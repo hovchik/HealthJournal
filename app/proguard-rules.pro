@@ -11,7 +11,3 @@
 -keep,includedescriptorclasses class com.healthjournal.**$$serializer { *; }
 -keepclassmembers class com.healthjournal.** { *** Companion; }
 -keepclasseswithmembers class com.healthjournal.** { kotlinx.serialization.KSerializer serializer(...); }
-
-# Room
--keep class * extends androidx.room.RoomDatabase
--keep @androidx.room.Entity class *
