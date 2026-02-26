@@ -13,9 +13,8 @@ import com.healthjournal.domain.repository.MedicationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import java.time.LocalDateTime
-import javax.inject.Inject
 
-class GenerateAiSummaryUseCase @Inject constructor(
+class GenerateAiSummaryUseCase constructor(
     private val aiProvider: AiProvider,
     private val reportRepository: AiReportRepository,
     private val symptomRepository: SymptomRepository,
@@ -85,7 +84,7 @@ class GenerateAiSummaryUseCase @Inject constructor(
     }
 }
 
-class GeneratePatternAnalysisUseCase @Inject constructor(
+class GeneratePatternAnalysisUseCase constructor(
     private val aiProvider: AiProvider,
     private val reportRepository: AiReportRepository,
     private val symptomRepository: SymptomRepository,
@@ -135,7 +134,7 @@ class GeneratePatternAnalysisUseCase @Inject constructor(
     }
 }
 
-class GetAllReportsUseCase @Inject constructor(
+class GetAllReportsUseCase constructor(
     private val repository: AiReportRepository
 ) {
     operator fun invoke(): Flow<List<AiReport>> = repository.getAllReports()

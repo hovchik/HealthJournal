@@ -1,29 +1,21 @@
 package com.healthjournal.presentation.screen.ai
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.healthjournal.domain.model.AiReport
-import com.healthjournal.domain.usecase.GenerateAiSummaryUseCase
-import com.healthjournal.domain.usecase.GeneratePatternAnalysisUseCase
-import com.healthjournal.domain.usecase.GetAllReportsUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.healthjournal.HealthJournalApp
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class AiReportUiState(
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
-@HiltViewModel
-class AiReportViewModel @Inject constructor(
-    getAllReports: GetAllReportsUseCase,
-    private val generateSummary: GenerateAiSummaryUseCase,
-    private val generatePatternAnalysis: GeneratePatternAnalysisUseCase
-) : ViewModel() {
+class AiReportViewModel(application: Application) : AndroidViewModel(application) {
+    private val container = (application as HealthJournalApp).container
 
-    val reports = getAllReports()
+    val reports = container.getAllReports()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _uiState = MutableStateFlow(AiReportUiState())
@@ -32,7 +24,7 @@ class AiReportViewModel @Inject constructor(
     fun generateReport(periodDays: Int = 7) {
         viewModelScope.launch {
             _uiState.value = AiReportUiState(isLoading = true)
-            generateSummary(periodDays)
+            container.generateAiSummary(periodDays)
                 .onSuccess { _uiState.value = AiReportUiState() }
                 .onFailure { _uiState.value = AiReportUiState(error = it.message) }
         }
@@ -41,7 +33,7 @@ class AiReportViewModel @Inject constructor(
     fun analyzePatterns(periodDays: Int = 30) {
         viewModelScope.launch {
             _uiState.value = AiReportUiState(isLoading = true)
-            generatePatternAnalysis(periodDays)
+            container.generatePatternAnalysis(periodDays)
                 .onSuccess { _uiState.value = AiReportUiState() }
                 .onFailure { _uiState.value = AiReportUiState(error = it.message) }
         }

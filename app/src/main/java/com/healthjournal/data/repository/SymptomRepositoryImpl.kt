@@ -8,9 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.ZoneId
-import javax.inject.Inject
 
-class SymptomRepositoryImpl @Inject constructor(
+class SymptomRepositoryImpl constructor(
     private val store: JsonFileStore<SymptomDto>
 ) : SymptomRepository {
 

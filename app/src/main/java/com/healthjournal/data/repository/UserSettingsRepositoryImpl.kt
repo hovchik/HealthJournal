@@ -9,15 +9,13 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.healthjournal.domain.model.UserSettings
 import com.healthjournal.domain.repository.UserSettingsRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_settings")
 
-class UserSettingsRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+class UserSettingsRepositoryImpl constructor(
+    private val context: Context
 ) : UserSettingsRepository {
 
     private object Keys {

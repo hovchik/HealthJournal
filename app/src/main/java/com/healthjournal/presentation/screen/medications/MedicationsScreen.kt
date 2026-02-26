@@ -12,7 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthjournal.domain.model.Medication
 import java.time.format.DateTimeFormatter
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun MedicationsScreen(
     onAddMedication: () -> Unit,
-    viewModel: MedicationsViewModel = hiltViewModel()
+    viewModel: MedicationsViewModel = viewModel()
 ) {
     val medications by viewModel.medications.collectAsStateWithLifecycle()
 

@@ -8,9 +8,8 @@ import com.healthjournal.domain.model.MedicationLog
 import com.healthjournal.domain.repository.MedicationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class MedicationRepositoryImpl @Inject constructor(
+class MedicationRepositoryImpl constructor(
     private val medicationStore: JsonFileStore<MedicationDto>,
     private val logStore: JsonFileStore<MedicationLogDto>
 ) : MedicationRepository {

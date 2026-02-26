@@ -4,9 +4,8 @@ import com.healthjournal.data.remote.api.ClaudeApi
 import com.healthjournal.data.remote.dto.ClaudeMessage
 import com.healthjournal.data.remote.dto.ClaudeRequest
 import com.healthjournal.domain.repository.AiProvider
-import javax.inject.Inject
 
-class ClaudeAiProvider @Inject constructor(
+class ClaudeAiProvider constructor(
     private val api: ClaudeApi
 ) : AiProvider {
 

@@ -9,14 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMedicationScreen(
     onBack: () -> Unit,
-    viewModel: MedicationsViewModel = hiltViewModel()
+    viewModel: MedicationsViewModel = viewModel()
 ) {
     var name by remember { mutableStateOf("") }
     var dosage by remember { mutableStateOf("") }

@@ -1,25 +1,18 @@
 package com.healthjournal.presentation.screen.medications
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.healthjournal.HealthJournalApp
 import com.healthjournal.domain.model.Medication
 import com.healthjournal.domain.model.MedicationLog
-import com.healthjournal.domain.usecase.*
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class MedicationsViewModel @Inject constructor(
-    getAllMedications: GetAllMedicationsUseCase,
-    private val addMedication: AddMedicationUseCase,
-    private val updateMedication: UpdateMedicationUseCase,
-    private val deleteMedication: DeleteMedicationUseCase,
-    private val logMedicationTaken: LogMedicationTakenUseCase
-) : ViewModel() {
+class MedicationsViewModel(application: Application) : AndroidViewModel(application) {
+    private val container = (application as HealthJournalApp).container
 
-    val medications = getAllMedications()
+    val medications = container.getAllMedications()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _saveSuccess = MutableSharedFlow<Boolean>()
@@ -27,7 +20,7 @@ class MedicationsViewModel @Inject constructor(
 
     fun addNewMedication(name: String, dosage: String, frequency: String, notes: String) {
         viewModelScope.launch {
-            addMedication(
+            container.addMedication(
                 Medication(
                     name = name,
                     dosage = dosage,
@@ -41,17 +34,17 @@ class MedicationsViewModel @Inject constructor(
 
     fun toggleMedicationActive(medication: Medication) {
         viewModelScope.launch {
-            updateMedication(medication.copy(active = !medication.active))
+            container.updateMedication(medication.copy(active = !medication.active))
         }
     }
 
     fun logTaken(medication: Medication) {
         viewModelScope.launch {
-            logMedicationTaken(MedicationLog(medicationId = medication.id))
+            container.logMedicationTaken(MedicationLog(medicationId = medication.id))
         }
     }
 
     fun removeMedication(medication: Medication) {
-        viewModelScope.launch { deleteMedication(medication) }
+        viewModelScope.launch { container.deleteMedication(medication) }
     }
 }

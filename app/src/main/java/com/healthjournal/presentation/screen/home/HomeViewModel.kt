@@ -1,33 +1,22 @@
 package com.healthjournal.presentation.screen.home
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.healthjournal.HealthJournalApp
 import com.healthjournal.domain.model.Symptom
-import com.healthjournal.domain.model.VitalSign
 import com.healthjournal.domain.model.VitalType
-import com.healthjournal.domain.usecase.AddSymptomUseCase
-import com.healthjournal.domain.usecase.AddVitalSignUseCase
-import com.healthjournal.domain.usecase.DeleteSymptomUseCase
-import com.healthjournal.domain.usecase.GetAllSymptomsUseCase
-import com.healthjournal.domain.usecase.GetAllVitalSignsUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.healthjournal.domain.model.VitalSign
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
-    getAllSymptoms: GetAllSymptomsUseCase,
-    private val getAllVitalSigns: GetAllVitalSignsUseCase,
-    private val addSymptom: AddSymptomUseCase,
-    private val addVitalSign: AddVitalSignUseCase,
-    private val deleteSymptom: DeleteSymptomUseCase
-) : ViewModel() {
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
+    private val container = (application as HealthJournalApp).container
 
-    val symptoms = getAllSymptoms()
+    val symptoms = container.getAllSymptoms()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val recentVitals = getAllVitalSigns()
+    val recentVitals = container.getAllVitalSigns()
         .map { it.take(5) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -42,7 +31,7 @@ class HomeViewModel @Inject constructor(
         notes: String
     ) {
         viewModelScope.launch {
-            addSymptom(
+            container.addSymptom(
                 Symptom(
                     name = name,
                     intensity = intensity,
@@ -62,7 +51,7 @@ class HomeViewModel @Inject constructor(
         notes: String
     ) {
         viewModelScope.launch {
-            addVitalSign(
+            container.addVitalSign(
                 VitalSign(
                     type = type,
                     value = value,
@@ -75,6 +64,6 @@ class HomeViewModel @Inject constructor(
     }
 
     fun removeSymptom(symptom: Symptom) {
-        viewModelScope.launch { deleteSymptom(symptom) }
+        viewModelScope.launch { container.deleteSymptom(symptom) }
     }
 }

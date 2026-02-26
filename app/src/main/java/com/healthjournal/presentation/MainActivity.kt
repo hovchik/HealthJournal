@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.healthjournal.presentation.navigation.HealthNavHost
@@ -17,9 +17,7 @@ import com.healthjournal.presentation.navigation.Screen
 import com.healthjournal.presentation.navigation.bottomNavItems
 import com.healthjournal.presentation.screen.onboarding.OnboardingViewModel
 import com.healthjournal.presentation.theme.HealthJournalTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +33,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
-    val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    val onboardingViewModel: OnboardingViewModel = viewModel()
     val settings by onboardingViewModel.settings.collectAsStateWithLifecycle()
 
     val startDestination = if (settings.onboardingCompleted) Screen.Home.route else Screen.Onboarding.route

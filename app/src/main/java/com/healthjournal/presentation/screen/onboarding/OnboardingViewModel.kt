@@ -1,19 +1,16 @@
 package com.healthjournal.presentation.screen.onboarding
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.healthjournal.HealthJournalApp
 import com.healthjournal.domain.model.UserSettings
-import com.healthjournal.domain.repository.UserSettingsRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class OnboardingViewModel @Inject constructor(
-    private val userSettingsRepository: UserSettingsRepository
-) : ViewModel() {
+class OnboardingViewModel(application: Application) : AndroidViewModel(application) {
+    private val userSettingsRepository = (application as HealthJournalApp).container.userSettingsRepository
 
     val settings = userSettingsRepository.getUserSettings()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UserSettings())

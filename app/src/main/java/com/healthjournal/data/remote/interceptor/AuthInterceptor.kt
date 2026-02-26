@@ -3,9 +3,8 @@ package com.healthjournal.data.remote.interceptor
 import com.healthjournal.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
-import javax.inject.Inject
 
-class AuthInterceptor @Inject constructor() : Interceptor {
+class AuthInterceptor constructor() : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
             .addHeader("x-api-key", BuildConfig.CLAUDE_API_KEY)

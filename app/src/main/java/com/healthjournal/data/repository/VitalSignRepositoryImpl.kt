@@ -9,9 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.ZoneId
-import javax.inject.Inject
 
-class VitalSignRepositoryImpl @Inject constructor(
+class VitalSignRepositoryImpl constructor(
     private val store: JsonFileStore<VitalSignDto>
 ) : VitalSignRepository {
 

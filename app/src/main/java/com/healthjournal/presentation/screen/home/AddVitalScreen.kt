@@ -11,7 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.domain.model.VitalType
 import kotlinx.coroutines.flow.collectLatest
 
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun AddVitalScreen(
     onBack: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = viewModel()
 ) {
     var selectedType by remember { mutableStateOf(VitalType.BLOOD_PRESSURE) }
     var value by remember { mutableStateOf("") }
