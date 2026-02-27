@@ -6,10 +6,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -26,6 +30,13 @@ fun AiSettingsScreen(
 ) {
     val settings by viewModel.aiSettings.collectAsStateWithLifecycle()
     val validationMessage by viewModel.validationMessage.collectAsStateWithLifecycle()
+
+    // Reorder providers: Gemini Nano first (system AI), then others
+    val orderedProviders = remember(viewModel.providers) {
+        val gemini = viewModel.providers.filter { it.id == AiProviderId.GEMINI_NANO }
+        val rest = viewModel.providers.filter { it.id != AiProviderId.GEMINI_NANO }
+        gemini + rest
+    }
 
     Scaffold(
         topBar = {
@@ -48,70 +59,128 @@ fun AiSettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // AI enabled toggle
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    stringResource(R.string.ai_enabled),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Switch(
-                    checked = settings.enabled,
-                    onCheckedChange = { viewModel.toggleEnabled(it) }
-                )
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.ai_enabled),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Switch(
+                        checked = settings.enabled,
+                        onCheckedChange = { viewModel.toggleEnabled(it) }
+                    )
+                }
             }
 
             if (settings.enabled) {
                 // Provider selection
                 Text(
                     stringResource(R.string.ai_select_provider),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
                 )
-                viewModel.providers.forEach { provider ->
+
+                orderedProviders.forEach { provider ->
                     val selected = provider.id.key == settings.selectedProviderId
+                    val isSystemAi = provider.id == AiProviderId.GEMINI_NANO
+
                     Card(
                         onClick = { viewModel.selectProvider(provider.id.key) },
                         colors = if (selected) CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer
-                        ) else CardDefaults.cardColors()
+                        ) else CardDefaults.cardColors(),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = if (selected) 4.dp else 1.dp
+                        )
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp)
                         ) {
-                            Text(stringResource(provider.displayNameResId))
-                            RadioButton(
-                                selected = selected,
-                                onClick = { viewModel.selectProvider(provider.id.key) }
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    if (isSystemAi) {
+                                        Icon(
+                                            Icons.Default.PhoneAndroid,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp),
+                                            tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                                                   else MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                    Text(
+                                        if (isSystemAi) stringResource(R.string.ai_provider_system)
+                                        else stringResource(provider.displayNameResId),
+                                        fontWeight = if (isSystemAi) FontWeight.SemiBold else FontWeight.Normal
+                                    )
+                                    if (isSystemAi) {
+                                        Surface(
+                                            shape = MaterialTheme.shapes.extraSmall,
+                                            color = MaterialTheme.colorScheme.tertiaryContainer
+                                        ) {
+                                            Text(
+                                                stringResource(R.string.system_ai_recommended),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                                RadioButton(
+                                    selected = selected,
+                                    onClick = { viewModel.selectProvider(provider.id.key) }
+                                )
+                            }
+                            if (isSystemAi) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    stringResource(R.string.system_ai_desc),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                           else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
 
                 // Privacy redaction toggle
                 HorizontalDivider()
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            stringResource(R.string.ai_privacy_redact),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Text(
-                            stringResource(R.string.ai_privacy_redact_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                stringResource(R.string.ai_privacy_redact),
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Text(
+                                stringResource(R.string.ai_privacy_redact_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = settings.privacyRedactEnabled,
+                            onCheckedChange = { viewModel.togglePrivacyRedact(it) }
                         )
                     }
-                    Switch(
-                        checked = settings.privacyRedactEnabled,
-                        onCheckedChange = { viewModel.togglePrivacyRedact(it) }
-                    )
                 }
 
                 // Provider-specific config
@@ -138,7 +207,7 @@ fun AiSettingsScreen(
                 // Validate button
                 Button(
                     onClick = { viewModel.validateCurrentProvider() },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
                     Text(stringResource(R.string.ai_validate_config))
                 }

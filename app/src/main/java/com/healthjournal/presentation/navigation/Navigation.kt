@@ -2,7 +2,6 @@ package com.healthjournal.presentation.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -10,6 +9,7 @@ import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Summarize
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.healthjournal.R
@@ -18,7 +18,7 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object Home : Screen("home", R.string.nav_home, Icons.Default.Dashboard)
     data object Vitals : Screen("vitals", R.string.nav_vitals, Icons.Default.MonitorHeart)
     data object Medications : Screen("medications", R.string.nav_medications, Icons.Default.Medication)
-    data object AiReport : Screen("ai_report", R.string.nav_ai_report, Icons.Default.AutoAwesome)
+    data object Reports : Screen("reports", R.string.nav_reports, Icons.Default.Summarize)
     data object Settings : Screen("settings", R.string.nav_settings, Icons.Default.Tune)
     data object Onboarding : Screen("onboarding", R.string.nav_home, Icons.Default.Home)
     data object AddSymptom : Screen("add_symptom", R.string.add_symptom_title, Icons.Default.Home)
@@ -31,4 +31,4 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object PredefinedDataSettings : Screen("predefined_data_settings", R.string.predefined_data_title, Icons.Default.Settings)
 }
 
-val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.AiReport, Screen.Settings)
+val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.Reports, Screen.Settings)

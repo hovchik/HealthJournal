@@ -3,7 +3,6 @@ package com.healthjournal.presentation.screen.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -12,15 +11,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.InsertDriveFile
+import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,6 +31,7 @@ import com.healthjournal.util.AttachmentHelper
 import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
 import kotlinx.coroutines.flow.collectLatest
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -51,21 +52,16 @@ fun AddVitalScreen(
     var selectedProfileId by remember { mutableStateOf<Long?>(null) }
     val effectiveProfileId = selectedProfileId ?: activeProfileId
 
-    // Initialize selectedProfileId once active profile is loaded
     LaunchedEffect(activeProfileId) {
         if (selectedProfileId == null) selectedProfileId = activeProfileId
     }
 
-    val filePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
-    ) { uris: List<Uri> ->
+    val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
         val paths = uris.mapNotNull { uri -> AttachmentHelper.copyToInternal(context, uri) }
         attachmentPaths = attachmentPaths + paths
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.saveSuccess.collectLatest { onBack() }
-    }
+    LaunchedEffect(Unit) { viewModel.saveSuccess.collectLatest { onBack() } }
 
     Scaffold(
         topBar = {
@@ -80,59 +76,19 @@ fun AddVitalScreen(
         }
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Profile selector
-            Text(
-                stringResource(R.string.recording_for, ""),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            ProfileSelector(
+                effectiveProfileId = effectiveProfileId,
+                familyMembers = familyMembers,
+                onSelect = { selectedProfileId = it }
             )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                FilterChip(
-                    selected = effectiveProfileId == 0L,
-                    onClick = { selectedProfileId = 0L },
-                    label = { Text(stringResource(R.string.rel_self)) },
-                    leadingIcon = {
-                        Box(
-                            modifier = Modifier.size(24.dp).clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.Person, contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
-                        }
-                    }
-                )
-                familyMembers.forEach { member ->
-                    FilterChip(
-                        selected = effectiveProfileId == member.id,
-                        onClick = { selectedProfileId = member.id },
-                        label = { Text(member.name) },
-                        leadingIcon = {
-                            Box(
-                                modifier = Modifier.size(24.dp).clip(CircleShape)
-                                    .background(Color(member.avatarColor)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(member.name.take(1).uppercase(), color = Color.White,
-                                    style = MaterialTheme.typography.labelSmall)
-                            }
-                        }
-                    )
-                }
-            }
 
             HorizontalDivider()
 
+            // Vital type selector
             ExposedDropdownMenuBox(
                 expanded = typeMenuExpanded,
                 onExpandedChange = { typeMenuExpanded = it }
@@ -143,92 +99,94 @@ fun AddVitalScreen(
                     readOnly = true,
                     label = { Text(stringResource(R.string.vital_type_label)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeMenuExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    leadingIcon = { Icon(Icons.Default.MonitorHeart, contentDescription = null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.tertiary) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
                 )
-                ExposedDropdownMenu(
-                    expanded = typeMenuExpanded,
-                    onDismissRequest = { typeMenuExpanded = false }
-                ) {
+                ExposedDropdownMenu(expanded = typeMenuExpanded, onDismissRequest = { typeMenuExpanded = false }) {
                     VitalType.entries.forEach { type ->
                         DropdownMenuItem(
                             text = { Text(type.localizedDisplayName()) },
-                            onClick = {
-                                selectedType = type
-                                typeMenuExpanded = false
-                            }
+                            onClick = { selectedType = type; typeMenuExpanded = false }
+                        )
+                    }
+                }
+            }
+
+            // Value inputs
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(
+                        value = value, onValueChange = { value = it },
+                        label = {
+                            Text(if (selectedType == VitalType.BLOOD_PRESSURE) stringResource(R.string.systolic_upper)
+                                else stringResource(R.string.value_with_unit, selectedType.localizedUnit()))
+                        },
+                        modifier = Modifier.fillMaxWidth(), singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                    )
+                    if (selectedType == VitalType.BLOOD_PRESSURE) {
+                        OutlinedTextField(
+                            value = secondaryValue, onValueChange = { secondaryValue = it },
+                            label = { Text(stringResource(R.string.diastolic_lower)) },
+                            modifier = Modifier.fillMaxWidth(), singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
                         )
                     }
                 }
             }
 
             OutlinedTextField(
-                value = value,
-                onValueChange = { value = it },
-                label = {
-                    Text(
-                        if (selectedType == VitalType.BLOOD_PRESSURE) stringResource(R.string.systolic_upper)
-                        else stringResource(R.string.value_with_unit, selectedType.localizedUnit())
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-
-            if (selectedType == VitalType.BLOOD_PRESSURE) {
-                OutlinedTextField(
-                    value = secondaryValue,
-                    onValueChange = { secondaryValue = it },
-                    label = { Text(stringResource(R.string.diastolic_lower)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                )
-            }
-
-            OutlinedTextField(
-                value = notes,
-                onValueChange = { notes = it },
+                value = notes, onValueChange = { notes = it },
                 label = { Text(stringResource(R.string.notes)) },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 2
+                modifier = Modifier.fillMaxWidth(), minLines = 2
             )
 
-            OutlinedButton(
-                onClick = { filePicker.launch("*/*") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            // Attachments
+            FilledTonalButton(onClick = { filePicker.launch("*/*") }, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.AttachFile, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(stringResource(R.string.attach_file))
             }
 
             if (attachmentPaths.isNotEmpty()) {
-                Text(
-                    stringResource(R.string.attachments_count, attachmentPaths.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    attachmentPaths.forEachIndexed { index, path ->
+                        OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.InsertDriveFile, contentDescription = null,
+                                    modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.tertiary)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(File(path).name, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), maxLines = 1)
+                                IconButton(onClick = { attachmentPaths = attachmentPaths.toMutableList().also { it.removeAt(index) } },
+                                    modifier = Modifier.size(32.dp)) {
+                                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.delete),
+                                        modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
                     val v = value.toDoubleOrNull()
                     if (v != null) {
                         viewModel.addNewVitalSign(
-                            type = selectedType,
-                            value = v,
-                            secondaryValue = secondaryValue.toDoubleOrNull(),
-                            notes = notes,
-                            attachmentPaths = attachmentPaths,
-                            profileId = effectiveProfileId
+                            type = selectedType, value = v, secondaryValue = secondaryValue.toDoubleOrNull(),
+                            notes = notes, attachmentPaths = attachmentPaths, profileId = effectiveProfileId
                         )
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(52.dp),
                 enabled = value.toDoubleOrNull() != null
             ) {
-                Text(stringResource(R.string.save))
+                Text(stringResource(R.string.save), style = MaterialTheme.typography.titleSmall)
             }
         }
     }

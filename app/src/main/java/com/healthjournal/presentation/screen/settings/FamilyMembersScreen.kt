@@ -2,6 +2,7 @@ package com.healthjournal.presentation.screen.settings
 
 import android.app.Application
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.*
@@ -20,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -83,8 +86,14 @@ fun FamilyMembersScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showAddDialog = true }) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_family_member))
+            ExtendedFloatingActionButton(
+                onClick = { showAddDialog = true },
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.add_family_member))
             }
         }
     ) { padding ->
@@ -93,10 +102,42 @@ fun FamilyMembersScreen(
                 .fillMaxSize()
                 .padding(padding),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Self profile (id = 0)
-            item {
+            // Header with instructions
+            item(key = "header") {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(64.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Groups,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        stringResource(R.string.select_member_first),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    HorizontalDivider()
+                }
+            }
+
+            // Self profile (id = 0) - prominent card
+            item(key = "self_profile") {
                 val isActive = activeProfileId == 0L
                 ElevatedCard(
                     onClick = { viewModel.selectProfile(0) },
@@ -104,7 +145,7 @@ fun FamilyMembersScreen(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
                     ) else CardDefaults.elevatedCardColors(),
                     elevation = CardDefaults.elevatedCardElevation(
-                        defaultElevation = if (isActive) 4.dp else 1.dp
+                        defaultElevation = if (isActive) 6.dp else 2.dp
                     )
                 ) {
                     Row(
@@ -116,25 +157,50 @@ fun FamilyMembersScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(44.dp)
+                                .size(52.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary),
+                                .background(MaterialTheme.colorScheme.primary)
+                                .then(
+                                    if (isActive) Modifier.border(3.dp, MaterialTheme.colorScheme.tertiary, CircleShape)
+                                    else Modifier
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 Icons.Default.Person,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(28.dp)
                             )
                         }
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(stringResource(R.string.rel_self), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                            Text(stringResource(R.string.default_profile), style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                stringResource(R.string.rel_self),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                stringResource(R.string.default_profile),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isActive) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                        else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                         if (isActive) {
-                            Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onTertiary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -148,7 +214,7 @@ fun FamilyMembersScreen(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
                     ) else CardDefaults.elevatedCardColors(),
                     elevation = CardDefaults.elevatedCardElevation(
-                        defaultElevation = if (isActive) 4.dp else 1.dp
+                        defaultElevation = if (isActive) 6.dp else 2.dp
                     )
                 ) {
                     Row(
@@ -160,31 +226,59 @@ fun FamilyMembersScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(44.dp)
+                                .size(52.dp)
                                 .clip(CircleShape)
-                                .background(Color(member.avatarColor)),
+                                .background(Color(member.avatarColor))
+                                .then(
+                                    if (isActive) Modifier.border(3.dp, MaterialTheme.colorScheme.tertiary, CircleShape)
+                                    else Modifier
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 member.name.take(1).uppercase(),
                                 color = Color.White,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(member.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                            Text(
+                                member.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
                             if (member.relationship.isNotBlank()) {
-                                Text(member.relationship, style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    member.relationship,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (isActive) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                            else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                         }
                         if (isActive) {
-                            Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onTertiary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
                         }
                         IconButton(onClick = { viewModel.deleteMember(member) }) {
-                            Icon(Icons.Outlined.DeleteOutline, contentDescription = stringResource(R.string.delete),
-                                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f))
+                            Icon(
+                                Icons.Outlined.DeleteOutline,
+                                contentDescription = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+                            )
                         }
                     }
                 }

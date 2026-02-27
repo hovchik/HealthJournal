@@ -6,7 +6,7 @@
     <string name="nav_home">Главная</string>
     <string name="nav_vitals">Показатели</string>
     <string name="nav_medications">Лекарства</string>
-    <string name="nav_ai_report">AI Отчёт</string>
+    <string name="nav_reports">Отчёты</string>
     <string name="nav_settings">Настройки</string>
 
     <!-- Common -->
@@ -16,6 +16,8 @@
     <string name="close">Закрыть</string>
     <string name="notes">Заметки</string>
     <string name="error_format">Ошибка: %1$s</string>
+    <string name="search">Поиск</string>
+    <string name="search_hint">Поиск…</string>
 
     <!-- Home Screen -->
     <string name="home_title">Медицинский дневник</string>
@@ -55,15 +57,19 @@
     <string name="dosage_hint">Дозировка (напр. 500 мг)</string>
     <string name="schedule_hint">Расписание (напр. 2 раза в день)</string>
 
-    <!-- AI Report Screen -->
-    <string name="ai_reports_title">AI Отчёты</string>
+    <!-- Reports Screen -->
+    <string name="reports_title">Отчёты</string>
+    <string name="reports_tab_records">Записи</string>
+    <string name="reports_tab_ai">AI Анализ</string>
     <string name="report_7_days">Отчёт (7 дней)</string>
     <string name="patterns_30_days">Паттерны (30 дн)</string>
     <string name="ai_analyzing">AI анализирует данные…</string>
-    <string name="no_reports_hint">Нет отчётов. Нажмите кнопку выше, чтобы сгенерировать AI-отчёт на основе ваших данных.</string>
+    <string name="no_reports_hint">Нет отчётов. Нажмите кнопку выше, чтобы сгенерировать AI-отчёт.</string>
+    <string name="no_records_hint">Нет записей за этот период.</string>
     <string name="report_type_summary">Медицинское резюме</string>
     <string name="report_type_patterns">Анализ паттернов</string>
     <string name="days_format">%1$d дн.</string>
+    <string name="records_export_pdf">Экспорт записей в PDF</string>
 
     <!-- Vitals Screen -->
     <string name="vitals_title">Показатели здоровья</string>
@@ -129,6 +135,9 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-совместимый</string>
     <string name="ai_provider_local">Локальная модель</string>
+    <string name="ai_provider_system">Системный AI (Google / Samsung)</string>
+    <string name="system_ai_desc">Использует встроенный AI на устройстве: Google AI Core или Samsung Galaxy AI. Не требует интернета или API-ключа. Доступно на Android 14+ с совместимым устройством.</string>
+    <string name="system_ai_recommended">(Рекомендуется)</string>
     <string name="ai_privacy_redact">Редактирование данных</string>
     <string name="ai_privacy_redact_desc">Удалять телефоны и email перед отправкой</string>
     <string name="ai_api_key">API-ключ</string>
@@ -163,6 +172,7 @@
     <string name="member_name">Имя</string>
     <string name="relationship">Родство</string>
     <string name="default_profile">Профиль по умолчанию</string>
+    <string name="select_member_first">Выберите кого добавляете</string>
 
     <!-- Relationships -->
     <string name="rel_self">Я</string>
@@ -190,35 +200,62 @@
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Головная боль</string>
+    <string name="symptom_migraine">Мигрень</string>
     <string name="symptom_stomachache">Боль в животе</string>
     <string name="symptom_back_pain">Боль в спине</string>
     <string name="symptom_fatigue">Усталость</string>
     <string name="symptom_dizziness">Головокружение</string>
     <string name="symptom_nausea">Тошнота</string>
+    <string name="symptom_vomiting">Рвота</string>
     <string name="symptom_insomnia">Бессонница</string>
     <string name="symptom_cough">Кашель</string>
     <string name="symptom_sore_throat">Боль в горле</string>
     <string name="symptom_runny_nose">Насморк</string>
+    <string name="symptom_sneezing">Чихание</string>
+    <string name="symptom_nasal_congestion">Заложенность носа</string>
+    <string name="symptom_wheezing">Свистящее дыхание</string>
     <string name="symptom_joint_pain">Боль в суставах</string>
     <string name="symptom_chest_pain">Боль в груди</string>
     <string name="symptom_shortness_of_breath">Одышка</string>
     <string name="symptom_fever">Жар</string>
+    <string name="symptom_chills">Озноб</string>
+    <string name="symptom_night_sweats">Ночная потливость</string>
     <string name="symptom_anxiety">Тревожность</string>
+    <string name="symptom_depression">Депрессия</string>
+    <string name="symptom_irritability">Раздражительность</string>
+    <string name="symptom_mood_swings">Перепады настроения</string>
+    <string name="symptom_panic_attacks">Панические атаки</string>
     <string name="symptom_muscle_pain">Боль в мышцах</string>
+    <string name="symptom_neck_pain">Боль в шее</string>
+    <string name="symptom_stiffness">Скованность</string>
+    <string name="symptom_muscle_cramps">Мышечные судороги</string>
     <string name="symptom_rash">Сыпь</string>
+    <string name="symptom_itching">Зуд</string>
+    <string name="symptom_dry_skin">Сухость кожи</string>
+    <string name="symptom_bruising">Синяки</string>
+    <string name="symptom_hair_loss">Выпадение волос</string>
     <string name="symptom_palpitations">Учащённое сердцебиение</string>
     <string name="symptom_blurred_vision">Нечёткое зрение</string>
+    <string name="symptom_tinnitus">Шум в ушах</string>
     <string name="symptom_earache">Боль в ухе</string>
     <string name="symptom_constipation">Запор</string>
     <string name="symptom_diarrhea">Диарея</string>
     <string name="symptom_bloating">Вздутие живота</string>
-    <string name="symptom_numbness">Онемение</string>
-    <string name="symptom_swelling">Отёк</string>
-    <string name="symptom_depression">Депрессия</string>
     <string name="symptom_heartburn">Изжога</string>
     <string name="symptom_loss_of_appetite">Потеря аппетита</string>
-    <string name="symptom_sneezing">Чихание</string>
+    <string name="symptom_excessive_thirst">Чрезмерная жажда</string>
+    <string name="symptom_numbness">Онемение</string>
+    <string name="symptom_tremor">Тремор</string>
+    <string name="symptom_memory_problems">Проблемы с памятью</string>
+    <string name="symptom_confusion">Спутанность сознания</string>
+    <string name="symptom_swelling">Отёк</string>
+    <string name="symptom_cold_hands_feet">Холодные руки/ноги</string>
+    <string name="symptom_weight_loss">Потеря веса</string>
+    <string name="symptom_weight_gain">Набор веса</string>
     <string name="symptom_dry_mouth">Сухость во рту</string>
+    <string name="symptom_toothache">Зубная боль</string>
+    <string name="symptom_frequent_urination">Частое мочеиспускание</string>
+    <string name="symptom_painful_urination">Болезненное мочеиспускание</string>
     <string name="common_symptoms">Частые симптомы</string>
 
     <!-- Predefined Medications -->
@@ -226,28 +263,49 @@
     <string name="med_paracetamol">Парацетамол</string>
     <string name="med_aspirin">Аспирин</string>
     <string name="med_amoxicillin">Амоксициллин</string>
+    <string name="med_azithromycin">Азитромицин</string>
+    <string name="med_ciprofloxacin">Ципрофлоксацин</string>
+    <string name="med_doxycycline">Доксициклин</string>
     <string name="med_omeprazole">Омепразол</string>
+    <string name="med_pantoprazole">Пантопразол</string>
+    <string name="med_metoclopramide">Метоклопрамид</string>
     <string name="med_metformin">Метформин</string>
+    <string name="med_insulin">Инсулин</string>
     <string name="med_lisinopril">Лизиноприл</string>
     <string name="med_amlodipine">Амлодипин</string>
     <string name="med_metoprolol">Метопролол</string>
+    <string name="med_losartan">Лозартан</string>
+    <string name="med_atorvastatin">Аторвастатин</string>
+    <string name="med_simvastatin">Симвастатин</string>
+    <string name="med_warfarin">Варфарин</string>
+    <string name="med_clopidogrel">Клопидогрел</string>
     <string name="med_loratadine">Лоратадин</string>
+    <string name="med_cetirizine">Цетиризин</string>
+    <string name="med_diphenhydramine">Дифенгидрамин</string>
+    <string name="med_levothyroxine">Левотироксин</string>
+    <string name="med_gabapentin">Габапентин</string>
+    <string name="med_sertraline">Сертралин</string>
+    <string name="med_amitriptyline">Амитриптилин</string>
+    <string name="med_diazepam">Диазепам</string>
+    <string name="med_prednisone">Преднизон</string>
+    <string name="med_dexamethasone">Дексаметазон</string>
+    <string name="med_diclofenac">Диклофенак</string>
+    <string name="med_naproxen">Напроксен</string>
+    <string name="med_tramadol">Трамадол</string>
+    <string name="med_salbutamol">Сальбутамол</string>
+    <string name="med_montelukast">Монтелукаст</string>
     <string name="med_vitamin_d">Витамин D</string>
     <string name="med_vitamin_c">Витамин C</string>
+    <string name="med_vitamin_b12">Витамин B12</string>
     <string name="med_omega3">Омега-3</string>
-    <string name="med_atorvastatin">Аторвастатин</string>
-    <string name="med_levothyroxine">Левотироксин</string>
-    <string name="med_losartan">Лозартан</string>
-    <string name="med_gabapentin">Габапентин</string>
-    <string name="med_pantoprazole">Пантопразол</string>
-    <string name="med_cetirizine">Цетиризин</string>
-    <string name="med_prednisone">Преднизон</string>
-    <string name="med_diclofenac">Диклофенак</string>
     <string name="med_magnesium">Магний</string>
-    <string name="med_probiotics">Пробиотики</string>
     <string name="med_iron">Препараты железа</string>
     <string name="med_folic_acid">Фолиевая кислота</string>
+    <string name="med_calcium">Кальций</string>
+    <string name="med_zinc">Цинк</string>
+    <string name="med_probiotics">Пробиотики</string>
     <string name="med_melatonin">Мелатонин</string>
+    <string name="med_multivitamin">Мультивитамины</string>
     <string name="common_medications">Частые лекарства</string>
 
     <!-- Attachments -->

@@ -5,31 +5,46 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
+import com.healthjournal.presentation.screen.home.ProfileSelector
+import com.healthjournal.presentation.screen.home.HomeViewModel
 import com.healthjournal.util.PredefinedData
 import com.healthjournal.util.PredefinedDataKeys
 import com.healthjournal.util.predefinedDataStore
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMedicationScreen(
     onBack: () -> Unit,
-    viewModel: MedicationsViewModel = viewModel()
+    viewModel: MedicationsViewModel = viewModel(),
+    homeViewModel: HomeViewModel = viewModel()
 ) {
     val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var dosage by remember { mutableStateOf("") }
     var frequency by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+    var dropdownExpanded by remember { mutableStateOf(false) }
+
+    val activeProfileId by homeViewModel.activeProfileId.collectAsStateWithLifecycle()
+    val familyMembers by homeViewModel.familyMembers.collectAsStateWithLifecycle()
+    var selectedProfileId by remember { mutableStateOf<Long?>(null) }
+    val effectiveProfileId = selectedProfileId ?: activeProfileId
+
+    LaunchedEffect(activeProfileId) {
+        if (selectedProfileId == null) selectedProfileId = activeProfileId
+    }
 
     val disabledMedications by remember {
         context.predefinedDataStore.data.map { prefs ->
@@ -42,7 +57,10 @@ fun AddMedicationScreen(
         }
     }.collectAsState(initial = emptySet())
 
-    val enabledPredefined = PredefinedData.medications.filter { it.key !in disabledMedications }
+    val allMedicationLabels = remember(disabledMedications, customMedications) {
+        val predefined = PredefinedData.medications.filter { it.key !in disabledMedications }
+        predefined.map { it.key to it.nameResId } to customMedications.toList()
+    }
 
     LaunchedEffect(Unit) {
         viewModel.saveSuccess.collectLatest { onBack() }
@@ -68,53 +86,80 @@ fun AddMedicationScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(R.string.medication_name)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+            // Profile selector
+            ProfileSelector(
+                effectiveProfileId = effectiveProfileId,
+                familyMembers = familyMembers,
+                onSelect = { selectedProfileId = it }
             )
 
-            Text(
-                stringResource(R.string.common_medications),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            HorizontalDivider()
+
+            // Medication name dropdown with search
+            ExposedDropdownMenuBox(
+                expanded = dropdownExpanded,
+                onExpandedChange = { dropdownExpanded = it }
             ) {
-                enabledPredefined.forEach { item ->
-                    val label = stringResource(item.nameResId)
-                    SuggestionChip(
-                        onClick = { name = label },
-                        label = { Text(label) }
-                    )
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it; dropdownExpanded = true },
+                    label = { Text(stringResource(R.string.medication_name)) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryEditable),
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(Icons.Default.Medication, contentDescription = null,
+                            modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+                    },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) }
+                )
+                val filteredPredefined = allMedicationLabels.first.filter { (_, resId) ->
+                    name.isBlank() || context.getString(resId).contains(name, ignoreCase = true)
                 }
-                customMedications.forEach { custom ->
-                    SuggestionChip(
-                        onClick = { name = custom },
-                        label = { Text(custom) }
-                    )
+                val filteredCustom = allMedicationLabels.second.filter {
+                    name.isBlank() || it.contains(name, ignoreCase = true)
+                }
+                if (filteredPredefined.isNotEmpty() || filteredCustom.isNotEmpty()) {
+                    ExposedDropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false }
+                    ) {
+                        filteredPredefined.forEach { (_, resId) ->
+                            val label = stringResource(resId)
+                            DropdownMenuItem(
+                                text = { Text(label) },
+                                onClick = { name = label; dropdownExpanded = false }
+                            )
+                        }
+                        filteredCustom.forEach { custom ->
+                            DropdownMenuItem(
+                                text = { Text(custom) },
+                                onClick = { name = custom; dropdownExpanded = false }
+                            )
+                        }
+                    }
                 }
             }
 
-            OutlinedTextField(
-                value = dosage,
-                onValueChange = { dosage = it },
-                label = { Text(stringResource(R.string.dosage_hint)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            // Dosage & Frequency in a card
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(
+                        value = dosage,
+                        onValueChange = { dosage = it },
+                        label = { Text(stringResource(R.string.dosage_hint)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
 
-            OutlinedTextField(
-                value = frequency,
-                onValueChange = { frequency = it },
-                label = { Text(stringResource(R.string.schedule_hint)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+                    OutlinedTextField(
+                        value = frequency,
+                        onValueChange = { frequency = it },
+                        label = { Text(stringResource(R.string.schedule_hint)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+            }
 
             OutlinedTextField(
                 value = notes,
@@ -124,16 +169,18 @@ fun AddMedicationScreen(
                 minLines = 2
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             Button(
                 onClick = {
                     if (name.isNotBlank() && dosage.isNotBlank()) {
                         viewModel.addNewMedication(name, dosage, frequency, notes)
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(52.dp),
                 enabled = name.isNotBlank() && dosage.isNotBlank()
             ) {
-                Text(stringResource(R.string.save))
+                Text(stringResource(R.string.save), style = MaterialTheme.typography.titleSmall)
             }
         }
     }

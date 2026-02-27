@@ -6,7 +6,7 @@
     <string name="nav_home">首页</string>
     <string name="nav_vitals">生命体征</string>
     <string name="nav_medications">药物</string>
-    <string name="nav_ai_report">AI 报告</string>
+    <string name="nav_reports">报告</string>
     <string name="nav_settings">设置</string>
 
     <!-- Common -->
@@ -16,6 +16,8 @@
     <string name="close">关闭</string>
     <string name="notes">备注</string>
     <string name="error_format">错误：%1$s</string>
+    <string name="search">搜索</string>
+    <string name="search_hint">搜索…</string>
 
     <!-- Home Screen -->
     <string name="home_title">健康日记</string>
@@ -55,15 +57,19 @@
     <string name="dosage_hint">剂量（如 500 毫克）</string>
     <string name="schedule_hint">用药频率（如 每日两次）</string>
 
-    <!-- AI Report Screen -->
-    <string name="ai_reports_title">AI 报告</string>
+    <!-- Reports Screen -->
+    <string name="reports_title">报告</string>
+    <string name="reports_tab_records">记录</string>
+    <string name="reports_tab_ai">AI 分析</string>
     <string name="report_7_days">报告（7 天）</string>
     <string name="patterns_30_days">模式分析（30 天）</string>
     <string name="ai_analyzing">AI 正在分析数据…</string>
     <string name="no_reports_hint">暂无报告。点击上方按钮，根据您的数据生成 AI 报告。</string>
+    <string name="no_records_hint">该时间段暂无记录。</string>
     <string name="report_type_summary">医疗摘要</string>
     <string name="report_type_patterns">模式分析</string>
     <string name="days_format">%1$d 天</string>
+    <string name="records_export_pdf">导出记录为 PDF</string>
 
     <!-- Vitals Screen -->
     <string name="vitals_title">健康指标</string>
@@ -129,6 +135,9 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI 兼容</string>
     <string name="ai_provider_local">本地模型</string>
+    <string name="ai_provider_system">系统 AI（Google / Samsung）</string>
+    <string name="system_ai_desc">使用设备内置 AI：Google AI Core 或 Samsung Galaxy AI。无需联网或 API 密钥。需要 Android 14+ 及兼容设备。</string>
+    <string name="system_ai_recommended">（推荐）</string>
     <string name="ai_privacy_redact">数据脱敏</string>
     <string name="ai_privacy_redact_desc">发送前删除电话号码和电子邮件</string>
     <string name="ai_api_key">API 密钥</string>
@@ -163,6 +172,7 @@
     <string name="member_name">姓名</string>
     <string name="relationship">关系</string>
     <string name="default_profile">默认档案</string>
+    <string name="select_member_first">请先选择添加对象</string>
 
     <!-- Relationships -->
     <string name="rel_self">本人</string>
@@ -190,35 +200,62 @@
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">头痛</string>
+    <string name="symptom_migraine">偏头痛</string>
     <string name="symptom_stomachache">胃痛</string>
     <string name="symptom_back_pain">背痛</string>
     <string name="symptom_fatigue">疲劳</string>
     <string name="symptom_dizziness">头晕</string>
     <string name="symptom_nausea">恶心</string>
+    <string name="symptom_vomiting">呕吐</string>
     <string name="symptom_insomnia">失眠</string>
     <string name="symptom_cough">咳嗽</string>
     <string name="symptom_sore_throat">喉咙痛</string>
     <string name="symptom_runny_nose">流鼻涕</string>
+    <string name="symptom_sneezing">打喷嚏</string>
+    <string name="symptom_nasal_congestion">鼻塞</string>
+    <string name="symptom_wheezing">喘息</string>
     <string name="symptom_joint_pain">关节痛</string>
     <string name="symptom_chest_pain">胸痛</string>
     <string name="symptom_shortness_of_breath">呼吸困难</string>
     <string name="symptom_fever">发烧</string>
+    <string name="symptom_chills">畏寒</string>
+    <string name="symptom_night_sweats">盗汗</string>
     <string name="symptom_anxiety">焦虑</string>
+    <string name="symptom_depression">抑郁</string>
+    <string name="symptom_irritability">易怒</string>
+    <string name="symptom_mood_swings">情绪波动</string>
+    <string name="symptom_panic_attacks">恐慌发作</string>
     <string name="symptom_muscle_pain">肌肉痛</string>
+    <string name="symptom_neck_pain">颈痛</string>
+    <string name="symptom_stiffness">僵硬</string>
+    <string name="symptom_muscle_cramps">肌肉痉挛</string>
     <string name="symptom_rash">皮疹</string>
+    <string name="symptom_itching">瘙痒</string>
+    <string name="symptom_dry_skin">皮肤干燥</string>
+    <string name="symptom_bruising">瘀伤</string>
+    <string name="symptom_hair_loss">脱发</string>
     <string name="symptom_palpitations">心悸</string>
     <string name="symptom_blurred_vision">视力模糊</string>
+    <string name="symptom_tinnitus">耳鸣</string>
     <string name="symptom_earache">耳痛</string>
     <string name="symptom_constipation">便秘</string>
     <string name="symptom_diarrhea">腹泻</string>
     <string name="symptom_bloating">腹胀</string>
-    <string name="symptom_numbness">麻木</string>
-    <string name="symptom_swelling">肿胀</string>
-    <string name="symptom_depression">抑郁</string>
     <string name="symptom_heartburn">胃灼热</string>
     <string name="symptom_loss_of_appetite">食欲不振</string>
-    <string name="symptom_sneezing">打喷嚏</string>
+    <string name="symptom_excessive_thirst">过度口渴</string>
+    <string name="symptom_numbness">麻木</string>
+    <string name="symptom_tremor">震颤</string>
+    <string name="symptom_memory_problems">记忆力减退</string>
+    <string name="symptom_confusion">意识混乱</string>
+    <string name="symptom_swelling">肿胀</string>
+    <string name="symptom_cold_hands_feet">手脚冰凉</string>
+    <string name="symptom_weight_loss">体重下降</string>
+    <string name="symptom_weight_gain">体重增加</string>
     <string name="symptom_dry_mouth">口干</string>
+    <string name="symptom_toothache">牙痛</string>
+    <string name="symptom_frequent_urination">尿频</string>
+    <string name="symptom_painful_urination">排尿疼痛</string>
     <string name="common_symptoms">常见症状</string>
 
     <!-- Predefined Medications -->
@@ -226,28 +263,49 @@
     <string name="med_paracetamol">对乙酰氨基酚</string>
     <string name="med_aspirin">阿司匹林</string>
     <string name="med_amoxicillin">阿莫西林</string>
+    <string name="med_azithromycin">阿奇霉素</string>
+    <string name="med_ciprofloxacin">环丙沙星</string>
+    <string name="med_doxycycline">多西环素</string>
     <string name="med_omeprazole">奥美拉唑</string>
+    <string name="med_pantoprazole">泮托拉唑</string>
+    <string name="med_metoclopramide">甲氧氯普胺</string>
     <string name="med_metformin">二甲双胍</string>
+    <string name="med_insulin">胰岛素</string>
     <string name="med_lisinopril">赖诺普利</string>
     <string name="med_amlodipine">氨氯地平</string>
     <string name="med_metoprolol">美托洛尔</string>
+    <string name="med_losartan">氯沙坦</string>
+    <string name="med_atorvastatin">阿托伐他汀</string>
+    <string name="med_simvastatin">辛伐他汀</string>
+    <string name="med_warfarin">华法林</string>
+    <string name="med_clopidogrel">氯吡格雷</string>
     <string name="med_loratadine">氯雷他定</string>
+    <string name="med_cetirizine">西替利嗪</string>
+    <string name="med_diphenhydramine">苯海拉明</string>
+    <string name="med_levothyroxine">左甲状腺素</string>
+    <string name="med_gabapentin">加巴喷丁</string>
+    <string name="med_sertraline">舍曲林</string>
+    <string name="med_amitriptyline">阿米替林</string>
+    <string name="med_diazepam">地西泮</string>
+    <string name="med_prednisone">泼尼松</string>
+    <string name="med_dexamethasone">地塞米松</string>
+    <string name="med_diclofenac">双氯芬酸</string>
+    <string name="med_naproxen">萘普生</string>
+    <string name="med_tramadol">曲马多</string>
+    <string name="med_salbutamol">沙丁胺醇</string>
+    <string name="med_montelukast">孟鲁司特</string>
     <string name="med_vitamin_d">维生素 D</string>
     <string name="med_vitamin_c">维生素 C</string>
+    <string name="med_vitamin_b12">维生素 B12</string>
     <string name="med_omega3">Omega-3</string>
-    <string name="med_atorvastatin">阿托伐他汀</string>
-    <string name="med_levothyroxine">左甲状腺素</string>
-    <string name="med_losartan">氯沙坦</string>
-    <string name="med_gabapentin">加巴喷丁</string>
-    <string name="med_pantoprazole">泮托拉唑</string>
-    <string name="med_cetirizine">西替利嗪</string>
-    <string name="med_prednisone">泼尼松</string>
-    <string name="med_diclofenac">双氯芬酸</string>
     <string name="med_magnesium">镁</string>
-    <string name="med_probiotics">益生菌</string>
     <string name="med_iron">铁剂</string>
     <string name="med_folic_acid">叶酸</string>
+    <string name="med_calcium">钙</string>
+    <string name="med_zinc">锌</string>
+    <string name="med_probiotics">益生菌</string>
     <string name="med_melatonin">褪黑素</string>
+    <string name="med_multivitamin">复合维生素</string>
     <string name="common_medications">常见药物</string>
 
     <!-- Attachments -->

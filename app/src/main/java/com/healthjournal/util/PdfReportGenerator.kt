@@ -158,6 +158,96 @@ object PdfReportGenerator {
         return file
     }
 
+    fun generateRecordsPdfAndShare(
+        context: Context,
+        symptoms: List<com.healthjournal.domain.model.Symptom>,
+        vitals: List<VitalSign>,
+        medications: List<com.healthjournal.domain.model.Medication>,
+        memberName: String
+    ) {
+        val document = PdfDocument()
+        val pageWidth = 595
+        val pageHeight = 842
+        val titlePaint = Paint().apply { textSize = 20f; isFakeBoldText = true; color = android.graphics.Color.rgb(27, 107, 77) }
+        val subtitlePaint = Paint().apply { textSize = 14f; isFakeBoldText = true; color = android.graphics.Color.DKGRAY }
+        val bodyPaint = Paint().apply { textSize = 11f; color = android.graphics.Color.BLACK }
+        val metaPaint = Paint().apply { textSize = 10f; color = android.graphics.Color.GRAY }
+        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+        val margin = 40f
+        val usableWidth = pageWidth - 2 * margin
+        var pageNum = 1
+        var pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create()
+        var page = document.startPage(pageInfo)
+        var canvas = page.canvas
+        var y = margin + 30f
+
+        fun checkNewPage() {
+            if (y > pageHeight - margin - 30) {
+                document.finishPage(page)
+                pageNum++
+                pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create()
+                page = document.startPage(pageInfo)
+                canvas = page.canvas
+                y = margin
+            }
+        }
+
+        canvas.drawText("Health Records - $memberName", margin, y, titlePaint)
+        y += 28f
+        canvas.drawText("Generated: ${java.time.LocalDateTime.now().format(dateFormatter)}", margin, y, metaPaint)
+        y += 25f
+        canvas.drawLine(margin, y, pageWidth - margin, y, metaPaint)
+        y += 20f
+
+        if (vitals.isNotEmpty()) {
+            canvas.drawText("Vital Signs (${vitals.size})", margin, y, subtitlePaint)
+            y += 20f
+            vitals.sortedByDescending { it.recordedAt }.forEach { vital ->
+                checkNewPage()
+                val valueStr = if (vital.secondaryValue != null) "${vital.value.toInt()}/${vital.secondaryValue.toInt()}" else vital.value.toString()
+                canvas.drawText("${vital.type.displayName}: $valueStr ${vital.type.unit} - ${vital.recordedAt.format(dateFormatter)}", margin + 10, y, bodyPaint)
+                y += 16f
+            }
+            y += 10f
+        }
+
+        if (symptoms.isNotEmpty()) {
+            checkNewPage()
+            canvas.drawText("Symptoms (${symptoms.size})", margin, y, subtitlePaint)
+            y += 20f
+            symptoms.sortedByDescending { it.recordedAt }.forEach { symptom ->
+                checkNewPage()
+                canvas.drawText("${symptom.name} - Intensity: ${symptom.intensity}/10 - ${symptom.recordedAt.format(dateFormatter)}", margin + 10, y, bodyPaint)
+                y += 16f
+                if (symptom.notes.isNotBlank()) {
+                    val noteLines = wrapText("  Notes: ${symptom.notes}", metaPaint, usableWidth - 10)
+                    noteLines.forEach { line -> checkNewPage(); canvas.drawText(line, margin + 10, y, metaPaint); y += 14f }
+                }
+            }
+            y += 10f
+        }
+
+        if (medications.isNotEmpty()) {
+            checkNewPage()
+            canvas.drawText("Medications (${medications.size})", margin, y, subtitlePaint)
+            y += 20f
+            medications.forEach { med ->
+                checkNewPage()
+                val status = if (med.active) "Active" else "Inactive"
+                canvas.drawText("${med.name} - ${med.dosage} - ${med.frequency} ($status)", margin + 10, y, bodyPaint)
+                y += 16f
+            }
+        }
+
+        document.finishPage(page)
+        val dir = File(context.cacheDir, "reports")
+        dir.mkdirs()
+        val file = File(dir, "health_records_${System.currentTimeMillis()}.pdf")
+        file.outputStream().use { document.writeTo(it) }
+        document.close()
+        shareFile(context, file)
+    }
+
     private fun shareFile(context: Context, file: File) {
         val uri = FileProvider.getUriForFile(
             context,

@@ -35,6 +35,14 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
         all.filter { it.profileId == profileId }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val symptoms = combine(container.getAllSymptoms(), activeProfileId) { all, profileId ->
+        all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val medications = combine(container.getAllMedications(), activeProfileId) { all, profileId ->
+        all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     private val _uiState = MutableStateFlow(AiReportUiState())
     val uiState = _uiState.asStateFlow()
 

@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.healthjournal.presentation.screen.ai.AiReportScreen
+import com.healthjournal.presentation.screen.ai.ReportsScreen
 import com.healthjournal.presentation.screen.home.AddSymptomScreen
 import com.healthjournal.presentation.screen.home.AddVitalScreen
 import com.healthjournal.presentation.screen.home.HomeScreen
@@ -59,8 +59,8 @@ fun HealthNavHost(
         composable(Screen.AddMedication.route) {
             AddMedicationScreen(onBack = { navController.popBackStack() })
         }
-        composable(Screen.AiReport.route) {
-            AiReportScreen()
+        composable(Screen.Reports.route) {
+            ReportsScreen()
         }
         composable(Screen.Settings.route) {
             SettingsScreen(

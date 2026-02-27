@@ -6,7 +6,7 @@
     <string name="nav_home">Home</string>
     <string name="nav_vitals">Vitals</string>
     <string name="nav_medications">Medications</string>
-    <string name="nav_ai_report">AI Report</string>
+    <string name="nav_reports">Reports</string>
     <string name="nav_settings">Settings</string>
 
     <!-- Common -->
@@ -16,6 +16,8 @@
     <string name="close">Close</string>
     <string name="notes">Notes</string>
     <string name="error_format">Error: %1$s</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Search…</string>
 
     <!-- Home Screen -->
     <string name="home_title">Health Journal</string>
@@ -55,15 +57,19 @@
     <string name="dosage_hint">Dosage (e.g. 500 mg)</string>
     <string name="schedule_hint">Schedule (e.g. twice a day)</string>
 
-    <!-- AI Report Screen -->
-    <string name="ai_reports_title">AI Reports</string>
+    <!-- Reports Screen -->
+    <string name="reports_title">Reports</string>
+    <string name="reports_tab_records">Records</string>
+    <string name="reports_tab_ai">AI Analysis</string>
     <string name="report_7_days">Report (7 days)</string>
     <string name="patterns_30_days">Patterns (30 days)</string>
     <string name="ai_analyzing">AI is analyzing data…</string>
     <string name="no_reports_hint">No reports. Tap the button above to generate an AI report based on your data.</string>
+    <string name="no_records_hint">No records for this period.</string>
     <string name="report_type_summary">Medical summary</string>
     <string name="report_type_patterns">Pattern analysis</string>
     <string name="days_format">%1$d days</string>
+    <string name="records_export_pdf">Export records to PDF</string>
 
     <!-- Vitals Screen -->
     <string name="vitals_title">Health vitals</string>
@@ -129,6 +135,9 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-compatible</string>
     <string name="ai_provider_local">Local model</string>
+    <string name="ai_provider_system">System AI (Google / Samsung)</string>
+    <string name="system_ai_desc">Uses the built-in on-device AI: Google AI Core or Samsung Galaxy AI. Does not require internet or an API key. Available on Android 14+ with a compatible device.</string>
+    <string name="system_ai_recommended">(Recommended)</string>
     <string name="ai_privacy_redact">Data redaction</string>
     <string name="ai_privacy_redact_desc">Remove phone numbers and emails before sending</string>
     <string name="ai_api_key">API key</string>
@@ -163,6 +172,7 @@
     <string name="member_name">Name</string>
     <string name="relationship">Relationship</string>
     <string name="default_profile">Default profile</string>
+    <string name="select_member_first">Select who to add for</string>
 
     <!-- Relationships -->
     <string name="rel_self">Self</string>
@@ -190,35 +200,62 @@
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Headache</string>
+    <string name="symptom_migraine">Migraine</string>
     <string name="symptom_stomachache">Stomachache</string>
     <string name="symptom_back_pain">Back pain</string>
     <string name="symptom_fatigue">Fatigue</string>
     <string name="symptom_dizziness">Dizziness</string>
     <string name="symptom_nausea">Nausea</string>
+    <string name="symptom_vomiting">Vomiting</string>
     <string name="symptom_insomnia">Insomnia</string>
     <string name="symptom_cough">Cough</string>
     <string name="symptom_sore_throat">Sore throat</string>
     <string name="symptom_runny_nose">Runny nose</string>
+    <string name="symptom_sneezing">Sneezing</string>
+    <string name="symptom_nasal_congestion">Nasal congestion</string>
+    <string name="symptom_wheezing">Wheezing</string>
     <string name="symptom_joint_pain">Joint pain</string>
     <string name="symptom_chest_pain">Chest pain</string>
     <string name="symptom_shortness_of_breath">Shortness of breath</string>
     <string name="symptom_fever">Fever</string>
+    <string name="symptom_chills">Chills</string>
+    <string name="symptom_night_sweats">Night sweats</string>
     <string name="symptom_anxiety">Anxiety</string>
+    <string name="symptom_depression">Depression</string>
+    <string name="symptom_irritability">Irritability</string>
+    <string name="symptom_mood_swings">Mood swings</string>
+    <string name="symptom_panic_attacks">Panic attacks</string>
     <string name="symptom_muscle_pain">Muscle pain</string>
+    <string name="symptom_neck_pain">Neck pain</string>
+    <string name="symptom_stiffness">Stiffness</string>
+    <string name="symptom_muscle_cramps">Muscle cramps</string>
     <string name="symptom_rash">Rash</string>
+    <string name="symptom_itching">Itching</string>
+    <string name="symptom_dry_skin">Dry skin</string>
+    <string name="symptom_bruising">Bruising</string>
+    <string name="symptom_hair_loss">Hair loss</string>
     <string name="symptom_palpitations">Palpitations</string>
     <string name="symptom_blurred_vision">Blurred vision</string>
+    <string name="symptom_tinnitus">Tinnitus</string>
     <string name="symptom_earache">Earache</string>
     <string name="symptom_constipation">Constipation</string>
     <string name="symptom_diarrhea">Diarrhea</string>
     <string name="symptom_bloating">Bloating</string>
-    <string name="symptom_numbness">Numbness</string>
-    <string name="symptom_swelling">Swelling</string>
-    <string name="symptom_depression">Depression</string>
     <string name="symptom_heartburn">Heartburn</string>
     <string name="symptom_loss_of_appetite">Loss of appetite</string>
-    <string name="symptom_sneezing">Sneezing</string>
+    <string name="symptom_excessive_thirst">Excessive thirst</string>
+    <string name="symptom_numbness">Numbness</string>
+    <string name="symptom_tremor">Tremor</string>
+    <string name="symptom_memory_problems">Memory problems</string>
+    <string name="symptom_confusion">Confusion</string>
+    <string name="symptom_swelling">Swelling</string>
+    <string name="symptom_cold_hands_feet">Cold hands/feet</string>
+    <string name="symptom_weight_loss">Weight loss</string>
+    <string name="symptom_weight_gain">Weight gain</string>
     <string name="symptom_dry_mouth">Dry mouth</string>
+    <string name="symptom_toothache">Toothache</string>
+    <string name="symptom_frequent_urination">Frequent urination</string>
+    <string name="symptom_painful_urination">Painful urination</string>
     <string name="common_symptoms">Common symptoms</string>
 
     <!-- Predefined Medications -->
@@ -226,28 +263,49 @@
     <string name="med_paracetamol">Paracetamol</string>
     <string name="med_aspirin">Aspirin</string>
     <string name="med_amoxicillin">Amoxicillin</string>
+    <string name="med_azithromycin">Azithromycin</string>
+    <string name="med_ciprofloxacin">Ciprofloxacin</string>
+    <string name="med_doxycycline">Doxycycline</string>
     <string name="med_omeprazole">Omeprazole</string>
+    <string name="med_pantoprazole">Pantoprazole</string>
+    <string name="med_metoclopramide">Metoclopramide</string>
     <string name="med_metformin">Metformin</string>
+    <string name="med_insulin">Insulin</string>
     <string name="med_lisinopril">Lisinopril</string>
     <string name="med_amlodipine">Amlodipine</string>
     <string name="med_metoprolol">Metoprolol</string>
+    <string name="med_losartan">Losartan</string>
+    <string name="med_atorvastatin">Atorvastatin</string>
+    <string name="med_simvastatin">Simvastatin</string>
+    <string name="med_warfarin">Warfarin</string>
+    <string name="med_clopidogrel">Clopidogrel</string>
     <string name="med_loratadine">Loratadine</string>
+    <string name="med_cetirizine">Cetirizine</string>
+    <string name="med_diphenhydramine">Diphenhydramine</string>
+    <string name="med_levothyroxine">Levothyroxine</string>
+    <string name="med_gabapentin">Gabapentin</string>
+    <string name="med_sertraline">Sertraline</string>
+    <string name="med_amitriptyline">Amitriptyline</string>
+    <string name="med_diazepam">Diazepam</string>
+    <string name="med_prednisone">Prednisone</string>
+    <string name="med_dexamethasone">Dexamethasone</string>
+    <string name="med_diclofenac">Diclofenac</string>
+    <string name="med_naproxen">Naproxen</string>
+    <string name="med_tramadol">Tramadol</string>
+    <string name="med_salbutamol">Salbutamol</string>
+    <string name="med_montelukast">Montelukast</string>
     <string name="med_vitamin_d">Vitamin D</string>
     <string name="med_vitamin_c">Vitamin C</string>
+    <string name="med_vitamin_b12">Vitamin B12</string>
     <string name="med_omega3">Omega-3</string>
-    <string name="med_atorvastatin">Atorvastatin</string>
-    <string name="med_levothyroxine">Levothyroxine</string>
-    <string name="med_losartan">Losartan</string>
-    <string name="med_gabapentin">Gabapentin</string>
-    <string name="med_pantoprazole">Pantoprazole</string>
-    <string name="med_cetirizine">Cetirizine</string>
-    <string name="med_prednisone">Prednisone</string>
-    <string name="med_diclofenac">Diclofenac</string>
     <string name="med_magnesium">Magnesium</string>
-    <string name="med_probiotics">Probiotics</string>
     <string name="med_iron">Iron supplement</string>
     <string name="med_folic_acid">Folic acid</string>
+    <string name="med_calcium">Calcium</string>
+    <string name="med_zinc">Zinc</string>
+    <string name="med_probiotics">Probiotics</string>
     <string name="med_melatonin">Melatonin</string>
+    <string name="med_multivitamin">Multivitamin</string>
     <string name="common_medications">Common medications</string>
 
     <!-- Attachments -->

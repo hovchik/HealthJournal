@@ -12,6 +12,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -32,6 +34,7 @@ import com.healthjournal.util.PredefinedDataKeys
 import com.healthjournal.util.predefinedDataStore
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -46,39 +49,40 @@ fun AddSymptomScreen(
     var triggers by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
+    var dropdownExpanded by remember { mutableStateOf(false) }
 
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
     val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
     var selectedProfileId by remember { mutableStateOf<Long?>(null) }
     val effectiveProfileId = selectedProfileId ?: activeProfileId
 
-    // Initialize selectedProfileId once active profile is loaded
     LaunchedEffect(activeProfileId) {
         if (selectedProfileId == null) selectedProfileId = activeProfileId
     }
 
     val disabledSymptoms by remember {
-        context.predefinedDataStore.data.map { prefs ->
-            prefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet()
-        }
+        context.predefinedDataStore.data.map { prefs -> prefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet() }
     }.collectAsState(initial = emptySet())
     val customSymptoms by remember {
-        context.predefinedDataStore.data.map { prefs ->
-            prefs[PredefinedDataKeys.CUSTOM_SYMPTOMS] ?: emptySet()
-        }
+        context.predefinedDataStore.data.map { prefs -> prefs[PredefinedDataKeys.CUSTOM_SYMPTOMS] ?: emptySet() }
     }.collectAsState(initial = emptySet())
 
-    val enabledPredefined = PredefinedData.symptoms.filter { it.key !in disabledSymptoms }
+    val allSymptomLabels = remember(disabledSymptoms, customSymptoms) {
+        val predefined = PredefinedData.symptoms.filter { it.key !in disabledSymptoms }
+        predefined.map { it.key to it.nameResId } to customSymptoms.toList()
+    }
 
-    val filePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
-    ) { uris: List<Uri> ->
+    val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
         val paths = uris.mapNotNull { uri -> AttachmentHelper.copyToInternal(context, uri) }
         attachmentPaths = attachmentPaths + paths
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.saveSuccess.collectLatest { onBack() }
+    LaunchedEffect(Unit) { viewModel.saveSuccess.collectLatest { onBack() } }
+
+    val intensityColor = when {
+        intensity.toInt() <= 3 -> MaterialTheme.colorScheme.primary
+        intensity.toInt() <= 6 -> MaterialTheme.colorScheme.tertiary
+        else -> MaterialTheme.colorScheme.error
     }
 
     Scaffold(
@@ -94,127 +98,109 @@ fun AddSymptomScreen(
         }
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Profile selector
-            Text(
-                stringResource(R.string.recording_for, ""),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            ProfileSelector(
+                effectiveProfileId = effectiveProfileId,
+                familyMembers = familyMembers,
+                onSelect = { selectedProfileId = it }
             )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                FilterChip(
-                    selected = effectiveProfileId == 0L,
-                    onClick = { selectedProfileId = 0L },
-                    label = { Text(stringResource(R.string.rel_self)) },
-                    leadingIcon = {
-                        Box(
-                            modifier = Modifier.size(24.dp).clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.Person, contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
-                        }
-                    }
-                )
-                familyMembers.forEach { member ->
-                    FilterChip(
-                        selected = effectiveProfileId == member.id,
-                        onClick = { selectedProfileId = member.id },
-                        label = { Text(member.name) },
-                        leadingIcon = {
-                            Box(
-                                modifier = Modifier.size(24.dp).clip(CircleShape)
-                                    .background(Color(member.avatarColor)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(member.name.take(1).uppercase(), color = Color.White,
-                                    style = MaterialTheme.typography.labelSmall)
-                            }
-                        }
-                    )
-                }
-            }
 
             HorizontalDivider()
 
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(R.string.symptom_name)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Text(
-                stringResource(R.string.common_symptoms),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            // Symptom name dropdown with search
+            ExposedDropdownMenuBox(
+                expanded = dropdownExpanded,
+                onExpandedChange = { dropdownExpanded = it }
             ) {
-                enabledPredefined.forEach { item ->
-                    val label = stringResource(item.nameResId)
-                    SuggestionChip(
-                        onClick = { name = label },
-                        label = { Text(label) }
-                    )
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it; dropdownExpanded = true },
+                    label = { Text(stringResource(R.string.symptom_name)) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryEditable),
+                    singleLine = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) }
+                )
+                val filteredPredefined = allSymptomLabels.first.filter { (_, resId) ->
+                    name.isBlank() || context.getString(resId).contains(name, ignoreCase = true)
                 }
-                customSymptoms.forEach { custom ->
-                    SuggestionChip(
-                        onClick = { name = custom },
-                        label = { Text(custom) }
-                    )
+                val filteredCustom = allSymptomLabels.second.filter {
+                    name.isBlank() || it.contains(name, ignoreCase = true)
+                }
+                if (filteredPredefined.isNotEmpty() || filteredCustom.isNotEmpty()) {
+                    ExposedDropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false }
+                    ) {
+                        filteredPredefined.forEach { (_, resId) ->
+                            val label = stringResource(resId)
+                            DropdownMenuItem(
+                                text = { Text(label) },
+                                onClick = { name = label; dropdownExpanded = false }
+                            )
+                        }
+                        filteredCustom.forEach { custom ->
+                            DropdownMenuItem(
+                                text = { Text(custom) },
+                                onClick = { name = custom; dropdownExpanded = false }
+                            )
+                        }
+                    }
                 }
             }
 
-            Column {
-                Text(stringResource(R.string.intensity_label, intensity.toInt()))
-                Slider(
-                    value = intensity,
-                    onValueChange = { intensity = it },
-                    valueRange = 0f..10f,
-                    steps = 9
-                )
+            // Intensity slider
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(R.string.intensity_label, intensity.toInt()),
+                            style = MaterialTheme.typography.titleSmall)
+                        Surface(
+                            shape = CircleShape,
+                            color = intensityColor.copy(alpha = 0.12f),
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text("${intensity.toInt()}", color = intensityColor,
+                                    style = MaterialTheme.typography.titleMedium)
+                            }
+                        }
+                    }
+                    Slider(
+                        value = intensity, onValueChange = { intensity = it },
+                        valueRange = 0f..10f, steps = 9,
+                        colors = SliderDefaults.colors(thumbColor = intensityColor, activeTrackColor = intensityColor)
+                    )
+                }
             }
 
             OutlinedTextField(
-                value = duration,
-                onValueChange = { duration = it },
+                value = duration, onValueChange = { duration = it },
                 label = { Text(stringResource(R.string.duration_minutes)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                modifier = Modifier.fillMaxWidth(), singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             OutlinedTextField(
-                value = triggers,
-                onValueChange = { triggers = it },
+                value = triggers, onValueChange = { triggers = it },
                 label = { Text(stringResource(R.string.triggers_hint)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                modifier = Modifier.fillMaxWidth(), singleLine = true
             )
 
             OutlinedTextField(
-                value = notes,
-                onValueChange = { notes = it },
+                value = notes, onValueChange = { notes = it },
                 label = { Text(stringResource(R.string.notes)) },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3
+                modifier = Modifier.fillMaxWidth(), minLines = 2
             )
 
-            OutlinedButton(
+            // Attachments section
+            FilledTonalButton(
                 onClick = { filePicker.launch("*/*") },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -224,32 +210,86 @@ fun AddSymptomScreen(
             }
 
             if (attachmentPaths.isNotEmpty()) {
-                Text(
-                    stringResource(R.string.attachments_count, attachmentPaths.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    attachmentPaths.forEachIndexed { index, path ->
+                        val fileName = File(path).name
+                        OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.InsertDriveFile, contentDescription = null,
+                                    modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.tertiary)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(fileName, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), maxLines = 1)
+                                IconButton(onClick = { attachmentPaths = attachmentPaths.toMutableList().also { it.removeAt(index) } },
+                                    modifier = Modifier.size(32.dp)) {
+                                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.delete),
+                                        modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
                         viewModel.addNewSymptom(
-                            name = name,
-                            intensity = intensity.toInt(),
+                            name = name, intensity = intensity.toInt(),
                             durationMinutes = duration.toIntOrNull(),
                             triggers = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                            notes = notes,
-                            attachmentPaths = attachmentPaths,
-                            profileId = effectiveProfileId
+                            notes = notes, attachmentPaths = attachmentPaths, profileId = effectiveProfileId
                         )
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(52.dp),
                 enabled = name.isNotBlank()
             ) {
-                Text(stringResource(R.string.save))
+                Text(stringResource(R.string.save), style = MaterialTheme.typography.titleSmall)
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun ProfileSelector(
+    effectiveProfileId: Long,
+    familyMembers: List<com.healthjournal.domain.model.FamilyMember>,
+    onSelect: (Long) -> Unit
+) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FilterChip(
+            selected = effectiveProfileId == 0L,
+            onClick = { onSelect(0L) },
+            label = { Text(stringResource(R.string.rel_self)) },
+            leadingIcon = {
+                Box(modifier = Modifier.size(24.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center) {
+                    Icon(Icons.Default.Person, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
+                }
+            }
+        )
+        familyMembers.forEach { member ->
+            FilterChip(
+                selected = effectiveProfileId == member.id,
+                onClick = { onSelect(member.id) },
+                label = { Text(member.name) },
+                leadingIcon = {
+                    Box(modifier = Modifier.size(24.dp).clip(CircleShape).background(Color(member.avatarColor)),
+                        contentAlignment = Alignment.Center) {
+                        Text(member.name.take(1).uppercase(), color = Color.White, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+            )
         }
     }
 }

@@ -1,13 +1,8 @@
 package com.healthjournal.presentation.screen.settings
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -16,11 +11,13 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Healing
 import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,6 +32,7 @@ fun PredefinedDataSettingsScreen(
     onBack: () -> Unit,
     viewModel: PredefinedDataSettingsViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val disabledSymptoms by viewModel.disabledSymptoms.collectAsStateWithLifecycle()
     val disabledMedications by viewModel.disabledMedications.collectAsStateWithLifecycle()
     val customSymptoms by viewModel.customSymptoms.collectAsStateWithLifecycle()
@@ -44,6 +42,7 @@ fun PredefinedDataSettingsScreen(
     var showAddMedicationDialog by remember { mutableStateOf(false) }
     var symptomsExpanded by rememberSaveable { mutableStateOf(false) }
     var medicationsExpanded by rememberSaveable { mutableStateOf(false) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -64,6 +63,53 @@ fun PredefinedDataSettingsScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            // Search bar
+            item(key = "search_bar") {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    placeholder = { Text(stringResource(R.string.search_hint)) },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    },
+                    singleLine = true
+                )
+            }
+
+            // Filter symptoms and medications by search query
+            val filteredSymptoms = if (searchQuery.isBlank()) {
+                PredefinedData.symptoms
+            } else {
+                PredefinedData.symptoms.filter { item ->
+                    context.getString(item.nameResId).contains(searchQuery, ignoreCase = true)
+                }
+            }
+            val filteredCustomSymptoms = if (searchQuery.isBlank()) {
+                customSymptoms.toList()
+            } else {
+                customSymptoms.filter { it.contains(searchQuery, ignoreCase = true) }.toList()
+            }
+            val filteredMedications = if (searchQuery.isBlank()) {
+                PredefinedData.medications
+            } else {
+                PredefinedData.medications.filter { item ->
+                    context.getString(item.nameResId).contains(searchQuery, ignoreCase = true)
+                }
+            }
+            val filteredCustomMedications = if (searchQuery.isBlank()) {
+                customMedications.toList()
+            } else {
+                customMedications.filter { it.contains(searchQuery, ignoreCase = true) }.toList()
+            }
+
+            val isSearching = searchQuery.isNotBlank()
+
             // Symptoms section header
             item(key = "symptoms_header") {
                 SectionHeader(
@@ -71,15 +117,15 @@ fun PredefinedDataSettingsScreen(
                     title = stringResource(R.string.predefined_symptoms_section),
                     count = PredefinedData.symptoms.count { it.key !in disabledSymptoms } + customSymptoms.size,
                     total = PredefinedData.symptoms.size + customSymptoms.size,
-                    expanded = symptomsExpanded,
-                    onToggle = { symptomsExpanded = !symptomsExpanded },
+                    expanded = symptomsExpanded || isSearching,
+                    onToggle = { if (!isSearching) symptomsExpanded = !symptomsExpanded },
                     onAdd = { showAddSymptomDialog = true }
                 )
             }
 
-            // Symptoms content (collapsible)
-            if (symptomsExpanded) {
-                items(PredefinedData.symptoms, key = { "s_${it.key}" }) { item ->
+            // Symptoms content (collapsible, or always show when searching)
+            if (symptomsExpanded || isSearching) {
+                items(filteredSymptoms, key = { "s_${it.key}" }) { item ->
                     val enabled = item.key !in disabledSymptoms
                     val label = stringResource(item.nameResId)
                     ToggleItem(
@@ -89,7 +135,7 @@ fun PredefinedDataSettingsScreen(
                     )
                 }
 
-                items(customSymptoms.toList(), key = { "cs_$it" }) { custom ->
+                items(filteredCustomSymptoms, key = { "cs_$it" }) { custom ->
                     CustomItem(
                         label = custom,
                         onRemove = { viewModel.removeCustomSymptom(custom) }
@@ -106,15 +152,15 @@ fun PredefinedDataSettingsScreen(
                     title = stringResource(R.string.predefined_medications_section),
                     count = PredefinedData.medications.count { it.key !in disabledMedications } + customMedications.size,
                     total = PredefinedData.medications.size + customMedications.size,
-                    expanded = medicationsExpanded,
-                    onToggle = { medicationsExpanded = !medicationsExpanded },
+                    expanded = medicationsExpanded || isSearching,
+                    onToggle = { if (!isSearching) medicationsExpanded = !medicationsExpanded },
                     onAdd = { showAddMedicationDialog = true }
                 )
             }
 
-            // Medications content (collapsible)
-            if (medicationsExpanded) {
-                items(PredefinedData.medications, key = { "m_${it.key}" }) { item ->
+            // Medications content (collapsible, or always show when searching)
+            if (medicationsExpanded || isSearching) {
+                items(filteredMedications, key = { "m_${it.key}" }) { item ->
                     val enabled = item.key !in disabledMedications
                     val label = stringResource(item.nameResId)
                     ToggleItem(
@@ -124,7 +170,7 @@ fun PredefinedDataSettingsScreen(
                     )
                 }
 
-                items(customMedications.toList(), key = { "cm_$it" }) { custom ->
+                items(filteredCustomMedications, key = { "cm_$it" }) { custom ->
                     CustomItem(
                         label = custom,
                         onRemove = { viewModel.removeCustomMedication(custom) }
