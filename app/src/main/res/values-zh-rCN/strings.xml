@@ -152,6 +152,8 @@
     <string name="ai_provider_gemini_nano">Gemini Nano（设备端）</string>
     <string name="gemini_nano_desc">设备端 AI。需要 Android 14+ 和受支持的设备（如 Pixel 8+）。无需联网。</string>
     <string name="gemini_top_k">Top-K</string>
+    <string name="ai_api_key_required">需要 API 密钥</string>
+    <string name="ai_local_model_desc">从设备存储加载自定义 AI 模型</string>
 
     <!-- Reports -->
     <string name="report_select_profile">选择报告的档案</string>

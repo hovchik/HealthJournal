@@ -152,6 +152,8 @@
     <string name="ai_provider_gemini_nano">Gemini Nano (en dispositivo)</string>
     <string name="gemini_nano_desc">IA en dispositivo. Requiere Android 14+ y un dispositivo compatible (ej. Pixel 8+). No requiere internet.</string>
     <string name="gemini_top_k">Top-K</string>
+    <string name="ai_api_key_required">Requiere clave API</string>
+    <string name="ai_local_model_desc">Cargar un modelo de IA personalizado desde el almacenamiento</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Seleccionar perfil para el informe</string>
