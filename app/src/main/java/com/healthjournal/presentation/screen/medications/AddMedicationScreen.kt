@@ -8,8 +8,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.healthjournal.R
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,10 +32,10 @@ fun AddMedicationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Добавить лекарство") },
+                title = { Text(stringResource(R.string.add_medication_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -50,7 +52,7 @@ fun AddMedicationScreen(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Название лекарства") },
+                label = { Text(stringResource(R.string.medication_name)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -58,7 +60,7 @@ fun AddMedicationScreen(
             OutlinedTextField(
                 value = dosage,
                 onValueChange = { dosage = it },
-                label = { Text("Дозировка (напр. 500 мг)") },
+                label = { Text(stringResource(R.string.dosage_hint)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -66,7 +68,7 @@ fun AddMedicationScreen(
             OutlinedTextField(
                 value = frequency,
                 onValueChange = { frequency = it },
-                label = { Text("Расписание (напр. 2 раза в день)") },
+                label = { Text(stringResource(R.string.schedule_hint)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -74,7 +76,7 @@ fun AddMedicationScreen(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Заметки") },
+                label = { Text(stringResource(R.string.notes)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2
             )
@@ -88,7 +90,7 @@ fun AddMedicationScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = name.isNotBlank() && dosage.isNotBlank()
             ) {
-                Text("Сохранить")
+                Text(stringResource(R.string.save))
             }
         }
     }

@@ -11,9 +11,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.healthjournal.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +31,7 @@ fun OnboardingScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Медицинский дневник") })
+            TopAppBar(title = { Text(stringResource(R.string.home_title)) })
         }
     ) { padding ->
         Column(
@@ -44,13 +46,13 @@ fun OnboardingScreen(
                 when (page) {
                     0 -> OnboardingPage(
                         icon = Icons.Default.HealthAndSafety,
-                        title = "Добро пожаловать!",
-                        description = "Ведите дневник здоровья: записывайте симптомы, показатели и приём лекарств. Вся информация хранится локально на вашем устройстве."
+                        title = stringResource(R.string.onboarding_welcome),
+                        description = stringResource(R.string.onboarding_welcome_desc)
                     )
                     1 -> OnboardingPage(
                         icon = Icons.Default.Favorite,
-                        title = "Отслеживайте здоровье",
-                        description = "Записывайте давление, пульс, температуру, уровень глюкозы и другие показатели. Отмечайте симптомы с указанием интенсивности и триггеров."
+                        title = stringResource(R.string.onboarding_track_health),
+                        description = stringResource(R.string.onboarding_track_health_desc)
                     )
                     2 -> AiConsentPage(
                         icon = Icons.Default.Psychology,
@@ -73,7 +75,7 @@ fun OnboardingScreen(
                     TextButton(onClick = {
                         scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) }
                     }) {
-                        Text("Назад")
+                        Text(stringResource(R.string.back))
                     }
                 } else {
                     Spacer(modifier = Modifier.width(80.dp))
@@ -97,14 +99,14 @@ fun OnboardingScreen(
                     Button(onClick = {
                         scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                     }) {
-                        Text("Далее")
+                        Text(stringResource(R.string.onboarding_next))
                     }
                 } else {
                     Button(onClick = {
                         viewModel.completeOnboarding(userName, aiConsent)
                         onComplete()
                     }) {
-                        Text("Начать")
+                        Text(stringResource(R.string.onboarding_start))
                     }
                 }
             }
@@ -170,7 +172,7 @@ private fun AiConsentPage(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Настройка",
+            text = stringResource(R.string.onboarding_setup),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
         )
@@ -178,7 +180,7 @@ private fun AiConsentPage(
         OutlinedTextField(
             value = userName,
             onValueChange = onUserNameChange,
-            label = { Text("Ваше имя") },
+            label = { Text(stringResource(R.string.your_name)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -190,7 +192,7 @@ private fun AiConsentPage(
             Checkbox(checked = aiConsent, onCheckedChange = onAiConsentChange)
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Разрешить AI-анализ данных для генерации отчётов. AI НЕ ставит диагнозы и НЕ назначает лечение.",
+                text = stringResource(R.string.ai_consent_text),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

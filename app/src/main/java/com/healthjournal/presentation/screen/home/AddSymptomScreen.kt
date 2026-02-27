@@ -9,9 +9,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.healthjournal.R
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,10 +35,10 @@ fun AddSymptomScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Добавить симптом") },
+                title = { Text(stringResource(R.string.add_symptom_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -53,13 +55,13 @@ fun AddSymptomScreen(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Название симптома") },
+                label = { Text(stringResource(R.string.symptom_name)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
             Column {
-                Text("Интенсивность: ${intensity.toInt()}/10")
+                Text(stringResource(R.string.intensity_label, intensity.toInt()))
                 Slider(
                     value = intensity,
                     onValueChange = { intensity = it },
@@ -71,7 +73,7 @@ fun AddSymptomScreen(
             OutlinedTextField(
                 value = duration,
                 onValueChange = { duration = it },
-                label = { Text("Длительность (мин)") },
+                label = { Text(stringResource(R.string.duration_minutes)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -80,7 +82,7 @@ fun AddSymptomScreen(
             OutlinedTextField(
                 value = triggers,
                 onValueChange = { triggers = it },
-                label = { Text("Триггеры (через запятую)") },
+                label = { Text(stringResource(R.string.triggers_hint)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -88,7 +90,7 @@ fun AddSymptomScreen(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Заметки") },
+                label = { Text(stringResource(R.string.notes)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )
@@ -108,7 +110,7 @@ fun AddSymptomScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = name.isNotBlank()
             ) {
-                Text("Сохранить")
+                Text(stringResource(R.string.save))
             }
         }
     }

@@ -1,4 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Медицинский дневник</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_vitals">Показатели</string>
+    <string name="nav_medications">Лекарства</string>
+    <string name="nav_ai_report">AI Отчёт</string>
+    <string name="nav_settings">Настройки</string>
+
+    <!-- Common -->
+    <string name="back">Назад</string>
+    <string name="save">Сохранить</string>
+    <string name="delete">Удалить</string>
+    <string name="close">Закрыть</string>
+    <string name="notes">Заметки</string>
+    <string name="error_format">Ошибка: %1$s</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">Медицинский дневник</string>
+    <string name="add_vital_desc">Добавить показатель</string>
+    <string name="add_symptom_desc">Добавить симптом</string>
+    <string name="recent_vitals">Последние показатели</string>
+    <string name="symptoms_title">Симптомы</string>
+    <string name="no_symptoms_hint">Нет записей. Нажмите + чтобы добавить симптом.</string>
+    <string name="intensity_format">Интенсивность: %1$d/10</string>
+    <string name="triggers_format">Триггеры: %1$s</string>
+
+    <!-- Add Symptom Screen -->
+    <string name="add_symptom_title">Добавить симптом</string>
+    <string name="symptom_name">Название симптома</string>
+    <string name="intensity_label">Интенсивность: %1$d/10</string>
+    <string name="duration_minutes">Длительность (мин)</string>
+    <string name="triggers_hint">Триггеры (через запятую)</string>
+
+    <!-- Add Vital Screen -->
+    <string name="add_vital_title">Добавить показатель</string>
+    <string name="vital_type_label">Тип показателя</string>
+    <string name="systolic_upper">Систолическое (верхнее)</string>
+    <string name="value_with_unit">Значение (%1$s)</string>
+    <string name="diastolic_lower">Диастолическое (нижнее)</string>
+
+    <!-- Medications Screen -->
+    <string name="medications_title">Лекарства</string>
+    <string name="add_medication_desc">Добавить лекарство</string>
+    <string name="no_medications_hint">Нет лекарств.\nНажмите + чтобы добавить.</string>
+    <string name="since_date">С %1$s</string>
+    <string name="inactive">Неактивно</string>
+    <string name="taken_desc">Принято</string>
+
+    <!-- Add Medication Screen -->
+    <string name="add_medication_title">Добавить лекарство</string>
+    <string name="medication_name">Название лекарства</string>
+    <string name="dosage_hint">Дозировка (напр. 500 мг)</string>
+    <string name="schedule_hint">Расписание (напр. 2 раза в день)</string>
+
+    <!-- AI Report Screen -->
+    <string name="ai_reports_title">AI Отчёты</string>
+    <string name="report_7_days">Отчёт (7 дней)</string>
+    <string name="patterns_30_days">Паттерны (30 дн)</string>
+    <string name="ai_analyzing">AI анализирует данные…</string>
+    <string name="no_reports_hint">Нет отчётов. Нажмите кнопку выше, чтобы сгенерировать AI-отчёт на основе ваших данных.</string>
+    <string name="report_type_summary">Медицинское резюме</string>
+    <string name="report_type_patterns">Анализ паттернов</string>
+    <string name="days_format">%1$d дн.</string>
+
+    <!-- Vitals Screen -->
+    <string name="vitals_title">Показатели здоровья</string>
+    <string name="no_vitals_hint">Нет записей о показателях.\nДобавьте первый показатель на главном экране.</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">Добро пожаловать!</string>
+    <string name="onboarding_welcome_desc">Ведите дневник здоровья: записывайте симптомы, показатели и приём лекарств. Вся информация хранится локально на вашем устройстве.</string>
+    <string name="onboarding_track_health">Отслеживайте здоровье</string>
+    <string name="onboarding_track_health_desc">Записывайте давление, пульс, температуру, уровень глюкозы и другие показатели. Отмечайте симптомы с указанием интенсивности и триггеров.</string>
+    <string name="onboarding_setup">Настройка</string>
+    <string name="your_name">Ваше имя</string>
+    <string name="ai_consent_text">Разрешить AI-анализ данных для генерации отчётов. AI НЕ ставит диагнозы и НЕ назначает лечение.</string>
+    <string name="onboarding_next">Далее</string>
+    <string name="onboarding_start">Начать</string>
+
+    <!-- VitalType display names -->
+    <string name="vital_blood_pressure">Давление</string>
+    <string name="vital_pulse">Пульс</string>
+    <string name="vital_temperature">Температура</string>
+    <string name="vital_spo2">SpO2</string>
+    <string name="vital_glucose">Глюкоза</string>
+    <string name="vital_weight">Вес</string>
+    <string name="vital_sleep">Сон</string>
+    <string name="vital_steps">Шаги</string>
+
+    <!-- VitalType units -->
+    <string name="unit_mmhg">мм рт.ст.</string>
+    <string name="unit_bpm">уд/мин</string>
+    <string name="unit_celsius">°C</string>
+    <string name="unit_percent">%</string>
+    <string name="unit_mmol">ммоль/л</string>
+    <string name="unit_kg">кг</string>
+    <string name="unit_hours">ч</string>
+    <string name="unit_steps">шагов</string>
+
+    <!-- Language Settings -->
+    <string name="language_settings_title">Язык</string>
+    <string name="language_system_default">Системный</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">中文 (简体)</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_current">Текущий язык</string>
+    <string name="language_select_prompt">Выберите язык приложения</string>
+
+    <!-- SMS -->
+    <string name="sms_send">Отправить SMS</string>
+
+    <!-- Export/Import -->
+    <string name="export_data">Экспорт данных</string>
+    <string name="import_data">Импорт данных</string>
+    <string name="export_success">Данные успешно экспортированы</string>
+    <string name="import_success">Данные успешно импортированы</string>
+    <string name="export_error">Ошибка экспорта: %1$s</string>
+    <string name="import_error">Ошибка импорта: %1$s</string>
+
+    <!-- Plurals -->
+    <plurals name="entries_count">
+        <item quantity="one">%1$d запись</item>
+        <item quantity="few">%1$d записи</item>
+        <item quantity="many">%1$d записей</item>
+        <item quantity="other">%1$d записей</item>
+    </plurals>
+    <plurals name="days_count">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дня</item>
+        <item quantity="many">%1$d дней</item>
+        <item quantity="other">%1$d дней</item>
+    </plurals>
 </resources>

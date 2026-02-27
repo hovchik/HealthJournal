@@ -11,11 +11,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthjournal.R
 import com.healthjournal.domain.model.Symptom
 import com.healthjournal.domain.model.VitalSign
+import com.healthjournal.util.localizedDisplayName
+import com.healthjournal.util.localizedUnit
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +34,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Медицинский дневник") })
+            TopAppBar(title = { Text(stringResource(R.string.home_title)) })
         },
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
@@ -38,11 +42,11 @@ fun HomeScreen(
                     onClick = onAddVital,
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                 ) {
-                    Icon(Icons.Default.MonitorHeart, contentDescription = "Добавить показатель")
+                    Icon(Icons.Default.MonitorHeart, contentDescription = stringResource(R.string.add_vital_desc))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 FloatingActionButton(onClick = onAddSymptom) {
-                    Icon(Icons.Default.Add, contentDescription = "Добавить симптом")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_symptom_desc))
                 }
             }
         }
@@ -57,7 +61,7 @@ fun HomeScreen(
             if (recentVitals.isNotEmpty()) {
                 item {
                     Text(
-                        "Последние показатели",
+                        stringResource(R.string.recent_vitals),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
@@ -70,7 +74,7 @@ fun HomeScreen(
 
             item {
                 Text(
-                    "Симптомы",
+                    stringResource(R.string.symptoms_title),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
@@ -80,7 +84,7 @@ fun HomeScreen(
                 item {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            "Нет записей. Нажмите + чтобы добавить симптом.",
+                            stringResource(R.string.no_symptoms_hint),
                             modifier = Modifier.padding(16.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -109,12 +113,12 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(symptom.name, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    "Интенсивность: ${symptom.intensity}/10",
+                    stringResource(R.string.intensity_format, symptom.intensity),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 if (symptom.triggers.isNotEmpty()) {
                     Text(
-                        "Триггеры: ${symptom.triggers.joinToString(", ")}",
+                        stringResource(R.string.triggers_format, symptom.triggers.joinToString(", ")),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -135,7 +139,7 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Удалить",
+                    contentDescription = stringResource(R.string.delete),
                     tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -151,6 +155,8 @@ private fun VitalCard(vital: VitalSign) {
     } else {
         vital.value.toString()
     }
+    val displayName = vital.type.localizedDisplayName()
+    val unit = vital.type.localizedUnit()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -164,7 +170,7 @@ private fun VitalCard(vital: VitalSign) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(vital.type.displayName, style = MaterialTheme.typography.titleSmall)
+                Text(displayName, style = MaterialTheme.typography.titleSmall)
                 Text(
                     vital.recordedAt.format(formatter),
                     style = MaterialTheme.typography.labelSmall,
@@ -172,7 +178,7 @@ private fun VitalCard(vital: VitalSign) {
                 )
             }
             Text(
-                "$valueStr ${vital.type.unit}",
+                "$valueStr $unit",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )

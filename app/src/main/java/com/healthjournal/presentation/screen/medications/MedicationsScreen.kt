@@ -11,9 +11,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthjournal.R
 import com.healthjournal.domain.model.Medication
 import java.time.format.DateTimeFormatter
 
@@ -27,11 +29,11 @@ fun MedicationsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Лекарства") })
+            TopAppBar(title = { Text(stringResource(R.string.medications_title)) })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddMedication) {
-                Icon(Icons.Default.Add, contentDescription = "Добавить лекарство")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_medication_desc))
             }
         }
     ) { padding ->
@@ -43,7 +45,7 @@ fun MedicationsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    "Нет лекарств.\nНажмите + чтобы добавить.",
+                    stringResource(R.string.no_medications_hint),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -95,13 +97,13 @@ private fun MedicationCard(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        "С ${medication.startDate.format(dateFormatter)}",
+                        stringResource(R.string.since_date, medication.startDate.format(dateFormatter)),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline
                     )
                     if (!medication.active) {
                         Text(
-                            "Неактивно",
+                            stringResource(R.string.inactive),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -112,7 +114,7 @@ private fun MedicationCard(
                         IconButton(onClick = onLogTaken) {
                             Icon(
                                 Icons.Default.Check,
-                                contentDescription = "Принято",
+                                contentDescription = stringResource(R.string.taken_desc),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -120,7 +122,7 @@ private fun MedicationCard(
                     IconButton(onClick = onDelete) {
                         Icon(
                             Icons.Default.Delete,
-                            contentDescription = "Удалить",
+                            contentDescription = stringResource(R.string.delete),
                             tint = MaterialTheme.colorScheme.error
                         )
                     }

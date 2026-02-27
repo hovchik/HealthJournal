@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Health Journal</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_vitals">Vitals</string>
+    <string name="nav_medications">Medications</string>
+    <string name="nav_ai_report">AI Report</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="close">Close</string>
+    <string name="notes">Notes</string>
+    <string name="error_format">Error: %1$s</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">Health Journal</string>
+    <string name="add_vital_desc">Add vital sign</string>
+    <string name="add_symptom_desc">Add symptom</string>
+    <string name="recent_vitals">Recent vitals</string>
+    <string name="symptoms_title">Symptoms</string>
+    <string name="no_symptoms_hint">No entries. Tap + to add a symptom.</string>
+    <string name="intensity_format">Intensity: %1$d/10</string>
+    <string name="triggers_format">Triggers: %1$s</string>
+
+    <!-- Add Symptom Screen -->
+    <string name="add_symptom_title">Add symptom</string>
+    <string name="symptom_name">Symptom name</string>
+    <string name="intensity_label">Intensity: %1$d/10</string>
+    <string name="duration_minutes">Duration (min)</string>
+    <string name="triggers_hint">Triggers (comma-separated)</string>
+
+    <!-- Add Vital Screen -->
+    <string name="add_vital_title">Add vital sign</string>
+    <string name="vital_type_label">Vital type</string>
+    <string name="systolic_upper">Systolic (upper)</string>
+    <string name="value_with_unit">Value (%1$s)</string>
+    <string name="diastolic_lower">Diastolic (lower)</string>
+
+    <!-- Medications Screen -->
+    <string name="medications_title">Medications</string>
+    <string name="add_medication_desc">Add medication</string>
+    <string name="no_medications_hint">No medications.\nTap + to add one.</string>
+    <string name="since_date">Since %1$s</string>
+    <string name="inactive">Inactive</string>
+    <string name="taken_desc">Taken</string>
+
+    <!-- Add Medication Screen -->
+    <string name="add_medication_title">Add medication</string>
+    <string name="medication_name">Medication name</string>
+    <string name="dosage_hint">Dosage (e.g. 500 mg)</string>
+    <string name="schedule_hint">Schedule (e.g. twice a day)</string>
+
+    <!-- AI Report Screen -->
+    <string name="ai_reports_title">AI Reports</string>
+    <string name="report_7_days">Report (7 days)</string>
+    <string name="patterns_30_days">Patterns (30 days)</string>
+    <string name="ai_analyzing">AI is analyzing data…</string>
+    <string name="no_reports_hint">No reports. Tap the button above to generate an AI report based on your data.</string>
+    <string name="report_type_summary">Medical summary</string>
+    <string name="report_type_patterns">Pattern analysis</string>
+    <string name="days_format">%1$d days</string>
+
+    <!-- Vitals Screen -->
+    <string name="vitals_title">Health vitals</string>
+    <string name="no_vitals_hint">No vitals recorded.\nAdd your first vital sign on the home screen.</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">Welcome!</string>
+    <string name="onboarding_welcome_desc">Keep a health journal: track symptoms, vital signs, and medications. All data is stored locally on your device.</string>
+    <string name="onboarding_track_health">Track your health</string>
+    <string name="onboarding_track_health_desc">Record blood pressure, heart rate, temperature, glucose levels, and more. Log symptoms with intensity and triggers.</string>
+    <string name="onboarding_setup">Setup</string>
+    <string name="your_name">Your name</string>
+    <string name="ai_consent_text">Allow AI analysis of data to generate reports. AI does NOT diagnose conditions and does NOT prescribe treatment.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Start</string>
+
+    <!-- VitalType display names -->
+    <string name="vital_blood_pressure">Blood pressure</string>
+    <string name="vital_pulse">Heart rate</string>
+    <string name="vital_temperature">Temperature</string>
+    <string name="vital_spo2">SpO2</string>
+    <string name="vital_glucose">Glucose</string>
+    <string name="vital_weight">Weight</string>
+    <string name="vital_sleep">Sleep</string>
+    <string name="vital_steps">Steps</string>
+
+    <!-- VitalType units -->
+    <string name="unit_mmhg">mmHg</string>
+    <string name="unit_bpm">bpm</string>
+    <string name="unit_celsius">°C</string>
+    <string name="unit_percent">%</string>
+    <string name="unit_mmol">mmol/L</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_hours">h</string>
+    <string name="unit_steps">steps</string>
+
+    <!-- Language Settings -->
+    <string name="language_settings_title">Language</string>
+    <string name="language_system_default">System default</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">中文 (简体)</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_current">Current language</string>
+    <string name="language_select_prompt">Choose app language</string>
+
+    <!-- SMS -->
+    <string name="sms_send">Send SMS</string>
+
+    <!-- Export/Import -->
+    <string name="export_data">Export data</string>
+    <string name="import_data">Import data</string>
+    <string name="export_success">Data exported successfully</string>
+    <string name="import_success">Data imported successfully</string>
+    <string name="export_error">Export error: %1$s</string>
+    <string name="import_error">Import error: %1$s</string>
+
+    <!-- Plurals -->
+    <plurals name="entries_count">
+        <item quantity="one">%1$d entry</item>
+        <item quantity="other">%1$d entries</item>
+    </plurals>
+    <plurals name="days_count">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+</resources>

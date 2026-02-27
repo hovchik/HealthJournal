@@ -7,9 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthjournal.R
 import com.healthjournal.domain.model.AiReport
 import com.healthjournal.domain.model.ReportType
 import java.time.format.DateTimeFormatter
@@ -24,7 +26,7 @@ fun AiReportScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("AI Отчёты") })
+            TopAppBar(title = { Text(stringResource(R.string.ai_reports_title)) })
         }
     ) { padding ->
         LazyColumn(
@@ -44,14 +46,14 @@ fun AiReportScreen(
                         enabled = !uiState.isLoading,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Отчёт (7 дней)")
+                        Text(stringResource(R.string.report_7_days))
                     }
                     OutlinedButton(
                         onClick = { viewModel.analyzePatterns() },
                         enabled = !uiState.isLoading,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Паттерны (30 дн)")
+                        Text(stringResource(R.string.patterns_30_days))
                     }
                 }
             }
@@ -67,7 +69,7 @@ fun AiReportScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator()
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("AI анализирует данные...")
+                            Text(stringResource(R.string.ai_analyzing))
                         }
                     }
                 }
@@ -82,11 +84,11 @@ fun AiReportScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                "Ошибка: $error",
+                                stringResource(R.string.error_format, error),
                                 color = MaterialTheme.colorScheme.onErrorContainer
                             )
                             TextButton(onClick = { viewModel.clearError() }) {
-                                Text("Закрыть")
+                                Text(stringResource(R.string.close))
                             }
                         }
                     }
@@ -97,7 +99,7 @@ fun AiReportScreen(
                 item {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            "Нет отчётов. Нажмите кнопку выше, чтобы сгенерировать AI-отчёт на основе ваших данных.",
+                            stringResource(R.string.no_reports_hint),
                             modifier = Modifier.padding(16.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -116,8 +118,8 @@ fun AiReportScreen(
 private fun ReportCard(report: AiReport) {
     val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
     val typeLabel = when (report.type) {
-        ReportType.SUMMARY -> "Медицинское резюме"
-        ReportType.PATTERN_ANALYSIS -> "Анализ паттернов"
+        ReportType.SUMMARY -> stringResource(R.string.report_type_summary)
+        ReportType.PATTERN_ANALYSIS -> stringResource(R.string.report_type_patterns)
     }
 
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -128,7 +130,7 @@ private fun ReportCard(report: AiReport) {
             ) {
                 Text(typeLabel, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    "${report.periodDays} дн.",
+                    stringResource(R.string.days_format, report.periodDays),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )

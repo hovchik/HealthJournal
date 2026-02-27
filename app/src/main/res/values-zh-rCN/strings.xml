@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">健康日记</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">首页</string>
+    <string name="nav_vitals">生命体征</string>
+    <string name="nav_medications">药物</string>
+    <string name="nav_ai_report">AI 报告</string>
+    <string name="nav_settings">设置</string>
+
+    <!-- Common -->
+    <string name="back">返回</string>
+    <string name="save">保存</string>
+    <string name="delete">删除</string>
+    <string name="close">关闭</string>
+    <string name="notes">备注</string>
+    <string name="error_format">错误：%1$s</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">健康日记</string>
+    <string name="add_vital_desc">添加生命体征</string>
+    <string name="add_symptom_desc">添加症状</string>
+    <string name="recent_vitals">最近的生命体征</string>
+    <string name="symptoms_title">症状</string>
+    <string name="no_symptoms_hint">暂无记录。点击 + 添加症状。</string>
+    <string name="intensity_format">强度：%1$d/10</string>
+    <string name="triggers_format">诱因：%1$s</string>
+
+    <!-- Add Symptom Screen -->
+    <string name="add_symptom_title">添加症状</string>
+    <string name="symptom_name">症状名称</string>
+    <string name="intensity_label">强度：%1$d/10</string>
+    <string name="duration_minutes">持续时间（分钟）</string>
+    <string name="triggers_hint">诱因（用逗号分隔）</string>
+
+    <!-- Add Vital Screen -->
+    <string name="add_vital_title">添加生命体征</string>
+    <string name="vital_type_label">体征类型</string>
+    <string name="systolic_upper">收缩压（高压）</string>
+    <string name="value_with_unit">数值（%1$s）</string>
+    <string name="diastolic_lower">舒张压（低压）</string>
+
+    <!-- Medications Screen -->
+    <string name="medications_title">药物</string>
+    <string name="add_medication_desc">添加药物</string>
+    <string name="no_medications_hint">暂无药物。\n点击 + 添加。</string>
+    <string name="since_date">从 %1$s 起</string>
+    <string name="inactive">已停用</string>
+    <string name="taken_desc">已服用</string>
+
+    <!-- Add Medication Screen -->
+    <string name="add_medication_title">添加药物</string>
+    <string name="medication_name">药物名称</string>
+    <string name="dosage_hint">剂量（如 500 毫克）</string>
+    <string name="schedule_hint">用药频率（如 每日两次）</string>
+
+    <!-- AI Report Screen -->
+    <string name="ai_reports_title">AI 报告</string>
+    <string name="report_7_days">报告（7 天）</string>
+    <string name="patterns_30_days">模式分析（30 天）</string>
+    <string name="ai_analyzing">AI 正在分析数据…</string>
+    <string name="no_reports_hint">暂无报告。点击上方按钮，根据您的数据生成 AI 报告。</string>
+    <string name="report_type_summary">医疗摘要</string>
+    <string name="report_type_patterns">模式分析</string>
+    <string name="days_format">%1$d 天</string>
+
+    <!-- Vitals Screen -->
+    <string name="vitals_title">健康指标</string>
+    <string name="no_vitals_hint">暂无体征记录。\n请在首页添加第一条生命体征。</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">欢迎！</string>
+    <string name="onboarding_welcome_desc">记录健康日记：跟踪症状、生命体征和药物。所有数据均存储在您的设备本地。</string>
+    <string name="onboarding_track_health">追踪您的健康</string>
+    <string name="onboarding_track_health_desc">记录血压、心率、体温、血糖水平等。记录症状及其强度和诱因。</string>
+    <string name="onboarding_setup">设置</string>
+    <string name="your_name">您的姓名</string>
+    <string name="ai_consent_text">允许 AI 分析数据以生成报告。AI 不进行诊断，也不开具处方。</string>
+    <string name="onboarding_next">下一步</string>
+    <string name="onboarding_start">开始</string>
+
+    <!-- VitalType display names -->
+    <string name="vital_blood_pressure">血压</string>
+    <string name="vital_pulse">心率</string>
+    <string name="vital_temperature">体温</string>
+    <string name="vital_spo2">血氧饱和度</string>
+    <string name="vital_glucose">血糖</string>
+    <string name="vital_weight">体重</string>
+    <string name="vital_sleep">睡眠</string>
+    <string name="vital_steps">步数</string>
+
+    <!-- VitalType units -->
+    <string name="unit_mmhg">mmHg</string>
+    <string name="unit_bpm">次/分</string>
+    <string name="unit_celsius">°C</string>
+    <string name="unit_percent">%</string>
+    <string name="unit_mmol">mmol/L</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_hours">小时</string>
+    <string name="unit_steps">步</string>
+
+    <!-- Language Settings -->
+    <string name="language_settings_title">语言</string>
+    <string name="language_system_default">跟随系统</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">中文 (简体)</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_current">当前语言</string>
+    <string name="language_select_prompt">选择应用语言</string>
+
+    <!-- SMS -->
+    <string name="sms_send">发送短信</string>
+
+    <!-- Export/Import -->
+    <string name="export_data">导出数据</string>
+    <string name="import_data">导入数据</string>
+    <string name="export_success">数据导出成功</string>
+    <string name="import_success">数据导入成功</string>
+    <string name="export_error">导出错误：%1$s</string>
+    <string name="import_error">导入错误：%1$s</string>
+
+    <!-- Plurals (Chinese has no plural forms) -->
+    <plurals name="entries_count">
+        <item quantity="other">%1$d 条记录</item>
+    </plurals>
+    <plurals name="days_count">
+        <item quantity="other">%1$d 天</item>
+    </plurals>
+</resources>
