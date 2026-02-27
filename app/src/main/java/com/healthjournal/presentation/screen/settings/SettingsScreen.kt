@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -16,7 +16,8 @@ import com.healthjournal.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onLanguageSettings: () -> Unit
+    onLanguageSettings: () -> Unit,
+    onAiSettings: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -38,6 +39,18 @@ fun SettingsScreen(
                     Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = onLanguageSettings)
+            )
+            HorizontalDivider()
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.ai_settings_title)) },
+                supportingContent = { Text(stringResource(R.string.ai_settings_desc)) },
+                leadingContent = {
+                    Icon(Icons.Default.Psychology, contentDescription = null)
+                },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                },
+                modifier = Modifier.clickable(onClick = onAiSettings)
             )
             HorizontalDivider()
         }

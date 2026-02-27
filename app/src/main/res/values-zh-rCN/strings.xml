@@ -121,6 +121,26 @@
     <string name="export_error">导出错误：%1$s</string>
     <string name="import_error">导入错误：%1$s</string>
 
+    <!-- AI Settings -->
+    <string name="ai_settings_title">AI 设置</string>
+    <string name="ai_settings_desc">提供商、API 密钥、隐私</string>
+    <string name="ai_enabled">启用 AI</string>
+    <string name="ai_select_provider">选择提供商</string>
+    <string name="ai_provider_claude">Claude (Anthropic)</string>
+    <string name="ai_provider_openai">OpenAI 兼容</string>
+    <string name="ai_provider_local">本地模型</string>
+    <string name="ai_privacy_redact">数据脱敏</string>
+    <string name="ai_privacy_redact_desc">发送前删除电话号码和电子邮件</string>
+    <string name="ai_api_key">API 密钥</string>
+    <string name="ai_model">模型</string>
+    <string name="ai_base_url">基础 URL</string>
+    <string name="ai_timeout">超时（秒）</string>
+    <string name="ai_model_path">模型路径</string>
+    <string name="ai_context_size">上下文大小</string>
+    <string name="ai_max_tokens">最大令牌数</string>
+    <string name="ai_temperature">温度</string>
+    <string name="ai_validate_config">验证配置</string>
+
     <!-- Plurals (Chinese has no plural forms) -->
     <plurals name="entries_count">
         <item quantity="other">%1$d 条记录</item>

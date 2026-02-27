@@ -121,6 +121,26 @@
     <string name="export_error">Ошибка экспорта: %1$s</string>
     <string name="import_error">Ошибка импорта: %1$s</string>
 
+    <!-- AI Settings -->
+    <string name="ai_settings_title">Настройки AI</string>
+    <string name="ai_settings_desc">Провайдер, API-ключ, конфиденциальность</string>
+    <string name="ai_enabled">AI включён</string>
+    <string name="ai_select_provider">Выберите провайдера</string>
+    <string name="ai_provider_claude">Claude (Anthropic)</string>
+    <string name="ai_provider_openai">OpenAI-совместимый</string>
+    <string name="ai_provider_local">Локальная модель</string>
+    <string name="ai_privacy_redact">Редактирование данных</string>
+    <string name="ai_privacy_redact_desc">Удалять телефоны и email перед отправкой</string>
+    <string name="ai_api_key">API-ключ</string>
+    <string name="ai_model">Модель</string>
+    <string name="ai_base_url">Базовый URL</string>
+    <string name="ai_timeout">Таймаут (сек)</string>
+    <string name="ai_model_path">Путь к модели</string>
+    <string name="ai_context_size">Размер контекста</string>
+    <string name="ai_max_tokens">Макс. токенов</string>
+    <string name="ai_temperature">Температура</string>
+    <string name="ai_validate_config">Проверить конфигурацию</string>
+
     <!-- Plurals -->
     <plurals name="entries_count">
         <item quantity="one">%1$d запись</item>

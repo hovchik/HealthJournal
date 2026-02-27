@@ -121,6 +121,26 @@
     <string name="export_error">Export error: %1$s</string>
     <string name="import_error">Import error: %1$s</string>
 
+    <!-- AI Settings -->
+    <string name="ai_settings_title">AI Settings</string>
+    <string name="ai_settings_desc">Provider, API key, privacy</string>
+    <string name="ai_enabled">AI enabled</string>
+    <string name="ai_select_provider">Select provider</string>
+    <string name="ai_provider_claude">Claude (Anthropic)</string>
+    <string name="ai_provider_openai">OpenAI-compatible</string>
+    <string name="ai_provider_local">Local model</string>
+    <string name="ai_privacy_redact">Data redaction</string>
+    <string name="ai_privacy_redact_desc">Remove phone numbers and emails before sending</string>
+    <string name="ai_api_key">API key</string>
+    <string name="ai_model">Model</string>
+    <string name="ai_base_url">Base URL</string>
+    <string name="ai_timeout">Timeout (sec)</string>
+    <string name="ai_model_path">Model path</string>
+    <string name="ai_context_size">Context size</string>
+    <string name="ai_max_tokens">Max tokens</string>
+    <string name="ai_temperature">Temperature</string>
+    <string name="ai_validate_config">Validate configuration</string>
+
     <!-- Plurals -->
     <plurals name="entries_count">
         <item quantity="one">%1$d entry</item>
