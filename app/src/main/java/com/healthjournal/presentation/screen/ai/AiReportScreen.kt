@@ -220,7 +220,7 @@ fun AiReportScreen(
             }
 
             // Report list
-            items(reports, key = { it.id }) { report ->
+            items(reports, key = { "report_${it.id}" }) { report ->
                 ReportCard(
                     report = report,
                     onExportPdf = {

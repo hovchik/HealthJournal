@@ -92,7 +92,7 @@ fun HomeScreen(
                         )
                     }
                 }
-                items(recentVitals, key = { it.id }) { vital ->
+                items(recentVitals, key = { "vital_${it.id}" }) { vital ->
                     AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
                         VitalCard(vital)
                     }
@@ -139,7 +139,7 @@ fun HomeScreen(
                     }
                 }
             } else {
-                items(symptoms, key = { it.id }) { symptom ->
+                items(symptoms, key = { "symptom_${it.id}" }) { symptom ->
                     SymptomCard(symptom, onDelete = { viewModel.removeSymptom(symptom) })
                 }
             }
