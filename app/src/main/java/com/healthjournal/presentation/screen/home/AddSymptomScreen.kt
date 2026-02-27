@@ -28,7 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -64,7 +63,7 @@ import kotlinx.coroutines.flow.map
 
 private data class ProfileUiModel(val id: Long, val label: String)
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AddSymptomScreen(
     onBack: () -> Unit,
@@ -79,8 +78,8 @@ fun AddSymptomScreen(
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
     var selectedCommonSymptoms by remember { mutableStateOf(setOf<String>()) }
 
-    val familyMembers: List<FamilyMember> by viewModel.familyMembers.collectAsState(initial = emptyList())
-    val activeProfileId: Long by viewModel.activeProfileId.collectAsState(initial = 0L)
+    val familyMembers by viewModel.familyMembers.collectAsState(initial = emptyList())
+    val activeProfileId by viewModel.activeProfileId.collectAsState(initial = 0L)
     val selfLabel = stringResource(R.string.rel_self)
     val profiles = remember(familyMembers, selfLabel) {
         buildList {
@@ -96,13 +95,13 @@ fun AddSymptomScreen(
         context.predefinedDataStore.data.map { prefs ->
             prefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet()
         }
-    }.collectAsState(initial = emptySet<String>())
+    }.collectAsState(initial = emptySet())
 
     val customSymptoms by remember {
         context.predefinedDataStore.data.map { prefs ->
             prefs[PredefinedDataKeys.CUSTOM_SYMPTOMS] ?: emptySet()
         }
-    }.collectAsState(initial = emptySet<String>())
+    }.collectAsState(initial = emptySet())
 
     val enabledPredefined = remember(disabledSymptoms) {
         PredefinedData.symptoms.filter { it.key !in disabledSymptoms }
