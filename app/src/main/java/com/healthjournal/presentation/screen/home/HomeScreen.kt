@@ -3,6 +3,7 @@ package com.healthjournal.presentation.screen.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +11,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +40,7 @@ fun HomeScreen(
     val recentVitals by viewModel.recentVitals.collectAsStateWithLifecycle()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             LargeTopAppBar(
                 title = {
@@ -68,6 +73,13 @@ fun HomeScreen(
             }
         }
     ) { padding ->
+        val heroGradient = Brush.horizontalGradient(
+            listOf(
+                MaterialTheme.colorScheme.primaryContainer,
+                MaterialTheme.colorScheme.tertiaryContainer
+            )
+        )
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -75,6 +87,43 @@ fun HomeScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            item {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.elevatedCardColors(containerColor = Color.Transparent)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.large)
+                            .background(heroGradient)
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.home_title),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = stringResource(R.string.no_symptoms_hint),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+            }
+
             if (recentVitals.isNotEmpty()) {
                 item {
                     Row(
@@ -119,7 +168,12 @@ fun HomeScreen(
 
             if (symptoms.isEmpty()) {
                 item {
-                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
+                    ) {
                         Column(
                             modifier = Modifier.fillMaxWidth().padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -223,7 +277,7 @@ private fun VitalCard(vital: VitalSign) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.35f)
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.55f)
         )
     ) {
         Row(
