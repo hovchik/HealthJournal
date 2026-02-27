@@ -1,13 +1,14 @@
 package com.healthjournal.presentation
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -18,7 +19,7 @@ import com.healthjournal.presentation.navigation.bottomNavItems
 import com.healthjournal.presentation.screen.onboarding.OnboardingViewModel
 import com.healthjournal.presentation.theme.HealthJournalTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -48,9 +49,10 @@ fun MainApp() {
             if (showBottomBar) {
                 NavigationBar {
                     bottomNavItems.forEach { screen ->
+                        val title = stringResource(screen.titleResId)
                         NavigationBarItem(
-                            icon = { Icon(screen.icon, contentDescription = screen.title) },
-                            label = { Text(screen.title) },
+                            icon = { Icon(screen.icon, contentDescription = title) },
+                            label = { Text(title) },
                             selected = currentRoute == screen.route,
                             onClick = {
                                 navController.navigate(screen.route) {

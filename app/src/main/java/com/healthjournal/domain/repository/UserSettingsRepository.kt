@@ -8,4 +8,5 @@ interface UserSettingsRepository {
     suspend fun updateUserSettings(settings: UserSettings)
     suspend fun setAiConsent(consent: Boolean)
     suspend fun setOnboardingCompleted(completed: Boolean)
+    suspend fun setLanguageMode(languageMode: String)
 }

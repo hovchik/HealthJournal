@@ -9,10 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.healthjournal.R
 import com.healthjournal.domain.model.VitalSign
+import com.healthjournal.util.localizedDisplayName
+import com.healthjournal.util.localizedUnit
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +28,7 @@ fun VitalsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Показатели здоровья") })
+            TopAppBar(title = { Text(stringResource(R.string.vitals_title)) })
         }
     ) { padding ->
         if (vitals.isEmpty()) {
@@ -35,7 +39,7 @@ fun VitalsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    "Нет записей о показателях.\nДобавьте первый показатель на главном экране.",
+                    stringResource(R.string.no_vitals_hint),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -63,6 +67,8 @@ private fun VitalDetailCard(vital: VitalSign, onDelete: () -> Unit) {
     } else {
         vital.value.toString()
     }
+    val displayName = vital.type.localizedDisplayName()
+    val unit = vital.type.localizedUnit()
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -72,9 +78,9 @@ private fun VitalDetailCard(vital: VitalSign, onDelete: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(vital.type.displayName, style = MaterialTheme.typography.titleSmall)
+                Text(displayName, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    "$valueStr ${vital.type.unit}",
+                    "$valueStr $unit",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -94,7 +100,7 @@ private fun VitalDetailCard(vital: VitalSign, onDelete: () -> Unit) {
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Удалить",
+                    contentDescription = stringResource(R.string.delete),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

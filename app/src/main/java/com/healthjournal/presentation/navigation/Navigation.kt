@@ -1,21 +1,26 @@
 package com.healthjournal.presentation.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.healthjournal.R
 
-sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    data object Home : Screen("home", "Главная", Icons.Default.Home)
-    data object Vitals : Screen("vitals", "Показатели", Icons.Default.Favorite)
-    data object Medications : Screen("medications", "Лекарства", Icons.Default.Medication)
-    data object AiReport : Screen("ai_report", "AI Отчёт", Icons.Default.Psychology)
-    data object Onboarding : Screen("onboarding", "Онбординг", Icons.Default.Home)
-    data object AddSymptom : Screen("add_symptom", "Добавить симптом", Icons.Default.Home)
-    data object AddVital : Screen("add_vital", "Добавить показатель", Icons.Default.Favorite)
-    data object AddMedication : Screen("add_medication", "Добавить лекарство", Icons.Default.Medication)
+sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon: ImageVector) {
+    data object Home : Screen("home", R.string.nav_home, Icons.Default.Home)
+    data object Vitals : Screen("vitals", R.string.nav_vitals, Icons.Default.Favorite)
+    data object Medications : Screen("medications", R.string.nav_medications, Icons.Default.Medication)
+    data object AiReport : Screen("ai_report", R.string.nav_ai_report, Icons.Default.Psychology)
+    data object Settings : Screen("settings", R.string.nav_settings, Icons.Default.Settings)
+    data object Onboarding : Screen("onboarding", R.string.nav_home, Icons.Default.Home)
+    data object AddSymptom : Screen("add_symptom", R.string.add_symptom_title, Icons.Default.Home)
+    data object AddVital : Screen("add_vital", R.string.add_vital_title, Icons.Default.Favorite)
+    data object AddMedication : Screen("add_medication", R.string.add_medication_title, Icons.Default.Medication)
+    data object LanguageSettings : Screen("language_settings", R.string.language_settings_title, Icons.Default.Settings)
 }
 
-val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.AiReport)
+val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.AiReport, Screen.Settings)

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Diario de salud</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_vitals">Signos vitales</string>
+    <string name="nav_medications">Medicamentos</string>
+    <string name="nav_ai_report">Informe IA</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <!-- Common -->
+    <string name="back">Atrás</string>
+    <string name="save">Guardar</string>
+    <string name="delete">Eliminar</string>
+    <string name="close">Cerrar</string>
+    <string name="notes">Notas</string>
+    <string name="error_format">Error: %1$s</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">Diario de salud</string>
+    <string name="add_vital_desc">Agregar signo vital</string>
+    <string name="add_symptom_desc">Agregar síntoma</string>
+    <string name="recent_vitals">Signos vitales recientes</string>
+    <string name="symptoms_title">Síntomas</string>
+    <string name="no_symptoms_hint">Sin registros. Pulse + para agregar un síntoma.</string>
+    <string name="intensity_format">Intensidad: %1$d/10</string>
+    <string name="triggers_format">Desencadenantes: %1$s</string>
+
+    <!-- Add Symptom Screen -->
+    <string name="add_symptom_title">Agregar síntoma</string>
+    <string name="symptom_name">Nombre del síntoma</string>
+    <string name="intensity_label">Intensidad: %1$d/10</string>
+    <string name="duration_minutes">Duración (min)</string>
+    <string name="triggers_hint">Desencadenantes (separados por comas)</string>
+
+    <!-- Add Vital Screen -->
+    <string name="add_vital_title">Agregar signo vital</string>
+    <string name="vital_type_label">Tipo de signo vital</string>
+    <string name="systolic_upper">Sistólica (superior)</string>
+    <string name="value_with_unit">Valor (%1$s)</string>
+    <string name="diastolic_lower">Diastólica (inferior)</string>
+
+    <!-- Medications Screen -->
+    <string name="medications_title">Medicamentos</string>
+    <string name="add_medication_desc">Agregar medicamento</string>
+    <string name="no_medications_hint">Sin medicamentos.\nPulse + para agregar uno.</string>
+    <string name="since_date">Desde %1$s</string>
+    <string name="inactive">Inactivo</string>
+    <string name="taken_desc">Tomado</string>
+
+    <!-- Add Medication Screen -->
+    <string name="add_medication_title">Agregar medicamento</string>
+    <string name="medication_name">Nombre del medicamento</string>
+    <string name="dosage_hint">Dosis (ej. 500 mg)</string>
+    <string name="schedule_hint">Frecuencia (ej. 2 veces al día)</string>
+
+    <!-- AI Report Screen -->
+    <string name="ai_reports_title">Informes IA</string>
+    <string name="report_7_days">Informe (7 días)</string>
+    <string name="patterns_30_days">Patrones (30 días)</string>
+    <string name="ai_analyzing">La IA está analizando los datos…</string>
+    <string name="no_reports_hint">Sin informes. Pulse el botón de arriba para generar un informe de IA basado en sus datos.</string>
+    <string name="report_type_summary">Resumen médico</string>
+    <string name="report_type_patterns">Análisis de patrones</string>
+    <string name="days_format">%1$d días</string>
+
+    <!-- Vitals Screen -->
+    <string name="vitals_title">Signos vitales</string>
+    <string name="no_vitals_hint">Sin registros de signos vitales.\nAgregue el primer signo vital en la pantalla principal.</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">¡Bienvenido!</string>
+    <string name="onboarding_welcome_desc">Lleve un diario de salud: registre síntomas, signos vitales y medicamentos. Toda la información se almacena localmente en su dispositivo.</string>
+    <string name="onboarding_track_health">Controle su salud</string>
+    <string name="onboarding_track_health_desc">Registre presión arterial, frecuencia cardíaca, temperatura, niveles de glucosa y más. Anote los síntomas con intensidad y desencadenantes.</string>
+    <string name="onboarding_setup">Configuración</string>
+    <string name="your_name">Su nombre</string>
+    <string name="ai_consent_text">Permitir el análisis de datos por IA para generar informes. La IA NO diagnostica enfermedades y NO prescribe tratamientos.</string>
+    <string name="onboarding_next">Siguiente</string>
+    <string name="onboarding_start">Comenzar</string>
+
+    <!-- VitalType display names -->
+    <string name="vital_blood_pressure">Presión arterial</string>
+    <string name="vital_pulse">Frecuencia cardíaca</string>
+    <string name="vital_temperature">Temperatura</string>
+    <string name="vital_spo2">SpO2</string>
+    <string name="vital_glucose">Glucosa</string>
+    <string name="vital_weight">Peso</string>
+    <string name="vital_sleep">Sueño</string>
+    <string name="vital_steps">Pasos</string>
+
+    <!-- VitalType units -->
+    <string name="unit_mmhg">mmHg</string>
+    <string name="unit_bpm">lpm</string>
+    <string name="unit_celsius">°C</string>
+    <string name="unit_percent">%</string>
+    <string name="unit_mmol">mmol/L</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_hours">h</string>
+    <string name="unit_steps">pasos</string>
+
+    <!-- Language Settings -->
+    <string name="language_settings_title">Idioma</string>
+    <string name="language_system_default">Predeterminado del sistema</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">中文 (简体)</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_current">Idioma actual</string>
+    <string name="language_select_prompt">Seleccione el idioma de la aplicación</string>
+
+    <!-- SMS -->
+    <string name="sms_send">Enviar SMS</string>
+
+    <!-- Export/Import -->
+    <string name="export_data">Exportar datos</string>
+    <string name="import_data">Importar datos</string>
+    <string name="export_success">Datos exportados correctamente</string>
+    <string name="import_success">Datos importados correctamente</string>
+    <string name="export_error">Error de exportación: %1$s</string>
+    <string name="import_error">Error de importación: %1$s</string>
+
+    <!-- Plurals -->
+    <plurals name="entries_count">
+        <item quantity="one">%1$d registro</item>
+        <item quantity="other">%1$d registros</item>
+    </plurals>
+    <plurals name="days_count">
+        <item quantity="one">%1$d día</item>
+        <item quantity="other">%1$d días</item>
+    </plurals>
+</resources>

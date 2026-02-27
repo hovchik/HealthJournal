@@ -77,6 +77,36 @@ com.healthjournal/
 - Согласие на использование AI запрашивается при первом запуске
 - Все данные хранятся локально на устройстве
 
+## Multi-language support (i18n)
+
+The app supports 4 UI languages: Russian (default), English, Simplified Chinese, and Spanish.
+
+### How to add a new language
+
+1. **Create string resources**: Add a new directory under `app/src/main/res/` with the appropriate qualifier (e.g. `values-fr` for French, `values-de` for German). Copy `values/strings.xml` into it and translate all values.
+
+2. **Update `locales_config.xml`**: Add a `<locale>` entry in `app/src/main/res/xml/locales_config.xml`:
+   ```xml
+   <locale android:name="fr" />
+   ```
+
+3. **Update `LocaleManager.kt`**: Add the new language code to `supportedLanguages` and add a mapping in `getOutputLanguageName()`.
+
+4. **Update Language Settings screen**: Add a new `LanguageOption` entry in `LanguageSettingsScreen.kt` with the language code and string resource for the label. Add corresponding `language_<name>` entries in all existing `strings.xml` files.
+
+5. **Update AI prompt templates**: Add a new language branch in `SummaryPromptTemplates.forLanguage()` and `PatternPromptTemplates.forLanguage()` inside `AiUseCases.kt`.
+
+6. **Plurals**: If the new language has specific plural rules (like Russian), add the appropriate `<item quantity="...">` entries in the new `strings.xml`.
+
+### Architecture notes
+
+- All user-facing strings use Android string resources via `stringResource(R.string.key)` in Compose.
+- `@StringRes` annotations enforce compile-time correctness for resource IDs.
+- Language preference is persisted in DataStore as `language_mode` (values: `SYSTEM`, `ru`, `en`, `es`, `zh-CN`).
+- Locale switching uses `AppCompatDelegate.setApplicationLocales()` which works on Android 13+ natively and pre-13 via AppCompat.
+- AI output language follows the selected UI language by passing `outputLanguage` to the prompt builders.
+- Export `meta.json` includes `locale` and `uiLanguage` fields; import does NOT auto-switch the user's language.
+
 ## Требования
 
 - Android 8.0+ (API 26)

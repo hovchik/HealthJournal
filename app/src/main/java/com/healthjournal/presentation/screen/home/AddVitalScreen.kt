@@ -9,10 +9,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.healthjournal.R
 import com.healthjournal.domain.model.VitalType
+import com.healthjournal.util.localizedDisplayName
+import com.healthjournal.util.localizedUnit
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,10 +38,10 @@ fun AddVitalScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Добавить показатель") },
+                title = { Text(stringResource(R.string.add_vital_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -56,10 +60,10 @@ fun AddVitalScreen(
                 onExpandedChange = { typeMenuExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = selectedType.displayName,
+                    value = selectedType.localizedDisplayName(),
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Тип показателя") },
+                    label = { Text(stringResource(R.string.vital_type_label)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeMenuExpanded) },
                     modifier = Modifier.fillMaxWidth().menuAnchor()
                 )
@@ -69,7 +73,7 @@ fun AddVitalScreen(
                 ) {
                     VitalType.entries.forEach { type ->
                         DropdownMenuItem(
-                            text = { Text(type.displayName) },
+                            text = { Text(type.localizedDisplayName()) },
                             onClick = {
                                 selectedType = type
                                 typeMenuExpanded = false
@@ -84,8 +88,8 @@ fun AddVitalScreen(
                 onValueChange = { value = it },
                 label = {
                     Text(
-                        if (selectedType == VitalType.BLOOD_PRESSURE) "Систолическое (верхнее)"
-                        else "Значение (${selectedType.unit})"
+                        if (selectedType == VitalType.BLOOD_PRESSURE) stringResource(R.string.systolic_upper)
+                        else stringResource(R.string.value_with_unit, selectedType.localizedUnit())
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -97,7 +101,7 @@ fun AddVitalScreen(
                 OutlinedTextField(
                     value = secondaryValue,
                     onValueChange = { secondaryValue = it },
-                    label = { Text("Диастолическое (нижнее)") },
+                    label = { Text(stringResource(R.string.diastolic_lower)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -107,7 +111,7 @@ fun AddVitalScreen(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Заметки") },
+                label = { Text(stringResource(R.string.notes)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2
             )
@@ -127,7 +131,7 @@ fun AddVitalScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = value.toDoubleOrNull() != null
             ) {
-                Text("Сохранить")
+                Text(stringResource(R.string.save))
             }
         }
     }

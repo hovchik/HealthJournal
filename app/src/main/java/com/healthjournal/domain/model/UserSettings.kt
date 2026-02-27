@@ -5,5 +5,6 @@ data class UserSettings(
     val doctorName: String = "",
     val doctorPhone: String = "",
     val aiConsentGiven: Boolean = false,
-    val onboardingCompleted: Boolean = false
+    val onboardingCompleted: Boolean = false,
+    val languageMode: String = "SYSTEM"
 )

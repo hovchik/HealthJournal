@@ -12,6 +12,8 @@ import com.healthjournal.presentation.screen.home.HomeScreen
 import com.healthjournal.presentation.screen.medications.AddMedicationScreen
 import com.healthjournal.presentation.screen.medications.MedicationsScreen
 import com.healthjournal.presentation.screen.onboarding.OnboardingScreen
+import com.healthjournal.presentation.screen.settings.LanguageSettingsScreen
+import com.healthjournal.presentation.screen.settings.SettingsScreen
 import com.healthjournal.presentation.screen.vitals.VitalsScreen
 
 @Composable
@@ -55,6 +57,14 @@ fun HealthNavHost(
         }
         composable(Screen.AiReport.route) {
             AiReportScreen()
+        }
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                onLanguageSettings = { navController.navigate(Screen.LanguageSettings.route) }
+            )
+        }
+        composable(Screen.LanguageSettings.route) {
+            LanguageSettingsScreen(onBack = { navController.popBackStack() })
         }
     }
 }

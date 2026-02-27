@@ -24,6 +24,7 @@ class UserSettingsRepositoryImpl constructor(
         val DOCTOR_PHONE = stringPreferencesKey("doctor_phone")
         val AI_CONSENT = booleanPreferencesKey("ai_consent")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val LANGUAGE_MODE = stringPreferencesKey("language_mode")
     }
 
     override fun getUserSettings(): Flow<UserSettings> = context.dataStore.data.map { prefs ->
@@ -32,7 +33,8 @@ class UserSettingsRepositoryImpl constructor(
             doctorName = prefs[Keys.DOCTOR_NAME] ?: "",
             doctorPhone = prefs[Keys.DOCTOR_PHONE] ?: "",
             aiConsentGiven = prefs[Keys.AI_CONSENT] ?: false,
-            onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false
+            onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
+            languageMode = prefs[Keys.LANGUAGE_MODE] ?: "SYSTEM"
         )
     }
 
@@ -43,6 +45,7 @@ class UserSettingsRepositoryImpl constructor(
             prefs[Keys.DOCTOR_PHONE] = settings.doctorPhone
             prefs[Keys.AI_CONSENT] = settings.aiConsentGiven
             prefs[Keys.ONBOARDING_COMPLETED] = settings.onboardingCompleted
+            prefs[Keys.LANGUAGE_MODE] = settings.languageMode
         }
     }
 
@@ -55,6 +58,12 @@ class UserSettingsRepositoryImpl constructor(
     override suspend fun setOnboardingCompleted(completed: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[Keys.ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    override suspend fun setLanguageMode(languageMode: String) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.LANGUAGE_MODE] = languageMode
         }
     }
 }
