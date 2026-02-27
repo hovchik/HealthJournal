@@ -75,7 +75,9 @@ fun MainApp() {
                                 Text(
                                     title,
                                     fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                                    style = MaterialTheme.typography.labelSmall
+                                    style = MaterialTheme.typography.labelSmall,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                 )
                             },
                             selected = selected,
