@@ -319,4 +319,10 @@
     <plurals name="days_count">
         <item quantity="other">%1$d 天</item>
     </plurals>
+
+    <!-- Profile Selection -->
+    <string name="profile_selection_title">谁在使用日记？</string>
+    <string name="profile_selection_subtitle">选择一个档案以继续</string>
+    <string name="profile_continue">继续</string>
+    <string name="profile_add_new">添加成员</string>
 </resources>

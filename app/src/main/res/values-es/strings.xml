@@ -321,4 +321,10 @@
         <item quantity="one">%1$d día</item>
         <item quantity="other">%1$d días</item>
     </plurals>
+
+    <!-- Profile Selection -->
+    <string name="profile_selection_title">Quién usa el diario?</string>
+    <string name="profile_selection_subtitle">Selecciona un perfil para continuar</string>
+    <string name="profile_continue">Continuar</string>
+    <string name="profile_add_new">Agregar miembro</string>
 </resources>

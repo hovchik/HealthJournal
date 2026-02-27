@@ -325,4 +325,10 @@
         <item quantity="many">%1$d дней</item>
         <item quantity="other">%1$d дней</item>
     </plurals>
+
+    <!-- Profile Selection -->
+    <string name="profile_selection_title">Кто использует журнал?</string>
+    <string name="profile_selection_subtitle">Выберите профиль для продолжения</string>
+    <string name="profile_continue">Продолжить</string>
+    <string name="profile_add_new">Добавить участника</string>
 </resources>

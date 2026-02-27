@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.MonitorHeart
@@ -20,6 +21,7 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object Medications : Screen("medications", R.string.nav_medications, Icons.Default.Medication)
     data object Reports : Screen("reports", R.string.nav_reports, Icons.Default.Summarize)
     data object Settings : Screen("settings", R.string.nav_settings, Icons.Default.Tune)
+    data object ProfileSelection : Screen("profile_selection", R.string.profile_selection_title, Icons.Default.Groups)
     data object Onboarding : Screen("onboarding", R.string.nav_home, Icons.Default.Home)
     data object AddSymptom : Screen("add_symptom", R.string.add_symptom_title, Icons.Default.Home)
     data object AddVital : Screen("add_vital", R.string.add_vital_title, Icons.Default.Favorite)

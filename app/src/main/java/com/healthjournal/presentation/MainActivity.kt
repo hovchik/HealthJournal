@@ -43,7 +43,7 @@ fun MainApp() {
     val onboardingViewModel: OnboardingViewModel = viewModel()
     val settings by onboardingViewModel.settings.collectAsStateWithLifecycle()
 
-    val startDestination = if (settings.onboardingCompleted) Screen.Home.route else Screen.Onboarding.route
+    val startDestination = if (settings.onboardingCompleted) Screen.ProfileSelection.route else Screen.Onboarding.route
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

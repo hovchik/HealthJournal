@@ -9,6 +9,7 @@ import com.healthjournal.presentation.screen.ai.ReportsScreen
 import com.healthjournal.presentation.screen.home.AddSymptomScreen
 import com.healthjournal.presentation.screen.home.AddVitalScreen
 import com.healthjournal.presentation.screen.home.HomeScreen
+import com.healthjournal.presentation.screen.home.ProfileSelectionScreen
 import com.healthjournal.presentation.screen.medications.AddMedicationScreen
 import com.healthjournal.presentation.screen.medications.MedicationsScreen
 import com.healthjournal.presentation.screen.onboarding.OnboardingScreen
@@ -30,8 +31,17 @@ fun HealthNavHost(
         composable(Screen.Onboarding.route) {
             OnboardingScreen(
                 onComplete = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.ProfileSelection.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.ProfileSelection.route) {
+            ProfileSelectionScreen(
+                onContinue = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.ProfileSelection.route) { inclusive = true }
                     }
                 }
             )

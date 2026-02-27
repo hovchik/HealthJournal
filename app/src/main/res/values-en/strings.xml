@@ -321,4 +321,10 @@
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
+
+    <!-- Profile Selection -->
+    <string name="profile_selection_title">Who is using the journal?</string>
+    <string name="profile_selection_subtitle">Select a profile to continue</string>
+    <string name="profile_continue">Continue</string>
+    <string name="profile_add_new">Add member</string>
 </resources>
