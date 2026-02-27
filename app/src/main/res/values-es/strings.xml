@@ -140,6 +140,14 @@
     <string name="ai_max_tokens">Tokens máximos</string>
     <string name="ai_temperature">Temperatura</string>
     <string name="ai_validate_config">Validar configuración</string>
+    <string name="ai_provider_gemini_nano">Gemini Nano (en dispositivo)</string>
+    <string name="gemini_nano_desc">IA en dispositivo. Requiere Android 14+ y un dispositivo compatible (ej. Pixel 8+). No requiere internet.</string>
+    <string name="gemini_top_k">Top-K</string>
+
+    <!-- Reports -->
+    <string name="report_select_profile">Seleccionar perfil para el informe</string>
+    <string name="vitals_charts_title">Gr\u00e1ficos de signos vitales</string>
+    <string name="export_pdf">Exportar a PDF</string>
 
     <!-- User Info -->
     <string name="user_info_title">Informaci\u00f3n del usuario</string>

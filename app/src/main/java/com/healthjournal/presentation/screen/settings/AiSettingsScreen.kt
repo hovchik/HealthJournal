@@ -125,6 +125,10 @@ fun AiSettingsScreen(
                         config = settings.openAiConfig,
                         onUpdate = { viewModel.updateOpenAiConfig(it) }
                     )
+                    AiProviderId.GEMINI_NANO -> GeminiNanoConfigSection(
+                        config = settings.geminiNanoConfig,
+                        onUpdate = { viewModel.updateGeminiNanoConfig(it) }
+                    )
                     AiProviderId.LOCAL -> LocalConfigSection(
                         config = settings.localAiConfig,
                         onUpdate = { viewModel.updateLocalConfig(it) }
@@ -227,6 +231,47 @@ private fun OpenAiConfigSection(
         onValueChange = { onUpdate(config.copy(baseUrl = it)) },
         label = { Text(stringResource(R.string.ai_base_url)) },
         modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+}
+
+@Composable
+private fun GeminiNanoConfigSection(
+    config: GeminiNanoConfig,
+    onUpdate: (GeminiNanoConfig) -> Unit
+) {
+    Text(
+        stringResource(R.string.ai_provider_gemini_nano),
+        style = MaterialTheme.typography.titleMedium
+    )
+    Text(
+        stringResource(R.string.gemini_nano_desc),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    OutlinedTextField(
+        value = config.temperature.toString(),
+        onValueChange = { onUpdate(config.copy(temperature = it.toFloatOrNull() ?: 0.7f)) },
+        label = { Text(stringResource(R.string.ai_temperature)) },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        singleLine = true
+    )
+    OutlinedTextField(
+        value = config.topK.toString(),
+        onValueChange = { onUpdate(config.copy(topK = it.toIntOrNull() ?: 40)) },
+        label = { Text(stringResource(R.string.gemini_top_k)) },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        singleLine = true
+    )
+    OutlinedTextField(
+        value = config.maxOutputTokens.toString(),
+        onValueChange = { onUpdate(config.copy(maxOutputTokens = it.toIntOrNull() ?: 1024)) },
+        label = { Text(stringResource(R.string.ai_max_tokens)) },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true
     )
 }

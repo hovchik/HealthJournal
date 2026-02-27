@@ -23,16 +23,9 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
     private val _validationMessage = MutableStateFlow<String?>(null)
     val validationMessage = _validationMessage.asStateFlow()
 
-    fun updateAiSettings(settings: AiSettings) {
-        viewModelScope.launch {
-            settingsRepo.setAiSettings(settings)
-        }
-    }
-
     fun selectProvider(providerId: String) {
         viewModelScope.launch {
-            val current = aiSettings.value
-            settingsRepo.setAiSettings(current.copy(selectedProviderId = providerId))
+            settingsRepo.setAiSettings(aiSettings.value.copy(selectedProviderId = providerId))
         }
     }
 
@@ -60,6 +53,12 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun updateGeminiNanoConfig(config: GeminiNanoConfig) {
+        viewModelScope.launch {
+            settingsRepo.setAiSettings(aiSettings.value.copy(geminiNanoConfig = config))
+        }
+    }
+
     fun updateLocalConfig(config: LocalAiConfig) {
         viewModelScope.launch {
             settingsRepo.setAiSettings(aiSettings.value.copy(localAiConfig = config))
@@ -69,9 +68,5 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
     fun validateCurrentProvider() {
         val result = aiService.validateActiveProvider(aiSettings.value)
         _validationMessage.value = if (result.valid) null else result.errorMessage
-    }
-
-    fun clearValidationMessage() {
-        _validationMessage.value = null
     }
 }

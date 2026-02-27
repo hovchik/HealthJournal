@@ -1,6 +1,5 @@
 package com.healthjournal.domain.model.ai
 
-import androidx.annotation.StringRes
 import com.healthjournal.domain.model.Medication
 import com.healthjournal.domain.model.Symptom
 import com.healthjournal.domain.model.VitalSign
@@ -9,6 +8,7 @@ import kotlinx.serialization.Serializable
 enum class AiProviderId(val key: String) {
     CLAUDE("claude"),
     OPENAI_COMPATIBLE("openai"),
+    GEMINI_NANO("gemini_nano"),
     LOCAL("local");
 
     companion object {
@@ -60,6 +60,13 @@ data class OpenAiConfig(
 )
 
 @Serializable
+data class GeminiNanoConfig(
+    val temperature: Float = 0.7f,
+    val topK: Int = 40,
+    val maxOutputTokens: Int = 1024
+)
+
+@Serializable
 data class LocalAiConfig(
     val modelPath: String = "",
     val contextSize: Int = 2048,
@@ -74,6 +81,7 @@ data class AiSettings(
     val privacyRedactEnabled: Boolean = false,
     val claudeConfig: ClaudeConfig = ClaudeConfig(),
     val openAiConfig: OpenAiConfig = OpenAiConfig(),
+    val geminiNanoConfig: GeminiNanoConfig = GeminiNanoConfig(),
     val localAiConfig: LocalAiConfig = LocalAiConfig()
 )
 

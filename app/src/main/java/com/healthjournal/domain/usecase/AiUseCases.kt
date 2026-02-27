@@ -23,14 +23,18 @@ class GenerateAiSummaryUseCase(
     suspend operator fun invoke(
         periodDays: Int = 7,
         outputLanguage: String = "ru",
-        aiSettings: AiSettings = AiSettings()
+        aiSettings: AiSettings = AiSettings(),
+        profileId: Long = 0
     ): Result<AiReport> = runCatching {
         val now = LocalDateTime.now()
         val from = now.minusDays(periodDays.toLong())
 
         val symptoms = symptomRepository.getSymptomsByDateRange(from, now).first()
+            .filter { it.profileId == profileId }
         val vitals = vitalSignRepository.getVitalSignsByDateRange(from, now).first()
+            .filter { it.profileId == profileId }
         val medications = medicationRepository.getActiveMedications().first()
+            .filter { it.profileId == profileId }
 
         val input = AiInput(
             symptoms = symptoms,
@@ -45,7 +49,8 @@ class GenerateAiSummaryUseCase(
             content = result.text,
             type = ReportType.SUMMARY,
             periodDays = periodDays,
-            generatedAt = LocalDateTime.now()
+            generatedAt = LocalDateTime.now(),
+            profileId = profileId
         )
         val id = reportRepository.insertReport(report)
         report.copy(id = id)
@@ -61,13 +66,16 @@ class GeneratePatternAnalysisUseCase(
     suspend operator fun invoke(
         periodDays: Int = 30,
         outputLanguage: String = "ru",
-        aiSettings: AiSettings = AiSettings()
+        aiSettings: AiSettings = AiSettings(),
+        profileId: Long = 0
     ): Result<AiReport> = runCatching {
         val now = LocalDateTime.now()
         val from = now.minusDays(periodDays.toLong())
 
         val symptoms = symptomRepository.getSymptomsByDateRange(from, now).first()
+            .filter { it.profileId == profileId }
         val vitals = vitalSignRepository.getVitalSignsByDateRange(from, now).first()
+            .filter { it.profileId == profileId }
 
         val input = AiInput(
             symptoms = symptoms,
@@ -82,7 +90,8 @@ class GeneratePatternAnalysisUseCase(
             content = result.text,
             type = ReportType.PATTERN_ANALYSIS,
             periodDays = periodDays,
-            generatedAt = LocalDateTime.now()
+            generatedAt = LocalDateTime.now(),
+            profileId = profileId
         )
         val id = reportRepository.insertReport(report)
         report.copy(id = id)

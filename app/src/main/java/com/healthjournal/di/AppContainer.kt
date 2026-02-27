@@ -3,6 +3,7 @@ package com.healthjournal.di
 import android.content.Context
 import com.healthjournal.BuildConfig
 import com.healthjournal.data.ai.ClaudeAiProviderImpl
+import com.healthjournal.data.ai.GeminiNanoProviderImpl
 import com.healthjournal.data.ai.LocalAiProviderImpl
 import com.healthjournal.data.ai.OpenAiCompatibleProviderImpl
 import com.healthjournal.data.ai.StubLocalInferenceEngine
@@ -125,11 +126,12 @@ class AppContainer(context: Context) {
     // AI providers
     private val claudeProvider = ClaudeAiProviderImpl(::buildClaudeApi)
     private val openAiProvider = OpenAiCompatibleProviderImpl(::buildOpenAiApi)
+    private val geminiNanoProvider = GeminiNanoProviderImpl(context)
     private val localEngine = StubLocalInferenceEngine()
     private val localProvider = LocalAiProviderImpl(localEngine)
 
     val aiProviderRegistry = AiProviderRegistry(
-        listOf(claudeProvider, openAiProvider, localProvider)
+        listOf(claudeProvider, openAiProvider, geminiNanoProvider, localProvider)
     )
 
     private val privacyRedactor = PrivacyRedactor()

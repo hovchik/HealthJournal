@@ -154,14 +154,16 @@ data class AiReportDto(
     val content: String,
     val type: String,
     val periodDays: Int = 7,
-    val generatedAt: Long = 0
+    val generatedAt: Long = 0,
+    val profileId: Long = 0
 ) {
     fun toDomain() = AiReport(
         id = id,
         content = content,
         type = ReportType.valueOf(type),
         periodDays = periodDays,
-        generatedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(generatedAt), ZoneId.systemDefault())
+        generatedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(generatedAt), ZoneId.systemDefault()),
+        profileId = profileId
     )
 
     companion object {
@@ -170,7 +172,8 @@ data class AiReportDto(
             content = r.content,
             type = r.type.name,
             periodDays = r.periodDays,
-            generatedAt = r.generatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            generatedAt = r.generatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            profileId = r.profileId
         )
     }
 }

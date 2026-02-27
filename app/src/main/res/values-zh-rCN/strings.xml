@@ -140,6 +140,14 @@
     <string name="ai_max_tokens">最大令牌数</string>
     <string name="ai_temperature">温度</string>
     <string name="ai_validate_config">验证配置</string>
+    <string name="ai_provider_gemini_nano">Gemini Nano（设备端）</string>
+    <string name="gemini_nano_desc">设备端 AI。需要 Android 14+ 和受支持的设备（如 Pixel 8+）。无需联网。</string>
+    <string name="gemini_top_k">Top-K</string>
+
+    <!-- Reports -->
+    <string name="report_select_profile">选择报告的档案</string>
+    <string name="vitals_charts_title">生命体征图表</string>
+    <string name="export_pdf">导出为 PDF</string>
 
     <!-- User Info -->
     <string name="user_info_title">用户信息</string>

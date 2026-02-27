@@ -140,6 +140,14 @@
     <string name="ai_max_tokens">Макс. токенов</string>
     <string name="ai_temperature">Температура</string>
     <string name="ai_validate_config">Проверить конфигурацию</string>
+    <string name="ai_provider_gemini_nano">Gemini Nano (на устройстве)</string>
+    <string name="gemini_nano_desc">AI на устройстве. Требуется Android 14+ и поддерживаемое устройство (напр. Pixel 8+). Не требует интернета.</string>
+    <string name="gemini_top_k">Top-K</string>
+
+    <!-- Reports -->
+    <string name="report_select_profile">Выберите профиль для отчёта</string>
+    <string name="vitals_charts_title">Графики показателей</string>
+    <string name="export_pdf">Экспорт в PDF</string>
 
     <!-- User Info -->
     <string name="user_info_title">Информация о пользователе</string>
