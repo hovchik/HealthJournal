@@ -12,8 +12,12 @@ import com.healthjournal.presentation.screen.home.HomeScreen
 import com.healthjournal.presentation.screen.medications.AddMedicationScreen
 import com.healthjournal.presentation.screen.medications.MedicationsScreen
 import com.healthjournal.presentation.screen.onboarding.OnboardingScreen
+import com.healthjournal.presentation.screen.settings.AiSettingsScreen
+import com.healthjournal.presentation.screen.settings.FamilyMembersScreen
 import com.healthjournal.presentation.screen.settings.LanguageSettingsScreen
+import com.healthjournal.presentation.screen.settings.PredefinedDataSettingsScreen
 import com.healthjournal.presentation.screen.settings.SettingsScreen
+import com.healthjournal.presentation.screen.settings.UserInfoScreen
 import com.healthjournal.presentation.screen.vitals.VitalsScreen
 
 @Composable
@@ -60,11 +64,27 @@ fun HealthNavHost(
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
-                onLanguageSettings = { navController.navigate(Screen.LanguageSettings.route) }
+                onLanguageSettings = { navController.navigate(Screen.LanguageSettings.route) },
+                onAiSettings = { navController.navigate(Screen.AiSettings.route) },
+                onUserInfo = { navController.navigate(Screen.UserInfo.route) },
+                onFamilyMembers = { navController.navigate(Screen.FamilyMembers.route) },
+                onPredefinedData = { navController.navigate(Screen.PredefinedDataSettings.route) }
             )
         }
         composable(Screen.LanguageSettings.route) {
             LanguageSettingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.AiSettings.route) {
+            AiSettingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.UserInfo.route) {
+            UserInfoScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.FamilyMembers.route) {
+            FamilyMembersScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.PredefinedDataSettings.route) {
+            PredefinedDataSettingsScreen(onBack = { navController.popBackStack() })
         }
     }
 }

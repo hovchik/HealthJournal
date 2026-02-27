@@ -15,7 +15,9 @@ data class SymptomDto(
     val durationMinutes: Int? = null,
     val triggers: List<String> = emptyList(),
     val notes: String = "",
-    val recordedAt: Long = 0 // epoch millis
+    val recordedAt: Long = 0,
+    val profileId: Long = 0,
+    val attachmentPaths: List<String> = emptyList()
 ) {
     fun toDomain() = Symptom(
         id = id,
@@ -24,7 +26,9 @@ data class SymptomDto(
         durationMinutes = durationMinutes,
         triggers = triggers,
         notes = notes,
-        recordedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(recordedAt), ZoneId.systemDefault())
+        recordedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(recordedAt), ZoneId.systemDefault()),
+        profileId = profileId,
+        attachmentPaths = attachmentPaths
     )
 
     companion object {
@@ -35,7 +39,9 @@ data class SymptomDto(
             durationMinutes = s.durationMinutes,
             triggers = s.triggers,
             notes = s.notes,
-            recordedAt = s.recordedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            recordedAt = s.recordedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            profileId = s.profileId,
+            attachmentPaths = s.attachmentPaths
         )
     }
 }
@@ -47,7 +53,9 @@ data class VitalSignDto(
     val value: Double,
     val secondaryValue: Double? = null,
     val notes: String = "",
-    val recordedAt: Long = 0
+    val recordedAt: Long = 0,
+    val profileId: Long = 0,
+    val attachmentPaths: List<String> = emptyList()
 ) {
     fun toDomain() = VitalSign(
         id = id,
@@ -55,7 +63,9 @@ data class VitalSignDto(
         value = value,
         secondaryValue = secondaryValue,
         notes = notes,
-        recordedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(recordedAt), ZoneId.systemDefault())
+        recordedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(recordedAt), ZoneId.systemDefault()),
+        profileId = profileId,
+        attachmentPaths = attachmentPaths
     )
 
     companion object {
@@ -65,7 +75,9 @@ data class VitalSignDto(
             value = v.value,
             secondaryValue = v.secondaryValue,
             notes = v.notes,
-            recordedAt = v.recordedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            recordedAt = v.recordedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            profileId = v.profileId,
+            attachmentPaths = v.attachmentPaths
         )
     }
 }
@@ -76,10 +88,11 @@ data class MedicationDto(
     val name: String,
     val dosage: String,
     val frequency: String,
-    val startDate: Long = 0, // epoch day
+    val startDate: Long = 0,
     val endDate: Long? = null,
     val active: Boolean = true,
-    val notes: String = ""
+    val notes: String = "",
+    val profileId: Long = 0
 ) {
     fun toDomain() = Medication(
         id = id,
@@ -89,7 +102,8 @@ data class MedicationDto(
         startDate = LocalDate.ofEpochDay(startDate),
         endDate = endDate?.let { LocalDate.ofEpochDay(it) },
         active = active,
-        notes = notes
+        notes = notes,
+        profileId = profileId
     )
 
     companion object {
@@ -101,7 +115,8 @@ data class MedicationDto(
             startDate = m.startDate.toEpochDay(),
             endDate = m.endDate?.toEpochDay(),
             active = m.active,
-            notes = m.notes
+            notes = m.notes,
+            profileId = m.profileId
         )
     }
 }
@@ -139,14 +154,16 @@ data class AiReportDto(
     val content: String,
     val type: String,
     val periodDays: Int = 7,
-    val generatedAt: Long = 0
+    val generatedAt: Long = 0,
+    val profileId: Long = 0
 ) {
     fun toDomain() = AiReport(
         id = id,
         content = content,
         type = ReportType.valueOf(type),
         periodDays = periodDays,
-        generatedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(generatedAt), ZoneId.systemDefault())
+        generatedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(generatedAt), ZoneId.systemDefault()),
+        profileId = profileId
     )
 
     companion object {
@@ -155,7 +172,32 @@ data class AiReportDto(
             content = r.content,
             type = r.type.name,
             periodDays = r.periodDays,
-            generatedAt = r.generatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            generatedAt = r.generatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            profileId = r.profileId
+        )
+    }
+}
+
+@Serializable
+data class FamilyMemberDto(
+    val id: Long = 0,
+    val name: String,
+    val relationship: String = "",
+    val avatarColor: Int = 0xFF1B6B4D.toInt()
+) {
+    fun toDomain() = FamilyMember(
+        id = id,
+        name = name,
+        relationship = relationship,
+        avatarColor = avatarColor
+    )
+
+    companion object {
+        fun from(f: FamilyMember) = FamilyMemberDto(
+            id = f.id,
+            name = f.name,
+            relationship = f.relationship,
+            avatarColor = f.avatarColor
         )
     }
 }

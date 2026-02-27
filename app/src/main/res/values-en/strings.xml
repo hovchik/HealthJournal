@@ -121,6 +121,132 @@
     <string name="export_error">Export error: %1$s</string>
     <string name="import_error">Import error: %1$s</string>
 
+    <!-- AI Settings -->
+    <string name="ai_settings_title">AI Settings</string>
+    <string name="ai_settings_desc">Provider, API key, privacy</string>
+    <string name="ai_enabled">AI enabled</string>
+    <string name="ai_select_provider">Select provider</string>
+    <string name="ai_provider_claude">Claude (Anthropic)</string>
+    <string name="ai_provider_openai">OpenAI-compatible</string>
+    <string name="ai_provider_local">Local model</string>
+    <string name="ai_privacy_redact">Data redaction</string>
+    <string name="ai_privacy_redact_desc">Remove phone numbers and emails before sending</string>
+    <string name="ai_api_key">API key</string>
+    <string name="ai_model">Model</string>
+    <string name="ai_base_url">Base URL</string>
+    <string name="ai_timeout">Timeout (sec)</string>
+    <string name="ai_model_path">Model path</string>
+    <string name="ai_context_size">Context size</string>
+    <string name="ai_max_tokens">Max tokens</string>
+    <string name="ai_temperature">Temperature</string>
+    <string name="ai_validate_config">Validate configuration</string>
+    <string name="ai_provider_gemini_nano">Gemini Nano (on-device)</string>
+    <string name="gemini_nano_desc">On-device AI. Requires Android 14+ and a supported device (e.g. Pixel 8+). No internet needed.</string>
+    <string name="gemini_top_k">Top-K</string>
+
+    <!-- Reports -->
+    <string name="report_select_profile">Select profile for report</string>
+    <string name="vitals_charts_title">Vital Signs Charts</string>
+    <string name="export_pdf">Export to PDF</string>
+
+    <!-- User Info -->
+    <string name="user_info_title">User Information</string>
+    <string name="user_info_desc">Name, doctor, contacts</string>
+    <string name="doctor_name">Doctor\'s name</string>
+    <string name="doctor_phone">Doctor\'s phone</string>
+    <string name="saved_successfully">Saved successfully</string>
+
+    <!-- Family Members -->
+    <string name="family_members_title">Family Members</string>
+    <string name="family_members_desc">Profiles and health journals</string>
+    <string name="add_family_member">Add family member</string>
+    <string name="member_name">Name</string>
+    <string name="relationship">Relationship</string>
+    <string name="default_profile">Default profile</string>
+
+    <!-- Relationships -->
+    <string name="rel_self">Self</string>
+    <string name="rel_spouse">Spouse</string>
+    <string name="rel_child">Child</string>
+    <string name="rel_parent">Parent</string>
+    <string name="rel_sibling">Sibling</string>
+    <string name="rel_grandparent">Grandparent</string>
+
+    <!-- Predefined Data Settings -->
+    <string name="predefined_data_title">Predefined Data</string>
+    <string name="predefined_data_desc">Symptoms, medications, custom items</string>
+    <string name="predefined_symptoms_section">Symptoms</string>
+    <string name="predefined_medications_section">Medications</string>
+    <string name="add_custom_symptom">Add custom symptom</string>
+    <string name="add_custom_medication">Add custom medication</string>
+    <string name="custom_label">Custom</string>
+
+    <!-- Predefined Symptoms -->
+    <string name="symptom_headache">Headache</string>
+    <string name="symptom_stomachache">Stomachache</string>
+    <string name="symptom_back_pain">Back pain</string>
+    <string name="symptom_fatigue">Fatigue</string>
+    <string name="symptom_dizziness">Dizziness</string>
+    <string name="symptom_nausea">Nausea</string>
+    <string name="symptom_insomnia">Insomnia</string>
+    <string name="symptom_cough">Cough</string>
+    <string name="symptom_sore_throat">Sore throat</string>
+    <string name="symptom_runny_nose">Runny nose</string>
+    <string name="symptom_joint_pain">Joint pain</string>
+    <string name="symptom_chest_pain">Chest pain</string>
+    <string name="symptom_shortness_of_breath">Shortness of breath</string>
+    <string name="symptom_fever">Fever</string>
+    <string name="symptom_anxiety">Anxiety</string>
+    <string name="symptom_muscle_pain">Muscle pain</string>
+    <string name="symptom_rash">Rash</string>
+    <string name="symptom_palpitations">Palpitations</string>
+    <string name="symptom_blurred_vision">Blurred vision</string>
+    <string name="symptom_earache">Earache</string>
+    <string name="symptom_constipation">Constipation</string>
+    <string name="symptom_diarrhea">Diarrhea</string>
+    <string name="symptom_bloating">Bloating</string>
+    <string name="symptom_numbness">Numbness</string>
+    <string name="symptom_swelling">Swelling</string>
+    <string name="symptom_depression">Depression</string>
+    <string name="symptom_heartburn">Heartburn</string>
+    <string name="symptom_loss_of_appetite">Loss of appetite</string>
+    <string name="symptom_sneezing">Sneezing</string>
+    <string name="symptom_dry_mouth">Dry mouth</string>
+    <string name="common_symptoms">Common symptoms</string>
+
+    <!-- Predefined Medications -->
+    <string name="med_ibuprofen">Ibuprofen</string>
+    <string name="med_paracetamol">Paracetamol</string>
+    <string name="med_aspirin">Aspirin</string>
+    <string name="med_amoxicillin">Amoxicillin</string>
+    <string name="med_omeprazole">Omeprazole</string>
+    <string name="med_metformin">Metformin</string>
+    <string name="med_lisinopril">Lisinopril</string>
+    <string name="med_amlodipine">Amlodipine</string>
+    <string name="med_metoprolol">Metoprolol</string>
+    <string name="med_loratadine">Loratadine</string>
+    <string name="med_vitamin_d">Vitamin D</string>
+    <string name="med_vitamin_c">Vitamin C</string>
+    <string name="med_omega3">Omega-3</string>
+    <string name="med_atorvastatin">Atorvastatin</string>
+    <string name="med_levothyroxine">Levothyroxine</string>
+    <string name="med_losartan">Losartan</string>
+    <string name="med_gabapentin">Gabapentin</string>
+    <string name="med_pantoprazole">Pantoprazole</string>
+    <string name="med_cetirizine">Cetirizine</string>
+    <string name="med_prednisone">Prednisone</string>
+    <string name="med_diclofenac">Diclofenac</string>
+    <string name="med_magnesium">Magnesium</string>
+    <string name="med_probiotics">Probiotics</string>
+    <string name="med_iron">Iron supplement</string>
+    <string name="med_folic_acid">Folic acid</string>
+    <string name="med_melatonin">Melatonin</string>
+    <string name="common_medications">Common medications</string>
+
+    <!-- Attachments -->
+    <string name="attach_file">Attach file</string>
+    <string name="attachments_count">%1$d attachments</string>
+
     <!-- Plurals -->
     <plurals name="entries_count">
         <item quantity="one">%1$d entry</item>

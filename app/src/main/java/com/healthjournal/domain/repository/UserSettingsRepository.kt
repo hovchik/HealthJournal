@@ -1,6 +1,7 @@
 package com.healthjournal.domain.repository
 
 import com.healthjournal.domain.model.UserSettings
+import com.healthjournal.domain.model.ai.AiSettings
 import kotlinx.coroutines.flow.Flow
 
 interface UserSettingsRepository {
@@ -9,4 +10,6 @@ interface UserSettingsRepository {
     suspend fun setAiConsent(consent: Boolean)
     suspend fun setOnboardingCompleted(completed: Boolean)
     suspend fun setLanguageMode(languageMode: String)
+    suspend fun setAiSettings(aiSettings: AiSettings)
+    suspend fun setActiveProfileId(profileId: Long)
 }

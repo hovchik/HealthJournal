@@ -17,7 +17,9 @@ data class VitalSign(
     val id: Long = 0,
     val type: VitalType,
     val value: Double,
-    val secondaryValue: Double? = null, // For blood pressure (diastolic)
+    val secondaryValue: Double? = null,
     val notes: String = "",
-    val recordedAt: LocalDateTime = LocalDateTime.now()
+    val recordedAt: LocalDateTime = LocalDateTime.now(),
+    val profileId: Long = 0,
+    val attachmentPaths: List<String> = emptyList()
 )

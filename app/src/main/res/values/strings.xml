@@ -121,6 +121,132 @@
     <string name="export_error">Ошибка экспорта: %1$s</string>
     <string name="import_error">Ошибка импорта: %1$s</string>
 
+    <!-- AI Settings -->
+    <string name="ai_settings_title">Настройки AI</string>
+    <string name="ai_settings_desc">Провайдер, API-ключ, конфиденциальность</string>
+    <string name="ai_enabled">AI включён</string>
+    <string name="ai_select_provider">Выберите провайдера</string>
+    <string name="ai_provider_claude">Claude (Anthropic)</string>
+    <string name="ai_provider_openai">OpenAI-совместимый</string>
+    <string name="ai_provider_local">Локальная модель</string>
+    <string name="ai_privacy_redact">Редактирование данных</string>
+    <string name="ai_privacy_redact_desc">Удалять телефоны и email перед отправкой</string>
+    <string name="ai_api_key">API-ключ</string>
+    <string name="ai_model">Модель</string>
+    <string name="ai_base_url">Базовый URL</string>
+    <string name="ai_timeout">Таймаут (сек)</string>
+    <string name="ai_model_path">Путь к модели</string>
+    <string name="ai_context_size">Размер контекста</string>
+    <string name="ai_max_tokens">Макс. токенов</string>
+    <string name="ai_temperature">Температура</string>
+    <string name="ai_validate_config">Проверить конфигурацию</string>
+    <string name="ai_provider_gemini_nano">Gemini Nano (на устройстве)</string>
+    <string name="gemini_nano_desc">AI на устройстве. Требуется Android 14+ и поддерживаемое устройство (напр. Pixel 8+). Не требует интернета.</string>
+    <string name="gemini_top_k">Top-K</string>
+
+    <!-- Reports -->
+    <string name="report_select_profile">Выберите профиль для отчёта</string>
+    <string name="vitals_charts_title">Графики показателей</string>
+    <string name="export_pdf">Экспорт в PDF</string>
+
+    <!-- User Info -->
+    <string name="user_info_title">Информация о пользователе</string>
+    <string name="user_info_desc">Имя, врач, контакты</string>
+    <string name="doctor_name">Имя врача</string>
+    <string name="doctor_phone">Телефон врача</string>
+    <string name="saved_successfully">Сохранено успешно</string>
+
+    <!-- Family Members -->
+    <string name="family_members_title">Члены семьи</string>
+    <string name="family_members_desc">Профили и журналы здоровья</string>
+    <string name="add_family_member">Добавить члена семьи</string>
+    <string name="member_name">Имя</string>
+    <string name="relationship">Родство</string>
+    <string name="default_profile">Профиль по умолчанию</string>
+
+    <!-- Relationships -->
+    <string name="rel_self">Я</string>
+    <string name="rel_spouse">Супруг(а)</string>
+    <string name="rel_child">Ребёнок</string>
+    <string name="rel_parent">Родитель</string>
+    <string name="rel_sibling">Брат/Сестра</string>
+    <string name="rel_grandparent">Бабушка/Дедушка</string>
+
+    <!-- Predefined Data Settings -->
+    <string name="predefined_data_title">Предустановленные данные</string>
+    <string name="predefined_data_desc">Симптомы, лекарства, пользовательские элементы</string>
+    <string name="predefined_symptoms_section">Симптомы</string>
+    <string name="predefined_medications_section">Лекарства</string>
+    <string name="add_custom_symptom">Добавить свой симптом</string>
+    <string name="add_custom_medication">Добавить своё лекарство</string>
+    <string name="custom_label">Своё</string>
+
+    <!-- Predefined Symptoms -->
+    <string name="symptom_headache">Головная боль</string>
+    <string name="symptom_stomachache">Боль в животе</string>
+    <string name="symptom_back_pain">Боль в спине</string>
+    <string name="symptom_fatigue">Усталость</string>
+    <string name="symptom_dizziness">Головокружение</string>
+    <string name="symptom_nausea">Тошнота</string>
+    <string name="symptom_insomnia">Бессонница</string>
+    <string name="symptom_cough">Кашель</string>
+    <string name="symptom_sore_throat">Боль в горле</string>
+    <string name="symptom_runny_nose">Насморк</string>
+    <string name="symptom_joint_pain">Боль в суставах</string>
+    <string name="symptom_chest_pain">Боль в груди</string>
+    <string name="symptom_shortness_of_breath">Одышка</string>
+    <string name="symptom_fever">Жар</string>
+    <string name="symptom_anxiety">Тревожность</string>
+    <string name="symptom_muscle_pain">Боль в мышцах</string>
+    <string name="symptom_rash">Сыпь</string>
+    <string name="symptom_palpitations">Учащённое сердцебиение</string>
+    <string name="symptom_blurred_vision">Нечёткое зрение</string>
+    <string name="symptom_earache">Боль в ухе</string>
+    <string name="symptom_constipation">Запор</string>
+    <string name="symptom_diarrhea">Диарея</string>
+    <string name="symptom_bloating">Вздутие живота</string>
+    <string name="symptom_numbness">Онемение</string>
+    <string name="symptom_swelling">Отёк</string>
+    <string name="symptom_depression">Депрессия</string>
+    <string name="symptom_heartburn">Изжога</string>
+    <string name="symptom_loss_of_appetite">Потеря аппетита</string>
+    <string name="symptom_sneezing">Чихание</string>
+    <string name="symptom_dry_mouth">Сухость во рту</string>
+    <string name="common_symptoms">Частые симптомы</string>
+
+    <!-- Predefined Medications -->
+    <string name="med_ibuprofen">Ибупрофен</string>
+    <string name="med_paracetamol">Парацетамол</string>
+    <string name="med_aspirin">Аспирин</string>
+    <string name="med_amoxicillin">Амоксициллин</string>
+    <string name="med_omeprazole">Омепразол</string>
+    <string name="med_metformin">Метформин</string>
+    <string name="med_lisinopril">Лизиноприл</string>
+    <string name="med_amlodipine">Амлодипин</string>
+    <string name="med_metoprolol">Метопролол</string>
+    <string name="med_loratadine">Лоратадин</string>
+    <string name="med_vitamin_d">Витамин D</string>
+    <string name="med_vitamin_c">Витамин C</string>
+    <string name="med_omega3">Омега-3</string>
+    <string name="med_atorvastatin">Аторвастатин</string>
+    <string name="med_levothyroxine">Левотироксин</string>
+    <string name="med_losartan">Лозартан</string>
+    <string name="med_gabapentin">Габапентин</string>
+    <string name="med_pantoprazole">Пантопразол</string>
+    <string name="med_cetirizine">Цетиризин</string>
+    <string name="med_prednisone">Преднизон</string>
+    <string name="med_diclofenac">Диклофенак</string>
+    <string name="med_magnesium">Магний</string>
+    <string name="med_probiotics">Пробиотики</string>
+    <string name="med_iron">Препараты железа</string>
+    <string name="med_folic_acid">Фолиевая кислота</string>
+    <string name="med_melatonin">Мелатонин</string>
+    <string name="common_medications">Частые лекарства</string>
+
+    <!-- Attachments -->
+    <string name="attach_file">Прикрепить файл</string>
+    <string name="attachments_count">%1$d вложений</string>
+
     <!-- Plurals -->
     <plurals name="entries_count">
         <item quantity="one">%1$d запись</item>

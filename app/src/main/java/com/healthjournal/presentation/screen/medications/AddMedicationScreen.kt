@@ -8,22 +8,41 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
+import com.healthjournal.util.PredefinedData
+import com.healthjournal.util.PredefinedDataKeys
+import com.healthjournal.util.predefinedDataStore
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddMedicationScreen(
     onBack: () -> Unit,
     viewModel: MedicationsViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var dosage by remember { mutableStateOf("") }
     var frequency by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+
+    val disabledMedications by remember {
+        context.predefinedDataStore.data.map { prefs ->
+            prefs[PredefinedDataKeys.DISABLED_MEDICATIONS] ?: emptySet()
+        }
+    }.collectAsState(initial = emptySet())
+    val customMedications by remember {
+        context.predefinedDataStore.data.map { prefs ->
+            prefs[PredefinedDataKeys.CUSTOM_MEDICATIONS] ?: emptySet()
+        }
+    }.collectAsState(initial = emptySet())
+
+    val enabledPredefined = PredefinedData.medications.filter { it.key !in disabledMedications }
 
     LaunchedEffect(Unit) {
         viewModel.saveSuccess.collectLatest { onBack() }
@@ -56,6 +75,30 @@ fun AddMedicationScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
+            Text(
+                stringResource(R.string.common_medications),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                enabledPredefined.forEach { item ->
+                    val label = stringResource(item.nameResId)
+                    SuggestionChip(
+                        onClick = { name = label },
+                        label = { Text(label) }
+                    )
+                }
+                customMedications.forEach { custom ->
+                    SuggestionChip(
+                        onClick = { name = custom },
+                        label = { Text(custom) }
+                    )
+                }
+            }
 
             OutlinedTextField(
                 value = dosage,

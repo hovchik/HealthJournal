@@ -121,6 +121,132 @@
     <string name="export_error">导出错误：%1$s</string>
     <string name="import_error">导入错误：%1$s</string>
 
+    <!-- AI Settings -->
+    <string name="ai_settings_title">AI 设置</string>
+    <string name="ai_settings_desc">提供商、API 密钥、隐私</string>
+    <string name="ai_enabled">启用 AI</string>
+    <string name="ai_select_provider">选择提供商</string>
+    <string name="ai_provider_claude">Claude (Anthropic)</string>
+    <string name="ai_provider_openai">OpenAI 兼容</string>
+    <string name="ai_provider_local">本地模型</string>
+    <string name="ai_privacy_redact">数据脱敏</string>
+    <string name="ai_privacy_redact_desc">发送前删除电话号码和电子邮件</string>
+    <string name="ai_api_key">API 密钥</string>
+    <string name="ai_model">模型</string>
+    <string name="ai_base_url">基础 URL</string>
+    <string name="ai_timeout">超时（秒）</string>
+    <string name="ai_model_path">模型路径</string>
+    <string name="ai_context_size">上下文大小</string>
+    <string name="ai_max_tokens">最大令牌数</string>
+    <string name="ai_temperature">温度</string>
+    <string name="ai_validate_config">验证配置</string>
+    <string name="ai_provider_gemini_nano">Gemini Nano（设备端）</string>
+    <string name="gemini_nano_desc">设备端 AI。需要 Android 14+ 和受支持的设备（如 Pixel 8+）。无需联网。</string>
+    <string name="gemini_top_k">Top-K</string>
+
+    <!-- Reports -->
+    <string name="report_select_profile">选择报告的档案</string>
+    <string name="vitals_charts_title">生命体征图表</string>
+    <string name="export_pdf">导出为 PDF</string>
+
+    <!-- User Info -->
+    <string name="user_info_title">用户信息</string>
+    <string name="user_info_desc">姓名、医生、联系方式</string>
+    <string name="doctor_name">医生姓名</string>
+    <string name="doctor_phone">医生电话</string>
+    <string name="saved_successfully">保存成功</string>
+
+    <!-- Family Members -->
+    <string name="family_members_title">家庭成员</string>
+    <string name="family_members_desc">个人档案和健康日记</string>
+    <string name="add_family_member">添加家庭成员</string>
+    <string name="member_name">姓名</string>
+    <string name="relationship">关系</string>
+    <string name="default_profile">默认档案</string>
+
+    <!-- Relationships -->
+    <string name="rel_self">本人</string>
+    <string name="rel_spouse">配偶</string>
+    <string name="rel_child">子女</string>
+    <string name="rel_parent">父母</string>
+    <string name="rel_sibling">兄弟姐妹</string>
+    <string name="rel_grandparent">祖父母</string>
+
+    <!-- Predefined Data Settings -->
+    <string name="predefined_data_title">预设数据</string>
+    <string name="predefined_data_desc">症状、药物、自定义项目</string>
+    <string name="predefined_symptoms_section">症状</string>
+    <string name="predefined_medications_section">药物</string>
+    <string name="add_custom_symptom">添加自定义症状</string>
+    <string name="add_custom_medication">添加自定义药物</string>
+    <string name="custom_label">自定义</string>
+
+    <!-- Predefined Symptoms -->
+    <string name="symptom_headache">头痛</string>
+    <string name="symptom_stomachache">胃痛</string>
+    <string name="symptom_back_pain">背痛</string>
+    <string name="symptom_fatigue">疲劳</string>
+    <string name="symptom_dizziness">头晕</string>
+    <string name="symptom_nausea">恶心</string>
+    <string name="symptom_insomnia">失眠</string>
+    <string name="symptom_cough">咳嗽</string>
+    <string name="symptom_sore_throat">喉咙痛</string>
+    <string name="symptom_runny_nose">流鼻涕</string>
+    <string name="symptom_joint_pain">关节痛</string>
+    <string name="symptom_chest_pain">胸痛</string>
+    <string name="symptom_shortness_of_breath">呼吸困难</string>
+    <string name="symptom_fever">发烧</string>
+    <string name="symptom_anxiety">焦虑</string>
+    <string name="symptom_muscle_pain">肌肉痛</string>
+    <string name="symptom_rash">皮疹</string>
+    <string name="symptom_palpitations">心悸</string>
+    <string name="symptom_blurred_vision">视力模糊</string>
+    <string name="symptom_earache">耳痛</string>
+    <string name="symptom_constipation">便秘</string>
+    <string name="symptom_diarrhea">腹泻</string>
+    <string name="symptom_bloating">腹胀</string>
+    <string name="symptom_numbness">麻木</string>
+    <string name="symptom_swelling">肿胀</string>
+    <string name="symptom_depression">抑郁</string>
+    <string name="symptom_heartburn">胃灼热</string>
+    <string name="symptom_loss_of_appetite">食欲不振</string>
+    <string name="symptom_sneezing">打喷嚏</string>
+    <string name="symptom_dry_mouth">口干</string>
+    <string name="common_symptoms">常见症状</string>
+
+    <!-- Predefined Medications -->
+    <string name="med_ibuprofen">布洛芬</string>
+    <string name="med_paracetamol">对乙酰氨基酚</string>
+    <string name="med_aspirin">阿司匹林</string>
+    <string name="med_amoxicillin">阿莫西林</string>
+    <string name="med_omeprazole">奥美拉唑</string>
+    <string name="med_metformin">二甲双胍</string>
+    <string name="med_lisinopril">赖诺普利</string>
+    <string name="med_amlodipine">氨氯地平</string>
+    <string name="med_metoprolol">美托洛尔</string>
+    <string name="med_loratadine">氯雷他定</string>
+    <string name="med_vitamin_d">维生素 D</string>
+    <string name="med_vitamin_c">维生素 C</string>
+    <string name="med_omega3">Omega-3</string>
+    <string name="med_atorvastatin">阿托伐他汀</string>
+    <string name="med_levothyroxine">左甲状腺素</string>
+    <string name="med_losartan">氯沙坦</string>
+    <string name="med_gabapentin">加巴喷丁</string>
+    <string name="med_pantoprazole">泮托拉唑</string>
+    <string name="med_cetirizine">西替利嗪</string>
+    <string name="med_prednisone">泼尼松</string>
+    <string name="med_diclofenac">双氯芬酸</string>
+    <string name="med_magnesium">镁</string>
+    <string name="med_probiotics">益生菌</string>
+    <string name="med_iron">铁剂</string>
+    <string name="med_folic_acid">叶酸</string>
+    <string name="med_melatonin">褪黑素</string>
+    <string name="common_medications">常见药物</string>
+
+    <!-- Attachments -->
+    <string name="attach_file">附加文件</string>
+    <string name="attachments_count">%1$d 个附件</string>
+
     <!-- Plurals (Chinese has no plural forms) -->
     <plurals name="entries_count">
         <item quantity="other">%1$d 条记录</item>

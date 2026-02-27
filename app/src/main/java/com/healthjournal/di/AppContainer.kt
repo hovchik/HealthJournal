@@ -2,16 +2,25 @@ package com.healthjournal.di
 
 import android.content.Context
 import com.healthjournal.BuildConfig
+import com.healthjournal.data.ai.ClaudeAiProviderImpl
+import com.healthjournal.data.ai.GeminiNanoProviderImpl
+import com.healthjournal.data.ai.LocalAiProviderImpl
+import com.healthjournal.data.ai.OpenAiCompatibleProviderImpl
+import com.healthjournal.data.ai.StubLocalInferenceEngine
 import com.healthjournal.data.local.JsonFileStore
 import com.healthjournal.data.local.dto.*
-import com.healthjournal.data.remote.ClaudeAiProvider
 import com.healthjournal.data.remote.api.ClaudeApi
+import com.healthjournal.data.remote.openai.OpenAiApi
 import com.healthjournal.data.repository.*
+import com.healthjournal.domain.ai.AiProviderRegistry
+import com.healthjournal.domain.ai.AiService
+import com.healthjournal.domain.model.ai.ClaudeConfig
+import com.healthjournal.domain.model.ai.OpenAiConfig
 import com.healthjournal.domain.repository.*
 import com.healthjournal.domain.usecase.*
+import com.healthjournal.util.PrivacyRedactor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -53,34 +62,81 @@ class AppContainer(context: Context) {
         serializer = AiReportDto.serializer(), json = json,
         getId = { it.id }, setId = { item, id -> item.copy(id = id) }
     )
+    private val familyMemberStore = JsonFileStore(
+        context = context, fileName = "family_members.json",
+        serializer = FamilyMemberDto.serializer(), json = json,
+        getId = { it.id }, setId = { item, id -> item.copy(id = id) }
+    )
 
-    // Network
-    private val authInterceptor = Interceptor { chain ->
-        val request = chain.request().newBuilder()
-            .addHeader("x-api-key", BuildConfig.CLAUDE_API_KEY)
-            .addHeader("anthropic-version", "2023-06-01")
-            .addHeader("content-type", "application/json")
-            .build()
-        chain.proceed(request)
+    // Network helpers
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(authInterceptor)
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
-        .build()
+    private fun buildClaudeApi(config: ClaudeConfig): ClaudeApi {
+        val apiKey = config.apiKey.ifBlank { BuildConfig.CLAUDE_API_KEY }
+        val client = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("x-api-key", apiKey)
+                    .addHeader("anthropic-version", "2023-06-01")
+                    .addHeader("content-type", "application/json")
+                    .build()
+                chain.proceed(request)
+            }
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(config.timeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(config.timeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .build()
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.anthropic.com/")
-        .client(okHttpClient)
-        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-        .build()
+        return Retrofit.Builder()
+            .baseUrl(config.baseUrl)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create(ClaudeApi::class.java)
+    }
 
-    private val claudeApi: ClaudeApi = retrofit.create(ClaudeApi::class.java)
+    private fun buildOpenAiApi(config: OpenAiConfig): OpenAiApi {
+        val client = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val builder = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer ${config.apiKey}")
+                    .addHeader("Content-Type", "application/json")
+                config.extraHeaders.forEach { (key, value) ->
+                    builder.addHeader(key, value)
+                }
+                chain.proceed(builder.build())
+            }
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl(config.baseUrl)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create(OpenAiApi::class.java)
+    }
+
+    // AI providers
+    private val claudeProvider = ClaudeAiProviderImpl(::buildClaudeApi)
+    private val openAiProvider = OpenAiCompatibleProviderImpl(::buildOpenAiApi)
+    private val geminiNanoProvider = GeminiNanoProviderImpl(context)
+    private val localEngine = StubLocalInferenceEngine()
+    private val localProvider = LocalAiProviderImpl(localEngine)
+
+    val aiProviderRegistry = AiProviderRegistry(
+        listOf(claudeProvider, openAiProvider, geminiNanoProvider, localProvider)
+    )
+
+    private val privacyRedactor = PrivacyRedactor()
+
+    val aiService = AiService(aiProviderRegistry, privacyRedactor)
 
     // Repositories
     val symptomRepository: SymptomRepository = SymptomRepositoryImpl(symptomStore)
@@ -88,7 +144,7 @@ class AppContainer(context: Context) {
     val medicationRepository: MedicationRepository = MedicationRepositoryImpl(medicationStore, medicationLogStore)
     val aiReportRepository: AiReportRepository = AiReportRepositoryImpl(aiReportStore)
     val userSettingsRepository: UserSettingsRepository = UserSettingsRepositoryImpl(context)
-    val aiProvider: AiProvider = ClaudeAiProvider(claudeApi)
+    val familyMemberRepository: FamilyMemberRepository = FamilyMemberRepositoryImpl(familyMemberStore)
 
     // Use Cases
     val getAllSymptoms = GetAllSymptomsUseCase(symptomRepository)
@@ -110,7 +166,7 @@ class AppContainer(context: Context) {
     val logMedicationTaken = LogMedicationTakenUseCase(medicationRepository)
     val getMedicationLogs = GetMedicationLogsUseCase(medicationRepository)
 
-    val generateAiSummary = GenerateAiSummaryUseCase(aiProvider, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository)
-    val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiProvider, aiReportRepository, symptomRepository, vitalSignRepository)
+    val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository)
+    val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository)
     val getAllReports = GetAllReportsUseCase(aiReportRepository)
 }

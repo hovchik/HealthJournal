@@ -12,5 +12,6 @@ data class AiReport(
     val content: String,
     val type: ReportType,
     val periodDays: Int = 7,
-    val generatedAt: LocalDateTime = LocalDateTime.now()
+    val generatedAt: LocalDateTime = LocalDateTime.now(),
+    val profileId: Long = 0
 )

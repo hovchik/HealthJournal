@@ -1,17 +1,22 @@
 package com.healthjournal.presentation.screen.medications
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.MedicalServices
+import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,10 +34,21 @@ fun MedicationsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.medications_title)) })
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        stringResource(R.string.medications_title),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddMedication) {
+            FloatingActionButton(
+                onClick = onAddMedication,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_medication_desc))
             }
         }
@@ -44,10 +60,20 @@ fun MedicationsScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    stringResource(R.string.no_medications_hint),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        Icons.Default.MedicalServices,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        stringResource(R.string.no_medications_hint),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         } else {
             LazyColumn(
@@ -55,15 +81,17 @@ fun MedicationsScreen(
                     .fillMaxSize()
                     .padding(padding),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(medications, key = { it.id }) { medication ->
-                    MedicationCard(
-                        medication = medication,
-                        onLogTaken = { viewModel.logTaken(medication) },
-                        onToggleActive = { viewModel.toggleMedicationActive(medication) },
-                        onDelete = { viewModel.removeMedication(medication) }
-                    )
+                    AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
+                        MedicationCard(
+                            medication = medication,
+                            onLogTaken = { viewModel.logTaken(medication) },
+                            onToggleActive = { viewModel.toggleMedicationActive(medication) },
+                            onDelete = { viewModel.removeMedication(medication) }
+                        )
+                    }
                 }
             }
         }
@@ -79,10 +107,12 @@ private fun MedicationCard(
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
 
-    Card(
+    ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        colors = if (medication.active) CardDefaults.cardColors()
-        else CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = if (medication.active) CardDefaults.elevatedCardColors()
+        else CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -91,10 +121,15 @@ private fun MedicationCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(medication.name, style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        medication.name,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
                     Text(
                         "${medication.dosage} — ${medication.frequency}",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         stringResource(R.string.since_date, medication.startDate.format(dateFormatter)),
@@ -113,7 +148,7 @@ private fun MedicationCard(
                     if (medication.active) {
                         IconButton(onClick = onLogTaken) {
                             Icon(
-                                Icons.Default.Check,
+                                Icons.Default.CheckCircle,
                                 contentDescription = stringResource(R.string.taken_desc),
                                 tint = MaterialTheme.colorScheme.primary
                             )
@@ -121,7 +156,7 @@ private fun MedicationCard(
                     }
                     IconButton(onClick = onDelete) {
                         Icon(
-                            Icons.Default.Delete,
+                            Icons.Outlined.DeleteOutline,
                             contentDescription = stringResource(R.string.delete),
                             tint = MaterialTheme.colorScheme.error
                         )
