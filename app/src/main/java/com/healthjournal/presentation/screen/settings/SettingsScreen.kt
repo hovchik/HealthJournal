@@ -4,7 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,7 +19,9 @@ import com.healthjournal.R
 @Composable
 fun SettingsScreen(
     onLanguageSettings: () -> Unit,
-    onAiSettings: () -> Unit
+    onAiSettings: () -> Unit,
+    onUserInfo: () -> Unit,
+    onFamilyMembers: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -29,6 +33,30 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.user_info_title)) },
+                supportingContent = { Text(stringResource(R.string.user_info_desc)) },
+                leadingContent = {
+                    Icon(Icons.Default.Person, contentDescription = null)
+                },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                },
+                modifier = Modifier.clickable(onClick = onUserInfo)
+            )
+            HorizontalDivider()
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.family_members_title)) },
+                supportingContent = { Text(stringResource(R.string.family_members_desc)) },
+                leadingContent = {
+                    Icon(Icons.Default.Group, contentDescription = null)
+                },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                },
+                modifier = Modifier.clickable(onClick = onFamilyMembers)
+            )
+            HorizontalDivider()
             ListItem(
                 headlineContent = { Text(stringResource(R.string.language_settings_title)) },
                 supportingContent = { Text(stringResource(R.string.language_select_prompt)) },

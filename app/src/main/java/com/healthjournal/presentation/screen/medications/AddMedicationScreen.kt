@@ -12,9 +12,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
+import com.healthjournal.util.PredefinedData
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddMedicationScreen(
     onBack: () -> Unit,
@@ -56,6 +57,24 @@ fun AddMedicationScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
+            Text(
+                stringResource(R.string.common_medications),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                PredefinedData.medications.forEach { item ->
+                    val label = stringResource(item.nameResId)
+                    SuggestionChip(
+                        onClick = { name = label },
+                        label = { Text(label) }
+                    )
+                }
+            }
 
             OutlinedTextField(
                 value = dosage,

@@ -141,6 +141,67 @@
     <string name="ai_temperature">Temperatura</string>
     <string name="ai_validate_config">Validar configuración</string>
 
+    <!-- User Info -->
+    <string name="user_info_title">Informaci\u00f3n del usuario</string>
+    <string name="user_info_desc">Nombre, m\u00e9dico, contactos</string>
+    <string name="doctor_name">Nombre del m\u00e9dico</string>
+    <string name="doctor_phone">Tel\u00e9fono del m\u00e9dico</string>
+    <string name="saved_successfully">Guardado correctamente</string>
+
+    <!-- Family Members -->
+    <string name="family_members_title">Miembros de la familia</string>
+    <string name="family_members_desc">Perfiles y diarios de salud</string>
+    <string name="add_family_member">Agregar miembro de la familia</string>
+    <string name="member_name">Nombre</string>
+    <string name="relationship">Parentesco</string>
+    <string name="default_profile">Perfil predeterminado</string>
+
+    <!-- Relationships -->
+    <string name="rel_self">Yo</string>
+    <string name="rel_spouse">C\u00f3nyuge</string>
+    <string name="rel_child">Hijo/a</string>
+    <string name="rel_parent">Padre/Madre</string>
+    <string name="rel_sibling">Hermano/a</string>
+    <string name="rel_grandparent">Abuelo/a</string>
+
+    <!-- Predefined Symptoms -->
+    <string name="symptom_headache">Dolor de cabeza</string>
+    <string name="symptom_stomachache">Dolor de est\u00f3mago</string>
+    <string name="symptom_back_pain">Dolor de espalda</string>
+    <string name="symptom_fatigue">Fatiga</string>
+    <string name="symptom_dizziness">Mareo</string>
+    <string name="symptom_nausea">N\u00e1usea</string>
+    <string name="symptom_insomnia">Insomnio</string>
+    <string name="symptom_cough">Tos</string>
+    <string name="symptom_sore_throat">Dolor de garganta</string>
+    <string name="symptom_runny_nose">Congesti\u00f3n nasal</string>
+    <string name="symptom_joint_pain">Dolor articular</string>
+    <string name="symptom_chest_pain">Dolor de pecho</string>
+    <string name="symptom_shortness_of_breath">Dificultad para respirar</string>
+    <string name="symptom_fever">Fiebre</string>
+    <string name="symptom_anxiety">Ansiedad</string>
+    <string name="common_symptoms">S\u00edntomas comunes</string>
+
+    <!-- Predefined Medications -->
+    <string name="med_ibuprofen">Ibuprofeno</string>
+    <string name="med_paracetamol">Paracetamol</string>
+    <string name="med_aspirin">Aspirina</string>
+    <string name="med_amoxicillin">Amoxicilina</string>
+    <string name="med_omeprazole">Omeprazol</string>
+    <string name="med_metformin">Metformina</string>
+    <string name="med_lisinopril">Lisinopril</string>
+    <string name="med_amlodipine">Amlodipino</string>
+    <string name="med_metoprolol">Metoprolol</string>
+    <string name="med_loratadine">Loratadina</string>
+    <string name="med_vitamin_d">Vitamina D</string>
+    <string name="med_vitamin_c">Vitamina C</string>
+    <string name="med_omega3">Omega-3</string>
+    <string name="common_medications">Medicamentos comunes</string>
+
+    <!-- Attachments -->
+    <string name="attach_file">Adjuntar archivo</string>
+    <string name="attachments_count">%1$d archivos adjuntos</string>
+
     <!-- Plurals -->
     <plurals name="entries_count">
         <item quantity="one">%1$d registro</item>

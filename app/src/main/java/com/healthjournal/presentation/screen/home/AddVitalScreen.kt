@@ -1,20 +1,26 @@
 package com.healthjournal.presentation.screen.home
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
 import com.healthjournal.domain.model.VitalType
+import com.healthjournal.util.AttachmentHelper
 import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
 import kotlinx.coroutines.flow.collectLatest
@@ -25,11 +31,20 @@ fun AddVitalScreen(
     onBack: () -> Unit,
     viewModel: HomeViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     var selectedType by remember { mutableStateOf(VitalType.BLOOD_PRESSURE) }
     var value by remember { mutableStateOf("") }
     var secondaryValue by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var typeMenuExpanded by remember { mutableStateOf(false) }
+    var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
+
+    val filePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        val paths = uris.mapNotNull { uri -> AttachmentHelper.copyToInternal(context, uri) }
+        attachmentPaths = attachmentPaths + paths
+    }
 
     LaunchedEffect(Unit) {
         viewModel.saveSuccess.collectLatest { onBack() }
@@ -116,6 +131,23 @@ fun AddVitalScreen(
                 minLines = 2
             )
 
+            OutlinedButton(
+                onClick = { filePicker.launch("*/*") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.AttachFile, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.attach_file))
+            }
+
+            if (attachmentPaths.isNotEmpty()) {
+                Text(
+                    stringResource(R.string.attachments_count, attachmentPaths.size),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+            }
+
             Button(
                 onClick = {
                     val v = value.toDoubleOrNull()
@@ -124,7 +156,8 @@ fun AddVitalScreen(
                             type = selectedType,
                             value = v,
                             secondaryValue = secondaryValue.toDoubleOrNull(),
-                            notes = notes
+                            notes = notes,
+                            attachmentPaths = attachmentPaths
                         )
                     }
                 },

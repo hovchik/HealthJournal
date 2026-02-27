@@ -9,5 +9,6 @@ data class UserSettings(
     val aiConsentGiven: Boolean = false,
     val onboardingCompleted: Boolean = false,
     val languageMode: String = "SYSTEM",
-    val aiSettings: AiSettings = AiSettings()
+    val aiSettings: AiSettings = AiSettings(),
+    val activeProfileId: Long = 0
 )

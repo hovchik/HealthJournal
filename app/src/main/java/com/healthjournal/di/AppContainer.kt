@@ -61,6 +61,11 @@ class AppContainer(context: Context) {
         serializer = AiReportDto.serializer(), json = json,
         getId = { it.id }, setId = { item, id -> item.copy(id = id) }
     )
+    private val familyMemberStore = JsonFileStore(
+        context = context, fileName = "family_members.json",
+        serializer = FamilyMemberDto.serializer(), json = json,
+        getId = { it.id }, setId = { item, id -> item.copy(id = id) }
+    )
 
     // Network helpers
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -137,6 +142,7 @@ class AppContainer(context: Context) {
     val medicationRepository: MedicationRepository = MedicationRepositoryImpl(medicationStore, medicationLogStore)
     val aiReportRepository: AiReportRepository = AiReportRepositoryImpl(aiReportStore)
     val userSettingsRepository: UserSettingsRepository = UserSettingsRepositoryImpl(context)
+    val familyMemberRepository: FamilyMemberRepository = FamilyMemberRepositoryImpl(familyMemberStore)
 
     // Use Cases
     val getAllSymptoms = GetAllSymptomsUseCase(symptomRepository)

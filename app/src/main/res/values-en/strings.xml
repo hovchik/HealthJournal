@@ -141,6 +141,67 @@
     <string name="ai_temperature">Temperature</string>
     <string name="ai_validate_config">Validate configuration</string>
 
+    <!-- User Info -->
+    <string name="user_info_title">User Information</string>
+    <string name="user_info_desc">Name, doctor, contacts</string>
+    <string name="doctor_name">Doctor\'s name</string>
+    <string name="doctor_phone">Doctor\'s phone</string>
+    <string name="saved_successfully">Saved successfully</string>
+
+    <!-- Family Members -->
+    <string name="family_members_title">Family Members</string>
+    <string name="family_members_desc">Profiles and health journals</string>
+    <string name="add_family_member">Add family member</string>
+    <string name="member_name">Name</string>
+    <string name="relationship">Relationship</string>
+    <string name="default_profile">Default profile</string>
+
+    <!-- Relationships -->
+    <string name="rel_self">Self</string>
+    <string name="rel_spouse">Spouse</string>
+    <string name="rel_child">Child</string>
+    <string name="rel_parent">Parent</string>
+    <string name="rel_sibling">Sibling</string>
+    <string name="rel_grandparent">Grandparent</string>
+
+    <!-- Predefined Symptoms -->
+    <string name="symptom_headache">Headache</string>
+    <string name="symptom_stomachache">Stomachache</string>
+    <string name="symptom_back_pain">Back pain</string>
+    <string name="symptom_fatigue">Fatigue</string>
+    <string name="symptom_dizziness">Dizziness</string>
+    <string name="symptom_nausea">Nausea</string>
+    <string name="symptom_insomnia">Insomnia</string>
+    <string name="symptom_cough">Cough</string>
+    <string name="symptom_sore_throat">Sore throat</string>
+    <string name="symptom_runny_nose">Runny nose</string>
+    <string name="symptom_joint_pain">Joint pain</string>
+    <string name="symptom_chest_pain">Chest pain</string>
+    <string name="symptom_shortness_of_breath">Shortness of breath</string>
+    <string name="symptom_fever">Fever</string>
+    <string name="symptom_anxiety">Anxiety</string>
+    <string name="common_symptoms">Common symptoms</string>
+
+    <!-- Predefined Medications -->
+    <string name="med_ibuprofen">Ibuprofen</string>
+    <string name="med_paracetamol">Paracetamol</string>
+    <string name="med_aspirin">Aspirin</string>
+    <string name="med_amoxicillin">Amoxicillin</string>
+    <string name="med_omeprazole">Omeprazole</string>
+    <string name="med_metformin">Metformin</string>
+    <string name="med_lisinopril">Lisinopril</string>
+    <string name="med_amlodipine">Amlodipine</string>
+    <string name="med_metoprolol">Metoprolol</string>
+    <string name="med_loratadine">Loratadine</string>
+    <string name="med_vitamin_d">Vitamin D</string>
+    <string name="med_vitamin_c">Vitamin C</string>
+    <string name="med_omega3">Omega-3</string>
+    <string name="common_medications">Common medications</string>
+
+    <!-- Attachments -->
+    <string name="attach_file">Attach file</string>
+    <string name="attachments_count">%1$d attachments</string>
+
     <!-- Plurals -->
     <plurals name="entries_count">
         <item quantity="one">%1$d entry</item>

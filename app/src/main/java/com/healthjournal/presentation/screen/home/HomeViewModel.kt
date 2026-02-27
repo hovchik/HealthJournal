@@ -13,12 +13,17 @@ import kotlinx.coroutines.launch
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
 
-    val symptoms = container.getAllSymptoms()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    private val activeProfileId = container.userSettingsRepository.getUserSettings()
+        .map { it.activeProfileId }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
 
-    val recentVitals = container.getAllVitalSigns()
-        .map { it.take(5) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val symptoms = combine(container.getAllSymptoms(), activeProfileId) { all, profileId ->
+        all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val recentVitals = combine(container.getAllVitalSigns(), activeProfileId) { all, profileId ->
+        all.filter { it.profileId == profileId }.take(5)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _saveSuccess = MutableSharedFlow<Boolean>()
     val saveSuccess = _saveSuccess.asSharedFlow()
@@ -28,7 +33,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         intensity: Int,
         durationMinutes: Int?,
         triggers: List<String>,
-        notes: String
+        notes: String,
+        attachmentPaths: List<String> = emptyList()
     ) {
         viewModelScope.launch {
             container.addSymptom(
@@ -37,7 +43,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     intensity = intensity,
                     durationMinutes = durationMinutes,
                     triggers = triggers,
-                    notes = notes
+                    notes = notes,
+                    profileId = activeProfileId.value,
+                    attachmentPaths = attachmentPaths
                 )
             )
             _saveSuccess.emit(true)
@@ -48,7 +56,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         type: VitalType,
         value: Double,
         secondaryValue: Double?,
-        notes: String
+        notes: String,
+        attachmentPaths: List<String> = emptyList()
     ) {
         viewModelScope.launch {
             container.addVitalSign(
@@ -56,7 +65,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     type = type,
                     value = value,
                     secondaryValue = secondaryValue,
-                    notes = notes
+                    notes = notes,
+                    profileId = activeProfileId.value,
+                    attachmentPaths = attachmentPaths
                 )
             )
             _saveSuccess.emit(true)

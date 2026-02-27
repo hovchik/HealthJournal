@@ -141,6 +141,67 @@
     <string name="ai_temperature">Температура</string>
     <string name="ai_validate_config">Проверить конфигурацию</string>
 
+    <!-- User Info -->
+    <string name="user_info_title">Информация о пользователе</string>
+    <string name="user_info_desc">Имя, врач, контакты</string>
+    <string name="doctor_name">Имя врача</string>
+    <string name="doctor_phone">Телефон врача</string>
+    <string name="saved_successfully">Сохранено успешно</string>
+
+    <!-- Family Members -->
+    <string name="family_members_title">Члены семьи</string>
+    <string name="family_members_desc">Профили и журналы здоровья</string>
+    <string name="add_family_member">Добавить члена семьи</string>
+    <string name="member_name">Имя</string>
+    <string name="relationship">Родство</string>
+    <string name="default_profile">Профиль по умолчанию</string>
+
+    <!-- Relationships -->
+    <string name="rel_self">Я</string>
+    <string name="rel_spouse">Супруг(а)</string>
+    <string name="rel_child">Ребёнок</string>
+    <string name="rel_parent">Родитель</string>
+    <string name="rel_sibling">Брат/Сестра</string>
+    <string name="rel_grandparent">Бабушка/Дедушка</string>
+
+    <!-- Predefined Symptoms -->
+    <string name="symptom_headache">Головная боль</string>
+    <string name="symptom_stomachache">Боль в животе</string>
+    <string name="symptom_back_pain">Боль в спине</string>
+    <string name="symptom_fatigue">Усталость</string>
+    <string name="symptom_dizziness">Головокружение</string>
+    <string name="symptom_nausea">Тошнота</string>
+    <string name="symptom_insomnia">Бессонница</string>
+    <string name="symptom_cough">Кашель</string>
+    <string name="symptom_sore_throat">Боль в горле</string>
+    <string name="symptom_runny_nose">Насморк</string>
+    <string name="symptom_joint_pain">Боль в суставах</string>
+    <string name="symptom_chest_pain">Боль в груди</string>
+    <string name="symptom_shortness_of_breath">Одышка</string>
+    <string name="symptom_fever">Жар</string>
+    <string name="symptom_anxiety">Тревожность</string>
+    <string name="common_symptoms">Частые симптомы</string>
+
+    <!-- Predefined Medications -->
+    <string name="med_ibuprofen">Ибупрофен</string>
+    <string name="med_paracetamol">Парацетамол</string>
+    <string name="med_aspirin">Аспирин</string>
+    <string name="med_amoxicillin">Амоксициллин</string>
+    <string name="med_omeprazole">Омепразол</string>
+    <string name="med_metformin">Метформин</string>
+    <string name="med_lisinopril">Лизиноприл</string>
+    <string name="med_amlodipine">Амлодипин</string>
+    <string name="med_metoprolol">Метопролол</string>
+    <string name="med_loratadine">Лоратадин</string>
+    <string name="med_vitamin_d">Витамин D</string>
+    <string name="med_vitamin_c">Витамин C</string>
+    <string name="med_omega3">Омега-3</string>
+    <string name="common_medications">Частые лекарства</string>
+
+    <!-- Attachments -->
+    <string name="attach_file">Прикрепить файл</string>
+    <string name="attachments_count">%1$d вложений</string>
+
     <!-- Plurals -->
     <plurals name="entries_count">
         <item quantity="one">%1$d запись</item>

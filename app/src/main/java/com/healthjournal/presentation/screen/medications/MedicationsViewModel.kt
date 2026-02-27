@@ -12,8 +12,13 @@ import kotlinx.coroutines.launch
 class MedicationsViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
 
-    val medications = container.getAllMedications()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    private val activeProfileId = container.userSettingsRepository.getUserSettings()
+        .map { it.activeProfileId }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    val medications = combine(container.getAllMedications(), activeProfileId) { all, profileId ->
+        all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _saveSuccess = MutableSharedFlow<Boolean>()
     val saveSuccess = _saveSuccess.asSharedFlow()
@@ -25,7 +30,8 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
                     name = name,
                     dosage = dosage,
                     frequency = frequency,
-                    notes = notes
+                    notes = notes,
+                    profileId = activeProfileId.value
                 )
             )
             _saveSuccess.emit(true)

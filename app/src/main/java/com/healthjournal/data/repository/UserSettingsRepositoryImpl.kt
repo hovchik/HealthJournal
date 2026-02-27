@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.healthjournal.domain.model.UserSettings
@@ -30,6 +31,7 @@ class UserSettingsRepositoryImpl constructor(
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val LANGUAGE_MODE = stringPreferencesKey("language_mode")
         val AI_SETTINGS = stringPreferencesKey("ai_settings")
+        val ACTIVE_PROFILE_ID = longPreferencesKey("active_profile_id")
     }
 
     override fun getUserSettings(): Flow<UserSettings> = context.dataStore.data.map { prefs ->
@@ -45,7 +47,8 @@ class UserSettingsRepositoryImpl constructor(
             aiConsentGiven = prefs[Keys.AI_CONSENT] ?: false,
             onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
             languageMode = prefs[Keys.LANGUAGE_MODE] ?: "SYSTEM",
-            aiSettings = aiSettings
+            aiSettings = aiSettings,
+            activeProfileId = prefs[Keys.ACTIVE_PROFILE_ID] ?: 0
         )
     }
 
@@ -82,6 +85,12 @@ class UserSettingsRepositoryImpl constructor(
     override suspend fun setAiSettings(aiSettings: AiSettings) {
         context.dataStore.edit { prefs ->
             prefs[Keys.AI_SETTINGS] = json.encodeToString(AiSettings.serializer(), aiSettings)
+        }
+    }
+
+    override suspend fun setActiveProfileId(profileId: Long) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.ACTIVE_PROFILE_ID] = profileId
         }
     }
 }

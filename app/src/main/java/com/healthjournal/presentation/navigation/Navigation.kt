@@ -22,6 +22,8 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object AddMedication : Screen("add_medication", R.string.add_medication_title, Icons.Default.Medication)
     data object LanguageSettings : Screen("language_settings", R.string.language_settings_title, Icons.Default.Settings)
     data object AiSettings : Screen("ai_settings", R.string.ai_settings_title, Icons.Default.Psychology)
+    data object UserInfo : Screen("user_info", R.string.user_info_title, Icons.Default.Settings)
+    data object FamilyMembers : Screen("family_members", R.string.family_members_title, Icons.Default.Settings)
 }
 
 val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.AiReport, Screen.Settings)

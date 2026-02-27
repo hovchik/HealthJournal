@@ -6,9 +6,10 @@ data class Medication(
     val id: Long = 0,
     val name: String,
     val dosage: String,
-    val frequency: String, // e.g., "2 раза в день", "утром"
+    val frequency: String,
     val startDate: LocalDate = LocalDate.now(),
     val endDate: LocalDate? = null,
     val active: Boolean = true,
-    val notes: String = ""
+    val notes: String = "",
+    val profileId: Long = 0
 )

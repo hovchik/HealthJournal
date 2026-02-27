@@ -9,5 +9,7 @@ data class Symptom(
     val durationMinutes: Int? = null,
     val triggers: List<String> = emptyList(),
     val notes: String = "",
-    val recordedAt: LocalDateTime = LocalDateTime.now()
+    val recordedAt: LocalDateTime = LocalDateTime.now(),
+    val profileId: Long = 0,
+    val attachmentPaths: List<String> = emptyList()
 )

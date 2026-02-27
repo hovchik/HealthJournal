@@ -2,10 +2,15 @@ package com.healthjournal.presentation.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF1B6B4D),
@@ -21,7 +26,7 @@ private val LightColorScheme = lightColorScheme(
     tertiaryContainer = Color(0xFFC1E8FB),
     onTertiaryContainer = Color(0xFF001F29),
     error = Color(0xFFBA1A1A),
-    background = Color(0xFFFBFDF8),
+    background = Color(0xFFF5F9F6),
     onBackground = Color(0xFF191C1A),
     surface = Color(0xFFFBFDF8),
     onSurface = Color(0xFF191C1A),
@@ -51,6 +56,55 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = Color(0xFFC0C9BF)
 )
 
+private val AppTypography = Typography(
+    headlineLarge = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 28.sp,
+        lineHeight = 36.sp
+    ),
+    headlineMedium = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp
+    ),
+    titleLarge = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp,
+        lineHeight = 28.sp
+    ),
+    titleMedium = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
+    ),
+    titleSmall = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    ),
+    bodyLarge = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
+    ),
+    bodyMedium = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    ),
+    labelLarge = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    )
+)
+
+private val AppShapes = Shapes(
+    small = RoundedCornerShape(8.dp),
+    medium = RoundedCornerShape(16.dp),
+    large = RoundedCornerShape(24.dp)
+)
+
 @Composable
 fun HealthJournalTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -68,6 +122,8 @@ fun HealthJournalTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = AppTypography,
+        shapes = AppShapes,
         content = content
     )
 }

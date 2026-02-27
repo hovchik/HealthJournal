@@ -11,4 +11,5 @@ interface UserSettingsRepository {
     suspend fun setOnboardingCompleted(completed: Boolean)
     suspend fun setLanguageMode(languageMode: String)
     suspend fun setAiSettings(aiSettings: AiSettings)
+    suspend fun setActiveProfileId(profileId: Long)
 }
