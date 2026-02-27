@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Person
@@ -21,7 +22,8 @@ fun SettingsScreen(
     onLanguageSettings: () -> Unit,
     onAiSettings: () -> Unit,
     onUserInfo: () -> Unit,
-    onFamilyMembers: () -> Unit
+    onFamilyMembers: () -> Unit,
+    onPredefinedData: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -37,10 +39,15 @@ fun SettingsScreen(
                 headlineContent = { Text(stringResource(R.string.user_info_title)) },
                 supportingContent = { Text(stringResource(R.string.user_info_desc)) },
                 leadingContent = {
-                    Icon(Icons.Default.Person, contentDescription = null)
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 },
                 trailingContent = {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline)
                 },
                 modifier = Modifier.clickable(onClick = onUserInfo)
             )
@@ -49,22 +56,49 @@ fun SettingsScreen(
                 headlineContent = { Text(stringResource(R.string.family_members_title)) },
                 supportingContent = { Text(stringResource(R.string.family_members_desc)) },
                 leadingContent = {
-                    Icon(Icons.Default.Group, contentDescription = null)
+                    Icon(
+                        Icons.Default.Group,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 },
                 trailingContent = {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline)
                 },
                 modifier = Modifier.clickable(onClick = onFamilyMembers)
+            )
+            HorizontalDivider()
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.predefined_data_title)) },
+                supportingContent = { Text(stringResource(R.string.predefined_data_desc)) },
+                leadingContent = {
+                    Icon(
+                        Icons.Default.Checklist,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
+                },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline)
+                },
+                modifier = Modifier.clickable(onClick = onPredefinedData)
             )
             HorizontalDivider()
             ListItem(
                 headlineContent = { Text(stringResource(R.string.language_settings_title)) },
                 supportingContent = { Text(stringResource(R.string.language_select_prompt)) },
                 leadingContent = {
-                    Icon(Icons.Default.Language, contentDescription = null)
+                    Icon(
+                        Icons.Default.Language,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
                 },
                 trailingContent = {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline)
                 },
                 modifier = Modifier.clickable(onClick = onLanguageSettings)
             )
@@ -73,10 +107,15 @@ fun SettingsScreen(
                 headlineContent = { Text(stringResource(R.string.ai_settings_title)) },
                 supportingContent = { Text(stringResource(R.string.ai_settings_desc)) },
                 leadingContent = {
-                    Icon(Icons.Default.Psychology, contentDescription = null)
+                    Icon(
+                        Icons.Default.Psychology,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
                 },
                 trailingContent = {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline)
                 },
                 modifier = Modifier.clickable(onClick = onAiSettings)
             )

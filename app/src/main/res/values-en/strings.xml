@@ -172,6 +172,15 @@
     <string name="rel_sibling">Sibling</string>
     <string name="rel_grandparent">Grandparent</string>
 
+    <!-- Predefined Data Settings -->
+    <string name="predefined_data_title">Predefined Data</string>
+    <string name="predefined_data_desc">Symptoms, medications, custom items</string>
+    <string name="predefined_symptoms_section">Symptoms</string>
+    <string name="predefined_medications_section">Medications</string>
+    <string name="add_custom_symptom">Add custom symptom</string>
+    <string name="add_custom_medication">Add custom medication</string>
+    <string name="custom_label">Custom</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Headache</string>
     <string name="symptom_stomachache">Stomachache</string>
@@ -188,6 +197,21 @@
     <string name="symptom_shortness_of_breath">Shortness of breath</string>
     <string name="symptom_fever">Fever</string>
     <string name="symptom_anxiety">Anxiety</string>
+    <string name="symptom_muscle_pain">Muscle pain</string>
+    <string name="symptom_rash">Rash</string>
+    <string name="symptom_palpitations">Palpitations</string>
+    <string name="symptom_blurred_vision">Blurred vision</string>
+    <string name="symptom_earache">Earache</string>
+    <string name="symptom_constipation">Constipation</string>
+    <string name="symptom_diarrhea">Diarrhea</string>
+    <string name="symptom_bloating">Bloating</string>
+    <string name="symptom_numbness">Numbness</string>
+    <string name="symptom_swelling">Swelling</string>
+    <string name="symptom_depression">Depression</string>
+    <string name="symptom_heartburn">Heartburn</string>
+    <string name="symptom_loss_of_appetite">Loss of appetite</string>
+    <string name="symptom_sneezing">Sneezing</string>
+    <string name="symptom_dry_mouth">Dry mouth</string>
     <string name="common_symptoms">Common symptoms</string>
 
     <!-- Predefined Medications -->
@@ -204,6 +228,19 @@
     <string name="med_vitamin_d">Vitamin D</string>
     <string name="med_vitamin_c">Vitamin C</string>
     <string name="med_omega3">Omega-3</string>
+    <string name="med_atorvastatin">Atorvastatin</string>
+    <string name="med_levothyroxine">Levothyroxine</string>
+    <string name="med_losartan">Losartan</string>
+    <string name="med_gabapentin">Gabapentin</string>
+    <string name="med_pantoprazole">Pantoprazole</string>
+    <string name="med_cetirizine">Cetirizine</string>
+    <string name="med_prednisone">Prednisone</string>
+    <string name="med_diclofenac">Diclofenac</string>
+    <string name="med_magnesium">Magnesium</string>
+    <string name="med_probiotics">Probiotics</string>
+    <string name="med_iron">Iron supplement</string>
+    <string name="med_folic_acid">Folic acid</string>
+    <string name="med_melatonin">Melatonin</string>
     <string name="common_medications">Common medications</string>
 
     <!-- Attachments -->

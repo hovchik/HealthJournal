@@ -1,14 +1,18 @@
 package com.healthjournal.data.ai
 
 import android.content.Context
+import android.os.Build
 import com.healthjournal.R
 import com.healthjournal.domain.ai.AiProvider
 import com.healthjournal.domain.ai.PromptTemplate
 import com.healthjournal.domain.model.ai.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
- * On-device AI provider using Google's Gemini Nano via ML Kit GenAI.
- * Falls back to a helpful message if Gemini Nano is not available on the device.
+ * On-device AI provider using Google AI Edge SDK (Gemini Nano).
+ * Requires Android 14+ (API 34) with Google Play Services AI Core.
+ * Falls back to a local data summary if Gemini Nano is not available.
  */
 class GeminiNanoProviderImpl(
     private val context: Context
@@ -16,8 +20,6 @@ class GeminiNanoProviderImpl(
 
     override val id = AiProviderId.GEMINI_NANO
     override val displayNameResId = R.string.ai_provider_gemini_nano
-
-    private var inferenceSession: Any? = null
 
     override suspend fun generateDoctorSummary(input: AiInput, config: AiSettings): AiTextResult {
         val prompt = PromptTemplate.buildSummaryPrompt(input)
@@ -34,67 +36,104 @@ class GeminiNanoProviderImpl(
     }
 
     override fun validateConfig(config: AiSettings): ValidationResult {
+        if (Build.VERSION.SDK_INT < 34) {
+            return ValidationResult(false,
+                "Gemini Nano requires Android 14 (API 34) or higher. " +
+                "Current device is API ${Build.VERSION.SDK_INT}.")
+        }
         return if (isGeminiNanoAvailable()) {
             ValidationResult(true)
         } else {
-            ValidationResult(false, "Gemini Nano is not available on this device. " +
-                "Requires Android 14+ with Google Play Services and a supported device (e.g., Pixel 8+).")
+            ValidationResult(false,
+                "Gemini Nano is not available on this device. " +
+                "Requires Android 14+ with Google Play Services AI Core " +
+                "and a supported device (e.g., Pixel 8 Pro, Galaxy S24).")
         }
     }
 
     override fun isOnlineRequired(): Boolean = false
 
-    private suspend fun runInference(prompt: String, config: GeminiNanoConfig): String {
-        // Try to use Google AI Edge / ML Kit GenAI via reflection
-        // This allows compilation without hard dependency on the ML Kit library
-        try {
-            return runGeminiNanoViaReflection(prompt, config)
-        } catch (e: Exception) {
-            // If reflection fails, try the direct approach
+    private suspend fun runInference(prompt: String, config: GeminiNanoConfig): String =
+        withContext(Dispatchers.IO) {
+            // Try Google AI Edge SDK (aicore)
+            try {
+                return@withContext runViaAiCore(prompt, config)
+            } catch (_: Exception) { }
+
+            // Try ML Kit GenAI
+            try {
+                return@withContext runViaMlKit(prompt, config)
+            } catch (_: Exception) { }
+
+            // Fallback: local data extraction
+            buildFallbackResponse(prompt)
         }
 
-        // Fallback: provide instructions for enabling Gemini Nano
-        return buildFallbackResponse(prompt)
+    /**
+     * Run inference via com.google.ai.edge.aicore.GenerativeModel.
+     * Uses reflection to avoid compile-time hard dependency,
+     * allowing the app to build even when the SDK is absent.
+     */
+    private suspend fun runViaAiCore(prompt: String, config: GeminiNanoConfig): String {
+        val generationConfigClass = Class.forName("com.google.ai.edge.aicore.GenerationConfig")
+        val builderClass = Class.forName("com.google.ai.edge.aicore.GenerationConfig\$Builder")
+        val builder = builderClass.getDeclaredConstructor().newInstance()
+        builderClass.getMethod("setTemperature", Float::class.java)
+            .invoke(builder, config.temperature)
+        builderClass.getMethod("setTopK", Int::class.java)
+            .invoke(builder, config.topK)
+        builderClass.getMethod("setMaxOutputTokens", Int::class.java)
+            .invoke(builder, config.maxOutputTokens)
+        val genConfig = builderClass.getMethod("build").invoke(builder)
+
+        val modelClass = Class.forName("com.google.ai.edge.aicore.GenerativeModel")
+        val model = modelClass.getConstructor(generationConfigClass).newInstance(genConfig)
+
+        val response = modelClass.getMethod("generateContent", String::class.java)
+            .invoke(model, prompt)
+        val text = response.javaClass.getMethod("getText").invoke(response)
+        return text as? String ?: "No response from Gemini Nano"
     }
 
-    private suspend fun runGeminiNanoViaReflection(prompt: String, config: GeminiNanoConfig): String {
-        // Try to access com.google.ai.edge.aicore.GenerativeModel via reflection
-        val generativeModelClass = Class.forName("com.google.ai.edge.aicore.GenerativeModel")
-        val configClass = Class.forName("com.google.ai.edge.aicore.GenerationConfig")
-
-        val configBuilder = configClass.getDeclaredMethod("builder").invoke(null)
-        val builderClass = configBuilder.javaClass
-        builderClass.getDeclaredMethod("setTemperature", Float::class.java)
+    /**
+     * Fallback: try ML Kit GenAI inference API.
+     */
+    private suspend fun runViaMlKit(prompt: String, config: GeminiNanoConfig): String {
+        val inferenceClass = Class.forName("com.google.mlkit.genai.inference.GenerativeModel")
+        val configClass = Class.forName("com.google.mlkit.genai.inference.GenerationConfig")
+        val configBuilder = configClass.getMethod("builder").invoke(null)
+        val configBuilderClass = configBuilder.javaClass
+        configBuilderClass.getMethod("setTemperature", Float::class.java)
             .invoke(configBuilder, config.temperature)
-        builderClass.getDeclaredMethod("setTopK", Int::class.java)
+        configBuilderClass.getMethod("setTopK", Int::class.java)
             .invoke(configBuilder, config.topK)
-        builderClass.getDeclaredMethod("setMaxOutputTokens", Int::class.java)
+        configBuilderClass.getMethod("setMaxOutputTokens", Int::class.java)
             .invoke(configBuilder, config.maxOutputTokens)
-        val genConfig = builderClass.getDeclaredMethod("build").invoke(configBuilder)
+        val genConfig = configBuilderClass.getMethod("build").invoke(configBuilder)
 
-        val model = generativeModelClass
-            .getConstructor(configClass)
-            .newInstance(genConfig)
-
-        val generateMethod = generativeModelClass.getDeclaredMethod(
-            "generateContent", String::class.java
-        )
-        val response = generateMethod.invoke(model, prompt)
-        val textMethod = response.javaClass.getDeclaredMethod("getText")
-        return textMethod.invoke(response) as? String ?: "No response from Gemini Nano"
+        val model = inferenceClass.getMethod("create", configClass).invoke(null, genConfig)
+        val response = inferenceClass.getMethod("generateContent", String::class.java)
+            .invoke(model, prompt)
+        val text = response.javaClass.getMethod("getText").invoke(response)
+        return text as? String ?: "No response from ML Kit GenAI"
     }
 
     private fun isGeminiNanoAvailable(): Boolean {
+        if (Build.VERSION.SDK_INT < 34) return false
         return try {
             Class.forName("com.google.ai.edge.aicore.GenerativeModel")
             true
         } catch (_: ClassNotFoundException) {
-            false
+            try {
+                Class.forName("com.google.mlkit.genai.inference.GenerativeModel")
+                true
+            } catch (_: ClassNotFoundException) {
+                false
+            }
         }
     }
 
     private fun buildFallbackResponse(prompt: String): String {
-        // Extract key data from the prompt for a basic local analysis
         val lines = prompt.lines()
         val symptomLines = mutableListOf<String>()
         val vitalLines = mutableListOf<String>()
@@ -128,9 +167,14 @@ class GeminiNanoProviderImpl(
                 vitalLines.forEach { appendLine(it) }
                 appendLine()
             }
-            appendLine("Note: For full AI-powered analysis, ensure Gemini Nano is available on your device ")
-            appendLine("(Android 14+, Google Play Services, supported hardware like Pixel 8+), ")
-            appendLine("or configure a cloud AI provider in Settings > AI Settings.")
+            if (Build.VERSION.SDK_INT < 34) {
+                appendLine("Note: Gemini Nano requires Android 14 (API 34) or higher.")
+                appendLine("Your device is running API ${Build.VERSION.SDK_INT}.")
+            } else {
+                appendLine("Note: Gemini Nano AI Core is not installed on this device.")
+                appendLine("Ensure Google Play Services is updated and AI Core is available.")
+            }
+            appendLine("You can also configure a cloud AI provider in Settings > AI Settings.")
         }
     }
 }

@@ -10,7 +10,7 @@
     <string name="nav_settings">Ajustes</string>
 
     <!-- Common -->
-    <string name="back">Atrás</string>
+    <string name="back">Atr\u00e1s</string>
     <string name="save">Guardar</string>
     <string name="delete">Eliminar</string>
     <string name="close">Cerrar</string>
@@ -20,26 +20,26 @@
     <!-- Home Screen -->
     <string name="home_title">Diario de salud</string>
     <string name="add_vital_desc">Agregar signo vital</string>
-    <string name="add_symptom_desc">Agregar síntoma</string>
+    <string name="add_symptom_desc">Agregar s\u00edntoma</string>
     <string name="recent_vitals">Signos vitales recientes</string>
-    <string name="symptoms_title">Síntomas</string>
-    <string name="no_symptoms_hint">Sin registros. Pulse + para agregar un síntoma.</string>
+    <string name="symptoms_title">S\u00edntomas</string>
+    <string name="no_symptoms_hint">Sin registros. Pulse + para agregar un s\u00edntoma.</string>
     <string name="intensity_format">Intensidad: %1$d/10</string>
     <string name="triggers_format">Desencadenantes: %1$s</string>
 
     <!-- Add Symptom Screen -->
-    <string name="add_symptom_title">Agregar síntoma</string>
-    <string name="symptom_name">Nombre del síntoma</string>
+    <string name="add_symptom_title">Agregar s\u00edntoma</string>
+    <string name="symptom_name">Nombre del s\u00edntoma</string>
     <string name="intensity_label">Intensidad: %1$d/10</string>
-    <string name="duration_minutes">Duración (min)</string>
+    <string name="duration_minutes">Duraci\u00f3n (min)</string>
     <string name="triggers_hint">Desencadenantes (separados por comas)</string>
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">Agregar signo vital</string>
     <string name="vital_type_label">Tipo de signo vital</string>
-    <string name="systolic_upper">Sistólica (superior)</string>
+    <string name="systolic_upper">Sist\u00f3lica (superior)</string>
     <string name="value_with_unit">Valor (%1$s)</string>
-    <string name="diastolic_lower">Diastólica (inferior)</string>
+    <string name="diastolic_lower">Diast\u00f3lica (inferior)</string>
 
     <!-- Medications Screen -->
     <string name="medications_title">Medicamentos</string>
@@ -53,41 +53,41 @@
     <string name="add_medication_title">Agregar medicamento</string>
     <string name="medication_name">Nombre del medicamento</string>
     <string name="dosage_hint">Dosis (ej. 500 mg)</string>
-    <string name="schedule_hint">Frecuencia (ej. 2 veces al día)</string>
+    <string name="schedule_hint">Frecuencia (ej. 2 veces al d\u00eda)</string>
 
     <!-- AI Report Screen -->
     <string name="ai_reports_title">Informes IA</string>
-    <string name="report_7_days">Informe (7 días)</string>
-    <string name="patterns_30_days">Patrones (30 días)</string>
-    <string name="ai_analyzing">La IA está analizando los datos…</string>
-    <string name="no_reports_hint">Sin informes. Pulse el botón de arriba para generar un informe de IA basado en sus datos.</string>
-    <string name="report_type_summary">Resumen médico</string>
-    <string name="report_type_patterns">Análisis de patrones</string>
-    <string name="days_format">%1$d días</string>
+    <string name="report_7_days">Informe (7 d\u00edas)</string>
+    <string name="patterns_30_days">Patrones (30 d\u00edas)</string>
+    <string name="ai_analyzing">La IA est\u00e1 analizando los datos…</string>
+    <string name="no_reports_hint">Sin informes. Pulse el bot\u00f3n de arriba para generar un informe de IA basado en sus datos.</string>
+    <string name="report_type_summary">Resumen m\u00e9dico</string>
+    <string name="report_type_patterns">An\u00e1lisis de patrones</string>
+    <string name="days_format">%1$d d\u00edas</string>
 
     <!-- Vitals Screen -->
     <string name="vitals_title">Signos vitales</string>
     <string name="no_vitals_hint">Sin registros de signos vitales.\nAgregue el primer signo vital en la pantalla principal.</string>
 
     <!-- Onboarding -->
-    <string name="onboarding_welcome">¡Bienvenido!</string>
-    <string name="onboarding_welcome_desc">Lleve un diario de salud: registre síntomas, signos vitales y medicamentos. Toda la información se almacena localmente en su dispositivo.</string>
+    <string name="onboarding_welcome">\u00a1Bienvenido!</string>
+    <string name="onboarding_welcome_desc">Lleve un diario de salud: registre s\u00edntomas, signos vitales y medicamentos. Toda la informaci\u00f3n se almacena localmente en su dispositivo.</string>
     <string name="onboarding_track_health">Controle su salud</string>
-    <string name="onboarding_track_health_desc">Registre presión arterial, frecuencia cardíaca, temperatura, niveles de glucosa y más. Anote los síntomas con intensidad y desencadenantes.</string>
-    <string name="onboarding_setup">Configuración</string>
+    <string name="onboarding_track_health_desc">Registre presi\u00f3n arterial, frecuencia card\u00edaca, temperatura, niveles de glucosa y m\u00e1s. Anote los s\u00edntomas con intensidad y desencadenantes.</string>
+    <string name="onboarding_setup">Configuraci\u00f3n</string>
     <string name="your_name">Su nombre</string>
-    <string name="ai_consent_text">Permitir el análisis de datos por IA para generar informes. La IA NO diagnostica enfermedades y NO prescribe tratamientos.</string>
+    <string name="ai_consent_text">Permitir el an\u00e1lisis de datos por IA para generar informes. La IA NO diagnostica enfermedades y NO prescribe tratamientos.</string>
     <string name="onboarding_next">Siguiente</string>
     <string name="onboarding_start">Comenzar</string>
 
     <!-- VitalType display names -->
-    <string name="vital_blood_pressure">Presión arterial</string>
-    <string name="vital_pulse">Frecuencia cardíaca</string>
+    <string name="vital_blood_pressure">Presi\u00f3n arterial</string>
+    <string name="vital_pulse">Frecuencia card\u00edaca</string>
     <string name="vital_temperature">Temperatura</string>
     <string name="vital_spo2">SpO2</string>
     <string name="vital_glucose">Glucosa</string>
     <string name="vital_weight">Peso</string>
-    <string name="vital_sleep">Sueño</string>
+    <string name="vital_sleep">Sue\u00f1o</string>
     <string name="vital_steps">Pasos</string>
 
     <!-- VitalType units -->
@@ -106,9 +106,9 @@
     <string name="language_russian">Русский</string>
     <string name="language_english">English</string>
     <string name="language_chinese">中文 (简体)</string>
-    <string name="language_spanish">Español</string>
+    <string name="language_spanish">Espa\u00f1ol</string>
     <string name="language_current">Idioma actual</string>
-    <string name="language_select_prompt">Seleccione el idioma de la aplicación</string>
+    <string name="language_select_prompt">Seleccione el idioma de la aplicaci\u00f3n</string>
 
     <!-- SMS -->
     <string name="sms_send">Enviar SMS</string>
@@ -118,8 +118,8 @@
     <string name="import_data">Importar datos</string>
     <string name="export_success">Datos exportados correctamente</string>
     <string name="import_success">Datos importados correctamente</string>
-    <string name="export_error">Error de exportación: %1$s</string>
-    <string name="import_error">Error de importación: %1$s</string>
+    <string name="export_error">Error de exportaci\u00f3n: %1$s</string>
+    <string name="import_error">Error de importaci\u00f3n: %1$s</string>
 
     <!-- AI Settings -->
     <string name="ai_settings_title">Ajustes de IA</string>
@@ -129,17 +129,17 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">Compatible con OpenAI</string>
     <string name="ai_provider_local">Modelo local</string>
-    <string name="ai_privacy_redact">Redacción de datos</string>
-    <string name="ai_privacy_redact_desc">Eliminar teléfonos y correos electrónicos antes de enviar</string>
+    <string name="ai_privacy_redact">Redacci\u00f3n de datos</string>
+    <string name="ai_privacy_redact_desc">Eliminar tel\u00e9fonos y correos electr\u00f3nicos antes de enviar</string>
     <string name="ai_api_key">Clave API</string>
     <string name="ai_model">Modelo</string>
     <string name="ai_base_url">URL base</string>
     <string name="ai_timeout">Tiempo de espera (seg)</string>
     <string name="ai_model_path">Ruta del modelo</string>
-    <string name="ai_context_size">Tamaño del contexto</string>
-    <string name="ai_max_tokens">Tokens máximos</string>
+    <string name="ai_context_size">Tama\u00f1o del contexto</string>
+    <string name="ai_max_tokens">Tokens m\u00e1ximos</string>
     <string name="ai_temperature">Temperatura</string>
-    <string name="ai_validate_config">Validar configuración</string>
+    <string name="ai_validate_config">Validar configuraci\u00f3n</string>
     <string name="ai_provider_gemini_nano">Gemini Nano (en dispositivo)</string>
     <string name="gemini_nano_desc">IA en dispositivo. Requiere Android 14+ y un dispositivo compatible (ej. Pixel 8+). No requiere internet.</string>
     <string name="gemini_top_k">Top-K</string>
@@ -172,6 +172,15 @@
     <string name="rel_sibling">Hermano/a</string>
     <string name="rel_grandparent">Abuelo/a</string>
 
+    <!-- Predefined Data Settings -->
+    <string name="predefined_data_title">Datos predefinidos</string>
+    <string name="predefined_data_desc">S\u00edntomas, medicamentos, elementos personalizados</string>
+    <string name="predefined_symptoms_section">S\u00edntomas</string>
+    <string name="predefined_medications_section">Medicamentos</string>
+    <string name="add_custom_symptom">Agregar s\u00edntoma personalizado</string>
+    <string name="add_custom_medication">Agregar medicamento personalizado</string>
+    <string name="custom_label">Personal</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Dolor de cabeza</string>
     <string name="symptom_stomachache">Dolor de est\u00f3mago</string>
@@ -188,6 +197,21 @@
     <string name="symptom_shortness_of_breath">Dificultad para respirar</string>
     <string name="symptom_fever">Fiebre</string>
     <string name="symptom_anxiety">Ansiedad</string>
+    <string name="symptom_muscle_pain">Dolor muscular</string>
+    <string name="symptom_rash">Erupci\u00f3n cut\u00e1nea</string>
+    <string name="symptom_palpitations">Palpitaciones</string>
+    <string name="symptom_blurred_vision">Visi\u00f3n borrosa</string>
+    <string name="symptom_earache">Dolor de o\u00eddo</string>
+    <string name="symptom_constipation">Estre\u00f1imiento</string>
+    <string name="symptom_diarrhea">Diarrea</string>
+    <string name="symptom_bloating">Hinchaz\u00f3n abdominal</string>
+    <string name="symptom_numbness">Entumecimiento</string>
+    <string name="symptom_swelling">Inflamaci\u00f3n</string>
+    <string name="symptom_depression">Depresi\u00f3n</string>
+    <string name="symptom_heartburn">Acidez estomacal</string>
+    <string name="symptom_loss_of_appetite">P\u00e9rdida de apetito</string>
+    <string name="symptom_sneezing">Estornudos</string>
+    <string name="symptom_dry_mouth">Boca seca</string>
     <string name="common_symptoms">S\u00edntomas comunes</string>
 
     <!-- Predefined Medications -->
@@ -204,6 +228,19 @@
     <string name="med_vitamin_d">Vitamina D</string>
     <string name="med_vitamin_c">Vitamina C</string>
     <string name="med_omega3">Omega-3</string>
+    <string name="med_atorvastatin">Atorvastatina</string>
+    <string name="med_levothyroxine">Levotiroxina</string>
+    <string name="med_losartan">Losart\u00e1n</string>
+    <string name="med_gabapentin">Gabapentina</string>
+    <string name="med_pantoprazole">Pantoprazol</string>
+    <string name="med_cetirizine">Cetirizina</string>
+    <string name="med_prednisone">Prednisona</string>
+    <string name="med_diclofenac">Diclofenaco</string>
+    <string name="med_magnesium">Magnesio</string>
+    <string name="med_probiotics">Probi\u00f3ticos</string>
+    <string name="med_iron">Suplemento de hierro</string>
+    <string name="med_folic_acid">\u00c1cido f\u00f3lico</string>
+    <string name="med_melatonin">Melatonina</string>
     <string name="common_medications">Medicamentos comunes</string>
 
     <!-- Attachments -->
@@ -216,7 +253,7 @@
         <item quantity="other">%1$d registros</item>
     </plurals>
     <plurals name="days_count">
-        <item quantity="one">%1$d día</item>
-        <item quantity="other">%1$d días</item>
+        <item quantity="one">%1$d d\u00eda</item>
+        <item quantity="other">%1$d d\u00edas</item>
     </plurals>
 </resources>

@@ -172,6 +172,15 @@
     <string name="rel_sibling">兄弟姐妹</string>
     <string name="rel_grandparent">祖父母</string>
 
+    <!-- Predefined Data Settings -->
+    <string name="predefined_data_title">预设数据</string>
+    <string name="predefined_data_desc">症状、药物、自定义项目</string>
+    <string name="predefined_symptoms_section">症状</string>
+    <string name="predefined_medications_section">药物</string>
+    <string name="add_custom_symptom">添加自定义症状</string>
+    <string name="add_custom_medication">添加自定义药物</string>
+    <string name="custom_label">自定义</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">头痛</string>
     <string name="symptom_stomachache">胃痛</string>
@@ -188,6 +197,21 @@
     <string name="symptom_shortness_of_breath">呼吸困难</string>
     <string name="symptom_fever">发烧</string>
     <string name="symptom_anxiety">焦虑</string>
+    <string name="symptom_muscle_pain">肌肉痛</string>
+    <string name="symptom_rash">皮疹</string>
+    <string name="symptom_palpitations">心悸</string>
+    <string name="symptom_blurred_vision">视力模糊</string>
+    <string name="symptom_earache">耳痛</string>
+    <string name="symptom_constipation">便秘</string>
+    <string name="symptom_diarrhea">腹泻</string>
+    <string name="symptom_bloating">腹胀</string>
+    <string name="symptom_numbness">麻木</string>
+    <string name="symptom_swelling">肿胀</string>
+    <string name="symptom_depression">抑郁</string>
+    <string name="symptom_heartburn">胃灼热</string>
+    <string name="symptom_loss_of_appetite">食欲不振</string>
+    <string name="symptom_sneezing">打喷嚏</string>
+    <string name="symptom_dry_mouth">口干</string>
     <string name="common_symptoms">常见症状</string>
 
     <!-- Predefined Medications -->
@@ -204,6 +228,19 @@
     <string name="med_vitamin_d">维生素 D</string>
     <string name="med_vitamin_c">维生素 C</string>
     <string name="med_omega3">Omega-3</string>
+    <string name="med_atorvastatin">阿托伐他汀</string>
+    <string name="med_levothyroxine">左甲状腺素</string>
+    <string name="med_losartan">氯沙坦</string>
+    <string name="med_gabapentin">加巴喷丁</string>
+    <string name="med_pantoprazole">泮托拉唑</string>
+    <string name="med_cetirizine">西替利嗪</string>
+    <string name="med_prednisone">泼尼松</string>
+    <string name="med_diclofenac">双氯芬酸</string>
+    <string name="med_magnesium">镁</string>
+    <string name="med_probiotics">益生菌</string>
+    <string name="med_iron">铁剂</string>
+    <string name="med_folic_acid">叶酸</string>
+    <string name="med_melatonin">褪黑素</string>
     <string name="common_medications">常见药物</string>
 
     <!-- Attachments -->

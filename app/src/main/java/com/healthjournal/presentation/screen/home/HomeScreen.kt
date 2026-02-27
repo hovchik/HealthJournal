@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -82,7 +83,7 @@ fun HomeScreen(
                     ) {
                         Icon(
                             Icons.Default.MonitorHeart, contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(20.dp)
+                            tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(22.dp)
                         )
                         Text(
                             stringResource(R.string.recent_vitals),
@@ -105,8 +106,8 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(
-                        Icons.Default.Healing, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp)
+                        Icons.Default.Sick, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp)
                     )
                     Text(
                         stringResource(R.string.symptoms_title),
@@ -124,7 +125,7 @@ fun HomeScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                Icons.Default.NoteAdd, contentDescription = null,
+                                Icons.Default.EditNote, contentDescription = null,
                                 modifier = Modifier.size(48.dp),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -163,7 +164,7 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = MaterialTheme.shapes.small,
-                color = intensityColor.copy(alpha = 0.15f)
+                color = intensityColor.copy(alpha = 0.12f)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
@@ -203,7 +204,7 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
                     color = MaterialTheme.colorScheme.outline)
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete),
+                Icon(Icons.Outlined.DeleteOutline, contentDescription = stringResource(R.string.delete),
                     tint = MaterialTheme.colorScheme.error)
             }
         }
@@ -222,7 +223,7 @@ private fun VitalCard(vital: VitalSign) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f)
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.35f)
         )
     ) {
         Row(

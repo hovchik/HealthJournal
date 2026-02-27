@@ -21,7 +21,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
 import com.healthjournal.util.AttachmentHelper
 import com.healthjournal.util.PredefinedData
+import com.healthjournal.util.PredefinedDataKeys
+import com.healthjournal.util.predefinedDataStore
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -36,6 +39,19 @@ fun AddSymptomScreen(
     var triggers by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
+
+    val disabledSymptoms by remember {
+        context.predefinedDataStore.data.map { prefs ->
+            prefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet()
+        }
+    }.collectAsState(initial = emptySet())
+    val customSymptoms by remember {
+        context.predefinedDataStore.data.map { prefs ->
+            prefs[PredefinedDataKeys.CUSTOM_SYMPTOMS] ?: emptySet()
+        }
+    }.collectAsState(initial = emptySet())
+
+    val enabledPredefined = PredefinedData.symptoms.filter { it.key !in disabledSymptoms }
 
     val filePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
@@ -85,11 +101,17 @@ fun AddSymptomScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                PredefinedData.symptoms.forEach { item ->
+                enabledPredefined.forEach { item ->
                     val label = stringResource(item.nameResId)
                     SuggestionChip(
                         onClick = { name = label },
                         label = { Text(label) }
+                    )
+                }
+                customSymptoms.forEach { custom ->
+                    SuggestionChip(
+                        onClick = { name = custom },
+                        label = { Text(custom) }
                     )
                 }
             }

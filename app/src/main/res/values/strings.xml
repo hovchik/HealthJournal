@@ -172,6 +172,15 @@
     <string name="rel_sibling">Брат/Сестра</string>
     <string name="rel_grandparent">Бабушка/Дедушка</string>
 
+    <!-- Predefined Data Settings -->
+    <string name="predefined_data_title">Предустановленные данные</string>
+    <string name="predefined_data_desc">Симптомы, лекарства, пользовательские элементы</string>
+    <string name="predefined_symptoms_section">Симптомы</string>
+    <string name="predefined_medications_section">Лекарства</string>
+    <string name="add_custom_symptom">Добавить свой симптом</string>
+    <string name="add_custom_medication">Добавить своё лекарство</string>
+    <string name="custom_label">Своё</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Головная боль</string>
     <string name="symptom_stomachache">Боль в животе</string>
@@ -188,6 +197,21 @@
     <string name="symptom_shortness_of_breath">Одышка</string>
     <string name="symptom_fever">Жар</string>
     <string name="symptom_anxiety">Тревожность</string>
+    <string name="symptom_muscle_pain">Боль в мышцах</string>
+    <string name="symptom_rash">Сыпь</string>
+    <string name="symptom_palpitations">Учащённое сердцебиение</string>
+    <string name="symptom_blurred_vision">Нечёткое зрение</string>
+    <string name="symptom_earache">Боль в ухе</string>
+    <string name="symptom_constipation">Запор</string>
+    <string name="symptom_diarrhea">Диарея</string>
+    <string name="symptom_bloating">Вздутие живота</string>
+    <string name="symptom_numbness">Онемение</string>
+    <string name="symptom_swelling">Отёк</string>
+    <string name="symptom_depression">Депрессия</string>
+    <string name="symptom_heartburn">Изжога</string>
+    <string name="symptom_loss_of_appetite">Потеря аппетита</string>
+    <string name="symptom_sneezing">Чихание</string>
+    <string name="symptom_dry_mouth">Сухость во рту</string>
     <string name="common_symptoms">Частые симптомы</string>
 
     <!-- Predefined Medications -->
@@ -204,6 +228,19 @@
     <string name="med_vitamin_d">Витамин D</string>
     <string name="med_vitamin_c">Витамин C</string>
     <string name="med_omega3">Омега-3</string>
+    <string name="med_atorvastatin">Аторвастатин</string>
+    <string name="med_levothyroxine">Левотироксин</string>
+    <string name="med_losartan">Лозартан</string>
+    <string name="med_gabapentin">Габапентин</string>
+    <string name="med_pantoprazole">Пантопразол</string>
+    <string name="med_cetirizine">Цетиризин</string>
+    <string name="med_prednisone">Преднизон</string>
+    <string name="med_diclofenac">Диклофенак</string>
+    <string name="med_magnesium">Магний</string>
+    <string name="med_probiotics">Пробиотики</string>
+    <string name="med_iron">Препараты железа</string>
+    <string name="med_folic_acid">Фолиевая кислота</string>
+    <string name="med_melatonin">Мелатонин</string>
     <string name="common_medications">Частые лекарства</string>
 
     <!-- Attachments -->
