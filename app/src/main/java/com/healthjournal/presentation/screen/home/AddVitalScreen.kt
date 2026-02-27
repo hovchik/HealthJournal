@@ -3,20 +3,27 @@ package com.healthjournal.presentation.screen.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
 import com.healthjournal.domain.model.VitalType
@@ -25,7 +32,7 @@ import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddVitalScreen(
     onBack: () -> Unit,
@@ -38,6 +45,16 @@ fun AddVitalScreen(
     var notes by remember { mutableStateOf("") }
     var typeMenuExpanded by remember { mutableStateOf(false) }
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
+
+    val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
+    val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
+    var selectedProfileId by remember { mutableStateOf<Long?>(null) }
+    val effectiveProfileId = selectedProfileId ?: activeProfileId
+
+    // Initialize selectedProfileId once active profile is loaded
+    LaunchedEffect(activeProfileId) {
+        if (selectedProfileId == null) selectedProfileId = activeProfileId
+    }
 
     val filePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
@@ -70,6 +87,52 @@ fun AddVitalScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Profile selector
+            Text(
+                stringResource(R.string.recording_for, ""),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                FilterChip(
+                    selected = effectiveProfileId == 0L,
+                    onClick = { selectedProfileId = 0L },
+                    label = { Text(stringResource(R.string.rel_self)) },
+                    leadingIcon = {
+                        Box(
+                            modifier = Modifier.size(24.dp).clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Person, contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
+                        }
+                    }
+                )
+                familyMembers.forEach { member ->
+                    FilterChip(
+                        selected = effectiveProfileId == member.id,
+                        onClick = { selectedProfileId = member.id },
+                        label = { Text(member.name) },
+                        leadingIcon = {
+                            Box(
+                                modifier = Modifier.size(24.dp).clip(CircleShape)
+                                    .background(Color(member.avatarColor)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(member.name.take(1).uppercase(), color = Color.White,
+                                    style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    )
+                }
+            }
+
+            HorizontalDivider()
+
             ExposedDropdownMenuBox(
                 expanded = typeMenuExpanded,
                 onExpandedChange = { typeMenuExpanded = it }
@@ -157,7 +220,8 @@ fun AddVitalScreen(
                             value = v,
                             secondaryValue = secondaryValue.toDoubleOrNull(),
                             notes = notes,
-                            attachmentPaths = attachmentPaths
+                            attachmentPaths = attachmentPaths,
+                            profileId = effectiveProfileId
                         )
                     }
                 },

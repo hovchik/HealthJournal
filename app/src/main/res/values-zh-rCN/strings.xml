@@ -171,6 +171,13 @@
     <string name="rel_parent">父母</string>
     <string name="rel_sibling">兄弟姐妹</string>
     <string name="rel_grandparent">祖父母</string>
+    <string name="rel_grandchild">孙子/孙女</string>
+    <string name="rel_uncle_aunt">叔叔/阿姨</string>
+    <string name="rel_cousin">表亲</string>
+    <string name="rel_friend">朋友</string>
+    <string name="rel_other">其他</string>
+    <string name="custom_relationship_hint">输入关系类型</string>
+    <string name="recording_for">对象：%1$s</string>
 
     <!-- Predefined Data Settings -->
     <string name="predefined_data_title">预设数据</string>

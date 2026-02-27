@@ -10,8 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -97,11 +98,14 @@ fun FamilyMembersScreen(
             // Self profile (id = 0)
             item {
                 val isActive = activeProfileId == 0L
-                Card(
+                ElevatedCard(
                     onClick = { viewModel.selectProfile(0) },
-                    colors = if (isActive) CardDefaults.cardColors(
+                    colors = if (isActive) CardDefaults.elevatedCardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ) else CardDefaults.cardColors()
+                    ) else CardDefaults.elevatedCardColors(),
+                    elevation = CardDefaults.elevatedCardElevation(
+                        defaultElevation = if (isActive) 4.dp else 1.dp
+                    )
                 ) {
                     Row(
                         modifier = Modifier
@@ -112,7 +116,7 @@ fun FamilyMembersScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(44.dp)
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.primary),
                             contentAlignment = Alignment.Center
@@ -125,7 +129,7 @@ fun FamilyMembersScreen(
                             )
                         }
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(stringResource(R.string.rel_self), style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.rel_self), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                             Text(stringResource(R.string.default_profile), style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -138,11 +142,14 @@ fun FamilyMembersScreen(
 
             items(members, key = { it.id }) { member ->
                 val isActive = activeProfileId == member.id
-                Card(
+                ElevatedCard(
                     onClick = { viewModel.selectProfile(member.id) },
-                    colors = if (isActive) CardDefaults.cardColors(
+                    colors = if (isActive) CardDefaults.elevatedCardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ) else CardDefaults.cardColors()
+                    ) else CardDefaults.elevatedCardColors(),
+                    elevation = CardDefaults.elevatedCardElevation(
+                        defaultElevation = if (isActive) 4.dp else 1.dp
+                    )
                 ) {
                     Row(
                         modifier = Modifier
@@ -153,7 +160,7 @@ fun FamilyMembersScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(44.dp)
                                 .clip(CircleShape)
                                 .background(Color(member.avatarColor)),
                             contentAlignment = Alignment.Center
@@ -161,11 +168,12 @@ fun FamilyMembersScreen(
                             Text(
                                 member.name.take(1).uppercase(),
                                 color = Color.White,
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(member.name, style = MaterialTheme.typography.titleMedium)
+                            Text(member.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                             if (member.relationship.isNotBlank()) {
                                 Text(member.relationship, style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -175,8 +183,8 @@ fun FamilyMembersScreen(
                             Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         }
                         IconButton(onClick = { viewModel.deleteMember(member) }) {
-                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete),
-                                tint = MaterialTheme.colorScheme.error)
+                            Icon(Icons.Outlined.DeleteOutline, contentDescription = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f))
                         }
                     }
                 }
@@ -195,6 +203,7 @@ fun FamilyMembersScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AddFamilyMemberDialog(
     onDismiss: () -> Unit,
@@ -202,6 +211,9 @@ private fun AddFamilyMemberDialog(
 ) {
     var name by remember { mutableStateOf("") }
     var relationship by remember { mutableStateOf("") }
+    var customRelationship by remember { mutableStateOf("") }
+    val otherLabel = stringResource(R.string.rel_other)
+    val isOtherSelected = relationship == otherLabel
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -216,22 +228,43 @@ private fun AddFamilyMemberDialog(
                     singleLine = true
                 )
                 Text(stringResource(R.string.relationship), style = MaterialTheme.typography.labelMedium)
-                @OptIn(ExperimentalLayoutApi::class)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     PredefinedData.relationships.forEach { resId ->
                         val label = stringResource(resId)
                         FilterChip(
                             selected = relationship == label,
-                            onClick = { relationship = label },
+                            onClick = {
+                                relationship = label
+                                if (label != otherLabel) customRelationship = ""
+                            },
                             label = { Text(label) }
                         )
                     }
+                }
+                if (isOtherSelected) {
+                    OutlinedTextField(
+                        value = customRelationship,
+                        onValueChange = { customRelationship = it },
+                        label = { Text(stringResource(R.string.custom_relationship_hint)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
                 }
             }
         },
         confirmButton = {
             Button(
-                onClick = { onAdd(name, relationship) },
+                onClick = {
+                    val rel = if (isOtherSelected && customRelationship.isNotBlank()) {
+                        customRelationship.trim()
+                    } else {
+                        relationship
+                    }
+                    onAdd(name, rel)
+                },
                 enabled = name.isNotBlank()
             ) { Text(stringResource(R.string.save)) }
         },

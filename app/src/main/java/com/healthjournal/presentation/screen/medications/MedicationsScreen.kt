@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
@@ -61,13 +62,21 @@ fun MedicationsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        Icons.Default.MedicalServices,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(72.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.MedicalServices,
+                                contentDescription = null,
+                                modifier = Modifier.size(36.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         stringResource(R.string.no_medications_hint),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -112,6 +121,9 @@ private fun MedicationCard(
         colors = if (medication.active) CardDefaults.elevatedCardColors()
         else CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = if (medication.active) 2.dp else 0.dp
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -126,6 +138,7 @@ private fun MedicationCard(
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         "${medication.dosage} — ${medication.frequency}",
                         style = MaterialTheme.typography.bodyMedium,
@@ -137,11 +150,18 @@ private fun MedicationCard(
                         color = MaterialTheme.colorScheme.outline
                     )
                     if (!medication.active) {
-                        Text(
-                            stringResource(R.string.inactive),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Surface(
+                            shape = MaterialTheme.shapes.extraSmall,
+                            color = MaterialTheme.colorScheme.errorContainer
+                        ) {
+                            Text(
+                                stringResource(R.string.inactive),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                        }
                     }
                 }
                 Row {
@@ -158,7 +178,7 @@ private fun MedicationCard(
                         Icon(
                             Icons.Outlined.DeleteOutline,
                             contentDescription = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
                         )
                     }
                 }

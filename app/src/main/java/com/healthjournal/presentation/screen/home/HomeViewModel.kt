@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthjournal.HealthJournalApp
+import com.healthjournal.domain.model.FamilyMember
 import com.healthjournal.domain.model.Symptom
 import com.healthjournal.domain.model.VitalType
 import com.healthjournal.domain.model.VitalSign
@@ -13,9 +14,12 @@ import kotlinx.coroutines.launch
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
 
-    private val activeProfileId = container.userSettingsRepository.getUserSettings()
+    val activeProfileId = container.userSettingsRepository.getUserSettings()
         .map { it.activeProfileId }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    val familyMembers = container.familyMemberRepository.getAllMembers()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val symptoms = combine(container.getAllSymptoms(), activeProfileId) { all, profileId ->
         all.filter { it.profileId == profileId }
@@ -34,7 +38,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         durationMinutes: Int?,
         triggers: List<String>,
         notes: String,
-        attachmentPaths: List<String> = emptyList()
+        attachmentPaths: List<String> = emptyList(),
+        profileId: Long? = null
     ) {
         viewModelScope.launch {
             container.addSymptom(
@@ -44,7 +49,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     durationMinutes = durationMinutes,
                     triggers = triggers,
                     notes = notes,
-                    profileId = activeProfileId.value,
+                    profileId = profileId ?: activeProfileId.value,
                     attachmentPaths = attachmentPaths
                 )
             )
@@ -57,7 +62,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         value: Double,
         secondaryValue: Double?,
         notes: String,
-        attachmentPaths: List<String> = emptyList()
+        attachmentPaths: List<String> = emptyList(),
+        profileId: Long? = null
     ) {
         viewModelScope.launch {
             container.addVitalSign(
@@ -66,7 +72,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     value = value,
                     secondaryValue = secondaryValue,
                     notes = notes,
-                    profileId = activeProfileId.value,
+                    profileId = profileId ?: activeProfileId.value,
                     attachmentPaths = attachmentPaths
                 )
             )
@@ -76,5 +82,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun removeSymptom(symptom: Symptom) {
         viewModelScope.launch { container.deleteSymptom(symptom) }
+    }
+
+    fun getProfileName(profileId: Long): String {
+        if (profileId == 0L) return ""
+        return familyMembers.value.find { it.id == profileId }?.name ?: ""
     }
 }

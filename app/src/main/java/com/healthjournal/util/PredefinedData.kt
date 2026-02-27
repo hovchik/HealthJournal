@@ -69,11 +69,15 @@ object PredefinedData {
     )
 
     val relationships = listOf(
-        R.string.rel_self,
         R.string.rel_spouse,
         R.string.rel_child,
         R.string.rel_parent,
         R.string.rel_sibling,
-        R.string.rel_grandparent
+        R.string.rel_grandparent,
+        R.string.rel_grandchild,
+        R.string.rel_uncle_aunt,
+        R.string.rel_cousin,
+        R.string.rel_friend,
+        R.string.rel_other
     )
 }

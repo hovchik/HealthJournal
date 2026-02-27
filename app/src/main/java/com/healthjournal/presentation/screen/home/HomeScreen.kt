@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.DeleteOutline
@@ -34,15 +35,30 @@ fun HomeScreen(
 ) {
     val symptoms by viewModel.symptoms.collectAsStateWithLifecycle()
     val recentVitals by viewModel.recentVitals.collectAsStateWithLifecycle()
+    val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
+    val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
+
+    val activeProfileName = if (activeProfileId == 0L) {
+        stringResource(R.string.rel_self)
+    } else {
+        familyMembers.find { it.id == activeProfileId }?.name ?: stringResource(R.string.rel_self)
+    }
 
     Scaffold(
         topBar = {
             LargeTopAppBar(
                 title = {
-                    Text(
-                        stringResource(R.string.home_title),
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column {
+                        Text(
+                            stringResource(R.string.home_title),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            stringResource(R.string.recording_for, activeProfileName),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             )
         },
@@ -76,15 +92,24 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             if (recentVitals.isNotEmpty()) {
-                item {
+                item(key = "vitals_header") {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            Icons.Default.MonitorHeart, contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(22.dp)
-                        )
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.tertiaryContainer,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.MonitorHeart, contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                         Text(
                             stringResource(R.string.recent_vitals),
                             style = MaterialTheme.typography.titleMedium,
@@ -97,18 +122,27 @@ fun HomeScreen(
                         VitalCard(vital)
                     }
                 }
-                item { Spacer(modifier = Modifier.height(4.dp)) }
+                item(key = "vitals_spacer") { Spacer(modifier = Modifier.height(4.dp)) }
             }
 
-            item {
+            item(key = "symptoms_header") {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        Icons.Default.Sick, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp)
-                    )
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Sick, contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
                     Text(
                         stringResource(R.string.symptoms_title),
                         style = MaterialTheme.typography.titleMedium,
@@ -118,18 +152,18 @@ fun HomeScreen(
             }
 
             if (symptoms.isEmpty()) {
-                item {
-                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                item(key = "empty_symptoms") {
+                    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
                         Column(
-                            modifier = Modifier.fillMaxWidth().padding(24.dp),
+                            modifier = Modifier.fillMaxWidth().padding(32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
                                 Icons.Default.EditNote, contentDescription = null,
                                 modifier = Modifier.size(48.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = MaterialTheme.colorScheme.outlineVariant
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 stringResource(R.string.no_symptoms_hint),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -156,14 +190,17 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
         else -> MaterialTheme.colorScheme.error
     }
 
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.Top
         ) {
             Surface(
-                modifier = Modifier.size(40.dp),
-                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.size(44.dp),
+                shape = MaterialTheme.shapes.medium,
                 color = intensityColor.copy(alpha = 0.12f)
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -176,7 +213,8 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(symptom.name, style = MaterialTheme.typography.titleSmall)
+                Text(symptom.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     stringResource(R.string.intensity_format, symptom.intensity),
                     style = MaterialTheme.typography.bodySmall, color = intensityColor
@@ -193,6 +231,7 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 if (symptom.attachmentPaths.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         Icon(Icons.Default.AttachFile, contentDescription = null,
                             modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.tertiary)
@@ -200,12 +239,13 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
                             color = MaterialTheme.colorScheme.tertiary)
                     }
                 }
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(symptom.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline)
             }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Outlined.DeleteOutline, contentDescription = stringResource(R.string.delete),
-                    tint = MaterialTheme.colorScheme.error)
+                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f))
             }
         }
     }
@@ -224,17 +264,37 @@ private fun VitalCard(vital: VitalSign) {
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.35f)
-        )
+        ),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(displayName, style = MaterialTheme.typography.titleSmall)
-                Text(vital.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f),
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Default.MonitorHeart,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+                Column {
+                    Text(displayName, style = MaterialTheme.typography.titleSmall)
+                    Text(vital.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
             Text("$valueStr $unit", style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.tertiary, fontWeight = FontWeight.Bold)

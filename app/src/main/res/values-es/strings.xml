@@ -171,6 +171,13 @@
     <string name="rel_parent">Padre/Madre</string>
     <string name="rel_sibling">Hermano/a</string>
     <string name="rel_grandparent">Abuelo/a</string>
+    <string name="rel_grandchild">Nieto/a</string>
+    <string name="rel_uncle_aunt">T\u00edo/T\u00eda</string>
+    <string name="rel_cousin">Primo/a</string>
+    <string name="rel_friend">Amigo/a</string>
+    <string name="rel_other">Otro</string>
+    <string name="custom_relationship_hint">Ingrese tipo de parentesco</string>
+    <string name="recording_for">Para: %1$s</string>
 
     <!-- Predefined Data Settings -->
     <string name="predefined_data_title">Datos predefinidos</string>

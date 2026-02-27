@@ -171,6 +171,13 @@
     <string name="rel_parent">Parent</string>
     <string name="rel_sibling">Sibling</string>
     <string name="rel_grandparent">Grandparent</string>
+    <string name="rel_grandchild">Grandchild</string>
+    <string name="rel_uncle_aunt">Uncle/Aunt</string>
+    <string name="rel_cousin">Cousin</string>
+    <string name="rel_friend">Friend</string>
+    <string name="rel_other">Other</string>
+    <string name="custom_relationship_hint">Enter relationship type</string>
+    <string name="recording_for">For: %1$s</string>
 
     <!-- Predefined Data Settings -->
     <string name="predefined_data_title">Predefined Data</string>

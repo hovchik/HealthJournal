@@ -1,16 +1,24 @@
 package com.healthjournal.presentation.screen.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Healing
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,6 +42,8 @@ fun PredefinedDataSettingsScreen(
 
     var showAddSymptomDialog by remember { mutableStateOf(false) }
     var showAddMedicationDialog by remember { mutableStateOf(false) }
+    var symptomsExpanded by rememberSaveable { mutableStateOf(false) }
+    var medicationsExpanded by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -52,104 +62,74 @@ fun PredefinedDataSettingsScreen(
                 .fillMaxSize()
                 .padding(padding),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             // Symptoms section header
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Healing,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Text(
-                            stringResource(R.string.predefined_symptoms_section),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                    FilledTonalIconButton(onClick = { showAddSymptomDialog = true }) {
-                        Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_custom_symptom))
-                    }
+            item(key = "symptoms_header") {
+                SectionHeader(
+                    icon = { Icon(Icons.Default.Healing, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp)) },
+                    title = stringResource(R.string.predefined_symptoms_section),
+                    count = PredefinedData.symptoms.count { it.key !in disabledSymptoms } + customSymptoms.size,
+                    total = PredefinedData.symptoms.size + customSymptoms.size,
+                    expanded = symptomsExpanded,
+                    onToggle = { symptomsExpanded = !symptomsExpanded },
+                    onAdd = { showAddSymptomDialog = true }
+                )
+            }
+
+            // Symptoms content (collapsible)
+            if (symptomsExpanded) {
+                items(PredefinedData.symptoms, key = { "s_${it.key}" }) { item ->
+                    val enabled = item.key !in disabledSymptoms
+                    val label = stringResource(item.nameResId)
+                    ToggleItem(
+                        label = label,
+                        checked = enabled,
+                        onCheckedChange = { viewModel.toggleSymptom(item.key, it) }
+                    )
+                }
+
+                items(customSymptoms.toList(), key = { "cs_$it" }) { custom ->
+                    CustomItem(
+                        label = custom,
+                        onRemove = { viewModel.removeCustomSymptom(custom) }
+                    )
                 }
             }
 
-            // Predefined symptoms with toggles
-            items(PredefinedData.symptoms, key = { "s_${it.key}" }) { item ->
-                val enabled = item.key !in disabledSymptoms
-                val label = stringResource(item.nameResId)
-                ToggleItem(
-                    label = label,
-                    checked = enabled,
-                    onCheckedChange = { viewModel.toggleSymptom(item.key, it) }
-                )
-            }
-
-            // Custom symptoms
-            items(customSymptoms.toList(), key = { "cs_$it" }) { custom ->
-                CustomItem(
-                    label = custom,
-                    onRemove = { viewModel.removeCustomSymptom(custom) }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item(key = "section_divider") { Spacer(modifier = Modifier.height(8.dp)) }
 
             // Medications section header
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Medication,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Text(
-                            stringResource(R.string.predefined_medications_section),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                    FilledTonalIconButton(onClick = { showAddMedicationDialog = true }) {
-                        Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_custom_medication))
-                    }
+            item(key = "medications_header") {
+                SectionHeader(
+                    icon = { Icon(Icons.Default.Medication, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(22.dp)) },
+                    title = stringResource(R.string.predefined_medications_section),
+                    count = PredefinedData.medications.count { it.key !in disabledMedications } + customMedications.size,
+                    total = PredefinedData.medications.size + customMedications.size,
+                    expanded = medicationsExpanded,
+                    onToggle = { medicationsExpanded = !medicationsExpanded },
+                    onAdd = { showAddMedicationDialog = true }
+                )
+            }
+
+            // Medications content (collapsible)
+            if (medicationsExpanded) {
+                items(PredefinedData.medications, key = { "m_${it.key}" }) { item ->
+                    val enabled = item.key !in disabledMedications
+                    val label = stringResource(item.nameResId)
+                    ToggleItem(
+                        label = label,
+                        checked = enabled,
+                        onCheckedChange = { viewModel.toggleMedication(item.key, it) }
+                    )
                 }
-            }
 
-            // Predefined medications with toggles
-            items(PredefinedData.medications, key = { "m_${it.key}" }) { item ->
-                val enabled = item.key !in disabledMedications
-                val label = stringResource(item.nameResId)
-                ToggleItem(
-                    label = label,
-                    checked = enabled,
-                    onCheckedChange = { viewModel.toggleMedication(item.key, it) }
-                )
-            }
-
-            // Custom medications
-            items(customMedications.toList(), key = { "cm_$it" }) { custom ->
-                CustomItem(
-                    label = custom,
-                    onRemove = { viewModel.removeCustomMedication(custom) }
-                )
+                items(customMedications.toList(), key = { "cm_$it" }) { custom ->
+                    CustomItem(
+                        label = custom,
+                        onRemove = { viewModel.removeCustomMedication(custom) }
+                    )
+                }
             }
         }
     }
@@ -178,11 +158,60 @@ fun PredefinedDataSettingsScreen(
 }
 
 @Composable
+private fun SectionHeader(
+    icon: @Composable () -> Unit,
+    title: String,
+    count: Int,
+    total: Int,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    onAdd: () -> Unit
+) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onToggle
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            icon()
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    "$count / $total",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            FilledTonalIconButton(
+                onClick = onAdd,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            }
+            Icon(
+                if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
 private fun ToggleItem(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp),
+            .padding(horizontal = 8.dp, vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -203,7 +232,7 @@ private fun CustomItem(label: String, onRemove: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp),
+            .padding(horizontal = 8.dp, vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

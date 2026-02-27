@@ -171,6 +171,13 @@
     <string name="rel_parent">Родитель</string>
     <string name="rel_sibling">Брат/Сестра</string>
     <string name="rel_grandparent">Бабушка/Дедушка</string>
+    <string name="rel_grandchild">Внук/Внучка</string>
+    <string name="rel_uncle_aunt">Дядя/Тётя</string>
+    <string name="rel_cousin">Кузен/Кузина</string>
+    <string name="rel_friend">Друг</string>
+    <string name="rel_other">Другое</string>
+    <string name="custom_relationship_hint">Введите тип родства</string>
+    <string name="recording_for">Для: %1$s</string>
 
     <!-- Predefined Data Settings -->
     <string name="predefined_data_title">Предустановленные данные</string>
