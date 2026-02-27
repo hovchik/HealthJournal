@@ -33,6 +33,8 @@
     <string name="intensity_label">Интенсивность: %1$d/10</string>
     <string name="duration_minutes">Длительность (мин)</string>
     <string name="triggers_hint">Триггеры (через запятую)</string>
+    <string name="add_symptom_subtitle">Зафиксируйте симптомы, чтобы отслеживать динамику состояния.</string>
+    <string name="select_person">Для кого запись</string>
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">Добавить показатель</string>
