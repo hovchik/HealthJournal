@@ -5,17 +5,25 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthjournal.HealthJournalApp
 import com.healthjournal.domain.model.Symptom
-import com.healthjournal.domain.model.VitalType
 import com.healthjournal.domain.model.VitalSign
-import kotlinx.coroutines.flow.*
+import com.healthjournal.domain.model.VitalType
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
 
-    private val activeProfileId = container.userSettingsRepository.getUserSettings()
+    val activeProfileId = container.userSettingsRepository.getUserSettings()
         .map { it.activeProfileId }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    val familyMembers = container.familyMemberRepository.getAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val symptoms = combine(container.getAllSymptoms(), activeProfileId) { all, profileId ->
         all.filter { it.profileId == profileId }
@@ -34,6 +42,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         durationMinutes: Int?,
         triggers: List<String>,
         notes: String,
+        profileId: Long = activeProfileId.value,
         attachmentPaths: List<String> = emptyList()
     ) {
         viewModelScope.launch {
@@ -44,7 +53,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     durationMinutes = durationMinutes,
                     triggers = triggers,
                     notes = notes,
-                    profileId = activeProfileId.value,
+                    profileId = profileId,
                     attachmentPaths = attachmentPaths
                 )
             )

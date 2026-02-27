@@ -3,20 +3,56 @@ package com.healthjournal.presentation.screen.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
 import com.healthjournal.util.AttachmentHelper
@@ -25,6 +61,8 @@ import com.healthjournal.util.PredefinedDataKeys
 import com.healthjournal.util.predefinedDataStore
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+
+private data class ProfileUiModel(val id: Long, val label: String)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -39,20 +77,36 @@ fun AddSymptomScreen(
     var triggers by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
+    var selectedCommonSymptoms by remember { mutableStateOf(setOf<String>()) }
+
+    val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
+    val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
+    val selfLabel = stringResource(R.string.rel_self)
+    val profiles = remember(familyMembers, selfLabel) {
+        buildList {
+            add(ProfileUiModel(0L, selfLabel))
+            familyMembers.forEach { add(ProfileUiModel(it.id, it.name)) }
+        }
+    }
+
+    var selectedProfileId by remember(activeProfileId) { mutableStateOf(activeProfileId) }
+    var profileExpanded by remember { mutableStateOf(false) }
 
     val disabledSymptoms by remember {
         context.predefinedDataStore.data.map { prefs ->
             prefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet()
         }
-    }.collectAsState(initial = emptySet())
+    }.collectAsStateWithLifecycle(initialValue = emptySet())
+
     val customSymptoms by remember {
         context.predefinedDataStore.data.map { prefs ->
             prefs[PredefinedDataKeys.CUSTOM_SYMPTOMS] ?: emptySet()
         }
-    }.collectAsState(initial = emptySet())
+    }.collectAsStateWithLifecycle(initialValue = emptySet())
 
-    val enabledPredefined = PredefinedData.symptoms.filter { it.key !in disabledSymptoms }
-
+    val enabledPredefined = remember(disabledSymptoms) {
+        PredefinedData.symptoms.filter { it.key !in disabledSymptoms }
+    }
     val filePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
@@ -76,115 +130,214 @@ fun AddSymptomScreen(
             )
         }
     ) { padding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(R.string.symptom_name)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Text(
-                stringResource(R.string.common_symptoms),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                enabledPredefined.forEach { item ->
-                    val label = stringResource(item.nameResId)
-                    SuggestionChip(
-                        onClick = { name = label },
-                        label = { Text(label) }
+            item {
+                Text(
+                    text = stringResource(R.string.add_symptom_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = profileExpanded,
+                    onExpandedChange = { profileExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = profiles.firstOrNull { it.id == selectedProfileId }?.label ?: selfLabel,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.select_person)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = profileExpanded) },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
                     )
-                }
-                customSymptoms.forEach { custom ->
-                    SuggestionChip(
-                        onClick = { name = custom },
-                        label = { Text(custom) }
-                    )
+                    ExposedDropdownMenu(
+                        expanded = profileExpanded,
+                        onDismissRequest = { profileExpanded = false }
+                    ) {
+                        profiles.forEach { profile ->
+                            DropdownMenuItem(
+                                text = { Text(profile.label) },
+                                onClick = {
+                                    selectedProfileId = profile.id
+                                    profileExpanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
-            Column {
-                Text(stringResource(R.string.intensity_label, intensity.toInt()))
-                Slider(
-                    value = intensity,
-                    onValueChange = { intensity = it },
-                    valueRange = 0f..10f,
-                    steps = 9
+            item {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.symptom_name)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(14.dp)
                 )
             }
 
-            OutlinedTextField(
-                value = duration,
-                onValueChange = { duration = it },
-                label = { Text(stringResource(R.string.duration_minutes)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
+            item {
+                Text(
+                    stringResource(R.string.common_symptoms),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+            item {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    enabledPredefined.forEach { item ->
+                        val label = stringResource(item.nameResId)
+                        val selected = selectedCommonSymptoms.contains(label)
+                        FilterChip(
+                            selected = selected,
+                            onClick = {
+                                selectedCommonSymptoms = if (selected) {
+                                    selectedCommonSymptoms - label
+                                } else {
+                                    selectedCommonSymptoms + label
+                                }
+                                name = selectedCommonSymptoms.joinToString(", ")
+                            },
+                            label = { Text(label) }
+                        )
+                    }
+                    customSymptoms.forEach { custom ->
+                        val selected = selectedCommonSymptoms.contains(custom)
+                        FilterChip(
+                            selected = selected,
+                            onClick = {
+                                selectedCommonSymptoms = if (selected) {
+                                    selectedCommonSymptoms - custom
+                                } else {
+                                    selectedCommonSymptoms + custom
+                                }
+                                name = selectedCommonSymptoms.joinToString(", ")
+                            },
+                            label = { Text(custom) }
+                        )
+                    }
+                }
+            }
 
-            OutlinedTextField(
-                value = triggers,
-                onValueChange = { triggers = it },
-                label = { Text(stringResource(R.string.triggers_hint)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(stringResource(R.string.intensity_label, intensity.toInt()))
+                        Slider(
+                            value = intensity,
+                            onValueChange = { intensity = it },
+                            valueRange = 0f..10f,
+                            steps = 9
+                        )
+                    }
+                }
+            }
 
-            OutlinedTextField(
-                value = notes,
-                onValueChange = { notes = it },
-                label = { Text(stringResource(R.string.notes)) },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3
-            )
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    OutlinedTextField(
+                        value = duration,
+                        onValueChange = { duration = it },
+                        label = { Text(stringResource(R.string.duration_minutes)) },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Number),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                    OutlinedTextField(
+                        value = triggers,
+                        onValueChange = { triggers = it },
+                        label = { Text(stringResource(R.string.triggers_hint)) },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                }
+            }
 
-            OutlinedButton(
-                onClick = { filePicker.launch("*/*") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.AttachFile, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.attach_file))
+            item {
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text(stringResource(R.string.notes)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                    shape = RoundedCornerShape(14.dp)
+                )
+            }
+
+            item {
+                OutlinedButton(
+                    onClick = { filePicker.launch("*/*") },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.AttachFile, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.attach_file))
+                }
             }
 
             if (attachmentPaths.isNotEmpty()) {
-                Text(
-                    stringResource(R.string.attachments_count, attachmentPaths.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
+                item {
+                    Text(
+                        stringResource(R.string.attachments_count, attachmentPaths.size),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                items(attachmentPaths) { path ->
+                    AssistChip(
+                        onClick = {},
+                        label = { Text(path.substringAfterLast('/')) },
+                        trailingIcon = {
+                            IconButton(onClick = { attachmentPaths = attachmentPaths - path }) {
+                                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.delete))
+                            }
+                        }
+                    )
+                }
             }
 
-            Button(
-                onClick = {
-                    if (name.isNotBlank()) {
-                        viewModel.addNewSymptom(
-                            name = name,
-                            intensity = intensity.toInt(),
-                            durationMinutes = duration.toIntOrNull(),
-                            triggers = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                            notes = notes,
-                            attachmentPaths = attachmentPaths
-                        )
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = name.isNotBlank()
-            ) {
-                Text(stringResource(R.string.save))
+            item {
+                Button(
+                    onClick = {
+                        if (name.isNotBlank()) {
+                            viewModel.addNewSymptom(
+                                name = name,
+                                intensity = intensity.toInt(),
+                                durationMinutes = duration.toIntOrNull(),
+                                triggers = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() },
+                                notes = notes,
+                                profileId = selectedProfileId,
+                                attachmentPaths = attachmentPaths
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp),
+                    enabled = name.isNotBlank(),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text(stringResource(R.string.save))
+                }
             }
         }
     }
