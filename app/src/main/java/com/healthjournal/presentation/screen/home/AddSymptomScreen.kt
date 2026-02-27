@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,11 +26,8 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenu
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +51,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
 import com.healthjournal.util.AttachmentHelper
@@ -64,7 +62,7 @@ import kotlinx.coroutines.flow.map
 
 private data class ProfileUiModel(val id: Long, val label: String)
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AddSymptomScreen(
     onBack: () -> Unit,
@@ -79,8 +77,8 @@ fun AddSymptomScreen(
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
     var selectedCommonSymptoms by remember { mutableStateOf(setOf<String>()) }
 
-    val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
-    val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
+    val familyMembers by viewModel.familyMembers.collectAsState(initial = emptyList())
+    val activeProfileId by viewModel.activeProfileId.collectAsState(initial = 0L)
     val selfLabel = stringResource(R.string.rel_self)
     val profiles = remember(familyMembers, selfLabel) {
         buildList {
@@ -96,13 +94,13 @@ fun AddSymptomScreen(
         context.predefinedDataStore.data.map { prefs ->
             prefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet()
         }
-    }.collectAsStateWithLifecycle(initialValue = emptySet())
+    }.collectAsState(initial = emptySet())
 
     val customSymptoms by remember {
         context.predefinedDataStore.data.map { prefs ->
             prefs[PredefinedDataKeys.CUSTOM_SYMPTOMS] ?: emptySet()
         }
-    }.collectAsStateWithLifecycle(initialValue = emptySet())
+    }.collectAsState(initial = emptySet())
 
     val enabledPredefined = remember(disabledSymptoms) {
         PredefinedData.symptoms.filter { it.key !in disabledSymptoms }
@@ -146,21 +144,17 @@ fun AddSymptomScreen(
                 )
             }
             item {
-                ExposedDropdownMenuBox(
-                    expanded = profileExpanded,
-                    onExpandedChange = { profileExpanded = it }
-                ) {
+                Column {
                     OutlinedTextField(
                         value = profiles.firstOrNull { it.id == selectedProfileId }?.label ?: selfLabel,
                         onValueChange = {},
                         readOnly = true,
                         label = { Text(stringResource(R.string.select_person)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = profileExpanded) },
                         modifier = Modifier
-                            .menuAnchor()
+                            .clickable { profileExpanded = true }
                             .fillMaxWidth()
                     )
-                    ExposedDropdownMenu(
+                    DropdownMenu(
                         expanded = profileExpanded,
                         onDismissRequest = { profileExpanded = false }
                     ) {
