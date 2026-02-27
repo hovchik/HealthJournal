@@ -13,51 +13,51 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF0F6B50),
+    primary = Color(0xFF006E6D),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFADF5CB),
-    onPrimaryContainer = Color(0xFF002115),
-    secondary = Color(0xFF4B6358),
+    primaryContainer = Color(0xFF9CF1EF),
+    onPrimaryContainer = Color(0xFF002020),
+    secondary = Color(0xFF4A6362),
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFCDE9D9),
-    onSecondaryContainer = Color(0xFF071F16),
-    tertiary = Color(0xFF3A6471),
+    secondaryContainer = Color(0xFFCDE8E6),
+    onSecondaryContainer = Color(0xFF051F1E),
+    tertiary = Color(0xFF4D5E9B),
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFBDE9F8),
-    onTertiaryContainer = Color(0xFF001F28),
+    tertiaryContainer = Color(0xFFDDE1FF),
+    onTertiaryContainer = Color(0xFF07174F),
     error = Color(0xFFBA1A1A),
-    background = Color(0xFFF6FBF4),
-    onBackground = Color(0xFF171D19),
-    surface = Color(0xFFFBFDF8),
-    onSurface = Color(0xFF171D19),
-    surfaceVariant = Color(0xFFDAE5DB),
-    onSurfaceVariant = Color(0xFF3F4942),
-    outline = Color(0xFF6F7972),
-    outlineVariant = Color(0xFFBFC9C0)
+    background = Color(0xFFF4FBFA),
+    onBackground = Color(0xFF161D1D),
+    surface = Color(0xFFF8FAFA),
+    onSurface = Color(0xFF161D1D),
+    surfaceVariant = Color(0xFFDAE5E4),
+    onSurfaceVariant = Color(0xFF3F4948),
+    outline = Color(0xFF6F7978),
+    outlineVariant = Color(0xFFBEC9C8)
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF92D9B0),
-    onPrimary = Color(0xFF003822),
-    primaryContainer = Color(0xFF005234),
-    onPrimaryContainer = Color(0xFFADF5CB),
-    secondary = Color(0xFFB2CDBE),
-    onSecondary = Color(0xFF1D352A),
-    secondaryContainer = Color(0xFF334B41),
-    onSecondaryContainer = Color(0xFFCDE9D9),
-    tertiary = Color(0xFFA2CDDC),
-    onTertiary = Color(0xFF023542),
-    tertiaryContainer = Color(0xFF214C59),
-    onTertiaryContainer = Color(0xFFBDE9F8),
+    primary = Color(0xFF80D5D3),
+    onPrimary = Color(0xFF003737),
+    primaryContainer = Color(0xFF00504F),
+    onPrimaryContainer = Color(0xFF9CF1EF),
+    secondary = Color(0xFFB1CCCA),
+    onSecondary = Color(0xFF1C3534),
+    secondaryContainer = Color(0xFF334B4A),
+    onSecondaryContainer = Color(0xFFCDE8E6),
+    tertiary = Color(0xFFBDC4FF),
+    onTertiary = Color(0xFF1A2B65),
+    tertiaryContainer = Color(0xFF35457F),
+    onTertiaryContainer = Color(0xFFDDE1FF),
     error = Color(0xFFFFB4AB),
-    background = Color(0xFF0F1511),
-    onBackground = Color(0xFFDFE4DD),
-    surface = Color(0xFF0F1511),
-    onSurface = Color(0xFFDFE4DD),
-    surfaceVariant = Color(0xFF3F4942),
-    onSurfaceVariant = Color(0xFFBFC9C0),
-    outline = Color(0xFF89938B),
-    outlineVariant = Color(0xFF3F4942)
+    background = Color(0xFF0E1515),
+    onBackground = Color(0xFFDEE4E3),
+    surface = Color(0xFF0E1515),
+    onSurface = Color(0xFFDEE4E3),
+    surfaceVariant = Color(0xFF3F4948),
+    onSurfaceVariant = Color(0xFFBEC9C8),
+    outline = Color(0xFF899392),
+    outlineVariant = Color(0xFF3F4948)
 )
 
 private val AppTypography = Typography(
@@ -152,10 +152,11 @@ private val AppShapes = Shapes(
 @Composable
 fun HealthJournalTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context)
             else dynamicLightColorScheme(context)
