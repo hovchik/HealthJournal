@@ -190,7 +190,7 @@ private object SummaryPromptTemplates {
         )
         "zh-CN" -> SummaryInstructions(
             mainInstruction = { days -> "为医生创建过去${days}天的结构化医疗摘要。请用简体中文回复。" },
-            disclaimer = "重要提示：你不做诊断，也不开处方。请使用"可能的原因"、"建议与医生讨论"等措辞。",
+            disclaimer = "重要提示：你不做诊断，也不开处方。请使用「可能的原因」、「建议与医生讨论」等措辞。",
             symptomsHeader = "症状",
             vitalsHeader = "生命体征",
             medicationsHeader = "药物",
@@ -243,7 +243,7 @@ private object PatternPromptTemplates {
         )
         "zh-CN" -> PatternInstructions(
             mainInstruction = { days -> "分析${days}天内医疗数据中的相关性和模式。请用简体中文回复。" },
-            disclaimer = "重要提示：你不做诊断。请使用"可能的关联"、"值得注意"等措辞。",
+            disclaimer = "重要提示：你不做诊断。请使用「可能的关联」、「值得注意」等措辞。",
             symptomsHeader = "症状",
             vitalsHeader = "生命体征",
             findPatterns = "寻找规律、重复出现的模式以及症状和生命体征之间的可能关联。"
