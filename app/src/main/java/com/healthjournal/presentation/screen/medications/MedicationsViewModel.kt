@@ -12,9 +12,12 @@ import kotlinx.coroutines.launch
 class MedicationsViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
 
-    private val activeProfileId = container.userSettingsRepository.getUserSettings()
+    val activeProfileId = container.userSettingsRepository.getUserSettings()
         .map { it.activeProfileId }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    val familyMembers = container.familyMemberRepository.getAllMembers()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val medications = combine(container.getAllMedications(), activeProfileId) { all, profileId ->
         all.filter { it.profileId == profileId }

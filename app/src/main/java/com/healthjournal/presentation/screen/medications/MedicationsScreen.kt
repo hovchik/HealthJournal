@@ -32,15 +32,30 @@ fun MedicationsScreen(
     viewModel: MedicationsViewModel = viewModel()
 ) {
     val medications by viewModel.medications.collectAsStateWithLifecycle()
+    val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
+    val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
+
+    val activeProfileName = if (activeProfileId == 0L) {
+        stringResource(R.string.rel_self)
+    } else {
+        familyMembers.find { it.id == activeProfileId }?.name ?: stringResource(R.string.rel_self)
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        stringResource(R.string.medications_title),
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column {
+                        Text(
+                            stringResource(R.string.medications_title),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            stringResource(R.string.recording_for, activeProfileName),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             )
         },
