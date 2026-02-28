@@ -1,15 +1,12 @@
 package com.healthjournal.presentation.screen.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,64 +43,127 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            SettingsItem(
-                icon = Icons.Default.Person,
-                iconTint = MaterialTheme.colorScheme.primary,
-                title = stringResource(R.string.user_info_title),
-                subtitle = stringResource(R.string.user_info_desc),
-                onClick = onUserInfo
-            )
-            SettingsItem(
-                icon = Icons.Default.Group,
-                iconTint = MaterialTheme.colorScheme.primary,
-                title = stringResource(R.string.family_members_title),
-                subtitle = stringResource(R.string.family_members_desc),
-                onClick = onFamilyMembers
-            )
-            SettingsItem(
-                icon = Icons.Default.Checklist,
-                iconTint = MaterialTheme.colorScheme.tertiary,
-                title = stringResource(R.string.predefined_data_title),
-                subtitle = stringResource(R.string.predefined_data_desc),
-                onClick = onPredefinedData
-            )
-            SettingsItem(
-                icon = Icons.Default.Language,
-                iconTint = MaterialTheme.colorScheme.secondary,
-                title = stringResource(R.string.language_settings_title),
-                subtitle = stringResource(R.string.language_select_prompt),
-                onClick = onLanguageSettings
-            )
-            SettingsItem(
-                icon = Icons.Default.Psychology,
-                iconTint = MaterialTheme.colorScheme.tertiary,
-                title = stringResource(R.string.ai_settings_title),
-                subtitle = stringResource(R.string.ai_settings_desc),
-                onClick = onAiSettings
-            )
+            // Profile section
+            SettingsSection(
+                title = stringResource(R.string.settings_section_profile),
+                color = MaterialTheme.colorScheme.primary
+            ) {
+                SettingsGroupCard {
+                    SettingsListItem(
+                        icon = Icons.Default.Person,
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        title = stringResource(R.string.user_info_title),
+                        subtitle = stringResource(R.string.user_info_desc),
+                        onClick = onUserInfo
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.Group,
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        title = stringResource(R.string.family_members_title),
+                        subtitle = stringResource(R.string.family_members_desc),
+                        onClick = onFamilyMembers
+                    )
+                }
+            }
+
+            // Data section
+            SettingsSection(
+                title = stringResource(R.string.settings_section_data),
+                color = MaterialTheme.colorScheme.tertiary
+            ) {
+                SettingsGroupCard {
+                    SettingsListItem(
+                        icon = Icons.Default.Checklist,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.predefined_data_title),
+                        subtitle = stringResource(R.string.predefined_data_desc),
+                        onClick = onPredefinedData
+                    )
+                }
+            }
+
+            // Preferences section
+            SettingsSection(
+                title = stringResource(R.string.settings_section_preferences),
+                color = MaterialTheme.colorScheme.secondary
+            ) {
+                SettingsGroupCard {
+                    SettingsListItem(
+                        icon = Icons.Default.Language,
+                        iconTint = MaterialTheme.colorScheme.secondary,
+                        title = stringResource(R.string.language_settings_title),
+                        subtitle = stringResource(R.string.language_select_prompt),
+                        onClick = onLanguageSettings
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.Psychology,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.ai_settings_title),
+                        subtitle = stringResource(R.string.ai_settings_desc),
+                        onClick = onAiSettings
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
 
 @Composable
-private fun SettingsItem(
+private fun SettingsSection(
+    title: String,
+    color: Color,
+    content: @Composable () -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            title,
+            style = MaterialTheme.typography.labelLarge,
+            color = color,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+        content()
+    }
+}
+
+@Composable
+private fun SettingsGroupCard(
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(content = content)
+    }
+}
+
+@Composable
+private fun SettingsListItem(
     icon: ImageVector,
     iconTint: Color,
     title: String,
     subtitle: String,
     onClick: () -> Unit
 ) {
-    ElevatedCard(
+    Surface(
         onClick = onClick,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+        color = Color.Transparent
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {

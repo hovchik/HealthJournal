@@ -5,7 +5,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -20,10 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
 import com.healthjournal.domain.model.VitalType
@@ -46,15 +43,6 @@ fun AddVitalScreen(
     var notes by remember { mutableStateOf("") }
     var typeMenuExpanded by remember { mutableStateOf(false) }
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
-
-    val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
-    val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
-    var selectedProfileId by remember { mutableStateOf<Long?>(null) }
-    val effectiveProfileId = selectedProfileId ?: activeProfileId
-
-    LaunchedEffect(activeProfileId) {
-        if (selectedProfileId == null) selectedProfileId = activeProfileId
-    }
 
     val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
         val paths = uris.mapNotNull { uri -> AttachmentHelper.copyToInternal(context, uri) }
@@ -79,15 +67,6 @@ fun AddVitalScreen(
             modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Profile selector
-            ProfileSelector(
-                effectiveProfileId = effectiveProfileId,
-                familyMembers = familyMembers,
-                onSelect = { selectedProfileId = it }
-            )
-
-            HorizontalDivider()
-
             // Vital type selector
             ExposedDropdownMenuBox(
                 expanded = typeMenuExpanded,
@@ -179,7 +158,7 @@ fun AddVitalScreen(
                     if (v != null) {
                         viewModel.addNewVitalSign(
                             type = selectedType, value = v, secondaryValue = secondaryValue.toDoubleOrNull(),
-                            notes = notes, attachmentPaths = attachmentPaths, profileId = effectiveProfileId
+                            notes = notes, attachmentPaths = attachmentPaths
                         )
                     }
                 },

@@ -204,6 +204,11 @@
     <string name="add_custom_relation">Add custom relationship</string>
     <string name="ai_browse_model">Browse</string>
 
+    <!-- Settings Sections -->
+    <string name="settings_section_profile">Profile</string>
+    <string name="settings_section_data">Data</string>
+    <string name="settings_section_preferences">Preferences</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Headache</string>
     <string name="symptom_migraine">Migraine</string>

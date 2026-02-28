@@ -12,11 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
-import com.healthjournal.presentation.screen.home.ProfileSelector
-import com.healthjournal.presentation.screen.home.HomeViewModel
 import com.healthjournal.util.PredefinedData
 import com.healthjournal.util.PredefinedDataKeys
 import com.healthjournal.util.predefinedDataStore
@@ -27,8 +24,7 @@ import kotlinx.coroutines.flow.map
 @Composable
 fun AddMedicationScreen(
     onBack: () -> Unit,
-    viewModel: MedicationsViewModel = viewModel(),
-    homeViewModel: HomeViewModel = viewModel()
+    viewModel: MedicationsViewModel = viewModel()
 ) {
     val context = LocalContext.current
     var name by remember { mutableStateOf("") }
@@ -36,15 +32,6 @@ fun AddMedicationScreen(
     var frequency by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var dropdownExpanded by remember { mutableStateOf(false) }
-
-    val activeProfileId by homeViewModel.activeProfileId.collectAsStateWithLifecycle()
-    val familyMembers by homeViewModel.familyMembers.collectAsStateWithLifecycle()
-    var selectedProfileId by remember { mutableStateOf<Long?>(null) }
-    val effectiveProfileId = selectedProfileId ?: activeProfileId
-
-    LaunchedEffect(activeProfileId) {
-        if (selectedProfileId == null) selectedProfileId = activeProfileId
-    }
 
     val disabledMedications by remember {
         context.predefinedDataStore.data.map { prefs ->
@@ -86,15 +73,6 @@ fun AddMedicationScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Profile selector
-            ProfileSelector(
-                effectiveProfileId = effectiveProfileId,
-                familyMembers = familyMembers,
-                onSelect = { selectedProfileId = it }
-            )
-
-            HorizontalDivider()
-
             // Medication name dropdown with search
             ExposedDropdownMenuBox(
                 expanded = dropdownExpanded,
@@ -174,7 +152,7 @@ fun AddMedicationScreen(
             Button(
                 onClick = {
                     if (name.isNotBlank() && dosage.isNotBlank()) {
-                        viewModel.addNewMedication(name, dosage, frequency, notes, effectiveProfileId)
+                        viewModel.addNewMedication(name, dosage, frequency, notes)
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),

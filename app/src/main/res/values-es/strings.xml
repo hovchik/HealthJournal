@@ -204,6 +204,11 @@
     <string name="add_custom_relation">Agregar parentesco personalizado</string>
     <string name="ai_browse_model">Explorar</string>
 
+    <!-- Settings Sections -->
+    <string name="settings_section_profile">Perfil</string>
+    <string name="settings_section_data">Datos</string>
+    <string name="settings_section_preferences">Preferencias</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Dolor de cabeza</string>
     <string name="symptom_migraine">Migraña</string>

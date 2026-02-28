@@ -204,6 +204,11 @@
     <string name="add_custom_relation">Добавить своё родство</string>
     <string name="ai_browse_model">Обзор</string>
 
+    <!-- Settings Sections -->
+    <string name="settings_section_profile">Профиль</string>
+    <string name="settings_section_data">Данные</string>
+    <string name="settings_section_preferences">Настройки</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Головная боль</string>
     <string name="symptom_migraine">Мигрень</string>

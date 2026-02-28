@@ -3,7 +3,6 @@ package com.healthjournal.presentation.screen.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -14,18 +13,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.InsertDriveFile
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
 import com.healthjournal.util.AttachmentHelper
@@ -50,15 +45,6 @@ fun AddSymptomScreen(
     var notes by remember { mutableStateOf("") }
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
     var dropdownExpanded by remember { mutableStateOf(false) }
-
-    val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
-    val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
-    var selectedProfileId by remember { mutableStateOf<Long?>(null) }
-    val effectiveProfileId = selectedProfileId ?: activeProfileId
-
-    LaunchedEffect(activeProfileId) {
-        if (selectedProfileId == null) selectedProfileId = activeProfileId
-    }
 
     val disabledSymptoms by remember {
         context.predefinedDataStore.data.map { prefs -> prefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet() }
@@ -101,15 +87,6 @@ fun AddSymptomScreen(
             modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Profile selector
-            ProfileSelector(
-                effectiveProfileId = effectiveProfileId,
-                familyMembers = familyMembers,
-                onSelect = { selectedProfileId = it }
-            )
-
-            HorizontalDivider()
-
             // Symptom name dropdown with search
             ExposedDropdownMenuBox(
                 expanded = dropdownExpanded,
@@ -242,7 +219,7 @@ fun AddSymptomScreen(
                             name = name, intensity = intensity.toInt(),
                             durationMinutes = duration.toIntOrNull(),
                             triggers = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                            notes = notes, attachmentPaths = attachmentPaths, profileId = effectiveProfileId
+                            notes = notes, attachmentPaths = attachmentPaths
                         )
                     }
                 },
@@ -251,45 +228,6 @@ fun AddSymptomScreen(
             ) {
                 Text(stringResource(R.string.save), style = MaterialTheme.typography.titleSmall)
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun ProfileSelector(
-    effectiveProfileId: Long,
-    familyMembers: List<com.healthjournal.domain.model.FamilyMember>,
-    onSelect: (Long) -> Unit
-) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        FilterChip(
-            selected = effectiveProfileId == 0L,
-            onClick = { onSelect(0L) },
-            label = { Text(stringResource(R.string.rel_self)) },
-            leadingIcon = {
-                Box(modifier = Modifier.size(24.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Person, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
-                }
-            }
-        )
-        familyMembers.forEach { member ->
-            FilterChip(
-                selected = effectiveProfileId == member.id,
-                onClick = { onSelect(member.id) },
-                label = { Text(member.name) },
-                leadingIcon = {
-                    Box(modifier = Modifier.size(24.dp).clip(CircleShape).background(Color(member.avatarColor)),
-                        contentAlignment = Alignment.Center) {
-                        Text(member.name.take(1).uppercase(), color = Color.White, style = MaterialTheme.typography.labelSmall)
-                    }
-                }
-            )
         }
     }
 }

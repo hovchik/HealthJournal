@@ -16,14 +16,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,6 +35,16 @@ fun AiSettingsScreen(
 ) {
     val settings by viewModel.aiSettings.collectAsStateWithLifecycle()
     val validationMessage by viewModel.validationMessage.collectAsStateWithLifecycle()
+
+    val providerOptions = listOf(
+        AiProviderId.GEMINI_NANO.key to stringResource(R.string.ai_provider_system),
+        AiProviderId.CLAUDE.key to stringResource(R.string.ai_provider_claude),
+        AiProviderId.OPENAI_COMPATIBLE.key to stringResource(R.string.ai_provider_openai),
+        AiProviderId.LOCAL.key to stringResource(R.string.ai_provider_local)
+    )
+    var providerMenuExpanded by remember { mutableStateOf(false) }
+    val selectedProviderLabel = providerOptions.firstOrNull { it.first == settings.selectedProviderId }?.second
+        ?: stringResource(R.string.ai_provider_system)
 
     Scaffold(
         topBar = {
@@ -60,7 +67,12 @@ fun AiSettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // AI enabled toggle
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                ),
+                shape = MaterialTheme.shapes.large
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -101,79 +113,82 @@ fun AiSettingsScreen(
 
             AnimatedVisibility(visible = settings.enabled) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    // Provider selection header
-                    Text(
-                        stringResource(R.string.ai_select_provider),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    // Provider selector dropdown
+                    ExposedDropdownMenuBox(
+                        expanded = providerMenuExpanded,
+                        onExpandedChange = { providerMenuExpanded = it }
+                    ) {
+                        OutlinedTextField(
+                            value = selectedProviderLabel,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.ai_select_provider)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = providerMenuExpanded) },
+                            modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        )
+                        ExposedDropdownMenu(
+                            expanded = providerMenuExpanded,
+                            onDismissRequest = { providerMenuExpanded = false }
+                        ) {
+                            providerOptions.forEach { (key, label) ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(label)
+                                            if (key == AiProviderId.GEMINI_NANO.key) {
+                                                Surface(
+                                                    shape = MaterialTheme.shapes.extraSmall,
+                                                    color = MaterialTheme.colorScheme.tertiaryContainer
+                                                ) {
+                                                    Text(
+                                                        stringResource(R.string.system_ai_recommended),
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    },
+                                    onClick = {
+                                        viewModel.selectProvider(key)
+                                        providerMenuExpanded = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            when (key) {
+                                                AiProviderId.GEMINI_NANO.key -> Icons.Default.PhoneAndroid
+                                                AiProviderId.CLAUDE.key -> Icons.Default.Star
+                                                AiProviderId.OPENAI_COMPATIBLE.key -> Icons.Default.Cloud
+                                                else -> Icons.Default.Folder
+                                            },
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
 
-                    // On-device AI (Gemini Nano) — recommended
-                    ProviderCard(
-                        icon = Icons.Default.PhoneAndroid,
-                        name = stringResource(R.string.ai_provider_system),
-                        description = stringResource(R.string.system_ai_desc),
-                        badge = stringResource(R.string.system_ai_recommended),
-                        badgeColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        badgeTextColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        selected = settings.selectedProviderId == AiProviderId.GEMINI_NANO.key,
-                        onClick = { viewModel.selectProvider(AiProviderId.GEMINI_NANO.key) }
-                    )
-
-                    AnimatedVisibility(visible = settings.selectedProviderId == AiProviderId.GEMINI_NANO.key) {
-                        GeminiNanoConfigCard(
+                    // Provider-specific config
+                    when (settings.selectedProviderId) {
+                        AiProviderId.GEMINI_NANO.key -> GeminiNanoConfigSection(
                             config = settings.geminiNanoConfig,
                             onUpdate = { viewModel.updateGeminiNanoConfig(it) }
                         )
-                    }
-
-                    HorizontalDivider()
-
-                    // Claude
-                    ProviderCard(
-                        icon = Icons.Default.Star,
-                        name = stringResource(R.string.ai_provider_claude),
-                        description = stringResource(R.string.ai_api_key_required),
-                        selected = settings.selectedProviderId == AiProviderId.CLAUDE.key,
-                        onClick = { viewModel.selectProvider(AiProviderId.CLAUDE.key) }
-                    )
-
-                    AnimatedVisibility(visible = settings.selectedProviderId == AiProviderId.CLAUDE.key) {
-                        ClaudeConfigCard(
+                        AiProviderId.CLAUDE.key -> ClaudeConfigSection(
                             config = settings.claudeConfig,
                             onUpdate = { viewModel.updateClaudeConfig(it) }
                         )
-                    }
-
-                    // OpenAI-compatible
-                    ProviderCard(
-                        icon = Icons.Default.Cloud,
-                        name = stringResource(R.string.ai_provider_openai),
-                        description = stringResource(R.string.ai_api_key_required),
-                        selected = settings.selectedProviderId == AiProviderId.OPENAI_COMPATIBLE.key,
-                        onClick = { viewModel.selectProvider(AiProviderId.OPENAI_COMPATIBLE.key) }
-                    )
-
-                    AnimatedVisibility(visible = settings.selectedProviderId == AiProviderId.OPENAI_COMPATIBLE.key) {
-                        OpenAiConfigCard(
+                        AiProviderId.OPENAI_COMPATIBLE.key -> OpenAiConfigSection(
                             config = settings.openAiConfig,
                             onUpdate = { viewModel.updateOpenAiConfig(it) }
                         )
-                    }
-
-                    HorizontalDivider()
-
-                    // Local model
-                    ProviderCard(
-                        icon = Icons.Default.Folder,
-                        name = stringResource(R.string.ai_provider_local),
-                        description = stringResource(R.string.ai_local_model_desc),
-                        selected = settings.selectedProviderId == AiProviderId.LOCAL.key,
-                        onClick = { viewModel.selectProvider(AiProviderId.LOCAL.key) }
-                    )
-
-                    AnimatedVisibility(visible = settings.selectedProviderId == AiProviderId.LOCAL.key) {
-                        LocalConfigCard(
+                        AiProviderId.LOCAL.key -> LocalConfigSection(
                             config = settings.localAiConfig,
                             onUpdate = { viewModel.updateLocalConfig(it) }
                         )
@@ -182,7 +197,12 @@ fun AiSettingsScreen(
                     HorizontalDivider()
 
                     // Privacy redaction
-                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        ),
+                        shape = MaterialTheme.shapes.large
+                    ) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -263,102 +283,20 @@ fun AiSettingsScreen(
 }
 
 @Composable
-private fun ProviderCard(
-    icon: ImageVector,
-    name: String,
-    description: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    badge: String? = null,
-    badgeColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
-    badgeTextColor: Color = MaterialTheme.colorScheme.onTertiaryContainer
-) {
-    Card(
-        onClick = onClick,
-        colors = if (selected) CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ) else CardDefaults.elevatedCardColors(),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (selected) 4.dp else 1.dp
-        )
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Surface(
-                shape = CircleShape,
-                color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f)
-                else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
-                modifier = Modifier.size(40.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        icon,
-                        contentDescription = null,
-                        tint = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
-                        else MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        name,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    if (badge != null) {
-                        Surface(
-                            shape = MaterialTheme.shapes.extraSmall,
-                            color = badgeColor
-                        ) {
-                            Text(
-                                badge,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = badgeTextColor,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
-                }
-                Text(
-                    description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            RadioButton(
-                selected = selected,
-                onClick = onClick
-            )
-        }
-    }
-}
-
-@Composable
-private fun GeminiNanoConfigCard(
+private fun GeminiNanoConfigSection(
     config: GeminiNanoConfig,
     onUpdate: (GeminiNanoConfig) -> Unit
 ) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                stringResource(R.string.ai_provider_gemini_nano),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold
-            )
             Text(
                 stringResource(R.string.gemini_nano_desc),
                 style = MaterialTheme.typography.bodySmall,
@@ -395,11 +333,16 @@ private fun GeminiNanoConfigCard(
 }
 
 @Composable
-private fun ClaudeConfigCard(
+private fun ClaudeConfigSection(
     config: ClaudeConfig,
     onUpdate: (ClaudeConfig) -> Unit
 ) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -439,11 +382,16 @@ private fun ClaudeConfigCard(
 }
 
 @Composable
-private fun OpenAiConfigCard(
+private fun OpenAiConfigSection(
     config: OpenAiConfig,
     onUpdate: (OpenAiConfig) -> Unit
 ) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -475,7 +423,7 @@ private fun OpenAiConfigCard(
 }
 
 @Composable
-private fun LocalConfigCard(
+private fun LocalConfigSection(
     config: LocalAiConfig,
     onUpdate: (LocalAiConfig) -> Unit
 ) {
@@ -491,7 +439,12 @@ private fun LocalConfigCard(
         }
     }
 
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
