@@ -171,6 +171,7 @@
     <string name="family_members_title">家庭成员</string>
     <string name="family_members_desc">个人档案和健康日记</string>
     <string name="add_family_member">添加家庭成员</string>
+    <string name="edit_family_member">编辑</string>
     <string name="member_name">姓名</string>
     <string name="relationship">关系</string>
     <string name="default_profile">默认档案</string>
@@ -199,6 +200,9 @@
     <string name="add_custom_symptom">添加自定义症状</string>
     <string name="add_custom_medication">添加自定义药物</string>
     <string name="custom_label">自定义</string>
+    <string name="predefined_relations_section">关系</string>
+    <string name="add_custom_relation">添加自定义关系</string>
+    <string name="ai_browse_model">浏览</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">头痛</string>

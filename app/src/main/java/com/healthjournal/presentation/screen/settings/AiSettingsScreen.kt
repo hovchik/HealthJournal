@@ -1,5 +1,8 @@
 package com.healthjournal.presentation.screen.settings
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -326,7 +331,9 @@ private fun ProviderCard(
                     description,
                     style = MaterialTheme.typography.bodySmall,
                     color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                    else MaterialTheme.colorScheme.onSurfaceVariant
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
             RadioButton(
@@ -472,6 +479,18 @@ private fun LocalConfigCard(
     config: LocalAiConfig,
     onUpdate: (LocalAiConfig) -> Unit
 ) {
+    val context = LocalContext.current
+    val filePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            context.contentResolver.takePersistableUriPermission(
+                it, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            onUpdate(config.copy(modelPath = it.toString()))
+        }
+    }
+
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -482,7 +501,12 @@ private fun LocalConfigCard(
                 onValueChange = { onUpdate(config.copy(modelPath = it)) },
                 label = { Text(stringResource(R.string.ai_model_path)) },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                trailingIcon = {
+                    IconButton(onClick = { filePicker.launch(arrayOf("*/*")) }) {
+                        Icon(Icons.Default.FolderOpen, contentDescription = stringResource(R.string.ai_browse_model))
+                    }
+                }
             )
             OutlinedTextField(
                 value = config.contextSize.toString(),

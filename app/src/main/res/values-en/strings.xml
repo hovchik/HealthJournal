@@ -171,6 +171,7 @@
     <string name="family_members_title">Family Members</string>
     <string name="family_members_desc">Profiles and health journals</string>
     <string name="add_family_member">Add family member</string>
+    <string name="edit_family_member">Edit</string>
     <string name="member_name">Name</string>
     <string name="relationship">Relationship</string>
     <string name="default_profile">Default profile</string>
@@ -199,6 +200,9 @@
     <string name="add_custom_symptom">Add custom symptom</string>
     <string name="add_custom_medication">Add custom medication</string>
     <string name="custom_label">Custom</string>
+    <string name="predefined_relations_section">Relationships</string>
+    <string name="add_custom_relation">Add custom relationship</string>
+    <string name="ai_browse_model">Browse</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Headache</string>

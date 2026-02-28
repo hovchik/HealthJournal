@@ -13,6 +13,8 @@ val Context.predefinedDataStore: DataStore<Preferences> by preferencesDataStore(
 object PredefinedDataKeys {
     val DISABLED_SYMPTOMS = stringSetPreferencesKey("disabled_symptoms")
     val DISABLED_MEDICATIONS = stringSetPreferencesKey("disabled_medications")
+    val DISABLED_RELATIONS = stringSetPreferencesKey("disabled_relations")
     val CUSTOM_SYMPTOMS = stringSetPreferencesKey("custom_symptoms")
     val CUSTOM_MEDICATIONS = stringSetPreferencesKey("custom_medications")
+    val CUSTOM_RELATIONS = stringSetPreferencesKey("custom_relations")
 }

@@ -65,6 +65,11 @@ class GeminiNanoProviderImpl(
                 return@withContext runViaMlKit(prompt, config)
             } catch (_: Exception) { }
 
+            // Try Samsung AI SDK
+            try {
+                return@withContext runViaSamsungAi(prompt, config)
+            } catch (_: Exception) { }
+
             // Fallback: local data extraction
             buildFallbackResponse(prompt)
         }
@@ -118,19 +123,51 @@ class GeminiNanoProviderImpl(
         return text as? String ?: "No response from ML Kit GenAI"
     }
 
+    /**
+     * Run inference via Samsung AI SDK (Galaxy AI).
+     */
+    private fun runViaSamsungAi(prompt: String, config: GeminiNanoConfig): String {
+        val engineClass = Class.forName("com.samsung.android.sdk.aiinference.InferenceEngine")
+        val engine = engineClass.getMethod("getInstance", Context::class.java)
+            .invoke(null, context)
+        val response = engineClass.getMethod("generateText", String::class.java)
+            .invoke(engine, prompt)
+        return response as? String ?: "No response from Samsung AI"
+    }
+
     private fun isGeminiNanoAvailable(): Boolean {
         if (Build.VERSION.SDK_INT < 34) return false
-        return try {
-            Class.forName("com.google.ai.edge.aicore.GenerativeModel")
-            true
-        } catch (_: ClassNotFoundException) {
-            try {
-                Class.forName("com.google.mlkit.genai.inference.GenerativeModel")
-                true
-            } catch (_: ClassNotFoundException) {
-                false
-            }
+
+        // Check SDK classes (Google AI Edge, ML Kit GenAI, Samsung AI)
+        val sdkClasses = listOf(
+            "com.google.ai.edge.aicore.GenerativeModel",
+            "com.google.mlkit.genai.inference.GenerativeModel",
+            "com.samsung.android.sdk.aiinference.InferenceEngine"
+        )
+        for (cls in sdkClasses) {
+            try { Class.forName(cls); return true }
+            catch (_: ClassNotFoundException) { }
         }
+
+        // Check installed AI Core packages via PackageManager
+        val aiPackages = listOf(
+            "com.google.android.aicore",
+            "com.samsung.android.aicoreondevice",
+            "com.samsung.android.galaxyai"
+        )
+        val pm = context.packageManager
+        for (pkg in aiPackages) {
+            try { pm.getPackageInfo(pkg, 0); return true }
+            catch (_: Exception) { }
+        }
+
+        // Known compatible manufacturers on API 34+
+        val manufacturer = Build.MANUFACTURER.lowercase()
+        if (manufacturer == "samsung" || manufacturer == "google") {
+            return true
+        }
+
+        return false
     }
 
     private fun buildFallbackResponse(prompt: String): String {

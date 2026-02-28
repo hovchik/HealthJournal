@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.DeleteOutline
@@ -55,6 +56,10 @@ class FamilyMembersViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
+    fun updateMember(member: FamilyMember) {
+        viewModelScope.launch { repo.updateMember(member) }
+    }
+
     fun deleteMember(member: FamilyMember) {
         viewModelScope.launch { repo.deleteMember(member) }
     }
@@ -73,6 +78,7 @@ fun FamilyMembersScreen(
     val members by viewModel.members.collectAsStateWithLifecycle()
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
+    var editingMember by remember { mutableStateOf<FamilyMember?>(null) }
 
     Scaffold(
         topBar = {
@@ -273,6 +279,13 @@ fun FamilyMembersScreen(
                                 }
                             }
                         }
+                        IconButton(onClick = { editingMember = member }) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.edit_family_member),
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                            )
+                        }
                         IconButton(onClick = { viewModel.deleteMember(member) }) {
                             Icon(
                                 Icons.Outlined.DeleteOutline,
@@ -287,11 +300,27 @@ fun FamilyMembersScreen(
     }
 
     if (showAddDialog) {
-        AddFamilyMemberDialog(
+        FamilyMemberDialog(
+            title = stringResource(R.string.add_family_member),
+            initialName = "",
+            initialRelationship = "",
             onDismiss = { showAddDialog = false },
-            onAdd = { name, rel ->
+            onConfirm = { name, rel ->
                 viewModel.addMember(name, rel)
                 showAddDialog = false
+            }
+        )
+    }
+
+    editingMember?.let { member ->
+        FamilyMemberDialog(
+            title = stringResource(R.string.edit_family_member),
+            initialName = member.name,
+            initialRelationship = member.relationship,
+            onDismiss = { editingMember = null },
+            onConfirm = { name, rel ->
+                viewModel.updateMember(member.copy(name = name, relationship = rel))
+                editingMember = null
             }
         )
     }
@@ -299,19 +328,36 @@ fun FamilyMembersScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun AddFamilyMemberDialog(
+private fun FamilyMemberDialog(
+    title: String,
+    initialName: String,
+    initialRelationship: String,
     onDismiss: () -> Unit,
-    onAdd: (name: String, relationship: String) -> Unit
+    onConfirm: (name: String, relationship: String) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var relationship by remember { mutableStateOf("") }
-    var customRelationship by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf(initialName) }
     val otherLabel = stringResource(R.string.rel_other)
+
+    // Determine initial chip state from initialRelationship
+    val predefinedLabels = PredefinedData.relationships.map { stringResource(it) }
+    val initialIsPredefined = initialRelationship in predefinedLabels
+    var relationship by remember {
+        mutableStateOf(
+            if (initialIsPredefined) initialRelationship
+            else if (initialRelationship.isNotBlank()) otherLabel
+            else ""
+        )
+    }
+    var customRelationship by remember {
+        mutableStateOf(
+            if (!initialIsPredefined && initialRelationship.isNotBlank()) initialRelationship else ""
+        )
+    }
     val isOtherSelected = relationship == otherLabel
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_family_member)) },
+        title = { Text(title) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
@@ -357,7 +403,7 @@ private fun AddFamilyMemberDialog(
                     } else {
                         relationship
                     }
-                    onAdd(name, rel)
+                    onConfirm(name, rel)
                 },
                 enabled = name.isNotBlank()
             ) { Text(stringResource(R.string.save)) }

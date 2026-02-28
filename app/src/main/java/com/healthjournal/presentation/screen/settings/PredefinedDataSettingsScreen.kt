@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Healing
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.Search
@@ -37,11 +38,15 @@ fun PredefinedDataSettingsScreen(
     val disabledMedications by viewModel.disabledMedications.collectAsStateWithLifecycle()
     val customSymptoms by viewModel.customSymptoms.collectAsStateWithLifecycle()
     val customMedications by viewModel.customMedications.collectAsStateWithLifecycle()
+    val disabledRelations by viewModel.disabledRelations.collectAsStateWithLifecycle()
+    val customRelations by viewModel.customRelations.collectAsStateWithLifecycle()
 
     var showAddSymptomDialog by remember { mutableStateOf(false) }
     var showAddMedicationDialog by remember { mutableStateOf(false) }
+    var showAddRelationDialog by remember { mutableStateOf(false) }
     var symptomsExpanded by rememberSaveable { mutableStateOf(false) }
     var medicationsExpanded by rememberSaveable { mutableStateOf(false) }
+    var relationsExpanded by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
@@ -106,6 +111,19 @@ fun PredefinedDataSettingsScreen(
                 customMedications.toList()
             } else {
                 customMedications.filter { it.contains(searchQuery, ignoreCase = true) }.toList()
+            }
+
+            val filteredRelations = if (searchQuery.isBlank()) {
+                PredefinedData.relationshipItems
+            } else {
+                PredefinedData.relationshipItems.filter { item ->
+                    context.getString(item.nameResId).contains(searchQuery, ignoreCase = true)
+                }
+            }
+            val filteredCustomRelations = if (searchQuery.isBlank()) {
+                customRelations.toList()
+            } else {
+                customRelations.filter { it.contains(searchQuery, ignoreCase = true) }.toList()
             }
 
             val isSearching = searchQuery.isNotBlank()
@@ -177,6 +195,41 @@ fun PredefinedDataSettingsScreen(
                     )
                 }
             }
+
+            item(key = "section_divider_2") { Spacer(modifier = Modifier.height(8.dp)) }
+
+            // Relations section header
+            item(key = "relations_header") {
+                SectionHeader(
+                    icon = { Icon(Icons.Default.Group, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(22.dp)) },
+                    title = stringResource(R.string.predefined_relations_section),
+                    count = PredefinedData.relationshipItems.count { it.key !in disabledRelations } + customRelations.size,
+                    total = PredefinedData.relationshipItems.size + customRelations.size,
+                    expanded = relationsExpanded || isSearching,
+                    onToggle = { if (!isSearching) relationsExpanded = !relationsExpanded },
+                    onAdd = { showAddRelationDialog = true }
+                )
+            }
+
+            // Relations content
+            if (relationsExpanded || isSearching) {
+                items(filteredRelations, key = { "r_${it.key}" }) { item ->
+                    val enabled = item.key !in disabledRelations
+                    val label = stringResource(item.nameResId)
+                    ToggleItem(
+                        label = label,
+                        checked = enabled,
+                        onCheckedChange = { viewModel.toggleRelation(item.key, it) }
+                    )
+                }
+
+                items(filteredCustomRelations, key = { "cr_$it" }) { custom ->
+                    CustomItem(
+                        label = custom,
+                        onRemove = { viewModel.removeCustomRelation(custom) }
+                    )
+                }
+            }
         }
     }
 
@@ -198,6 +251,17 @@ fun PredefinedDataSettingsScreen(
             onConfirm = { name ->
                 viewModel.addCustomMedication(name)
                 showAddMedicationDialog = false
+            }
+        )
+    }
+
+    if (showAddRelationDialog) {
+        AddCustomItemDialog(
+            title = stringResource(R.string.add_custom_relation),
+            onDismiss = { showAddRelationDialog = false },
+            onConfirm = { name ->
+                viewModel.addCustomRelation(name)
+                showAddRelationDialog = false
             }
         )
     }

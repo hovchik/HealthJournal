@@ -149,4 +149,17 @@ object PredefinedData {
         R.string.rel_friend,
         R.string.rel_other
     )
+
+    val relationshipItems = listOf(
+        PredefinedItem("spouse", R.string.rel_spouse),
+        PredefinedItem("child", R.string.rel_child),
+        PredefinedItem("parent", R.string.rel_parent),
+        PredefinedItem("sibling", R.string.rel_sibling),
+        PredefinedItem("grandparent", R.string.rel_grandparent),
+        PredefinedItem("grandchild", R.string.rel_grandchild),
+        PredefinedItem("uncle_aunt", R.string.rel_uncle_aunt),
+        PredefinedItem("cousin", R.string.rel_cousin),
+        PredefinedItem("friend", R.string.rel_friend),
+        PredefinedItem("other", R.string.rel_other)
+    )
 }

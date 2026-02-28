@@ -32,6 +32,14 @@ class PredefinedDataSettingsViewModel(application: Application) : AndroidViewMod
         .map { it[PredefinedDataKeys.CUSTOM_MEDICATIONS] ?: emptySet() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
+    val disabledRelations: StateFlow<Set<String>> = dataStore.data
+        .map { it[PredefinedDataKeys.DISABLED_RELATIONS] ?: emptySet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
+    val customRelations: StateFlow<Set<String>> = dataStore.data
+        .map { it[PredefinedDataKeys.CUSTOM_RELATIONS] ?: emptySet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
     fun toggleSymptom(key: String, enabled: Boolean) {
         viewModelScope.launch {
             dataStore.edit { prefs ->
@@ -88,6 +96,36 @@ class PredefinedDataSettingsViewModel(application: Application) : AndroidViewMod
                 val current = prefs[PredefinedDataKeys.CUSTOM_MEDICATIONS]?.toMutableSet() ?: mutableSetOf()
                 current.remove(name)
                 prefs[PredefinedDataKeys.CUSTOM_MEDICATIONS] = current
+            }
+        }
+    }
+
+    fun toggleRelation(key: String, enabled: Boolean) {
+        viewModelScope.launch {
+            dataStore.edit { prefs ->
+                val current = prefs[PredefinedDataKeys.DISABLED_RELATIONS]?.toMutableSet() ?: mutableSetOf()
+                if (enabled) current.remove(key) else current.add(key)
+                prefs[PredefinedDataKeys.DISABLED_RELATIONS] = current
+            }
+        }
+    }
+
+    fun addCustomRelation(name: String) {
+        viewModelScope.launch {
+            dataStore.edit { prefs ->
+                val current = prefs[PredefinedDataKeys.CUSTOM_RELATIONS]?.toMutableSet() ?: mutableSetOf()
+                current.add(name)
+                prefs[PredefinedDataKeys.CUSTOM_RELATIONS] = current
+            }
+        }
+    }
+
+    fun removeCustomRelation(name: String) {
+        viewModelScope.launch {
+            dataStore.edit { prefs ->
+                val current = prefs[PredefinedDataKeys.CUSTOM_RELATIONS]?.toMutableSet() ?: mutableSetOf()
+                current.remove(name)
+                prefs[PredefinedDataKeys.CUSTOM_RELATIONS] = current
             }
         }
     }
