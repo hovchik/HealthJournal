@@ -42,6 +42,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         profileId: Long? = null
     ) {
         viewModelScope.launch {
+            val currentProfileId = profileId
+                ?: container.userSettingsRepository.getUserSettings().first().activeProfileId
             container.addSymptom(
                 Symptom(
                     name = name,
@@ -49,7 +51,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     durationMinutes = durationMinutes,
                     triggers = triggers,
                     notes = notes,
-                    profileId = profileId ?: activeProfileId.value,
+                    profileId = currentProfileId,
                     attachmentPaths = attachmentPaths
                 )
             )
@@ -66,13 +68,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         profileId: Long? = null
     ) {
         viewModelScope.launch {
+            val currentProfileId = profileId
+                ?: container.userSettingsRepository.getUserSettings().first().activeProfileId
             container.addVitalSign(
                 VitalSign(
                     type = type,
                     value = value,
                     secondaryValue = secondaryValue,
                     notes = notes,
-                    profileId = profileId ?: activeProfileId.value,
+                    profileId = currentProfileId,
                     attachmentPaths = attachmentPaths
                 )
             )

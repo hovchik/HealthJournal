@@ -62,7 +62,7 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             _uiState.value = AiReportUiState(isLoading = true)
             val settings = getAiSettings()
-            val profileId = activeProfileId.value
+            val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
             container.generateAiSummary(periodDays, getOutputLanguage(), settings, profileId)
                 .onSuccess { _uiState.value = AiReportUiState() }
                 .onFailure { _uiState.value = AiReportUiState(error = it.message) }
@@ -73,7 +73,7 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             _uiState.value = AiReportUiState(isLoading = true)
             val settings = getAiSettings()
-            val profileId = activeProfileId.value
+            val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
             container.generatePatternAnalysis(periodDays, getOutputLanguage(), settings, profileId)
                 .onSuccess { _uiState.value = AiReportUiState() }
                 .onFailure { _uiState.value = AiReportUiState(error = it.message) }

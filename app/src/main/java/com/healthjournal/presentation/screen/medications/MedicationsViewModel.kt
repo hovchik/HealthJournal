@@ -28,13 +28,15 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
 
     fun addNewMedication(name: String, dosage: String, frequency: String, notes: String, profileId: Long? = null) {
         viewModelScope.launch {
+            val currentProfileId = profileId
+                ?: container.userSettingsRepository.getUserSettings().first().activeProfileId
             container.addMedication(
                 Medication(
                     name = name,
                     dosage = dosage,
                     frequency = frequency,
                     notes = notes,
-                    profileId = profileId ?: activeProfileId.value
+                    profileId = currentProfileId
                 )
             )
             _saveSuccess.emit(true)
