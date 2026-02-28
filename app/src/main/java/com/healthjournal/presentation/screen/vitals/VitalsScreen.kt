@@ -23,6 +23,7 @@ import com.healthjournal.R
 import com.healthjournal.domain.model.VitalSign
 import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +40,10 @@ fun VitalsScreen(
     } else {
         familyMembers.find { it.id == activeProfileId }?.name ?: stringResource(R.string.rel_self)
     }
+
+    val todayLabel = stringResource(R.string.date_today)
+    val yesterdayLabel = stringResource(R.string.date_yesterday)
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
 
     Scaffold(
         topBar = {
@@ -90,6 +95,9 @@ fun VitalsScreen(
                 }
             }
         } else {
+            val vitalsByDate = vitals.groupBy { it.recordedAt.toLocalDate() }
+                .toSortedMap(compareByDescending { it })
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -97,9 +105,14 @@ fun VitalsScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(vitals, key = { it.id }) { vital ->
-                    AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
-                        VitalDetailCard(vital, onDelete = { viewModel.removeVital(vital) })
+                vitalsByDate.forEach { (date, vitalsForDate) ->
+                    item(key = "date_$date") {
+                        DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
+                    }
+                    items(vitalsForDate, key = { it.id }) { vital ->
+                        AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
+                            VitalDetailCard(vital, onDelete = { viewModel.removeVital(vital) })
+                        }
                     }
                 }
             }
@@ -108,8 +121,30 @@ fun VitalsScreen(
 }
 
 @Composable
+private fun DateHeader(
+    date: LocalDate,
+    todayLabel: String,
+    yesterdayLabel: String,
+    dateFormatter: DateTimeFormatter
+) {
+    val today = LocalDate.now()
+    val label = when (date) {
+        today -> todayLabel
+        today.minusDays(1) -> yesterdayLabel
+        else -> date.format(dateFormatter)
+    }
+    Text(
+        label,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+    )
+}
+
+@Composable
 private fun VitalDetailCard(vital: VitalSign, onDelete: () -> Unit) {
-    val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
+    val formatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val valueStr = if (vital.secondaryValue != null) {
         "${vital.value.toInt()}/${vital.secondaryValue.toInt()}"
     } else {

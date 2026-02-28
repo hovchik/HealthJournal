@@ -209,6 +209,10 @@
     <string name="settings_section_data">数据</string>
     <string name="settings_section_preferences">偏好设置</string>
 
+    <!-- Date Grouping -->
+    <string name="date_today">今天</string>
+    <string name="date_yesterday">昨天</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">头痛</string>
     <string name="symptom_migraine">偏头痛</string>

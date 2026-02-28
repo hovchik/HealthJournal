@@ -24,6 +24,7 @@ import com.healthjournal.domain.model.Symptom
 import com.healthjournal.domain.model.VitalSign
 import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,6 +44,10 @@ fun HomeScreen(
     } else {
         familyMembers.find { it.id == activeProfileId }?.name ?: stringResource(R.string.rel_self)
     }
+
+    val todayLabel = stringResource(R.string.date_today)
+    val yesterdayLabel = stringResource(R.string.date_yesterday)
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
 
     Scaffold(
         topBar = {
@@ -117,9 +122,17 @@ fun HomeScreen(
                         )
                     }
                 }
-                items(recentVitals, key = { "vital_${it.id}" }) { vital ->
-                    AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
-                        VitalCard(vital)
+
+                val vitalsByDate = recentVitals.groupBy { it.recordedAt.toLocalDate() }
+                    .toSortedMap(compareByDescending { it })
+                vitalsByDate.forEach { (date, vitalsForDate) ->
+                    item(key = "vital_date_$date") {
+                        DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
+                    }
+                    items(vitalsForDate, key = { "vital_${it.id}" }) { vital ->
+                        AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
+                            VitalCard(vital)
+                        }
                     }
                 }
                 item(key = "vitals_spacer") { Spacer(modifier = Modifier.height(4.dp)) }
@@ -173,8 +186,15 @@ fun HomeScreen(
                     }
                 }
             } else {
-                items(symptoms, key = { "symptom_${it.id}" }) { symptom ->
-                    SymptomCard(symptom, onDelete = { viewModel.removeSymptom(symptom) })
+                val symptomsByDate = symptoms.groupBy { it.recordedAt.toLocalDate() }
+                    .toSortedMap(compareByDescending { it })
+                symptomsByDate.forEach { (date, symptomsForDate) ->
+                    item(key = "symptom_date_$date") {
+                        DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
+                    }
+                    items(symptomsForDate, key = { "symptom_${it.id}" }) { symptom ->
+                        SymptomCard(symptom, onDelete = { viewModel.removeSymptom(symptom) })
+                    }
                 }
             }
         }
@@ -182,8 +202,30 @@ fun HomeScreen(
 }
 
 @Composable
+private fun DateHeader(
+    date: LocalDate,
+    todayLabel: String,
+    yesterdayLabel: String,
+    dateFormatter: DateTimeFormatter
+) {
+    val today = LocalDate.now()
+    val label = when (date) {
+        today -> todayLabel
+        today.minusDays(1) -> yesterdayLabel
+        else -> date.format(dateFormatter)
+    }
+    Text(
+        label,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+    )
+}
+
+@Composable
 private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
-    val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
+    val formatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val intensityColor = when {
         symptom.intensity <= 3 -> MaterialTheme.colorScheme.primary
         symptom.intensity <= 6 -> MaterialTheme.colorScheme.tertiary
@@ -253,7 +295,7 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
 
 @Composable
 private fun VitalCard(vital: VitalSign) {
-    val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
+    val formatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val valueStr = if (vital.secondaryValue != null) {
         "${vital.value.toInt()}/${vital.secondaryValue.toInt()}"
     } else vital.value.toString()

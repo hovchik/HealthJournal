@@ -209,6 +209,10 @@
     <string name="settings_section_data">Data</string>
     <string name="settings_section_preferences">Preferences</string>
 
+    <!-- Date Grouping -->
+    <string name="date_today">Today</string>
+    <string name="date_yesterday">Yesterday</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Headache</string>
     <string name="symptom_migraine">Migraine</string>

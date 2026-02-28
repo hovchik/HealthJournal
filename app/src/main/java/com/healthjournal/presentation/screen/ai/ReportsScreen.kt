@@ -30,6 +30,7 @@ import com.healthjournal.presentation.components.VitalsChart
 import com.healthjournal.util.PdfReportGenerator
 import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,6 +133,28 @@ fun ReportsScreen(
 }
 
 @Composable
+private fun DateHeader(
+    date: LocalDate,
+    todayLabel: String,
+    yesterdayLabel: String,
+    dateFormatter: DateTimeFormatter
+) {
+    val today = LocalDate.now()
+    val label = when (date) {
+        today -> todayLabel
+        today.minusDays(1) -> yesterdayLabel
+        else -> date.format(dateFormatter)
+    }
+    Text(
+        label,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+    )
+}
+
+@Composable
 private fun RecordsTab(
     symptoms: List<Symptom>,
     vitals: List<VitalSign>,
@@ -139,8 +162,11 @@ private fun RecordsTab(
     context: android.content.Context,
     viewModel: AiReportViewModel
 ) {
-    val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
     val memberName = viewModel.getProfileName(viewModel.activeProfileId.collectAsStateWithLifecycle().value)
+    val todayLabel = stringResource(R.string.date_today)
+    val yesterdayLabel = stringResource(R.string.date_yesterday)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -173,16 +199,25 @@ private fun RecordsTab(
                     color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.padding(top = 8.dp))
             }
-            items(vitals.sortedByDescending { it.recordedAt }, key = { "rv_${it.id}" }) { vital ->
-                val valueStr = if (vital.secondaryValue != null) "${vital.value.toInt()}/${vital.secondaryValue.toInt()}" else vital.value.toString()
-                OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Column {
-                            Text(vital.type.localizedDisplayName(), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                            Text(vital.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+
+            val vitalsByDate = vitals.sortedByDescending { it.recordedAt }
+                .groupBy { it.recordedAt.toLocalDate() }
+
+            vitalsByDate.forEach { (date, vitalsForDate) ->
+                item(key = "rv_date_$date") {
+                    DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
+                }
+                items(vitalsForDate, key = { "rv_${it.id}" }) { vital ->
+                    val valueStr = if (vital.secondaryValue != null) "${vital.value.toInt()}/${vital.secondaryValue.toInt()}" else vital.value.toString()
+                    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                        Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Column {
+                                Text(vital.type.localizedDisplayName(), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                Text(vital.recordedAt.format(timeFormatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                            }
+                            Text("$valueStr ${vital.type.localizedUnit()}", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
                         }
-                        Text("$valueStr ${vital.type.localizedUnit()}", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -196,18 +231,27 @@ private fun RecordsTab(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 8.dp))
             }
-            items(symptoms.sortedByDescending { it.recordedAt }, key = { "rs_${it.id}" }) { symptom ->
-                OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(symptom.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                            if (symptom.notes.isNotBlank()) {
-                                Text(symptom.notes, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+
+            val symptomsByDate = symptoms.sortedByDescending { it.recordedAt }
+                .groupBy { it.recordedAt.toLocalDate() }
+
+            symptomsByDate.forEach { (date, symptomsForDate) ->
+                item(key = "rs_date_$date") {
+                    DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
+                }
+                items(symptomsForDate, key = { "rs_${it.id}" }) { symptom ->
+                    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                        Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(symptom.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                if (symptom.notes.isNotBlank()) {
+                                    Text(symptom.notes, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                                }
+                                Text(symptom.recordedAt.format(timeFormatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
                             }
-                            Text(symptom.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                            Text("${symptom.intensity}/10", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.tertiary)
                         }
-                        Text("${symptom.intensity}/10", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.tertiary)
                     }
                 }
             }

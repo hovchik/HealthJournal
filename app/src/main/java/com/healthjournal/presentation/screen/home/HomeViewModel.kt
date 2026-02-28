@@ -14,20 +14,22 @@ import kotlinx.coroutines.launch
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
 
-    val activeProfileId = container.userSettingsRepository.getUserSettings()
+    private val activeProfileFlow = container.userSettingsRepository.getUserSettings()
         .map { it.activeProfileId }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    val activeProfileId = activeProfileFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0L)
 
     val familyMembers = container.familyMemberRepository.getAllMembers()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val symptoms = combine(container.getAllSymptoms(), activeProfileId) { all, profileId ->
+    val symptoms = combine(container.getAllSymptoms(), activeProfileFlow) { all, profileId ->
         all.filter { it.profileId == profileId }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val recentVitals = combine(container.getAllVitalSigns(), activeProfileId) { all, profileId ->
+    val recentVitals = combine(container.getAllVitalSigns(), activeProfileFlow) { all, profileId ->
         all.filter { it.profileId == profileId }.take(5)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _saveSuccess = MutableSharedFlow<Boolean>()
     val saveSuccess = _saveSuccess.asSharedFlow()
