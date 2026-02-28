@@ -23,7 +23,7 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
     private val _saveSuccess = MutableSharedFlow<Boolean>()
     val saveSuccess = _saveSuccess.asSharedFlow()
 
-    fun addNewMedication(name: String, dosage: String, frequency: String, notes: String) {
+    fun addNewMedication(name: String, dosage: String, frequency: String, notes: String, profileId: Long? = null) {
         viewModelScope.launch {
             container.addMedication(
                 Medication(
@@ -31,7 +31,7 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
                     dosage = dosage,
                     frequency = frequency,
                     notes = notes,
-                    profileId = activeProfileId.value
+                    profileId = profileId ?: activeProfileId.value
                 )
             )
             _saveSuccess.emit(true)

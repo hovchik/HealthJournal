@@ -174,7 +174,7 @@ fun AddMedicationScreen(
             Button(
                 onClick = {
                     if (name.isNotBlank() && dosage.isNotBlank()) {
-                        viewModel.addNewMedication(name, dosage, frequency, notes)
+                        viewModel.addNewMedication(name, dosage, frequency, notes, effectiveProfileId)
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
