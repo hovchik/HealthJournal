@@ -34,6 +34,7 @@ import java.io.File
 @Composable
 fun AddVitalScreen(
     onBack: () -> Unit,
+    vitalId: Long = -1L,
     viewModel: HomeViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -43,6 +44,25 @@ fun AddVitalScreen(
     var notes by remember { mutableStateOf("") }
     var typeMenuExpanded by remember { mutableStateOf(false) }
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
+    var loaded by remember { mutableStateOf(vitalId == -1L) }
+
+    val isEditing = vitalId != -1L
+    var editingVital by remember { mutableStateOf<com.healthjournal.domain.model.VitalSign?>(null) }
+
+    LaunchedEffect(vitalId) {
+        if (vitalId != -1L) {
+            val vital = viewModel.getVitalSignById(vitalId)
+            if (vital != null) {
+                editingVital = vital
+                selectedType = vital.type
+                value = vital.value.toString()
+                secondaryValue = vital.secondaryValue?.toString() ?: ""
+                notes = vital.notes
+                attachmentPaths = vital.attachmentPaths
+            }
+            loaded = true
+        }
+    }
 
     val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
         val paths = uris.mapNotNull { uri -> AttachmentHelper.copyToInternal(context, uri) }
@@ -51,10 +71,14 @@ fun AddVitalScreen(
 
     LaunchedEffect(Unit) { viewModel.saveSuccess.collectLatest { onBack() } }
 
+    if (!loaded) return
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.add_vital_title)) },
+                title = {
+                    Text(stringResource(if (isEditing) R.string.edit_vital_title else R.string.add_vital_title))
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
@@ -156,10 +180,22 @@ fun AddVitalScreen(
                 onClick = {
                     val v = value.toDoubleOrNull()
                     if (v != null) {
-                        viewModel.addNewVitalSign(
-                            type = selectedType, value = v, secondaryValue = secondaryValue.toDoubleOrNull(),
-                            notes = notes, attachmentPaths = attachmentPaths
-                        )
+                        if (isEditing && editingVital != null) {
+                            viewModel.updateVitalSign(
+                                editingVital!!.copy(
+                                    type = selectedType,
+                                    value = v,
+                                    secondaryValue = secondaryValue.toDoubleOrNull(),
+                                    notes = notes,
+                                    attachmentPaths = attachmentPaths
+                                )
+                            )
+                        } else {
+                            viewModel.addNewVitalSign(
+                                type = selectedType, value = v, secondaryValue = secondaryValue.toDoubleOrNull(),
+                                notes = notes, attachmentPaths = attachmentPaths
+                            )
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),

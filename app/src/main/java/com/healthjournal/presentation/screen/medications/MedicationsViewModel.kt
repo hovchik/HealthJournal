@@ -45,6 +45,15 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    suspend fun getMedicationById(id: Long): Medication? = container.getMedicationById(id)
+
+    fun updateMedication(medication: Medication) {
+        viewModelScope.launch {
+            container.updateMedication(medication)
+            _saveSuccess.emit(true)
+        }
+    }
+
     fun toggleMedicationActive(medication: Medication) {
         viewModelScope.launch {
             container.updateMedication(medication.copy(active = !medication.active))

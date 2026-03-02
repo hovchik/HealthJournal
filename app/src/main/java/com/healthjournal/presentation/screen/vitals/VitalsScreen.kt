@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,6 +36,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun VitalsScreen(
     onAddVital: () -> Unit = {},
+    onEditVital: (Long) -> Unit = {},
     viewModel: VitalsViewModel = viewModel()
 ) {
     val vitals by viewModel.vitals.collectAsStateWithLifecycle()
@@ -125,7 +128,11 @@ fun VitalsScreen(
                     }
                     items(vitalsForDate, key = { it.id }) { vital ->
                         AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
-                            VitalDetailCard(vital, onDelete = { viewModel.removeVital(vital) })
+                            VitalDetailCard(
+                                vital,
+                                onEdit = { onEditVital(vital.id) },
+                                onDelete = { viewModel.removeVital(vital) }
+                            )
                         }
                     }
                 }
@@ -157,7 +164,7 @@ private fun DateHeader(
 }
 
 @Composable
-private fun VitalDetailCard(vital: VitalSign, onDelete: () -> Unit) {
+private fun VitalDetailCard(vital: VitalSign, onEdit: () -> Unit, onDelete: () -> Unit) {
     val formatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val valueStr = if (vital.secondaryValue != null) {
         "${vital.value.toInt()}/${vital.secondaryValue.toInt()}"
@@ -168,18 +175,18 @@ private fun VitalDetailCard(vital: VitalSign, onDelete: () -> Unit) {
     val unit = vital.type.localizedUnit()
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onEdit),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        )
+        ),
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            // Colored accent strip
             Box(
                 modifier = Modifier
                     .width(4.dp)
                     .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp))
+                    .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
                     .background(MaterialTheme.colorScheme.tertiary)
             )
             Row(
@@ -224,13 +231,19 @@ private fun VitalDetailCard(vital: VitalSign, onDelete: () -> Unit) {
                         color = MaterialTheme.colorScheme.outline
                     )
                 }
-                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                    Icon(
-                        Icons.Outlined.DeleteOutline,
-                        contentDescription = stringResource(R.string.delete),
-                        tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f),
-                        modifier = Modifier.size(20.dp)
-                    )
+                Column {
+                    IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                        Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit),
+                            tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f), modifier = Modifier.size(18.dp))
+                    }
+                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                        Icon(
+                            Icons.Outlined.DeleteOutline,
+                            contentDescription = stringResource(R.string.delete),
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }

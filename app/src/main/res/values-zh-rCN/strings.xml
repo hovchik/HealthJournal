@@ -16,6 +16,7 @@
     <string name="close">关闭</string>
     <string name="notes">备注</string>
     <string name="error_format">错误：%1$s</string>
+    <string name="edit">编辑</string>
     <string name="search">搜索</string>
     <string name="search_hint">搜索…</string>
 
@@ -31,6 +32,7 @@
 
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">添加症状</string>
+    <string name="edit_symptom_title">编辑症状</string>
     <string name="symptom_name">症状名称</string>
     <string name="symptom_value_label">值</string>
     <string name="symptom_value_hint">例如 38.5°C, 120/80</string>
@@ -40,6 +42,7 @@
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">添加生命体征</string>
+    <string name="edit_vital_title">编辑生命体征</string>
     <string name="vital_type_label">体征类型</string>
     <string name="systolic_upper">收缩压（高压）</string>
     <string name="value_with_unit">数值（%1$s）</string>
@@ -55,6 +58,7 @@
 
     <!-- Add Medication Screen -->
     <string name="add_medication_title">添加药物</string>
+    <string name="edit_medication_title">编辑药物</string>
     <string name="medication_name">药物名称</string>
     <string name="dosage_hint">剂量（如 500 毫克）</string>
     <string name="schedule_hint">用药频率（如 每日两次）</string>

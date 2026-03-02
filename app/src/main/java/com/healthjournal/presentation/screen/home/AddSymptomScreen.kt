@@ -36,6 +36,7 @@ import java.io.File
 @Composable
 fun AddSymptomScreen(
     onBack: () -> Unit,
+    symptomId: Long = -1L,
     viewModel: HomeViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -47,6 +48,28 @@ fun AddSymptomScreen(
     var notes by remember { mutableStateOf("") }
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
     var dropdownExpanded by remember { mutableStateOf(false) }
+    var loaded by remember { mutableStateOf(symptomId == -1L) }
+
+    val isEditing = symptomId != -1L
+    // Load existing symptom for editing
+    var editingSymptom by remember { mutableStateOf<com.healthjournal.domain.model.Symptom?>(null) }
+
+    LaunchedEffect(symptomId) {
+        if (symptomId != -1L) {
+            val symptom = viewModel.getSymptomById(symptomId)
+            if (symptom != null) {
+                editingSymptom = symptom
+                name = symptom.name
+                intensity = symptom.intensity.toFloat()
+                value = symptom.value ?: ""
+                duration = symptom.durationMinutes?.toString() ?: ""
+                triggers = symptom.triggers.joinToString(", ")
+                notes = symptom.notes
+                attachmentPaths = symptom.attachmentPaths
+            }
+            loaded = true
+        }
+    }
 
     val disabledSymptoms by remember {
         context.predefinedDataStore.data.map { prefs -> prefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet() }
@@ -73,10 +96,14 @@ fun AddSymptomScreen(
         else -> MaterialTheme.colorScheme.error
     }
 
+    if (!loaded) return
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.add_symptom_title)) },
+                title = {
+                    Text(stringResource(if (isEditing) R.string.edit_symptom_title else R.string.add_symptom_title))
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
@@ -231,13 +258,28 @@ fun AddSymptomScreen(
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
-                        viewModel.addNewSymptom(
-                            name = name, intensity = intensity.toInt(),
-                            value = value,
-                            durationMinutes = duration.toIntOrNull(),
-                            triggers = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                            notes = notes, attachmentPaths = attachmentPaths
-                        )
+                        val triggerList = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                        if (isEditing && editingSymptom != null) {
+                            viewModel.updateSymptom(
+                                editingSymptom!!.copy(
+                                    name = name,
+                                    intensity = intensity.toInt(),
+                                    value = value.takeIf { it.isNotBlank() },
+                                    durationMinutes = duration.toIntOrNull(),
+                                    triggers = triggerList,
+                                    notes = notes,
+                                    attachmentPaths = attachmentPaths
+                                )
+                            )
+                        } else {
+                            viewModel.addNewSymptom(
+                                name = name, intensity = intensity.toInt(),
+                                value = value,
+                                durationMinutes = duration.toIntOrNull(),
+                                triggers = triggerList,
+                                notes = notes, attachmentPaths = attachmentPaths
+                            )
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),

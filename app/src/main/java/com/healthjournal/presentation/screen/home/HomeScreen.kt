@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,6 +38,8 @@ import java.time.format.DateTimeFormatter
 fun HomeScreen(
     onAddSymptom: () -> Unit,
     onAddVital: () -> Unit,
+    onEditSymptom: (Long) -> Unit = {},
+    onEditVital: (Long) -> Unit = {},
     viewModel: HomeViewModel = viewModel()
 ) {
     val symptoms by viewModel.symptoms.collectAsStateWithLifecycle()
@@ -118,7 +122,7 @@ fun HomeScreen(
                     }
                     items(vitalsForDate, key = { "vital_${it.id}" }) { vital ->
                         AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
-                            VitalCard(vital)
+                            VitalCard(vital, onEdit = { onEditVital(vital.id) })
                         }
                     }
                 }
@@ -140,18 +144,27 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                        )
+                        ),
+                        shape = MaterialTheme.shapes.large
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth().padding(32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(
-                                Icons.Default.EditNote, contentDescription = null,
-                                modifier = Modifier.size(48.dp),
-                                tint = MaterialTheme.colorScheme.outlineVariant
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                modifier = Modifier.size(56.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.EditNote, contentDescription = null,
+                                        modifier = Modifier.size(28.dp),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 stringResource(R.string.no_symptoms_hint),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -168,7 +181,11 @@ fun HomeScreen(
                         DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
                     }
                     items(symptomsForDate, key = { "symptom_${it.id}" }) { symptom ->
-                        SymptomCard(symptom, onDelete = { viewModel.removeSymptom(symptom) })
+                        SymptomCard(
+                            symptom,
+                            onEdit = { onEditSymptom(symptom.id) },
+                            onDelete = { viewModel.removeSymptom(symptom) }
+                        )
                     }
                 }
             }
@@ -229,7 +246,7 @@ private fun DateHeader(
 }
 
 @Composable
-private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
+private fun SymptomCard(symptom: Symptom, onEdit: () -> Unit, onDelete: () -> Unit) {
     val formatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val intensityColor = when {
         symptom.intensity <= 3 -> MaterialTheme.colorScheme.primary
@@ -238,18 +255,18 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onEdit),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        )
+        ),
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            // Colored accent strip
             Box(
                 modifier = Modifier
                     .width(4.dp)
                     .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp))
+                    .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
                     .background(intensityColor)
             )
             Row(
@@ -311,9 +328,15 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
                     Text(symptom.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline)
                 }
-                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                    Icon(Icons.Outlined.DeleteOutline, contentDescription = stringResource(R.string.delete),
-                        tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
+                Column {
+                    IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                        Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit),
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), modifier = Modifier.size(18.dp))
+                    }
+                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                        Icon(Icons.Outlined.DeleteOutline, contentDescription = stringResource(R.string.delete),
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f), modifier = Modifier.size(18.dp))
+                    }
                 }
             }
         }
@@ -321,7 +344,7 @@ private fun SymptomCard(symptom: Symptom, onDelete: () -> Unit) {
 }
 
 @Composable
-private fun VitalCard(vital: VitalSign) {
+private fun VitalCard(vital: VitalSign, onEdit: () -> Unit = {}) {
     val formatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val valueStr = if (vital.secondaryValue != null) {
         "${vital.value.toInt()}/${vital.secondaryValue.toInt()}"
@@ -330,10 +353,11 @@ private fun VitalCard(vital: VitalSign) {
     val unit = vital.type.localizedUnit()
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onEdit),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
-        )
+        ),
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
@@ -342,7 +366,8 @@ private fun VitalCard(vital: VitalSign) {
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.weight(1f)
             ) {
                 Surface(
                     shape = CircleShape,
@@ -364,8 +389,12 @@ private fun VitalCard(vital: VitalSign) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            Text("$valueStr $unit", style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.tertiary, fontWeight = FontWeight.Bold)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("$valueStr $unit", style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.tertiary, fontWeight = FontWeight.Bold)
+                Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit),
+                    tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.5f), modifier = Modifier.size(16.dp))
+            }
         }
     }
 }

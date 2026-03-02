@@ -3,8 +3,10 @@ package com.healthjournal.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.healthjournal.presentation.screen.ai.ReportsScreen
 import com.healthjournal.presentation.screen.home.AddSymptomScreen
 import com.healthjournal.presentation.screen.home.AddVitalScreen
@@ -49,27 +51,52 @@ fun HealthNavHost(
         composable(Screen.Home.route) {
             HomeScreen(
                 onAddSymptom = { navController.navigate(Screen.AddSymptom.route) },
-                onAddVital = { navController.navigate(Screen.AddVital.route) }
+                onAddVital = { navController.navigate(Screen.AddVital.route) },
+                onEditSymptom = { id -> navController.navigate(Screen.EditSymptom.createRoute(id)) },
+                onEditVital = { id -> navController.navigate(Screen.EditVital.createRoute(id)) }
             )
         }
         composable(Screen.AddSymptom.route) {
             AddSymptomScreen(onBack = { navController.popBackStack() })
         }
+        composable(
+            Screen.EditSymptom.route,
+            arguments = listOf(navArgument("symptomId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val symptomId = backStackEntry.arguments?.getLong("symptomId") ?: -1L
+            AddSymptomScreen(onBack = { navController.popBackStack() }, symptomId = symptomId)
+        }
         composable(Screen.AddVital.route) {
             AddVitalScreen(onBack = { navController.popBackStack() })
         }
+        composable(
+            Screen.EditVital.route,
+            arguments = listOf(navArgument("vitalId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val vitalId = backStackEntry.arguments?.getLong("vitalId") ?: -1L
+            AddVitalScreen(onBack = { navController.popBackStack() }, vitalId = vitalId)
+        }
         composable(Screen.Vitals.route) {
             VitalsScreen(
-                onAddVital = { navController.navigate(Screen.AddVital.route) }
+                onAddVital = { navController.navigate(Screen.AddVital.route) },
+                onEditVital = { id -> navController.navigate(Screen.EditVital.createRoute(id)) }
             )
         }
         composable(Screen.Medications.route) {
             MedicationsScreen(
-                onAddMedication = { navController.navigate(Screen.AddMedication.route) }
+                onAddMedication = { navController.navigate(Screen.AddMedication.route) },
+                onEditMedication = { id -> navController.navigate(Screen.EditMedication.createRoute(id)) }
             )
         }
         composable(Screen.AddMedication.route) {
             AddMedicationScreen(onBack = { navController.popBackStack() })
+        }
+        composable(
+            Screen.EditMedication.route,
+            arguments = listOf(navArgument("medicationId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val medicationId = backStackEntry.arguments?.getLong("medicationId") ?: -1L
+            AddMedicationScreen(onBack = { navController.popBackStack() }, medicationId = medicationId)
         }
         composable(Screen.Reports.route) {
             ReportsScreen()

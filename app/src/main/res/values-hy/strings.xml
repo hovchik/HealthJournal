@@ -16,6 +16,7 @@
     <string name="close">Փակել</string>
     <string name="notes">Նոտագրություններ</string>
     <string name="error_format">Սխալ: %1$s</string>
+    <string name="edit">Խմբագրել</string>
     <string name="search">Որոնել</string>
     <string name="search_hint">Որոնել…</string>
 
@@ -31,6 +32,7 @@
 
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">Ավելացնել ախտանիշ</string>
+    <string name="edit_symptom_title">Խմբագրել ախտանիշ</string>
     <string name="symptom_name">Ախտանիշի անունը</string>
     <string name="symptom_value_label">Արժեք</string>
     <string name="symptom_value_hint">Օրինակ 38.5°C, 120/80</string>
@@ -40,6 +42,7 @@
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">Ավելացնել ցուցանիշ</string>
+    <string name="edit_vital_title">Խմբագրել ցուցանիշ</string>
     <string name="vital_type_label">Ցուցանիշի տեսակ</string>
     <string name="systolic_upper">Սիստոլիկ (վերին)</string>
     <string name="value_with_unit">Արժեք (%1$s)</string>
@@ -55,6 +58,7 @@
 
     <!-- Add Medication Screen -->
     <string name="add_medication_title">Ավելացնել դեղ</string>
+    <string name="edit_medication_title">Խմբագրել դեղ</string>
     <string name="medication_name">Դեղի անունը</string>
     <string name="dosage_hint">Դոզան (օր. 500 մգ)</string>
     <string name="schedule_hint">Գրաֆիկ (օր. օրը 2 անգամ)</string>

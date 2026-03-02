@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +34,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun MedicationsScreen(
     onAddMedication: () -> Unit,
+    onEditMedication: (Long) -> Unit = {},
     viewModel: MedicationsViewModel = viewModel()
 ) {
     val medications by viewModel.medications.collectAsStateWithLifecycle()
@@ -114,6 +117,7 @@ fun MedicationsScreen(
                     AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
                         MedicationCard(
                             medication = medication,
+                            onEdit = { onEditMedication(medication.id) },
                             onLogTaken = { viewModel.logTaken(medication) },
                             onToggleActive = { viewModel.toggleMedicationActive(medication) },
                             onDelete = { viewModel.removeMedication(medication) }
@@ -128,6 +132,7 @@ fun MedicationsScreen(
 @Composable
 private fun MedicationCard(
     medication: Medication,
+    onEdit: () -> Unit,
     onLogTaken: () -> Unit,
     onToggleActive: () -> Unit,
     onDelete: () -> Unit
@@ -137,19 +142,19 @@ private fun MedicationCard(
         else MaterialTheme.colorScheme.outline
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onEdit),
         colors = CardDefaults.cardColors(
             containerColor = if (medication.active) MaterialTheme.colorScheme.surfaceContainerLow
                 else MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.6f)
-        )
+        ),
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            // Colored accent strip
             Box(
                 modifier = Modifier
                     .width(4.dp)
                     .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp))
+                    .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
                     .background(accentColor)
             )
             Column(modifier = Modifier.weight(1f).padding(16.dp)) {
@@ -191,6 +196,14 @@ private fun MedicationCard(
                         }
                     }
                     Row {
+                        IconButton(onClick = onEdit, modifier = Modifier.size(40.dp)) {
+                            Icon(
+                                Icons.Outlined.Edit,
+                                contentDescription = stringResource(R.string.edit),
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                         if (medication.active) {
                             IconButton(onClick = onLogTaken, modifier = Modifier.size(40.dp)) {
                                 Icon(

@@ -16,6 +16,7 @@
     <string name="close">Закрыть</string>
     <string name="notes">Заметки</string>
     <string name="error_format">Ошибка: %1$s</string>
+    <string name="edit">Редактировать</string>
     <string name="search">Поиск</string>
     <string name="search_hint">Поиск…</string>
 
@@ -31,6 +32,7 @@
 
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">Добавить симптом</string>
+    <string name="edit_symptom_title">Редактировать симптом</string>
     <string name="symptom_name">Название симптома</string>
     <string name="symptom_value_label">Значение</string>
     <string name="symptom_value_hint">Напр. 38.5°C, 120/80</string>
@@ -40,6 +42,7 @@
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">Добавить показатель</string>
+    <string name="edit_vital_title">Редактировать показатель</string>
     <string name="vital_type_label">Тип показателя</string>
     <string name="systolic_upper">Систолическое (верхнее)</string>
     <string name="value_with_unit">Значение (%1$s)</string>
@@ -55,6 +58,7 @@
 
     <!-- Add Medication Screen -->
     <string name="add_medication_title">Добавить лекарство</string>
+    <string name="edit_medication_title">Редактировать лекарство</string>
     <string name="medication_name">Название лекарства</string>
     <string name="dosage_hint">Дозировка (напр. 500 мг)</string>
     <string name="schedule_hint">Расписание (напр. 2 раза в день)</string>

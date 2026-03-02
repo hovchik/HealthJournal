@@ -16,6 +16,7 @@
     <string name="close">Close</string>
     <string name="notes">Notes</string>
     <string name="error_format">Error: %1$s</string>
+    <string name="edit">Edit</string>
     <string name="search">Search</string>
     <string name="search_hint">Search…</string>
 
@@ -31,6 +32,7 @@
 
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">Add symptom</string>
+    <string name="edit_symptom_title">Edit symptom</string>
     <string name="symptom_name">Symptom name</string>
     <string name="symptom_value_label">Value</string>
     <string name="symptom_value_hint">E.g. 38.5°C, 120/80</string>
@@ -40,6 +42,7 @@
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">Add vital sign</string>
+    <string name="edit_vital_title">Edit vital sign</string>
     <string name="vital_type_label">Vital type</string>
     <string name="systolic_upper">Systolic (upper)</string>
     <string name="value_with_unit">Value (%1$s)</string>
@@ -55,6 +58,7 @@
 
     <!-- Add Medication Screen -->
     <string name="add_medication_title">Add medication</string>
+    <string name="edit_medication_title">Edit medication</string>
     <string name="medication_name">Medication name</string>
     <string name="dosage_hint">Dosage (e.g. 500 mg)</string>
     <string name="schedule_hint">Schedule (e.g. twice a day)</string>

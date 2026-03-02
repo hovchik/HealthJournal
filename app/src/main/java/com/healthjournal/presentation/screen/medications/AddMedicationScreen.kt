@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.map
 @Composable
 fun AddMedicationScreen(
     onBack: () -> Unit,
+    medicationId: Long = -1L,
     viewModel: MedicationsViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -32,6 +33,24 @@ fun AddMedicationScreen(
     var frequency by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var dropdownExpanded by remember { mutableStateOf(false) }
+    var loaded by remember { mutableStateOf(medicationId == -1L) }
+
+    val isEditing = medicationId != -1L
+    var editingMedication by remember { mutableStateOf<com.healthjournal.domain.model.Medication?>(null) }
+
+    LaunchedEffect(medicationId) {
+        if (medicationId != -1L) {
+            val medication = viewModel.getMedicationById(medicationId)
+            if (medication != null) {
+                editingMedication = medication
+                name = medication.name
+                dosage = medication.dosage
+                frequency = medication.frequency
+                notes = medication.notes
+            }
+            loaded = true
+        }
+    }
 
     val disabledMedications by remember {
         context.predefinedDataStore.data.map { prefs ->
@@ -53,10 +72,14 @@ fun AddMedicationScreen(
         viewModel.saveSuccess.collectLatest { onBack() }
     }
 
+    if (!loaded) return
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.add_medication_title)) },
+                title = {
+                    Text(stringResource(if (isEditing) R.string.edit_medication_title else R.string.add_medication_title))
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
@@ -152,7 +175,18 @@ fun AddMedicationScreen(
             Button(
                 onClick = {
                     if (name.isNotBlank() && dosage.isNotBlank()) {
-                        viewModel.addNewMedication(name, dosage, frequency, notes)
+                        if (isEditing && editingMedication != null) {
+                            viewModel.updateMedication(
+                                editingMedication!!.copy(
+                                    name = name,
+                                    dosage = dosage,
+                                    frequency = frequency,
+                                    notes = notes
+                                )
+                            )
+                        } else {
+                            viewModel.addNewMedication(name, dosage, frequency, notes)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),

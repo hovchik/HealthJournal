@@ -88,6 +88,24 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    suspend fun getSymptomById(id: Long): Symptom? = container.getSymptomById(id)
+
+    fun updateSymptom(symptom: Symptom) {
+        viewModelScope.launch {
+            container.updateSymptom(symptom)
+            _saveSuccess.emit(true)
+        }
+    }
+
+    suspend fun getVitalSignById(id: Long): VitalSign? = container.getVitalSignById(id)
+
+    fun updateVitalSign(vitalSign: VitalSign) {
+        viewModelScope.launch {
+            container.updateVitalSign(vitalSign)
+            _saveSuccess.emit(true)
+        }
+    }
+
     fun removeSymptom(symptom: Symptom) {
         viewModelScope.launch { container.deleteSymptom(symptom) }
     }
