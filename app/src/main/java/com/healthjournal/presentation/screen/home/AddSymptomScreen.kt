@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -40,6 +41,7 @@ fun AddSymptomScreen(
     val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var intensity by remember { mutableFloatStateOf(5f) }
+    var value by remember { mutableStateOf("") }
     var duration by remember { mutableStateOf("") }
     var triggers by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
@@ -129,7 +131,12 @@ fun AddSymptomScreen(
             }
 
             // Intensity slider
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = intensityColor.copy(alpha = 0.08f)
+                )
+            ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -140,12 +147,12 @@ fun AddSymptomScreen(
                             style = MaterialTheme.typography.titleSmall)
                         Surface(
                             shape = CircleShape,
-                            color = intensityColor.copy(alpha = 0.12f),
-                            modifier = Modifier.size(36.dp)
+                            color = intensityColor.copy(alpha = 0.15f),
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text("${intensity.toInt()}", color = intensityColor,
-                                    style = MaterialTheme.typography.titleMedium)
+                                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -156,6 +163,15 @@ fun AddSymptomScreen(
                     )
                 }
             }
+
+            // Value field
+            OutlinedTextField(
+                value = value, onValueChange = { value = it },
+                label = { Text(stringResource(R.string.symptom_value_label)) },
+                placeholder = { Text(stringResource(R.string.symptom_value_hint)) },
+                modifier = Modifier.fillMaxWidth(), singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            )
 
             OutlinedTextField(
                 value = duration, onValueChange = { duration = it },
@@ -217,6 +233,7 @@ fun AddSymptomScreen(
                     if (name.isNotBlank()) {
                         viewModel.addNewSymptom(
                             name = name, intensity = intensity.toInt(),
+                            value = value,
                             durationMinutes = duration.toIntOrNull(),
                             triggers = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() },
                             notes = notes, attachmentPaths = attachmentPaths

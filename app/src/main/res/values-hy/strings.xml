@@ -32,6 +32,8 @@
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">Ավելացնել ախտանիշ</string>
     <string name="symptom_name">Ախտանիշի անունը</string>
+    <string name="symptom_value_label">Արժեք</string>
+    <string name="symptom_value_hint">Օրինակ 38.5°C, 120/80</string>
     <string name="intensity_label">Ինտենսիվություն: %1$d/10</string>
     <string name="duration_minutes">Տևողություն (րոպե)</string>
     <string name="triggers_hint">Գործոններ (ստորակետով բաժանված)</string>

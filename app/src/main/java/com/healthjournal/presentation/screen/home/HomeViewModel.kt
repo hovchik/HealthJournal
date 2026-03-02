@@ -37,6 +37,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun addNewSymptom(
         name: String,
         intensity: Int,
+        value: String? = null,
         durationMinutes: Int?,
         triggers: List<String>,
         notes: String,
@@ -50,6 +51,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 Symptom(
                     name = name,
                     intensity = intensity,
+                    value = value?.takeIf { it.isNotBlank() },
                     durationMinutes = durationMinutes,
                     triggers = triggers,
                     notes = notes,

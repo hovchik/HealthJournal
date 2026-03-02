@@ -32,6 +32,8 @@
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">Add symptom</string>
     <string name="symptom_name">Symptom name</string>
+    <string name="symptom_value_label">Value</string>
+    <string name="symptom_value_hint">E.g. 38.5°C, 120/80</string>
     <string name="intensity_label">Intensity: %1$d/10</string>
     <string name="duration_minutes">Duration (min)</string>
     <string name="triggers_hint">Triggers (comma-separated)</string>

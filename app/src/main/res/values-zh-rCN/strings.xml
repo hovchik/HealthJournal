@@ -32,6 +32,8 @@
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">添加症状</string>
     <string name="symptom_name">症状名称</string>
+    <string name="symptom_value_label">值</string>
+    <string name="symptom_value_hint">例如 38.5°C, 120/80</string>
     <string name="intensity_label">强度：%1$d/10</string>
     <string name="duration_minutes">持续时间（分钟）</string>
     <string name="triggers_hint">诱因（用逗号分隔）</string>

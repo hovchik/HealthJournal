@@ -13,51 +13,61 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF0F6B50),
+    primary = Color(0xFF0B6B56),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFADF5CB),
-    onPrimaryContainer = Color(0xFF002115),
-    secondary = Color(0xFF4B6358),
+    primaryContainer = Color(0xFFB8F5D8),
+    onPrimaryContainer = Color(0xFF002117),
+    secondary = Color(0xFF4A6358),
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFCDE9D9),
-    onSecondaryContainer = Color(0xFF071F16),
-    tertiary = Color(0xFF3A6471),
+    secondaryContainer = Color(0xFFCCE8D9),
+    onSecondaryContainer = Color(0xFF062017),
+    tertiary = Color(0xFF356A7D),
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFBDE9F8),
-    onTertiaryContainer = Color(0xFF001F28),
+    tertiaryContainer = Color(0xFFC0E8FA),
+    onTertiaryContainer = Color(0xFF001F2A),
     error = Color(0xFFBA1A1A),
-    background = Color(0xFFF6FBF4),
+    background = Color(0xFFF5FAF6),
     onBackground = Color(0xFF171D19),
-    surface = Color(0xFFFBFDF8),
+    surface = Color(0xFFF5FAF6),
     onSurface = Color(0xFF171D19),
-    surfaceVariant = Color(0xFFDAE5DB),
+    surfaceVariant = Color(0xFFDAE5DC),
     onSurfaceVariant = Color(0xFF3F4942),
     outline = Color(0xFF6F7972),
-    outlineVariant = Color(0xFFBFC9C0)
+    outlineVariant = Color(0xFFBFC9C0),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFEFF5F0),
+    surfaceContainer = Color(0xFFE9EFEA),
+    surfaceContainerHigh = Color(0xFFE3EAE5),
+    surfaceContainerHighest = Color(0xFFDEE4DF)
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF92D9B0),
-    onPrimary = Color(0xFF003822),
-    primaryContainer = Color(0xFF005234),
-    onPrimaryContainer = Color(0xFFADF5CB),
-    secondary = Color(0xFFB2CDBE),
-    onSecondary = Color(0xFF1D352A),
+    primary = Color(0xFF8CD9B6),
+    onPrimary = Color(0xFF00382A),
+    primaryContainer = Color(0xFF005140),
+    onPrimaryContainer = Color(0xFFB8F5D8),
+    secondary = Color(0xFFB1CCBE),
+    onSecondary = Color(0xFF1D352B),
     secondaryContainer = Color(0xFF334B41),
-    onSecondaryContainer = Color(0xFFCDE9D9),
-    tertiary = Color(0xFFA2CDDC),
-    onTertiary = Color(0xFF023542),
-    tertiaryContainer = Color(0xFF214C59),
-    onTertiaryContainer = Color(0xFFBDE9F8),
+    onSecondaryContainer = Color(0xFFCCE8D9),
+    tertiary = Color(0xFFA4CCDD),
+    onTertiary = Color(0xFF053543),
+    tertiaryContainer = Color(0xFF1F5164),
+    onTertiaryContainer = Color(0xFFC0E8FA),
     error = Color(0xFFFFB4AB),
     background = Color(0xFF0F1511),
-    onBackground = Color(0xFFDFE4DD),
+    onBackground = Color(0xFFDEE4DF),
     surface = Color(0xFF0F1511),
-    onSurface = Color(0xFFDFE4DD),
+    onSurface = Color(0xFFDEE4DF),
     surfaceVariant = Color(0xFF3F4942),
     onSurfaceVariant = Color(0xFFBFC9C0),
     outline = Color(0xFF89938B),
-    outlineVariant = Color(0xFF3F4942)
+    outlineVariant = Color(0xFF3F4942),
+    surfaceContainerLowest = Color(0xFF0A100C),
+    surfaceContainerLow = Color(0xFF171D19),
+    surfaceContainer = Color(0xFF1B211D),
+    surfaceContainerHigh = Color(0xFF262B27),
+    surfaceContainerHighest = Color(0xFF303632)
 )
 
 private val AppTypography = Typography(
@@ -142,11 +152,11 @@ private val AppTypography = Typography(
 )
 
 private val AppShapes = Shapes(
-    extraSmall = RoundedCornerShape(6.dp),
-    small = RoundedCornerShape(10.dp),
+    extraSmall = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(12.dp),
     medium = RoundedCornerShape(16.dp),
-    large = RoundedCornerShape(24.dp),
-    extraLarge = RoundedCornerShape(32.dp)
+    large = RoundedCornerShape(20.dp),
+    extraLarge = RoundedCornerShape(28.dp)
 )
 
 @Composable
