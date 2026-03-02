@@ -1,10 +1,12 @@
 package com.healthjournal.presentation.screen.medications
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,6 +21,10 @@ import com.healthjournal.util.PredefinedDataKeys
 import com.healthjournal.util.predefinedDataStore
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +42,10 @@ fun AddMedicationScreen(
     var dropdownExpanded by remember { mutableStateOf(false) }
     var loaded by remember { mutableStateOf(medicationId == -1L) }
 
+    // Date state
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var showDatePicker by remember { mutableStateOf(false) }
+
     val isEditing = medicationId != -1L
     var editingMedication by remember { mutableStateOf<com.healthjournal.domain.model.Medication?>(null) }
 
@@ -48,6 +58,7 @@ fun AddMedicationScreen(
                 dosage = medication.dosage
                 frequency = medication.frequency
                 notes = medication.notes
+                selectedDate = medication.startDate
             }
             loaded = true
         }
@@ -73,7 +84,32 @@ fun AddMedicationScreen(
         viewModel.saveSuccess.collectLatest { onBack() }
     }
 
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+
     if (!loaded) return
+
+    // Date picker dialog
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        selectedDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                    }
+                    showDatePicker = false
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.close)) }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -97,6 +133,24 @@ fun AddMedicationScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Start date picker
+            OutlinedTextField(
+                value = selectedDate.format(dateFormatter),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(stringResource(R.string.start_date_label)) },
+                leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                modifier = Modifier.fillMaxWidth().clickable { showDatePicker = true },
+                singleLine = true,
+                enabled = false,
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+
             // Medication name dropdown with search
             ExposedDropdownMenuBox(
                 expanded = dropdownExpanded,
@@ -182,11 +236,12 @@ fun AddMedicationScreen(
                                     name = name,
                                     dosage = dosage,
                                     frequency = frequency,
-                                    notes = notes
+                                    notes = notes,
+                                    startDate = selectedDate
                                 )
                             )
                         } else {
-                            viewModel.addNewMedication(name, dosage, frequency, notes, diseaseId = diseaseId)
+                            viewModel.addNewMedication(name, dosage, frequency, notes, diseaseId = diseaseId, startDate = selectedDate)
                         }
                     }
                 },

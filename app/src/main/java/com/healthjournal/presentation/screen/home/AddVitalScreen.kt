@@ -3,13 +3,16 @@ package com.healthjournal.presentation.screen.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.MonitorHeart
@@ -29,6 +32,12 @@ import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -47,6 +56,12 @@ fun AddVitalScreen(
     var attachmentPaths by remember { mutableStateOf(listOf<String>()) }
     var loaded by remember { mutableStateOf(vitalId == -1L) }
 
+    // Date & time state
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedTime by remember { mutableStateOf(LocalTime.now()) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
     val isEditing = vitalId != -1L
     var editingVital by remember { mutableStateOf<com.healthjournal.domain.model.VitalSign?>(null) }
 
@@ -60,6 +75,8 @@ fun AddVitalScreen(
                 secondaryValue = vital.secondaryValue?.toString() ?: ""
                 notes = vital.notes
                 attachmentPaths = vital.attachmentPaths
+                selectedDate = vital.recordedAt.toLocalDate()
+                selectedTime = vital.recordedAt.toLocalTime()
             }
             loaded = true
         }
@@ -72,7 +89,55 @@ fun AddVitalScreen(
 
     LaunchedEffect(Unit) { viewModel.saveSuccess.collectLatest { onBack() } }
 
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+
     if (!loaded) return
+
+    // Date picker dialog
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        selectedDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                    }
+                    showDatePicker = false
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.close)) }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    // Time picker dialog
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = selectedTime.hour,
+            initialMinute = selectedTime.minute,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                    showTimePicker = false
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) { Text(stringResource(R.string.close)) }
+            },
+            text = { TimePicker(state = timePickerState) }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -92,6 +157,45 @@ fun AddVitalScreen(
             modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Date & Time picker row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = selectedDate.format(dateFormatter),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.date_label)) },
+                    leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    modifier = Modifier.weight(1f).clickable { showDatePicker = true },
+                    singleLine = true,
+                    enabled = false,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+                OutlinedTextField(
+                    value = selectedTime.format(timeFormatter),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.time_label)) },
+                    leadingIcon = { Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    modifier = Modifier.weight(1f).clickable { showTimePicker = true },
+                    singleLine = true,
+                    enabled = false,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
+
             // Vital type selector
             ExposedDropdownMenuBox(
                 expanded = typeMenuExpanded,
@@ -181,6 +285,7 @@ fun AddVitalScreen(
                 onClick = {
                     val v = value.toDoubleOrNull()
                     if (v != null) {
+                        val recordedAt = LocalDateTime.of(selectedDate, selectedTime)
                         if (isEditing && editingVital != null) {
                             viewModel.updateVitalSign(
                                 editingVital!!.copy(
@@ -188,14 +293,16 @@ fun AddVitalScreen(
                                     value = v,
                                     secondaryValue = secondaryValue.toDoubleOrNull(),
                                     notes = notes,
-                                    attachmentPaths = attachmentPaths
+                                    attachmentPaths = attachmentPaths,
+                                    recordedAt = recordedAt
                                 )
                             )
                         } else {
                             viewModel.addNewVitalSign(
                                 type = selectedType, value = v, secondaryValue = secondaryValue.toDoubleOrNull(),
                                 notes = notes, attachmentPaths = attachmentPaths,
-                                diseaseId = diseaseId
+                                diseaseId = diseaseId,
+                                recordedAt = recordedAt
                             )
                         }
                     }

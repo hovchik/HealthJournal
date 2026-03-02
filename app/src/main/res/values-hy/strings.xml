@@ -15,6 +15,9 @@
     <string name="delete">Ջնջել</string>
     <string name="close">Փակել</string>
     <string name="notes">Նոտագրություններ</string>
+    <string name="date_label">Ամսաթիվ</string>
+    <string name="time_label">Զամանակ</string>
+    <string name="start_date_label">Սկզբի ամսաթիվ</string>
     <string name="error_format">Սխալ: %1$s</string>
     <string name="edit">Խմբագրել</string>
     <string name="search">Որոնել</string>

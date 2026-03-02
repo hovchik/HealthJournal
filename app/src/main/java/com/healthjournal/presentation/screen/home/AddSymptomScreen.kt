@@ -3,6 +3,7 @@ package com.healthjournal.presentation.screen.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -10,7 +11,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material3.*
@@ -31,6 +34,12 @@ import com.healthjournal.util.predefinedDataStore
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import java.io.File
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -51,8 +60,13 @@ fun AddSymptomScreen(
     var dropdownExpanded by remember { mutableStateOf(false) }
     var loaded by remember { mutableStateOf(symptomId == -1L) }
 
+    // Date & time state
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedTime by remember { mutableStateOf(LocalTime.now()) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
     val isEditing = symptomId != -1L
-    // Load existing symptom for editing
     var editingSymptom by remember { mutableStateOf<com.healthjournal.domain.model.Symptom?>(null) }
 
     LaunchedEffect(symptomId) {
@@ -67,6 +81,8 @@ fun AddSymptomScreen(
                 triggers = symptom.triggers.joinToString(", ")
                 notes = symptom.notes
                 attachmentPaths = symptom.attachmentPaths
+                selectedDate = symptom.recordedAt.toLocalDate()
+                selectedTime = symptom.recordedAt.toLocalTime()
             }
             loaded = true
         }
@@ -97,7 +113,55 @@ fun AddSymptomScreen(
         else -> MaterialTheme.colorScheme.error
     }
 
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+
     if (!loaded) return
+
+    // Date picker dialog
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        selectedDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                    }
+                    showDatePicker = false
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.close)) }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    // Time picker dialog
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = selectedTime.hour,
+            initialMinute = selectedTime.minute,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                    showTimePicker = false
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) { Text(stringResource(R.string.close)) }
+            },
+            text = { TimePicker(state = timePickerState) }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -117,6 +181,45 @@ fun AddSymptomScreen(
             modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Date & Time picker row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = selectedDate.format(dateFormatter),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.date_label)) },
+                    leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    modifier = Modifier.weight(1f).clickable { showDatePicker = true },
+                    singleLine = true,
+                    enabled = false,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+                OutlinedTextField(
+                    value = selectedTime.format(timeFormatter),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.time_label)) },
+                    leadingIcon = { Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    modifier = Modifier.weight(1f).clickable { showTimePicker = true },
+                    singleLine = true,
+                    enabled = false,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
+
             // Symptom name dropdown with search
             ExposedDropdownMenuBox(
                 expanded = dropdownExpanded,
@@ -260,6 +363,7 @@ fun AddSymptomScreen(
                 onClick = {
                     if (name.isNotBlank()) {
                         val triggerList = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                        val recordedAt = LocalDateTime.of(selectedDate, selectedTime)
                         if (isEditing && editingSymptom != null) {
                             viewModel.updateSymptom(
                                 editingSymptom!!.copy(
@@ -269,7 +373,8 @@ fun AddSymptomScreen(
                                     durationMinutes = duration.toIntOrNull(),
                                     triggers = triggerList,
                                     notes = notes,
-                                    attachmentPaths = attachmentPaths
+                                    attachmentPaths = attachmentPaths,
+                                    recordedAt = recordedAt
                                 )
                             )
                         } else {
@@ -279,7 +384,8 @@ fun AddSymptomScreen(
                                 durationMinutes = duration.toIntOrNull(),
                                 triggers = triggerList,
                                 notes = notes, attachmentPaths = attachmentPaths,
-                                diseaseId = diseaseId
+                                diseaseId = diseaseId,
+                                recordedAt = recordedAt
                             )
                         }
                     }

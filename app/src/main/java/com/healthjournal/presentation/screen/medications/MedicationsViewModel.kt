@@ -8,6 +8,7 @@ import com.healthjournal.domain.model.Medication
 import com.healthjournal.domain.model.MedicationLog
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class MedicationsViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
@@ -28,7 +29,7 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
     private val _saveSuccess = MutableSharedFlow<Boolean>()
     val saveSuccess = _saveSuccess.asSharedFlow()
 
-    fun addNewMedication(name: String, dosage: String, frequency: String, notes: String, profileId: Long? = null, diseaseId: Long = 0L) {
+    fun addNewMedication(name: String, dosage: String, frequency: String, notes: String, profileId: Long? = null, diseaseId: Long = 0L, startDate: LocalDate = LocalDate.now()) {
         viewModelScope.launch {
             val currentProfileId = profileId
                 ?: container.userSettingsRepository.getUserSettings().first().activeProfileId
@@ -39,7 +40,8 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
                     frequency = frequency,
                     notes = notes,
                     profileId = currentProfileId,
-                    diseaseId = diseaseId
+                    diseaseId = diseaseId,
+                    startDate = startDate
                 )
             )
             _saveSuccess.emit(true)

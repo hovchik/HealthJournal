@@ -10,6 +10,7 @@ import com.healthjournal.domain.model.VitalType
 import com.healthjournal.domain.model.VitalSign
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
@@ -43,7 +44,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         notes: String,
         attachmentPaths: List<String> = emptyList(),
         profileId: Long? = null,
-        diseaseId: Long = 0L
+        diseaseId: Long = 0L,
+        recordedAt: LocalDateTime = LocalDateTime.now()
     ) {
         viewModelScope.launch {
             val currentProfileId = profileId
@@ -58,7 +60,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     notes = notes,
                     profileId = currentProfileId,
                     attachmentPaths = attachmentPaths,
-                    diseaseId = diseaseId
+                    diseaseId = diseaseId,
+                    recordedAt = recordedAt
                 )
             )
             _saveSuccess.emit(true)
@@ -72,7 +75,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         notes: String,
         attachmentPaths: List<String> = emptyList(),
         profileId: Long? = null,
-        diseaseId: Long = 0L
+        diseaseId: Long = 0L,
+        recordedAt: LocalDateTime = LocalDateTime.now()
     ) {
         viewModelScope.launch {
             val currentProfileId = profileId
@@ -85,7 +89,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     notes = notes,
                     profileId = currentProfileId,
                     attachmentPaths = attachmentPaths,
-                    diseaseId = diseaseId
+                    diseaseId = diseaseId,
+                    recordedAt = recordedAt
                 )
             )
             _saveSuccess.emit(true)
