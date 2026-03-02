@@ -29,7 +29,10 @@ data class UserSettingsBackup(
     val doctorName: String = "",
     val doctorPhone: String = "",
     val aiConsentGiven: Boolean = false,
-    val languageMode: String = "SYSTEM"
+    val languageMode: String = "SYSTEM",
+    val weight: String = "",
+    val height: String = "",
+    val knownDiseases: List<String> = emptyList()
 )
 
 @Serializable
@@ -39,7 +42,10 @@ data class PredefinedDataBackup(
     val disabledRelations: List<String> = emptyList(),
     val customSymptoms: List<String> = emptyList(),
     val customMedications: List<String> = emptyList(),
-    val customRelations: List<String> = emptyList()
+    val customRelations: List<String> = emptyList(),
+    val enabledSymptomKeys: List<String> = emptyList(),
+    val enabledMedicationKeys: List<String> = emptyList(),
+    val enabledRelationKeys: List<String> = emptyList()
 )
 
 class DataExportImportManager(
@@ -63,13 +69,29 @@ class DataExportImportManager(
         val settings = userSettingsRepository.getUserSettings().first()
 
         val predefinedPrefs = context.predefinedDataStore.data.first()
+        val disabledSymptoms = predefinedPrefs[PredefinedDataKeys.DISABLED_SYMPTOMS] ?: emptySet()
+        val disabledMedications = predefinedPrefs[PredefinedDataKeys.DISABLED_MEDICATIONS] ?: emptySet()
+        val disabledRelations = predefinedPrefs[PredefinedDataKeys.DISABLED_RELATIONS] ?: emptySet()
+        val customSymptoms = predefinedPrefs[PredefinedDataKeys.CUSTOM_SYMPTOMS] ?: emptySet()
+        val customMedications = predefinedPrefs[PredefinedDataKeys.CUSTOM_MEDICATIONS] ?: emptySet()
+        val customRelations = predefinedPrefs[PredefinedDataKeys.CUSTOM_RELATIONS] ?: emptySet()
+
         val predefinedData = PredefinedDataBackup(
-            disabledSymptoms = predefinedPrefs[PredefinedDataKeys.DISABLED_SYMPTOMS]?.toList() ?: emptyList(),
-            disabledMedications = predefinedPrefs[PredefinedDataKeys.DISABLED_MEDICATIONS]?.toList() ?: emptyList(),
-            disabledRelations = predefinedPrefs[PredefinedDataKeys.DISABLED_RELATIONS]?.toList() ?: emptyList(),
-            customSymptoms = predefinedPrefs[PredefinedDataKeys.CUSTOM_SYMPTOMS]?.toList() ?: emptyList(),
-            customMedications = predefinedPrefs[PredefinedDataKeys.CUSTOM_MEDICATIONS]?.toList() ?: emptyList(),
-            customRelations = predefinedPrefs[PredefinedDataKeys.CUSTOM_RELATIONS]?.toList() ?: emptyList()
+            disabledSymptoms = disabledSymptoms.toList(),
+            disabledMedications = disabledMedications.toList(),
+            disabledRelations = disabledRelations.toList(),
+            customSymptoms = customSymptoms.toList(),
+            customMedications = customMedications.toList(),
+            customRelations = customRelations.toList(),
+            enabledSymptomKeys = PredefinedData.symptoms
+                .filter { it.key !in disabledSymptoms }
+                .map { it.key } + customSymptoms.toList(),
+            enabledMedicationKeys = PredefinedData.medications
+                .filter { it.key !in disabledMedications }
+                .map { it.key } + customMedications.toList(),
+            enabledRelationKeys = PredefinedData.relationshipItems
+                .filter { it.key !in disabledRelations }
+                .map { it.key } + customRelations.toList()
         )
 
         return BackupData(
@@ -86,7 +108,10 @@ class DataExportImportManager(
                 doctorName = settings.doctorName,
                 doctorPhone = settings.doctorPhone,
                 aiConsentGiven = settings.aiConsentGiven,
-                languageMode = settings.languageMode
+                languageMode = settings.languageMode,
+                weight = settings.weight,
+                height = settings.height,
+                knownDiseases = settings.knownDiseases
             ),
             predefinedData = predefinedData
         )
@@ -135,7 +160,10 @@ class DataExportImportManager(
                     userName = settingsBackup.userName,
                     doctorName = settingsBackup.doctorName,
                     doctorPhone = settingsBackup.doctorPhone,
-                    aiConsentGiven = settingsBackup.aiConsentGiven
+                    aiConsentGiven = settingsBackup.aiConsentGiven,
+                    weight = settingsBackup.weight,
+                    height = settingsBackup.height,
+                    knownDiseases = settingsBackup.knownDiseases
                 )
             )
         }

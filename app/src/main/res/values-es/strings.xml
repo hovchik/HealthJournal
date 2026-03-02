@@ -172,6 +172,11 @@
     <string name="user_info_desc">Nombre, médico, contactos</string>
     <string name="doctor_name">Nombre del médico</string>
     <string name="doctor_phone">Teléfono del médico</string>
+    <string name="user_weight">Peso (kg)</string>
+    <string name="user_height">Altura (cm)</string>
+    <string name="known_diseases_title">Enfermedades conocidas</string>
+    <string name="known_diseases_hint">Indique sus enfermedades crónicas o conocidas (ej. diabetes, asma). Estos datos se compartirán con la IA para un análisis más preciso.</string>
+    <string name="add_known_disease">Agregar enfermedad</string>
     <string name="saved_successfully">Guardado correctamente</string>
 
     <!-- Family Members -->

@@ -172,6 +172,11 @@
     <string name="user_info_desc">Имя, врач, контакты</string>
     <string name="doctor_name">Имя врача</string>
     <string name="doctor_phone">Телефон врача</string>
+    <string name="user_weight">Вес (кг)</string>
+    <string name="user_height">Рост (см)</string>
+    <string name="known_diseases_title">Известные заболевания</string>
+    <string name="known_diseases_hint">Укажите ваши хронические или известные заболевания (напр. диабет, астма). Эти данные будут переданы AI для более точного анализа.</string>
+    <string name="add_known_disease">Добавить заболевание</string>
     <string name="saved_successfully">Сохранено успешно</string>
 
     <!-- Family Members -->

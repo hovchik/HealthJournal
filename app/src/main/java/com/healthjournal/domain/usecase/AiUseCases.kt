@@ -8,6 +8,7 @@ import com.healthjournal.domain.model.ai.AiSettings
 import com.healthjournal.domain.repository.AiReportRepository
 import com.healthjournal.domain.repository.MedicationRepository
 import com.healthjournal.domain.repository.SymptomRepository
+import com.healthjournal.domain.repository.UserSettingsRepository
 import com.healthjournal.domain.repository.VitalSignRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -18,7 +19,8 @@ class GenerateAiSummaryUseCase(
     private val reportRepository: AiReportRepository,
     private val symptomRepository: SymptomRepository,
     private val vitalSignRepository: VitalSignRepository,
-    private val medicationRepository: MedicationRepository
+    private val medicationRepository: MedicationRepository,
+    private val userSettingsRepository: UserSettingsRepository
 ) {
     suspend operator fun invoke(
         periodDays: Int = 7,
@@ -29,6 +31,7 @@ class GenerateAiSummaryUseCase(
         val now = LocalDateTime.now()
         val from = now.minusDays(periodDays.toLong())
 
+        val userSettings = userSettingsRepository.getUserSettings().first()
         val symptoms = symptomRepository.getSymptomsByDateRange(from, now).first()
             .filter { it.profileId == profileId }
         val vitals = vitalSignRepository.getVitalSignsByDateRange(from, now).first()
@@ -41,7 +44,10 @@ class GenerateAiSummaryUseCase(
             vitals = vitals,
             medications = medications,
             periodDays = periodDays,
-            outputLanguage = outputLanguage
+            outputLanguage = outputLanguage,
+            knownDiseases = userSettings.knownDiseases,
+            weight = userSettings.weight,
+            height = userSettings.height
         )
 
         val result = aiService.generateDoctorSummary(input, aiSettings)
@@ -61,7 +67,8 @@ class GeneratePatternAnalysisUseCase(
     private val aiService: AiService,
     private val reportRepository: AiReportRepository,
     private val symptomRepository: SymptomRepository,
-    private val vitalSignRepository: VitalSignRepository
+    private val vitalSignRepository: VitalSignRepository,
+    private val userSettingsRepository: UserSettingsRepository
 ) {
     suspend operator fun invoke(
         periodDays: Int = 30,
@@ -72,6 +79,7 @@ class GeneratePatternAnalysisUseCase(
         val now = LocalDateTime.now()
         val from = now.minusDays(periodDays.toLong())
 
+        val userSettings = userSettingsRepository.getUserSettings().first()
         val symptoms = symptomRepository.getSymptomsByDateRange(from, now).first()
             .filter { it.profileId == profileId }
         val vitals = vitalSignRepository.getVitalSignsByDateRange(from, now).first()
@@ -82,7 +90,10 @@ class GeneratePatternAnalysisUseCase(
             vitals = vitals,
             medications = emptyList(),
             periodDays = periodDays,
-            outputLanguage = outputLanguage
+            outputLanguage = outputLanguage,
+            knownDiseases = userSettings.knownDiseases,
+            weight = userSettings.weight,
+            height = userSettings.height
         )
 
         val result = aiService.analyzePatterns(input, aiSettings)

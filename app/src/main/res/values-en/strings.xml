@@ -172,6 +172,11 @@
     <string name="user_info_desc">Name, doctor, contacts</string>
     <string name="doctor_name">Doctor\'s name</string>
     <string name="doctor_phone">Doctor\'s phone</string>
+    <string name="user_weight">Weight (kg)</string>
+    <string name="user_height">Height (cm)</string>
+    <string name="known_diseases_title">Known diseases</string>
+    <string name="known_diseases_hint">List your chronic or known conditions (e.g. diabetes, asthma). This data will be shared with AI for more accurate analysis.</string>
+    <string name="add_known_disease">Add disease</string>
     <string name="saved_successfully">Saved successfully</string>
 
     <!-- Family Members -->

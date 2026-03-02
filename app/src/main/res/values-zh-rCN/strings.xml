@@ -172,6 +172,11 @@
     <string name="user_info_desc">姓名、医生、联系方式</string>
     <string name="doctor_name">医生姓名</string>
     <string name="doctor_phone">医生电话</string>
+    <string name="user_weight">体重（公斤）</string>
+    <string name="user_height">身高（厘米）</string>
+    <string name="known_diseases_title">已知疾病</string>
+    <string name="known_diseases_hint">列出您的慢性或已知疾病（如糖尿病、哮喘）。此数据将传递给AI以进行更准确的分析。</string>
+    <string name="add_known_disease">添加疾病</string>
     <string name="saved_successfully">保存成功</string>
 
     <!-- Family Members -->

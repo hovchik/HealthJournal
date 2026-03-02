@@ -173,6 +173,11 @@
     <string name="doctor_name">Բժիշկի անունը</string>
     <string name="doctor_phone">Բժիշկի հեռախոսը</string>
     <string name="saved_successfully">Հաջողությամբ պահվեց</string>
+    <string name="user_weight">Քաշ (կգ)</string>
+    <string name="user_height">Հասակ (սմ)</string>
+    <string name="known_diseases_title">Հայտնի հիվանդություններ</string>
+    <string name="known_diseases_hint">Նշեք ձեր քրոնիկ կամ հայտնի հիվանդությունները (օրինակ՝ շաքարախտ, ասթմա)։ Այս տվյալները կփոխանցվեն AI-ին ավելի ճշտ վերլուծության համար։</string>
+    <string name="add_known_disease">Ավելացնել հիվանդություն</string>
 
     <!-- Family Members -->
     <string name="family_members_title">Ընտանիքի անդամներ</string>

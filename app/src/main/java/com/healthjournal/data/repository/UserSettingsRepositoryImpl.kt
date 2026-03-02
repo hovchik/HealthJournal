@@ -13,6 +13,8 @@ import com.healthjournal.domain.model.ai.AiSettings
 import com.healthjournal.domain.repository.UserSettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_settings")
@@ -27,6 +29,9 @@ class UserSettingsRepositoryImpl constructor(
         val USER_NAME = stringPreferencesKey("user_name")
         val DOCTOR_NAME = stringPreferencesKey("doctor_name")
         val DOCTOR_PHONE = stringPreferencesKey("doctor_phone")
+        val WEIGHT = stringPreferencesKey("weight")
+        val HEIGHT = stringPreferencesKey("height")
+        val KNOWN_DISEASES = stringPreferencesKey("known_diseases")
         val AI_CONSENT = booleanPreferencesKey("ai_consent")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val LANGUAGE_MODE = stringPreferencesKey("language_mode")
@@ -40,10 +45,18 @@ class UserSettingsRepositoryImpl constructor(
             try { json.decodeFromString<AiSettings>(aiSettingsJson) } catch (_: Exception) { AiSettings() }
         } else AiSettings()
 
+        val knownDiseasesJson = prefs[Keys.KNOWN_DISEASES] ?: "[]"
+        val knownDiseases = try {
+            json.decodeFromString(ListSerializer(String.serializer()), knownDiseasesJson)
+        } catch (_: Exception) { emptyList() }
+
         UserSettings(
             userName = prefs[Keys.USER_NAME] ?: "",
             doctorName = prefs[Keys.DOCTOR_NAME] ?: "",
             doctorPhone = prefs[Keys.DOCTOR_PHONE] ?: "",
+            weight = prefs[Keys.WEIGHT] ?: "",
+            height = prefs[Keys.HEIGHT] ?: "",
+            knownDiseases = knownDiseases,
             aiConsentGiven = prefs[Keys.AI_CONSENT] ?: false,
             onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
             languageMode = prefs[Keys.LANGUAGE_MODE] ?: "SYSTEM",
@@ -57,6 +70,11 @@ class UserSettingsRepositoryImpl constructor(
             prefs[Keys.USER_NAME] = settings.userName
             prefs[Keys.DOCTOR_NAME] = settings.doctorName
             prefs[Keys.DOCTOR_PHONE] = settings.doctorPhone
+            prefs[Keys.WEIGHT] = settings.weight
+            prefs[Keys.HEIGHT] = settings.height
+            prefs[Keys.KNOWN_DISEASES] = json.encodeToString(
+                ListSerializer(String.serializer()), settings.knownDiseases
+            )
             prefs[Keys.AI_CONSENT] = settings.aiConsentGiven
             prefs[Keys.ONBOARDING_COMPLETED] = settings.onboardingCompleted
             prefs[Keys.LANGUAGE_MODE] = settings.languageMode
