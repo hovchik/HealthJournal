@@ -363,4 +363,11 @@
         <item quantity="one">%1$d օր</item>
         <item quantity="other">%1$d օր</item>
     </plurals>
+    <string name="gdrive_sign_in">Մուտք գործել Google</string>
+    <string name="gdrive_sign_out">Դուրս գալ</string>
+    <string name="gdrive_signed_in_as">Միացված: %1$s</string>
+    <string name="gdrive_upload">Վերբեռնել Drive</string>
+    <string name="gdrive_download">Ներբեռնել Drive-ից</string>
+    <string name="gdrive_no_backup">Drive-ում պահուստ չկա</string>
+    <string name="onedrive_desc">Պահել/վերականգնել OneDrive-ով</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.healthjournal.presentation.screen.settings
 
-import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -18,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,18 +50,28 @@ fun SettingsScreen(
         uri?.let { settingsViewModel.importData(it) }
     }
 
-    // Cloud export: SAF with initial URI hint for cloud providers
-    val cloudExportLauncher = rememberLauncherForActivityResult(
+    // Google Sign-In launcher
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        settingsViewModel.handleGoogleSignInResult(result.data)
+    }
+
+    // OneDrive via SAF
+    val onedriveExportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         uri?.let { settingsViewModel.exportData(it) }
     }
 
-    val cloudImportLauncher = rememberLauncherForActivityResult(
+    val onedriveImportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let { settingsViewModel.importData(it) }
     }
+
+    val isAnyLoading = uiState.isExporting || uiState.isImporting ||
+        uiState.isDriveUploading || uiState.isDriveDownloading
 
     Scaffold(
         topBar = {
@@ -121,6 +131,8 @@ fun SettingsScreen(
                         onClick = onPredefinedData
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+                    // Local Export/Import
                     SettingsListItem(
                         icon = Icons.Default.FileDownload,
                         iconTint = MaterialTheme.colorScheme.tertiary,
@@ -128,7 +140,6 @@ fun SettingsScreen(
                         subtitle = stringResource(R.string.export_import_desc),
                         onClick = {}
                     )
-                    // Export/Import buttons
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -138,7 +149,7 @@ fun SettingsScreen(
                     ) {
                         OutlinedButton(
                             onClick = { exportLauncher.launch("health_journal_backup.json") },
-                            enabled = !uiState.isExporting && !uiState.isImporting,
+                            enabled = !isAnyLoading,
                             modifier = Modifier.weight(1f)
                         ) {
                             if (uiState.isExporting) {
@@ -151,7 +162,7 @@ fun SettingsScreen(
                         }
                         OutlinedButton(
                             onClick = { importLauncher.launch(arrayOf("application/json")) },
-                            enabled = !uiState.isExporting && !uiState.isImporting,
+                            enabled = !isAnyLoading,
                             modifier = Modifier.weight(1f)
                         ) {
                             if (uiState.isImporting) {
@@ -163,13 +174,114 @@ fun SettingsScreen(
                             Text(stringResource(R.string.backup_import))
                         }
                     }
-                    // Cloud backup section
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+
+                // Google Drive section
+                SettingsGroupCard {
                     SettingsListItem(
                         icon = Icons.Default.Cloud,
                         iconTint = MaterialTheme.colorScheme.tertiary,
-                        title = stringResource(R.string.backup_cloud_title),
-                        subtitle = stringResource(R.string.backup_cloud_desc),
+                        title = stringResource(R.string.backup_google_drive),
+                        subtitle = if (uiState.googleSignedIn) {
+                            stringResource(R.string.gdrive_signed_in_as, uiState.googleEmail ?: "")
+                        } else {
+                            stringResource(R.string.gdrive_sign_in)
+                        },
+                        onClick = {}
+                    )
+
+                    if (!uiState.googleSignedIn) {
+                        // Sign-in button
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(bottom = 12.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    googleSignInLauncher.launch(settingsViewModel.getGoogleSignInIntent())
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(Icons.Default.Login, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(stringResource(R.string.gdrive_sign_in))
+                            }
+                        }
+                    } else {
+                        // Upload/Download buttons
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(bottom = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Last backup info
+                            uiState.lastDriveBackup?.let { time ->
+                                Text(
+                                    stringResource(R.string.backup_last_backup, time),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.outline,
+                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                )
+                            }
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = { settingsViewModel.uploadToDrive() },
+                                    enabled = !isAnyLoading,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    if (uiState.isDriveUploading) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(16.dp),
+                                            strokeWidth = 2.dp,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    } else {
+                                        Icon(Icons.Default.CloudUpload, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    }
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(stringResource(R.string.gdrive_upload))
+                                }
+                                OutlinedButton(
+                                    onClick = { settingsViewModel.downloadFromDrive() },
+                                    enabled = !isAnyLoading,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    if (uiState.isDriveDownloading) {
+                                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                                    } else {
+                                        Icon(Icons.Default.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    }
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(stringResource(R.string.gdrive_download))
+                                }
+                            }
+
+                            // Sign out
+                            TextButton(
+                                onClick = { settingsViewModel.signOutGoogle() },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(
+                                    stringResource(R.string.gdrive_sign_out),
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // OneDrive section (via SAF)
+                SettingsGroupCard {
+                    SettingsListItem(
+                        icon = Icons.Default.Cloud,
+                        iconTint = MaterialTheme.colorScheme.secondary,
+                        title = stringResource(R.string.backup_onedrive),
+                        subtitle = stringResource(R.string.onedrive_desc),
                         onClick = {}
                     )
                     Row(
@@ -180,8 +292,8 @@ fun SettingsScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         OutlinedButton(
-                            onClick = { cloudExportLauncher.launch("health_journal_backup.json") },
-                            enabled = !uiState.isExporting && !uiState.isImporting,
+                            onClick = { onedriveExportLauncher.launch("health_journal_backup.json") },
+                            enabled = !isAnyLoading,
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.CloudUpload, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -189,8 +301,8 @@ fun SettingsScreen(
                             Text(stringResource(R.string.backup_export))
                         }
                         OutlinedButton(
-                            onClick = { cloudImportLauncher.launch(arrayOf("application/json")) },
-                            enabled = !uiState.isExporting && !uiState.isImporting,
+                            onClick = { onedriveImportLauncher.launch(arrayOf("application/json")) },
+                            enabled = !isAnyLoading,
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -235,7 +347,9 @@ fun SettingsScreen(
                                     displayMessage,
                                     color = if (uiState.isError) MaterialTheme.colorScheme.onErrorContainer
                                     else MaterialTheme.colorScheme.onPrimaryContainer,
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                             TextButton(onClick = { settingsViewModel.clearMessage() }) {
@@ -337,7 +451,13 @@ private fun SettingsListItem(
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
             Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
                 tint = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.size(18.dp))

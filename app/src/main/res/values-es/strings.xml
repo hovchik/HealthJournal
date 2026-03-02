@@ -233,6 +233,13 @@
     <string name="backup_restore_from">Restaurar desde %1$s</string>
     <string name="backup_last_backup">Última: %1$s</string>
     <string name="backup_never">Sin copias</string>
+    <string name="gdrive_sign_in">Iniciar sesión con Google</string>
+    <string name="gdrive_sign_out">Cerrar sesión</string>
+    <string name="gdrive_signed_in_as">Conectado: %1$s</string>
+    <string name="gdrive_upload">Subir a Drive</string>
+    <string name="gdrive_download">Descargar de Drive</string>
+    <string name="gdrive_no_backup">No se encontró copia en Drive</string>
+    <string name="onedrive_desc">Guardar/restaurar vía OneDrive</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Dolor de cabeza</string>

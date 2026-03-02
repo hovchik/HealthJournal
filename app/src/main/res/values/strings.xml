@@ -233,6 +233,13 @@
     <string name="backup_restore_from">Восстановить из %1$s</string>
     <string name="backup_last_backup">Последнее: %1$s</string>
     <string name="backup_never">Нет копий</string>
+    <string name="gdrive_sign_in">Войти в Google</string>
+    <string name="gdrive_sign_out">Выйти</string>
+    <string name="gdrive_signed_in_as">Подключен: %1$s</string>
+    <string name="gdrive_upload">Загрузить в Drive</string>
+    <string name="gdrive_download">Скачать из Drive</string>
+    <string name="gdrive_no_backup">Нет резервной копии в Drive</string>
+    <string name="onedrive_desc">Сохранить/восстановить через OneDrive</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Головная боль</string>

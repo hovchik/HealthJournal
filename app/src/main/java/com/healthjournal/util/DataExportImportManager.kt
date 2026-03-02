@@ -57,7 +57,7 @@ class DataExportImportManager(
         prettyPrint = true
     }
 
-    suspend fun exportData(uri: Uri) {
+    private suspend fun buildBackupData(): BackupData {
         val settings = userSettingsRepository.getUserSettings().first()
 
         val predefinedPrefs = context.predefinedDataStore.data.first()
@@ -70,7 +70,7 @@ class DataExportImportManager(
             customRelations = predefinedPrefs[PredefinedDataKeys.CUSTOM_RELATIONS]?.toList() ?: emptyList()
         )
 
-        val backup = BackupData(
+        return BackupData(
             meta = ExportMeta(uiLanguage = settings.languageMode),
             symptoms = symptomStore.getAll(),
             vitalSigns = vitalSignStore.getAll(),
@@ -87,11 +87,23 @@ class DataExportImportManager(
             ),
             predefinedData = predefinedData
         )
+    }
 
-        val jsonString = json.encodeToString(BackupData.serializer(), backup)
+    suspend fun exportToString(): String {
+        val backup = buildBackupData()
+        return json.encodeToString(BackupData.serializer(), backup)
+    }
+
+    suspend fun exportData(uri: Uri) {
+        val jsonString = exportToString()
         context.contentResolver.openOutputStream(uri)?.use { stream ->
             stream.write(jsonString.toByteArray(Charsets.UTF_8))
         } ?: throw IllegalStateException("Cannot open output stream")
+    }
+
+    suspend fun importFromString(jsonString: String) {
+        val backup = json.decodeFromString(BackupData.serializer(), jsonString)
+        restoreBackup(backup)
     }
 
     suspend fun importData(uri: Uri) {
@@ -99,8 +111,10 @@ class DataExportImportManager(
             stream.bufferedReader(Charsets.UTF_8).readText()
         } ?: throw IllegalStateException("Cannot open input stream")
 
-        val backup = json.decodeFromString(BackupData.serializer(), jsonString)
+        importFromString(jsonString)
+    }
 
+    private suspend fun restoreBackup(backup: BackupData) {
         // Replace all data stores
         symptomStore.replaceAll(backup.symptoms)
         vitalSignStore.replaceAll(backup.vitalSigns)

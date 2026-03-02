@@ -233,6 +233,13 @@
     <string name="backup_restore_from">从%1$s恢复</string>
     <string name="backup_last_backup">上次：%1$s</string>
     <string name="backup_never">无备份</string>
+    <string name="gdrive_sign_in">登录Google</string>
+    <string name="gdrive_sign_out">退出</string>
+    <string name="gdrive_signed_in_as">已连接：%1$s</string>
+    <string name="gdrive_upload">上传到Drive</string>
+    <string name="gdrive_download">从Drive下载</string>
+    <string name="gdrive_no_backup">Drive中没有备份</string>
+    <string name="onedrive_desc">通过OneDrive保存/恢复</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">头痛</string>

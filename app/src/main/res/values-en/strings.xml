@@ -233,6 +233,13 @@
     <string name="backup_restore_from">Restore from %1$s</string>
     <string name="backup_last_backup">Last: %1$s</string>
     <string name="backup_never">No backups</string>
+    <string name="gdrive_sign_in">Sign in with Google</string>
+    <string name="gdrive_sign_out">Sign out</string>
+    <string name="gdrive_signed_in_as">Connected: %1$s</string>
+    <string name="gdrive_upload">Upload to Drive</string>
+    <string name="gdrive_download">Download from Drive</string>
+    <string name="gdrive_no_backup">No backup found in Drive</string>
+    <string name="onedrive_desc">Save/restore via OneDrive</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Headache</string>
