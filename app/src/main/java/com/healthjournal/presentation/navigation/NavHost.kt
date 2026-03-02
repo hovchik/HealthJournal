@@ -59,7 +59,9 @@ fun HealthNavHost(
             AddVitalScreen(onBack = { navController.popBackStack() })
         }
         composable(Screen.Vitals.route) {
-            VitalsScreen()
+            VitalsScreen(
+                onAddVital = { navController.navigate(Screen.AddVital.route) }
+            )
         }
         composable(Screen.Medications.route) {
             MedicationsScreen(

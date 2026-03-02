@@ -213,6 +213,12 @@
     <string name="date_today">Hoy</string>
     <string name="date_yesterday">Ayer</string>
 
+    <!-- Validation -->
+    <string name="ai_config_valid">La configuración es válida</string>
+
+    <!-- AI Data Requirements -->
+    <string name="ai_need_more_data">Se necesitan al menos 2 días de registros para el análisis</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Dolor de cabeza</string>
     <string name="symptom_migraine">Migraña</string>

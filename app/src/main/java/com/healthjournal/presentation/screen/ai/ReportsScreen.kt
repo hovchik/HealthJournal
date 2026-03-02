@@ -126,7 +126,7 @@ fun ReportsScreen(
 
             when (selectedTab) {
                 0 -> RecordsTab(symptoms, vitals, medications, context, viewModel)
-                1 -> AiAnalyzeTab(reports, vitals, uiState, context, viewModel)
+                1 -> AiAnalyzeTab(reports, vitals, symptoms, uiState, context, viewModel)
             }
         }
     }
@@ -271,10 +271,17 @@ private fun RecordsTab(
 private fun AiAnalyzeTab(
     reports: List<AiReport>,
     vitals: List<VitalSign>,
+    symptoms: List<Symptom>,
     uiState: AiReportUiState,
     context: android.content.Context,
     viewModel: AiReportViewModel
 ) {
+    val uniqueDays = remember(vitals, symptoms) {
+        (vitals.map { it.recordedAt.toLocalDate() } + symptoms.map { it.recordedAt.toLocalDate() })
+            .distinct()
+    }
+    val hasEnoughData = uniqueDays.size >= 2
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -282,23 +289,32 @@ private fun AiAnalyzeTab(
     ) {
         // Generate buttons
         item(key = "ai_buttons") {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = { viewModel.generateReport() },
-                    enabled = !uiState.isLoading,
-                    modifier = Modifier.weight(1f)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(stringResource(R.string.report_7_days))
+                    Button(
+                        onClick = { viewModel.generateReport() },
+                        enabled = !uiState.isLoading && hasEnoughData,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.report_7_days))
+                    }
+                    OutlinedButton(
+                        onClick = { viewModel.analyzePatterns() },
+                        enabled = !uiState.isLoading && hasEnoughData,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.patterns_30_days))
+                    }
                 }
-                OutlinedButton(
-                    onClick = { viewModel.analyzePatterns() },
-                    enabled = !uiState.isLoading,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.patterns_30_days))
+                if (!hasEnoughData) {
+                    Text(
+                        stringResource(R.string.ai_need_more_data),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }

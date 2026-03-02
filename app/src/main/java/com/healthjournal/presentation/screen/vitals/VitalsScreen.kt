@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.*
@@ -29,6 +30,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VitalsScreen(
+    onAddVital: () -> Unit = {},
     viewModel: VitalsViewModel = viewModel()
 ) {
     val vitals by viewModel.vitals.collectAsStateWithLifecycle()
@@ -62,6 +64,15 @@ fun VitalsScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddVital,
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+            ) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_vital_desc))
+            }
         }
     ) { padding ->
         if (vitals.isEmpty()) {

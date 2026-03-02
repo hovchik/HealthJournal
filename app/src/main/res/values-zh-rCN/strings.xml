@@ -213,6 +213,12 @@
     <string name="date_today">今天</string>
     <string name="date_yesterday">昨天</string>
 
+    <!-- Validation -->
+    <string name="ai_config_valid">配置有效</string>
+
+    <!-- AI Data Requirements -->
+    <string name="ai_need_more_data">分析需要至少2天的记录数据</string>
+
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">头痛</string>
     <string name="symptom_migraine">偏头痛</string>
