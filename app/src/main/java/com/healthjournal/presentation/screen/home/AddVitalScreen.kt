@@ -35,6 +35,7 @@ import java.io.File
 fun AddVitalScreen(
     onBack: () -> Unit,
     vitalId: Long = -1L,
+    diseaseId: Long = 0L,
     viewModel: HomeViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -193,7 +194,8 @@ fun AddVitalScreen(
                         } else {
                             viewModel.addNewVitalSign(
                                 type = selectedType, value = v, secondaryValue = secondaryValue.toDoubleOrNull(),
-                                notes = notes, attachmentPaths = attachmentPaths
+                                notes = notes, attachmentPaths = attachmentPaths,
+                                diseaseId = diseaseId
                             )
                         }
                     }

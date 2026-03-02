@@ -362,4 +362,15 @@
     <string name="profile_selection_subtitle">Select a profile to continue</string>
     <string name="profile_continue">Continue</string>
     <string name="profile_add_new">Add member</string>
+
+    <!-- Diseases -->
+    <string name="disease_name">Disease name</string>
+    <string name="add_disease">Add disease</string>
+    <string name="edit_disease">Edit disease</string>
+    <string name="disease_active">Active</string>
+    <string name="disease_resolved">Resolved</string>
+    <string name="no_diseases_hint">No diseases. Tap + to add one.</string>
+    <string name="family_diseases_title">Family diseases</string>
+    <string name="no_family_diseases_hint">No shared diseases among family members.</string>
+    <string name="family_members_count">%1$d members</string>
 </resources>

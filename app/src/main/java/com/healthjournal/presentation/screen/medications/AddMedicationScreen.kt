@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.map
 fun AddMedicationScreen(
     onBack: () -> Unit,
     medicationId: Long = -1L,
+    diseaseId: Long = 0L,
     viewModel: MedicationsViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -185,7 +186,7 @@ fun AddMedicationScreen(
                                 )
                             )
                         } else {
-                            viewModel.addNewMedication(name, dosage, frequency, notes)
+                            viewModel.addNewMedication(name, dosage, frequency, notes, diseaseId = diseaseId)
                         }
                     }
                 },

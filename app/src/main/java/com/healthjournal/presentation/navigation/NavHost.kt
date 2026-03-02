@@ -8,6 +8,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.healthjournal.presentation.screen.ai.ReportsScreen
+import com.healthjournal.presentation.screen.disease.DiseaseDetailScreen
+import com.healthjournal.presentation.screen.disease.DiseaseListScreen
+import com.healthjournal.presentation.screen.disease.FamilyDiseaseComparisonScreen
 import com.healthjournal.presentation.screen.home.AddSymptomScreen
 import com.healthjournal.presentation.screen.home.AddVitalScreen
 import com.healthjournal.presentation.screen.home.HomeScreen
@@ -49,11 +52,10 @@ fun HealthNavHost(
             )
         }
         composable(Screen.Home.route) {
-            HomeScreen(
+            DiseaseListScreen(
+                onDiseaseClick = { id -> navController.navigate(Screen.DiseaseDetail.createRoute(id)) },
                 onAddSymptom = { navController.navigate(Screen.AddSymptom.route) },
-                onAddVital = { navController.navigate(Screen.AddVital.route) },
-                onEditSymptom = { id -> navController.navigate(Screen.EditSymptom.createRoute(id)) },
-                onEditVital = { id -> navController.navigate(Screen.EditVital.createRoute(id)) }
+                onAddVital = { navController.navigate(Screen.AddVital.route) }
             )
         }
         composable(Screen.AddSymptom.route) {
@@ -97,6 +99,46 @@ fun HealthNavHost(
         ) { backStackEntry ->
             val medicationId = backStackEntry.arguments?.getLong("medicationId") ?: -1L
             AddMedicationScreen(onBack = { navController.popBackStack() }, medicationId = medicationId)
+        }
+        composable(
+            Screen.DiseaseDetail.route,
+            arguments = listOf(navArgument("diseaseId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val diseaseId = backStackEntry.arguments?.getLong("diseaseId") ?: return@composable
+            DiseaseDetailScreen(
+                diseaseId = diseaseId,
+                onBack = { navController.popBackStack() },
+                onAddSymptom = { id -> navController.navigate(Screen.AddSymptomToDisease.createRoute(id)) },
+                onAddVital = { id -> navController.navigate(Screen.AddVitalToDisease.createRoute(id)) },
+                onAddMedication = { id -> navController.navigate(Screen.AddMedicationToDisease.createRoute(id)) },
+                onEditSymptom = { id -> navController.navigate(Screen.EditSymptom.createRoute(id)) },
+                onEditVital = { id -> navController.navigate(Screen.EditVital.createRoute(id)) },
+                onEditMedication = { id -> navController.navigate(Screen.EditMedication.createRoute(id)) }
+            )
+        }
+        composable(Screen.FamilyDiseases.route) {
+            FamilyDiseaseComparisonScreen(onBack = { navController.popBackStack() })
+        }
+        composable(
+            Screen.AddSymptomToDisease.route,
+            arguments = listOf(navArgument("diseaseId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val diseaseId = backStackEntry.arguments?.getLong("diseaseId") ?: 0L
+            AddSymptomScreen(onBack = { navController.popBackStack() }, diseaseId = diseaseId)
+        }
+        composable(
+            Screen.AddVitalToDisease.route,
+            arguments = listOf(navArgument("diseaseId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val diseaseId = backStackEntry.arguments?.getLong("diseaseId") ?: 0L
+            AddVitalScreen(onBack = { navController.popBackStack() }, diseaseId = diseaseId)
+        }
+        composable(
+            Screen.AddMedicationToDisease.route,
+            arguments = listOf(navArgument("diseaseId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val diseaseId = backStackEntry.arguments?.getLong("diseaseId") ?: 0L
+            AddMedicationScreen(onBack = { navController.popBackStack() }, diseaseId = diseaseId)
         }
         composable(Screen.Reports.route) {
             ReportsScreen()

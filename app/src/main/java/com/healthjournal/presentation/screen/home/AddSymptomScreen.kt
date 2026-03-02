@@ -37,6 +37,7 @@ import java.io.File
 fun AddSymptomScreen(
     onBack: () -> Unit,
     symptomId: Long = -1L,
+    diseaseId: Long = 0L,
     viewModel: HomeViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -277,7 +278,8 @@ fun AddSymptomScreen(
                                 value = value,
                                 durationMinutes = duration.toIntOrNull(),
                                 triggers = triggerList,
-                                notes = notes, attachmentPaths = attachmentPaths
+                                notes = notes, attachmentPaths = attachmentPaths,
+                                diseaseId = diseaseId
                             )
                         }
                     }

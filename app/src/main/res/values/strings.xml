@@ -366,4 +366,15 @@
     <string name="profile_selection_subtitle">Выберите профиль для продолжения</string>
     <string name="profile_continue">Продолжить</string>
     <string name="profile_add_new">Добавить участника</string>
+
+    <!-- Diseases -->
+    <string name="disease_name">Название болезни</string>
+    <string name="add_disease">Добавить болезнь</string>
+    <string name="edit_disease">Редактировать болезнь</string>
+    <string name="disease_active">Активна</string>
+    <string name="disease_resolved">Вылечена</string>
+    <string name="no_diseases_hint">Нет болезней. Нажмите + чтобы добавить.</string>
+    <string name="family_diseases_title">Болезни семьи</string>
+    <string name="no_family_diseases_hint">Нет общих болезней среди членов семьи.</string>
+    <string name="family_members_count">%1$d чел.</string>
 </resources>

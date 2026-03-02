@@ -42,7 +42,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         triggers: List<String>,
         notes: String,
         attachmentPaths: List<String> = emptyList(),
-        profileId: Long? = null
+        profileId: Long? = null,
+        diseaseId: Long = 0L
     ) {
         viewModelScope.launch {
             val currentProfileId = profileId
@@ -56,7 +57,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     triggers = triggers,
                     notes = notes,
                     profileId = currentProfileId,
-                    attachmentPaths = attachmentPaths
+                    attachmentPaths = attachmentPaths,
+                    diseaseId = diseaseId
                 )
             )
             _saveSuccess.emit(true)
@@ -69,7 +71,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         secondaryValue: Double?,
         notes: String,
         attachmentPaths: List<String> = emptyList(),
-        profileId: Long? = null
+        profileId: Long? = null,
+        diseaseId: Long = 0L
     ) {
         viewModelScope.launch {
             val currentProfileId = profileId
@@ -81,7 +84,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     secondaryValue = secondaryValue,
                     notes = notes,
                     profileId = currentProfileId,
-                    attachmentPaths = attachmentPaths
+                    attachmentPaths = attachmentPaths,
+                    diseaseId = diseaseId
                 )
             )
             _saveSuccess.emit(true)

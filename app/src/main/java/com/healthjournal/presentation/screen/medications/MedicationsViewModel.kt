@@ -28,7 +28,7 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
     private val _saveSuccess = MutableSharedFlow<Boolean>()
     val saveSuccess = _saveSuccess.asSharedFlow()
 
-    fun addNewMedication(name: String, dosage: String, frequency: String, notes: String, profileId: Long? = null) {
+    fun addNewMedication(name: String, dosage: String, frequency: String, notes: String, profileId: Long? = null, diseaseId: Long = 0L) {
         viewModelScope.launch {
             val currentProfileId = profileId
                 ?: container.userSettingsRepository.getUserSettings().first().activeProfileId
@@ -38,7 +38,8 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
                     dosage = dosage,
                     frequency = frequency,
                     notes = notes,
-                    profileId = currentProfileId
+                    profileId = currentProfileId,
+                    diseaseId = diseaseId
                 )
             )
             _saveSuccess.emit(true)

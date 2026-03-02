@@ -360,4 +360,15 @@
     <string name="profile_selection_subtitle">选择一个档案以继续</string>
     <string name="profile_continue">继续</string>
     <string name="profile_add_new">添加成员</string>
+
+    <!-- Diseases -->
+    <string name="disease_name">疾病名称</string>
+    <string name="add_disease">添加疾病</string>
+    <string name="edit_disease">编辑疾病</string>
+    <string name="disease_active">活跃</string>
+    <string name="disease_resolved">已治愈</string>
+    <string name="no_diseases_hint">暂无疾病。点击 + 添加。</string>
+    <string name="family_diseases_title">家庭疾病</string>
+    <string name="no_family_diseases_hint">家庭成员之间没有共同疾病。</string>
+    <string name="family_members_count">%1$d 人</string>
 </resources>

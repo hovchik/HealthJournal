@@ -18,6 +18,7 @@ data class BackupData(
     val medicationLogs: List<MedicationLogDto> = emptyList(),
     val aiReports: List<AiReportDto> = emptyList(),
     val familyMembers: List<FamilyMemberDto> = emptyList(),
+    val diseases: List<DiseaseDto> = emptyList(),
     val userSettings: UserSettingsBackup? = null,
     val predefinedData: PredefinedDataBackup? = null
 )
@@ -49,6 +50,7 @@ class DataExportImportManager(
     private val medicationLogStore: JsonFileStore<MedicationLogDto>,
     private val aiReportStore: JsonFileStore<AiReportDto>,
     private val familyMemberStore: JsonFileStore<FamilyMemberDto>,
+    private val diseaseStore: JsonFileStore<DiseaseDto>,
     private val userSettingsRepository: UserSettingsRepository
 ) {
     private val json = Json {
@@ -78,6 +80,7 @@ class DataExportImportManager(
             medicationLogs = medicationLogStore.getAll(),
             aiReports = aiReportStore.getAll(),
             familyMembers = familyMemberStore.getAll(),
+            diseases = diseaseStore.getAll(),
             userSettings = UserSettingsBackup(
                 userName = settings.userName,
                 doctorName = settings.doctorName,
@@ -122,6 +125,7 @@ class DataExportImportManager(
         medicationLogStore.replaceAll(backup.medicationLogs)
         aiReportStore.replaceAll(backup.aiReports)
         familyMemberStore.replaceAll(backup.familyMembers)
+        diseaseStore.replaceAll(backup.diseases)
 
         // Restore user settings (keep onboarding completed, don't change active profile)
         backup.userSettings?.let { settingsBackup ->

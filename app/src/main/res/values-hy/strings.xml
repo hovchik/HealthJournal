@@ -362,4 +362,15 @@
         <item quantity="one">%1$d օր</item>
         <item quantity="other">%1$d օր</item>
     </plurals>
+
+    <!-- Diseases -->
+    <string name="disease_name">Հիվանդության անունը</string>
+    <string name="add_disease">Ավելացնել հիվանդություն</string>
+    <string name="edit_disease">Խմբագրել հիվանդությունը</string>
+    <string name="disease_active">Ակտիվ</string>
+    <string name="disease_resolved">Բուժված</string>
+    <string name="no_diseases_hint">Հիվանդություններ չկան։ Սեղմեք + ավելացնելու համար։</string>
+    <string name="family_diseases_title">Ընտանիքի հիվանդություններ</string>
+    <string name="no_family_diseases_hint">Ընտանիքի անդամների մեջ ընդհանուր հիվանդություններ չկան։</string>
+    <string name="family_members_count">%1$d անդամ</string>
 </resources>

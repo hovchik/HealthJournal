@@ -11,5 +11,6 @@ data class Medication(
     val endDate: LocalDate? = null,
     val active: Boolean = true,
     val notes: String = "",
-    val profileId: Long = 0
+    val profileId: Long = 0,
+    val diseaseId: Long = 0
 )

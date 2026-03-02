@@ -35,6 +35,19 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object EditMedication : Screen("edit_medication/{medicationId}", R.string.edit_medication_title, Icons.Default.Medication) {
         fun createRoute(medicationId: Long) = "edit_medication/$medicationId"
     }
+    data object DiseaseDetail : Screen("disease_detail/{diseaseId}", R.string.home_title, Icons.Default.Home) {
+        fun createRoute(diseaseId: Long) = "disease_detail/$diseaseId"
+    }
+    data object FamilyDiseases : Screen("family_diseases", R.string.family_diseases_title, Icons.Default.Groups)
+    data object AddSymptomToDisease : Screen("add_symptom_disease/{diseaseId}", R.string.add_symptom_title, Icons.Default.Home) {
+        fun createRoute(diseaseId: Long) = "add_symptom_disease/$diseaseId"
+    }
+    data object AddVitalToDisease : Screen("add_vital_disease/{diseaseId}", R.string.add_vital_title, Icons.Default.Favorite) {
+        fun createRoute(diseaseId: Long) = "add_vital_disease/$diseaseId"
+    }
+    data object AddMedicationToDisease : Screen("add_medication_disease/{diseaseId}", R.string.add_medication_title, Icons.Default.Medication) {
+        fun createRoute(diseaseId: Long) = "add_medication_disease/$diseaseId"
+    }
     data object LanguageSettings : Screen("language_settings", R.string.language_settings_title, Icons.Default.Settings)
     data object AiSettings : Screen("ai_settings", R.string.ai_settings_title, Icons.Default.Psychology)
     data object UserInfo : Screen("user_info", R.string.user_info_title, Icons.Default.Settings)

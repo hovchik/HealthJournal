@@ -362,4 +362,15 @@
     <string name="profile_selection_subtitle">Selecciona un perfil para continuar</string>
     <string name="profile_continue">Continuar</string>
     <string name="profile_add_new">Agregar miembro</string>
+
+    <!-- Diseases -->
+    <string name="disease_name">Nombre de la enfermedad</string>
+    <string name="add_disease">Agregar enfermedad</string>
+    <string name="edit_disease">Editar enfermedad</string>
+    <string name="disease_active">Activa</string>
+    <string name="disease_resolved">Resuelta</string>
+    <string name="no_diseases_hint">Sin enfermedades. Pulse + para agregar.</string>
+    <string name="family_diseases_title">Enfermedades familiares</string>
+    <string name="no_family_diseases_hint">No hay enfermedades compartidas entre los miembros de la familia.</string>
+    <string name="family_members_count">%1$d miembros</string>
 </resources>

@@ -68,6 +68,11 @@ class AppContainer(context: Context) {
         serializer = FamilyMemberDto.serializer(), json = json,
         getId = { it.id }, setId = { item, id -> item.copy(id = id) }
     )
+    private val diseaseStore = JsonFileStore(
+        context = context, fileName = "diseases.json",
+        serializer = DiseaseDto.serializer(), json = json,
+        getId = { it.id }, setId = { item, id -> item.copy(id = id) }
+    )
 
     // Network helpers
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -146,6 +151,7 @@ class AppContainer(context: Context) {
     val aiReportRepository: AiReportRepository = AiReportRepositoryImpl(aiReportStore)
     val userSettingsRepository: UserSettingsRepository = UserSettingsRepositoryImpl(context)
     val familyMemberRepository: FamilyMemberRepository = FamilyMemberRepositoryImpl(familyMemberStore)
+    val diseaseRepository: DiseaseRepository = DiseaseRepositoryImpl(diseaseStore)
 
     // Use Cases
     val getAllSymptoms = GetAllSymptomsUseCase(symptomRepository)
@@ -172,6 +178,13 @@ class AppContainer(context: Context) {
     val logMedicationTaken = LogMedicationTakenUseCase(medicationRepository)
     val getMedicationLogs = GetMedicationLogsUseCase(medicationRepository)
 
+    val getAllDiseases = GetAllDiseasesUseCase(diseaseRepository)
+    val getDiseasesByProfileId = GetDiseasesByProfileIdUseCase(diseaseRepository)
+    val getDiseaseById = GetDiseaseByIdUseCase(diseaseRepository)
+    val addDisease = AddDiseaseUseCase(diseaseRepository)
+    val updateDisease = UpdateDiseaseUseCase(diseaseRepository)
+    val deleteDisease = DeleteDiseaseUseCase(diseaseRepository)
+
     val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository)
     val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository)
     val getAllReports = GetAllReportsUseCase(aiReportRepository)
@@ -185,6 +198,7 @@ class AppContainer(context: Context) {
         medicationLogStore = medicationLogStore,
         aiReportStore = aiReportStore,
         familyMemberStore = familyMemberStore,
+        diseaseStore = diseaseStore,
         userSettingsRepository = userSettingsRepository
     )
 }
