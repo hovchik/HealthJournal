@@ -1,5 +1,8 @@
 package com.healthjournal.presentation.screen.settings
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -16,6 +19,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthjournal.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,8 +30,39 @@ fun SettingsScreen(
     onAiSettings: () -> Unit,
     onUserInfo: () -> Unit,
     onFamilyMembers: () -> Unit,
-    onPredefinedData: () -> Unit
+    onPredefinedData: () -> Unit,
+    settingsViewModel: SettingsViewModel = viewModel()
 ) {
+    val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+
+    val exportSuccessMsg = stringResource(R.string.export_success)
+    val importSuccessMsg = stringResource(R.string.import_success)
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        uri?.let { settingsViewModel.exportData(it) }
+    }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { settingsViewModel.importData(it) }
+    }
+
+    // Cloud export: SAF with initial URI hint for cloud providers
+    val cloudExportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        uri?.let { settingsViewModel.exportData(it) }
+    }
+
+    val cloudImportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { settingsViewModel.importData(it) }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -84,6 +120,129 @@ fun SettingsScreen(
                         subtitle = stringResource(R.string.predefined_data_desc),
                         onClick = onPredefinedData
                     )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.FileDownload,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.export_import_title),
+                        subtitle = stringResource(R.string.export_import_desc),
+                        onClick = {}
+                    )
+                    // Export/Import buttons
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { exportLauncher.launch("health_journal_backup.json") },
+                            enabled = !uiState.isExporting && !uiState.isImporting,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            if (uiState.isExporting) {
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                            } else {
+                                Icon(Icons.Default.Upload, contentDescription = null, modifier = Modifier.size(18.dp))
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(stringResource(R.string.backup_export))
+                        }
+                        OutlinedButton(
+                            onClick = { importLauncher.launch(arrayOf("application/json")) },
+                            enabled = !uiState.isExporting && !uiState.isImporting,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            if (uiState.isImporting) {
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                            } else {
+                                Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(stringResource(R.string.backup_import))
+                        }
+                    }
+                    // Cloud backup section
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.Cloud,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.backup_cloud_title),
+                        subtitle = stringResource(R.string.backup_cloud_desc),
+                        onClick = {}
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { cloudExportLauncher.launch("health_journal_backup.json") },
+                            enabled = !uiState.isExporting && !uiState.isImporting,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.CloudUpload, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(stringResource(R.string.backup_export))
+                        }
+                        OutlinedButton(
+                            onClick = { cloudImportLauncher.launch(arrayOf("application/json")) },
+                            enabled = !uiState.isExporting && !uiState.isImporting,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(stringResource(R.string.backup_import))
+                        }
+                    }
+                }
+
+                // Status message
+                uiState.message?.let { message ->
+                    val displayMessage = when (message) {
+                        "export_success" -> exportSuccessMsg
+                        "import_success" -> importSuccessMsg
+                        else -> message
+                    }
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (uiState.isError) MaterialTheme.colorScheme.errorContainer
+                            else MaterialTheme.colorScheme.primaryContainer
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    if (uiState.isError) Icons.Default.Warning else Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = if (uiState.isError) MaterialTheme.colorScheme.onErrorContainer
+                                    else MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    displayMessage,
+                                    color = if (uiState.isError) MaterialTheme.colorScheme.onErrorContainer
+                                    else MaterialTheme.colorScheme.onPrimaryContainer,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                            TextButton(onClick = { settingsViewModel.clearMessage() }) {
+                                Text(stringResource(R.string.close))
+                            }
+                        }
+                    }
                 }
             }
 

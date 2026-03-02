@@ -113,6 +113,7 @@
     <string name="language_english">English</string>
     <string name="language_chinese">中文 (简体)</string>
     <string name="language_spanish">Español</string>
+    <string name="language_armenian">Հայերեն</string>
     <string name="language_current">当前语言</string>
     <string name="language_select_prompt">选择应用语言</string>
 
@@ -218,6 +219,20 @@
 
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">分析需要至少2天的记录数据</string>
+
+    <!-- Export/Import & Backup -->
+    <string name="export_import_title">导出和导入</string>
+    <string name="export_import_desc">备份和恢复数据</string>
+    <string name="backup_export">导出数据</string>
+    <string name="backup_import">导入数据</string>
+    <string name="backup_cloud_title">云存储</string>
+    <string name="backup_cloud_desc">Google Drive、OneDrive</string>
+    <string name="backup_google_drive">Google Drive</string>
+    <string name="backup_onedrive">Microsoft OneDrive</string>
+    <string name="backup_save_to">保存到%1$s</string>
+    <string name="backup_restore_from">从%1$s恢复</string>
+    <string name="backup_last_backup">上次：%1$s</string>
+    <string name="backup_never">无备份</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">头痛</string>

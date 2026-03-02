@@ -113,6 +113,7 @@
     <string name="language_english">English</string>
     <string name="language_chinese">中文 (简体)</string>
     <string name="language_spanish">Español</string>
+    <string name="language_armenian">Հայերեն</string>
     <string name="language_current">Текущий язык</string>
     <string name="language_select_prompt">Выберите язык приложения</string>
 
@@ -218,6 +219,20 @@
 
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">Необходимы данные минимум за 2 дня для анализа</string>
+
+    <!-- Export/Import & Backup -->
+    <string name="export_import_title">Экспорт и импорт</string>
+    <string name="export_import_desc">Резервное копирование и восстановление данных</string>
+    <string name="backup_export">Экспорт данных</string>
+    <string name="backup_import">Импорт данных</string>
+    <string name="backup_cloud_title">Облачное хранилище</string>
+    <string name="backup_cloud_desc">Google Drive, OneDrive</string>
+    <string name="backup_google_drive">Google Drive</string>
+    <string name="backup_onedrive">Microsoft OneDrive</string>
+    <string name="backup_save_to">Сохранить в %1$s</string>
+    <string name="backup_restore_from">Восстановить из %1$s</string>
+    <string name="backup_last_backup">Последнее: %1$s</string>
+    <string name="backup_never">Нет копий</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Головная боль</string>

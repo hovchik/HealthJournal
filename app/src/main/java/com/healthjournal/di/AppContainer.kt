@@ -18,6 +18,7 @@ import com.healthjournal.domain.model.ai.ClaudeConfig
 import com.healthjournal.domain.model.ai.OpenAiConfig
 import com.healthjournal.domain.repository.*
 import com.healthjournal.domain.usecase.*
+import com.healthjournal.util.DataExportImportManager
 import com.healthjournal.util.PrivacyRedactor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -169,4 +170,16 @@ class AppContainer(context: Context) {
     val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository)
     val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository)
     val getAllReports = GetAllReportsUseCase(aiReportRepository)
+
+    // Export/Import
+    val dataExportImportManager = DataExportImportManager(
+        context = context,
+        symptomStore = symptomStore,
+        vitalSignStore = vitalSignStore,
+        medicationStore = medicationStore,
+        medicationLogStore = medicationLogStore,
+        aiReportStore = aiReportStore,
+        familyMemberStore = familyMemberStore,
+        userSettingsRepository = userSettingsRepository
+    )
 }

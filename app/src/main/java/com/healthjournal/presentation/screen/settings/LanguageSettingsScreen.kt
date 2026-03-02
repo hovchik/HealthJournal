@@ -24,7 +24,8 @@ private val languageOptions = listOf(
     LanguageOption("ru", R.string.language_russian),
     LanguageOption("en", R.string.language_english),
     LanguageOption("zh-CN", R.string.language_chinese),
-    LanguageOption("es", R.string.language_spanish)
+    LanguageOption("es", R.string.language_spanish),
+    LanguageOption("hy", R.string.language_armenian)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

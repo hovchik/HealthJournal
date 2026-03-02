@@ -16,7 +16,7 @@ import java.util.Locale
 object LocaleManager {
 
     /** Supported language codes that map to resource qualifiers. */
-    val supportedLanguages = listOf("ru", "en", "es", "zh-CN")
+    val supportedLanguages = listOf("ru", "en", "es", "zh-CN", "hy")
 
     /**
      * Applies the given language mode on app start.
@@ -70,6 +70,7 @@ object LocaleManager {
         "en" -> "English"
         "es" -> "español"
         "zh-CN" -> "简体中文"
+        "hy" -> "հայերեն"
         else -> "русском"
     }
 

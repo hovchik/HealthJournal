@@ -113,6 +113,7 @@
     <string name="language_english">English</string>
     <string name="language_chinese">中文 (简体)</string>
     <string name="language_spanish">Español</string>
+    <string name="language_armenian">Հայերեն</string>
     <string name="language_current">Idioma actual</string>
     <string name="language_select_prompt">Seleccione el idioma de la aplicación</string>
 
@@ -218,6 +219,20 @@
 
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">Se necesitan al menos 2 días de registros para el análisis</string>
+
+    <!-- Export/Import & Backup -->
+    <string name="export_import_title">Exportar e importar</string>
+    <string name="export_import_desc">Copia de seguridad y restauración de datos</string>
+    <string name="backup_export">Exportar datos</string>
+    <string name="backup_import">Importar datos</string>
+    <string name="backup_cloud_title">Almacenamiento en la nube</string>
+    <string name="backup_cloud_desc">Google Drive, OneDrive</string>
+    <string name="backup_google_drive">Google Drive</string>
+    <string name="backup_onedrive">Microsoft OneDrive</string>
+    <string name="backup_save_to">Guardar en %1$s</string>
+    <string name="backup_restore_from">Restaurar desde %1$s</string>
+    <string name="backup_last_backup">Última: %1$s</string>
+    <string name="backup_never">Sin copias</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Dolor de cabeza</string>

@@ -68,6 +68,17 @@ class JsonFileStore<T>(
         saveToFile(updated)
     }
 
+    suspend fun replaceAll(items: List<T>) = mutex.withLock {
+        _data.value = items
+        val maxId = items.maxOfOrNull { getId(it) } ?: 0
+        nextId.set(maxId + 1)
+        saveToFile(items)
+    }
+
+    fun getAll(): List<T> = _data.value
+
+    fun getFileName(): String = fileName
+
     private fun loadFromFile(): List<T> = try {
         if (file.exists()) {
             json.decodeFromString(ListSerializer(serializer), file.readText())

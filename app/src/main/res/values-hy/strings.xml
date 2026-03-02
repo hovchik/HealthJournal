@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Առողջության օրագիր</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Գլխավոր</string>
+    <string name="nav_vitals">Առողջական ցուցանիշներ</string>
+    <string name="nav_medications">Դեղեր</string>
+    <string name="nav_reports">Հաշվետվություններ</string>
+    <string name="nav_settings">Կարգավորումներ</string>
+
+    <!-- Common -->
+    <string name="back">Հետ</string>
+    <string name="save">Պահել</string>
+    <string name="delete">Ջնջել</string>
+    <string name="close">Փակել</string>
+    <string name="notes">Նոտագրություններ</string>
+    <string name="error_format">Սխալ: %1$s</string>
+    <string name="search">Որոնել</string>
+    <string name="search_hint">Որոնել…</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">Առողջության օրագիր</string>
+    <string name="add_vital_desc">Ավելացնել ցուցանիշ</string>
+    <string name="add_symptom_desc">Ավելացնել ախտանիշ</string>
+    <string name="recent_vitals">Վերջին ցուցանիշներ</string>
+    <string name="symptoms_title">Ախտանիշներ</string>
+    <string name="no_symptoms_hint">Գրառումներ չկան։ Սեղմեք + ախտանիշ ավելացնելու համար։</string>
+    <string name="intensity_format">Ինտենսիվություն: %1$d/10</string>
+    <string name="triggers_format">Գործոններ: %1$s</string>
+
+    <!-- Add Symptom Screen -->
+    <string name="add_symptom_title">Ավելացնել ախտանիշ</string>
+    <string name="symptom_name">Ախտանիշի անունը</string>
+    <string name="intensity_label">Ինտենսիվություն: %1$d/10</string>
+    <string name="duration_minutes">Տևողություն (րոպե)</string>
+    <string name="triggers_hint">Գործոններ (ստորակետով բաժանված)</string>
+
+    <!-- Add Vital Screen -->
+    <string name="add_vital_title">Ավելացնել ցուցանիշ</string>
+    <string name="vital_type_label">Ցուցանիշի տեսակ</string>
+    <string name="systolic_upper">Սիստոլիկ (վերին)</string>
+    <string name="value_with_unit">Արժեք (%1$s)</string>
+    <string name="diastolic_lower">Դիաստոլիկ (ստորին)</string>
+
+    <!-- Medications Screen -->
+    <string name="medications_title">Դեղեր</string>
+    <string name="add_medication_desc">Ավելացնել դեղ</string>
+    <string name="no_medications_hint">Դեղեր չկան։\nՍեղմեք + ավելացնելու համար։</string>
+    <string name="since_date">%1$s-ից</string>
+    <string name="inactive">Անակտիվ</string>
+    <string name="taken_desc">Ընդունվել է</string>
+
+    <!-- Add Medication Screen -->
+    <string name="add_medication_title">Ավելացնել դեղ</string>
+    <string name="medication_name">Դեղի անունը</string>
+    <string name="dosage_hint">Դոզան (օր. 500 մգ)</string>
+    <string name="schedule_hint">Գրաֆիկ (օր. օրը 2 անգամ)</string>
+
+    <!-- Reports Screen -->
+    <string name="reports_title">Հաշվետվություններ</string>
+    <string name="reports_tab_records">Գրառումներ</string>
+    <string name="reports_tab_ai">AI վերլուծություն</string>
+    <string name="report_7_days">Հաշվետվություն (7 օր)</string>
+    <string name="patterns_30_days">Օրինաչափեր (30 օր)</string>
+    <string name="ai_analyzing">AI-ն վերլուծում է…</string>
+    <string name="no_reports_hint">Հաշվետվություններ չկան։ Սեղմեք վերևի կոճակը AI հաշվետվություն ստեղծելու համար։</string>
+    <string name="no_records_hint">Այս ժամանակահատվածում գրառումներ չկան։</string>
+    <string name="report_type_summary">Բժշկական ամֆոփում</string>
+    <string name="report_type_patterns">Օրինաչափերի վերլուծություն</string>
+    <string name="days_format">%1$d օր</string>
+    <string name="records_export_pdf">Արտահանել գրառումները PDF</string>
+
+    <!-- Vitals Screen -->
+    <string name="vitals_title">Առողջական ցուցանիշներ</string>
+    <string name="no_vitals_hint">Ցուցանիշների գրառումներ չկան։\nԱվելացնեք ձեր առաջին ցուցանիշը գլխավոր էկրանին։</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">Բարի գալուստ!</string>
+    <string name="onboarding_welcome_desc">Վարեք առողջության օրագիր։ Գրանցեք ախտանիշները, ցուցանիշները և դեղերը։ Բոլոր տվյալները պահվում են ձեր սարքում։</string>
+    <string name="onboarding_track_health">Հետևեք առողջությանը</string>
+    <string name="onboarding_track_health_desc">Գրանցեք ճնշումը, սրտի բաբախը, ջերմաստիճանը, գլյուկոզի մակարդակը և այլն։ Նշեք ախտանիշները ինտենսիվությամբ և գործոններով։</string>
+    <string name="onboarding_setup">Կարգավորում</string>
+    <string name="your_name">Ձեր անունը</string>
+    <string name="ai_consent_text">Թույլատրել AI վերլուծությունը հաշվետվություններ ստեղծելու համար։ AI-ն ՉԻ ախտորոշում և ՉԻ նշանակում բուժում։</string>
+    <string name="onboarding_next">Հաջորդը</string>
+    <string name="onboarding_start">Սկսել</string>
+
+    <!-- VitalType display names -->
+    <string name="vital_blood_pressure">Ճնշում</string>
+    <string name="vital_pulse">Սրտի բաբախ</string>
+    <string name="vital_temperature">Ջերմաստիճան</string>
+    <string name="vital_spo2">SpO2</string>
+    <string name="vital_glucose">Գլյուկոզ</string>
+    <string name="vital_weight">Քաշ</string>
+    <string name="vital_sleep">Քուն</string>
+    <string name="vital_steps">Քայլեր</string>
+
+    <!-- VitalType units -->
+    <string name="unit_mmhg">մմ սնդ.ստ.</string>
+    <string name="unit_bpm">զարկ/րոպե</string>
+    <string name="unit_celsius">°C</string>
+    <string name="unit_percent">%</string>
+    <string name="unit_mmol">մմոլ/լ</string>
+    <string name="unit_kg">կգ</string>
+    <string name="unit_hours">ժ</string>
+    <string name="unit_steps">քայլ</string>
+
+    <!-- Language Settings -->
+    <string name="language_settings_title">Լեզու</string>
+    <string name="language_system_default">Համակարգի</string>
+    <string name="language_russian">Րուսերեն</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese">中文 (简体)</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_armenian">Հայերեն</string>
+    <string name="language_current">Ընթացիկ լեզու</string>
+    <string name="language_select_prompt">Ընտրեք հավելվածի լեզուն</string>
+
+    <!-- SMS -->
+    <string name="sms_send">Ուղարկել SMS</string>
+
+    <!-- Export/Import -->
+    <string name="export_data">Արտահանել տվյալները</string>
+    <string name="import_data">Ներմուծել տվյալները</string>
+    <string name="export_success">Տվյալները հաջողությամբ արտահանվեց</string>
+    <string name="import_success">Տվյալները հաջողությամբ ներմուծվեց</string>
+    <string name="export_error">Արտահանման սխալ: %1$s</string>
+    <string name="import_error">Ներմուծման սխալ: %1$s</string>
+
+    <!-- AI Settings -->
+    <string name="ai_settings_title">AI կարգավորումներ</string>
+    <string name="ai_settings_desc">Մատակարար, API բանալի, գաղտնիություն</string>
+    <string name="ai_enabled">AI միացված է</string>
+    <string name="ai_select_provider">Ընտրեք մատակարարը</string>
+    <string name="ai_provider_claude">Claude (Anthropic)</string>
+    <string name="ai_provider_openai">OpenAI-համատեղելի</string>
+    <string name="ai_provider_local">Տեղական մոդել</string>
+    <string name="ai_provider_system">Համակարգի AI (Google / Samsung)</string>
+    <string name="system_ai_desc">Օգտագործում է սարքի ներկառուցված AI-ն: Google AI Core կամ Samsung Galaxy AI։ Չի պահանջում ինտերնետ կամ API բանալի։ Հասանելի է Android 14+ համատեղելի սարքում։</string>
+    <string name="system_ai_recommended">(Առաջարկվում է)</string>
+    <string name="ai_privacy_redact">Տվյալների խմբագրում</string>
+    <string name="ai_privacy_redact_desc">Հեռացնել հեռախոսները և էլ. հասցեները ուղարկելից առաջ</string>
+    <string name="ai_api_key">API բանալի</string>
+    <string name="ai_model">Մոդել</string>
+    <string name="ai_base_url">Հիմնական URL</string>
+    <string name="ai_timeout">Սպասման ժամկետ (վրկ)</string>
+    <string name="ai_model_path">Մոդելի ուղին</string>
+    <string name="ai_context_size">Կոնտեքստի չափ</string>
+    <string name="ai_max_tokens">Առավելագույն տոկեններ</string>
+    <string name="ai_temperature">Ջերմաստիճան</string>
+    <string name="ai_validate_config">Ստուգել կարգավորումը</string>
+    <string name="ai_provider_gemini_nano">Gemini Nano (սարքում)</string>
+    <string name="gemini_nano_desc">AI սարքի վրա։ Պահանջվում է Android 14+ և համատեղելի սարք (օր. Pixel 8+)։ Ինտերնետ չի պահանջվում։</string>
+    <string name="gemini_top_k">Top-K</string>
+    <string name="ai_api_key_required">Պահանջվում է API բանալի</string>
+    <string name="ai_local_model_desc">Բեռնել սեփական AI մոդել սարքի հիշողությունից</string>
+
+    <!-- Reports -->
+    <string name="report_select_profile">Ընտրեք պրոֆիլը հաշվետվության համար</string>
+    <string name="vitals_charts_title">Ցուցանիշների գրաֆիկներ</string>
+    <string name="export_pdf">Արտահանել PDF</string>
+
+    <!-- User Info -->
+    <string name="user_info_title">Օգտագործողի տեղեկություն</string>
+    <string name="user_info_desc">Անուն, բժիշկ, կոնտակտներ</string>
+    <string name="doctor_name">Բժիշկի անունը</string>
+    <string name="doctor_phone">Բժիշկի հեռախոսը</string>
+    <string name="saved_successfully">Հաջողությամբ պահվեց</string>
+
+    <!-- Family Members -->
+    <string name="family_members_title">Ընտանիքի անդամներ</string>
+    <string name="family_members_desc">Պրոֆիլներ և առողջության օրագրեր</string>
+    <string name="add_family_member">Ավելացնել ընտանիքի անդամ</string>
+    <string name="edit_family_member">Խմբագրել</string>
+    <string name="member_name">Անուն</string>
+    <string name="relationship">Ազգակցություն</string>
+    <string name="default_profile">Լռելյալ պրոֆիլ</string>
+    <string name="select_member_first">Ընտրեք ում ավելացնել</string>
+
+    <!-- Relationships -->
+    <string name="rel_self">Ես</string>
+    <string name="rel_spouse">Ամուսին/կին</string>
+    <string name="rel_child">Երեխա</string>
+    <string name="rel_parent">Ծնող</string>
+    <string name="rel_sibling">Եղբայր/քույր</string>
+    <string name="rel_grandparent">Պապ/տատ</string>
+    <string name="rel_grandchild">Թոռ</string>
+    <string name="rel_uncle_aunt">Հորեղբայր/հորաքույր</string>
+    <string name="rel_cousin">Զարմիկ</string>
+    <string name="rel_friend">Ընկեր</string>
+    <string name="rel_other">Այլ</string>
+    <string name="custom_relationship_hint">Մուտքագրեք ազգակցության տեսակը</string>
+    <string name="recording_for">Համար: %1$s</string>
+
+    <!-- Predefined Data Settings -->
+    <string name="predefined_data_title">Նախասահմանված տվյալներ</string>
+    <string name="predefined_data_desc">Ախտանիշներ, դեղեր, սեփական տարրեր</string>
+    <string name="predefined_symptoms_section">Ախտանիշներ</string>
+    <string name="predefined_medications_section">Դեղեր</string>
+    <string name="add_custom_symptom">Ավելացնել սեփական ախտանիշ</string>
+    <string name="add_custom_medication">Ավելացնել սեփական դեղ</string>
+    <string name="custom_label">Սեփական</string>
+    <string name="predefined_relations_section">Ազգակցություններ</string>
+    <string name="add_custom_relation">Ավելացնել սեփական ազգակցություն</string>
+    <string name="ai_browse_model">Ընտրել</string>
+
+    <!-- Settings Sections -->
+    <string name="settings_section_profile">Պրոֆիլ</string>
+    <string name="settings_section_data">Տվյալներ</string>
+    <string name="settings_section_preferences">Կարգավորումներ</string>
+
+    <!-- Date Grouping -->
+    <string name="date_today">Այսօր</string>
+    <string name="date_yesterday">Երեկ</string>
+
+    <!-- Validation -->
+    <string name="ai_config_valid">Կարգավորումը վավեր է</string>
+
+    <!-- AI Data Requirements -->
+    <string name="ai_need_more_data">Վերլուծության համար անհրաժեշտ է նվազագույնը 2 օրվա տվյալներ</string>
+
+    <!-- Export/Import & Backup -->
+    <string name="export_import_title">Արտահանում և ներմուծում</string>
+    <string name="export_import_desc">Տվյալների պահուստավորում և վերականգնում</string>
+    <string name="backup_export">Արտահանել տվյալները</string>
+    <string name="backup_import">Ներմուծել տվյալները</string>
+    <string name="backup_cloud_title">Ամպային պահոց</string>
+    <string name="backup_cloud_desc">Google Drive, OneDrive</string>
+    <string name="backup_google_drive">Google Drive</string>
+    <string name="backup_onedrive">Microsoft OneDrive</string>
+    <string name="backup_save_to">Պահել %1$s-ում</string>
+    <string name="backup_restore_from">Վերականգնել %1$s-ից</string>
+    <string name="backup_last_backup">Վերջին: %1$s</string>
+    <string name="backup_never">Պահուստավորումներ չկան</string>
+
+    <!-- Predefined Symptoms -->
+    <string name="symptom_headache">Գլխացավ</string>
+    <string name="symptom_migraine">Միգրեն</string>
+    <string name="symptom_stomachache">Ստամոքսի ցավ</string>
+    <string name="symptom_back_pain">Մեջքի ցավ</string>
+    <string name="symptom_fatigue">Հոգնածություն</string>
+    <string name="symptom_dizziness">Գլխապտույտ</string>
+    <string name="symptom_nausea">Սրտող</string>
+    <string name="symptom_vomiting">Փսխում</string>
+    <string name="symptom_insomnia">Անքնություն</string>
+    <string name="symptom_cough">Հազ</string>
+    <string name="symptom_sore_throat">Կոկորդի ցավ</string>
+    <string name="symptom_runny_nose">Հարբուխ</string>
+    <string name="symptom_sneezing">Փռչում</string>
+    <string name="symptom_nasal_congestion">Քթի գողություն</string>
+    <string name="symptom_wheezing">Սուլոցող շնչառություն</string>
+    <string name="symptom_joint_pain">Հոդատարի ցավ</string>
+    <string name="symptom_chest_pain">Կրծքի ցավ</string>
+    <string name="symptom_shortness_of_breath">Շնչառհեղձություն</string>
+    <string name="symptom_fever">Ջերմություն</string>
+    <string name="symptom_chills">Դող</string>
+    <string name="symptom_night_sweats">Գիշերային քրտինք</string>
+    <string name="symptom_anxiety">Անհանգստություն</string>
+    <string name="symptom_depression">Դեպրեսիա</string>
+    <string name="symptom_irritability">Գրգռվածություն</string>
+    <string name="symptom_mood_swings">Տրամադրության տատանումներ</string>
+    <string name="symptom_panic_attacks">Խուճային նոպատներ</string>
+    <string name="symptom_muscle_pain">Մկանային ցավ</string>
+    <string name="symptom_neck_pain">Պարանոցի ցավ</string>
+    <string name="symptom_stiffness">Կարկամություն</string>
+    <string name="symptom_muscle_cramps">Մկանային ցուլեր</string>
+    <string name="symptom_rash">Ցան</string>
+    <string name="symptom_itching">Քոր</string>
+    <string name="symptom_dry_skin">Չոր մաշկ</string>
+    <string name="symptom_bruising">Կապտուկներ</string>
+    <string name="symptom_hair_loss">Մազերի թափում</string>
+    <string name="symptom_palpitations">Սրտի արագ բաբախ</string>
+    <string name="symptom_blurred_vision">Աղոտ տեսողություն</string>
+    <string name="symptom_tinnitus">Ականջի աղմուկ</string>
+    <string name="symptom_earache">Ականջի ցավ</string>
+    <string name="symptom_constipation">Փորկապակություն</string>
+    <string name="symptom_diarrhea">Լուծում</string>
+    <string name="symptom_bloating">Փորի ուռուցվածություն</string>
+    <string name="symptom_heartburn">Ստամոքսի այրոցք</string>
+    <string name="symptom_loss_of_appetite">Ախորժակի կորուստ</string>
+    <string name="symptom_excessive_thirst">Չափազանց ծարավ</string>
+    <string name="symptom_numbness">Թմրություն</string>
+    <string name="symptom_tremor">Դող</string>
+    <string name="symptom_memory_problems">Հիշողության խնդիրներ</string>
+    <string name="symptom_confusion">Շփոթություն</string>
+    <string name="symptom_swelling">Այտուց</string>
+    <string name="symptom_cold_hands_feet">Սառն ձեռքեր/ոտքեր</string>
+    <string name="symptom_weight_loss">Քաշի կորուստ</string>
+    <string name="symptom_weight_gain">Քաշի ավելացում</string>
+    <string name="symptom_dry_mouth">Չոր բերան</string>
+    <string name="symptom_toothache">Ատամի ցավ</string>
+    <string name="symptom_frequent_urination">Հաճախ միզարկում</string>
+    <string name="symptom_painful_urination">Ցավոտ միզարկում</string>
+    <string name="common_symptoms">Տարածված ախտանիշներ</string>
+
+    <!-- Predefined Medications -->
+    <string name="med_ibuprofen">Իբուպրոֆեն</string>
+    <string name="med_paracetamol">Պարացետամոլ</string>
+    <string name="med_aspirin">Ասպիրին</string>
+    <string name="med_amoxicillin">Ամոքսիցիլին</string>
+    <string name="med_azithromycin">Ազիթրոմիցին</string>
+    <string name="med_ciprofloxacin">Ցիպրոֆլոքսացին</string>
+    <string name="med_doxycycline">Դոքսիցիկլին</string>
+    <string name="med_omeprazole">Օմեպրազոլ</string>
+    <string name="med_pantoprazole">Պանտոպրազոլ</string>
+    <string name="med_metoclopramide">Մետոկլոպրամիդ</string>
+    <string name="med_metformin">Մետֆորմին</string>
+    <string name="med_insulin">Ինսուլին</string>
+    <string name="med_lisinopril">Լիզինոպրիլ</string>
+    <string name="med_amlodipine">Ամլոդիպին</string>
+    <string name="med_metoprolol">Մետոպրոլոլ</string>
+    <string name="med_losartan">Լոզարտան</string>
+    <string name="med_atorvastatin">Ատորվաստատին</string>
+    <string name="med_simvastatin">Սիմվաստատին</string>
+    <string name="med_warfarin">Վարֆարին</string>
+    <string name="med_clopidogrel">Կլոպիդոգրել</string>
+    <string name="med_loratadine">Լորատադին</string>
+    <string name="med_cetirizine">Ցետիրիզին</string>
+    <string name="med_diphenhydramine">Դիֆենհիդրամին</string>
+    <string name="med_levothyroxine">Լևոթիրոքսին</string>
+    <string name="med_gabapentin">Գաբապենտին</string>
+    <string name="med_sertraline">Սերտրալին</string>
+    <string name="med_amitriptyline">Ամիտրիպտիլին</string>
+    <string name="med_diazepam">Դիազեպամ</string>
+    <string name="med_prednisone">Պրեդնիզոն</string>
+    <string name="med_dexamethasone">Դեքսամեթազոն</string>
+    <string name="med_diclofenac">Դիկլոֆենակ</string>
+    <string name="med_naproxen">Նապրոքսեն</string>
+    <string name="med_tramadol">Տրամադոլ</string>
+    <string name="med_salbutamol">Սալբուտամոլ</string>
+    <string name="med_montelukast">Մոնտելուկաստ</string>
+    <string name="med_vitamin_d">Վիտամին D</string>
+    <string name="med_vitamin_c">Վիտամին C</string>
+    <string name="med_vitamin_b12">Վիտամին B12</string>
+    <string name="med_omega3">Օմեգա-3</string>
+    <string name="med_magnesium">Մագնեզիում</string>
+    <string name="med_iron">Երկաթի պատրաստանք</string>
+    <string name="med_folic_acid">Ֆոլաթթու</string>
+    <string name="med_calcium">Կալցիում</string>
+    <string name="med_zinc">Ցինկ</string>
+    <string name="med_probiotics">Պրոբիոտիկներ</string>
+    <string name="med_melatonin">Մելատոնին</string>
+    <string name="med_multivitamin">Մուլտիվիտամիններ</string>
+    <string name="common_medications">Տարածված դեղեր</string>
+
+    <!-- Attachments -->
+    <string name="attach_file">Կցել ֆայլ</string>
+    <string name="attachments_count">%1$d կցորդ</string>
+
+    <!-- Profile Selection -->
+    <string name="profile_selection_title">Ով է օգտագործում օրագիրը?</string>
+    <string name="profile_selection_subtitle">Ընտրեք պրոֆիլը շարունակելու համար</string>
+    <string name="profile_continue">Շարունակել</string>
+    <string name="profile_add_new">Ավելացնել անդամ</string>
+
+    <!-- Plurals -->
+    <plurals name="entries_count">
+        <item quantity="one">%1$d գրառում</item>
+        <item quantity="other">%1$d գրառում</item>
+    </plurals>
+    <plurals name="days_count">
+        <item quantity="one">%1$d օր</item>
+        <item quantity="other">%1$d օր</item>
+    </plurals>
+</resources>

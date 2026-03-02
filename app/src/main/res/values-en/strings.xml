@@ -113,6 +113,7 @@
     <string name="language_english">English</string>
     <string name="language_chinese">中文 (简体)</string>
     <string name="language_spanish">Español</string>
+    <string name="language_armenian">Հայերեն</string>
     <string name="language_current">Current language</string>
     <string name="language_select_prompt">Choose app language</string>
 
@@ -218,6 +219,20 @@
 
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">At least 2 days of records needed for analysis</string>
+
+    <!-- Export/Import & Backup -->
+    <string name="export_import_title">Export &amp; Import</string>
+    <string name="export_import_desc">Backup and restore your data</string>
+    <string name="backup_export">Export data</string>
+    <string name="backup_import">Import data</string>
+    <string name="backup_cloud_title">Cloud storage</string>
+    <string name="backup_cloud_desc">Google Drive, OneDrive</string>
+    <string name="backup_google_drive">Google Drive</string>
+    <string name="backup_onedrive">Microsoft OneDrive</string>
+    <string name="backup_save_to">Save to %1$s</string>
+    <string name="backup_restore_from">Restore from %1$s</string>
+    <string name="backup_last_backup">Last: %1$s</string>
+    <string name="backup_never">No backups</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Headache</string>
