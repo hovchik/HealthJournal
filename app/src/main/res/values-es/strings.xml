@@ -225,21 +225,7 @@
     <string name="export_import_desc">Copia de seguridad y restauración de datos</string>
     <string name="backup_export">Exportar datos</string>
     <string name="backup_import">Importar datos</string>
-    <string name="backup_cloud_title">Almacenamiento en la nube</string>
-    <string name="backup_cloud_desc">Google Drive, OneDrive</string>
-    <string name="backup_google_drive">Google Drive</string>
-    <string name="backup_onedrive">Microsoft OneDrive</string>
-    <string name="backup_save_to">Guardar en %1$s</string>
-    <string name="backup_restore_from">Restaurar desde %1$s</string>
-    <string name="backup_last_backup">Última: %1$s</string>
-    <string name="backup_never">Sin copias</string>
-    <string name="gdrive_sign_in">Iniciar sesión con Google</string>
-    <string name="gdrive_sign_out">Cerrar sesión</string>
-    <string name="gdrive_signed_in_as">Conectado: %1$s</string>
-    <string name="gdrive_upload">Subir a Drive</string>
-    <string name="gdrive_download">Descargar de Drive</string>
-    <string name="gdrive_no_backup">No se encontró copia en Drive</string>
-    <string name="onedrive_desc">Guardar/restaurar vía OneDrive</string>
+    <string name="backup_share">Compartir datos</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Dolor de cabeza</string>

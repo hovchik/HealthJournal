@@ -225,21 +225,7 @@
     <string name="export_import_desc">Резервное копирование и восстановление данных</string>
     <string name="backup_export">Экспорт данных</string>
     <string name="backup_import">Импорт данных</string>
-    <string name="backup_cloud_title">Облачное хранилище</string>
-    <string name="backup_cloud_desc">Google Drive, OneDrive</string>
-    <string name="backup_google_drive">Google Drive</string>
-    <string name="backup_onedrive">Microsoft OneDrive</string>
-    <string name="backup_save_to">Сохранить в %1$s</string>
-    <string name="backup_restore_from">Восстановить из %1$s</string>
-    <string name="backup_last_backup">Последнее: %1$s</string>
-    <string name="backup_never">Нет копий</string>
-    <string name="gdrive_sign_in">Войти в Google</string>
-    <string name="gdrive_sign_out">Выйти</string>
-    <string name="gdrive_signed_in_as">Подключен: %1$s</string>
-    <string name="gdrive_upload">Загрузить в Drive</string>
-    <string name="gdrive_download">Скачать из Drive</string>
-    <string name="gdrive_no_backup">Нет резервной копии в Drive</string>
-    <string name="onedrive_desc">Сохранить/восстановить через OneDrive</string>
+    <string name="backup_share">Поделиться данными</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Головная боль</string>

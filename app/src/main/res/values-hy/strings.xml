@@ -225,14 +225,7 @@
     <string name="export_import_desc">Տվյալների պահուստավորում և վերականգնում</string>
     <string name="backup_export">Արտահանել տվյալները</string>
     <string name="backup_import">Ներմուծել տվյալները</string>
-    <string name="backup_cloud_title">Ամպային պահոց</string>
-    <string name="backup_cloud_desc">Google Drive, OneDrive</string>
-    <string name="backup_google_drive">Google Drive</string>
-    <string name="backup_onedrive">Microsoft OneDrive</string>
-    <string name="backup_save_to">Պահել %1$s-ում</string>
-    <string name="backup_restore_from">Վերականգնել %1$s-ից</string>
-    <string name="backup_last_backup">Վերջին: %1$s</string>
-    <string name="backup_never">Պահուստավորումներ չկան</string>
+    <string name="backup_share">Կիսել տվյալները</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Գլխացավ</string>
@@ -363,11 +356,4 @@
         <item quantity="one">%1$d օր</item>
         <item quantity="other">%1$d օր</item>
     </plurals>
-    <string name="gdrive_sign_in">Մուտք գործել Google</string>
-    <string name="gdrive_sign_out">Դուրս գալ</string>
-    <string name="gdrive_signed_in_as">Միացված: %1$s</string>
-    <string name="gdrive_upload">Վերբեռնել Drive</string>
-    <string name="gdrive_download">Ներբեռնել Drive-ից</string>
-    <string name="gdrive_no_backup">Drive-ում պահուստ չկա</string>
-    <string name="onedrive_desc">Պահել/վերականգնել OneDrive-ով</string>
 </resources>

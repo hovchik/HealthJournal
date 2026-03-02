@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +35,7 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     val exportSuccessMsg = stringResource(R.string.export_success)
     val importSuccessMsg = stringResource(R.string.import_success)
@@ -50,28 +52,7 @@ fun SettingsScreen(
         uri?.let { settingsViewModel.importData(it) }
     }
 
-    // Google Sign-In launcher
-    val googleSignInLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        settingsViewModel.handleGoogleSignInResult(result.data)
-    }
-
-    // OneDrive via SAF
-    val onedriveExportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("application/json")
-    ) { uri ->
-        uri?.let { settingsViewModel.exportData(it) }
-    }
-
-    val onedriveImportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        uri?.let { settingsViewModel.importData(it) }
-    }
-
-    val isAnyLoading = uiState.isExporting || uiState.isImporting ||
-        uiState.isDriveUploading || uiState.isDriveDownloading
+    val isAnyLoading = uiState.isExporting || uiState.isImporting || uiState.isSharing
 
     Scaffold(
         topBar = {
@@ -132,7 +113,7 @@ fun SettingsScreen(
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-                    // Local Export/Import
+                    // Export/Import
                     SettingsListItem(
                         icon = Icons.Default.FileDownload,
                         iconTint = MaterialTheme.colorScheme.tertiary,
@@ -174,140 +155,25 @@ fun SettingsScreen(
                             Text(stringResource(R.string.backup_import))
                         }
                     }
-                }
-
-                // Google Drive section
-                SettingsGroupCard {
-                    SettingsListItem(
-                        icon = Icons.Default.Cloud,
-                        iconTint = MaterialTheme.colorScheme.tertiary,
-                        title = stringResource(R.string.backup_google_drive),
-                        subtitle = if (uiState.googleSignedIn) {
-                            stringResource(R.string.gdrive_signed_in_as, uiState.googleEmail ?: "")
-                        } else {
-                            stringResource(R.string.gdrive_sign_in)
-                        },
-                        onClick = {}
-                    )
-
-                    if (!uiState.googleSignedIn) {
-                        // Sign-in button
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .padding(bottom = 12.dp)
-                        ) {
-                            Button(
-                                onClick = {
-                                    googleSignInLauncher.launch(settingsViewModel.getGoogleSignInIntent())
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Icon(Icons.Default.Login, contentDescription = null, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.gdrive_sign_in))
-                            }
-                        }
-                    } else {
-                        // Upload/Download buttons
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .padding(bottom = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // Last backup info
-                            uiState.lastDriveBackup?.let { time ->
-                                Text(
-                                    stringResource(R.string.backup_last_backup, time),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    modifier = Modifier.padding(horizontal = 4.dp)
-                                )
-                            }
-
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button(
-                                    onClick = { settingsViewModel.uploadToDrive() },
-                                    enabled = !isAnyLoading,
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    if (uiState.isDriveUploading) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(16.dp),
-                                            strokeWidth = 2.dp,
-                                            color = MaterialTheme.colorScheme.onPrimary
-                                        )
-                                    } else {
-                                        Icon(Icons.Default.CloudUpload, contentDescription = null, modifier = Modifier.size(18.dp))
-                                    }
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(stringResource(R.string.gdrive_upload))
-                                }
-                                OutlinedButton(
-                                    onClick = { settingsViewModel.downloadFromDrive() },
-                                    enabled = !isAnyLoading,
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    if (uiState.isDriveDownloading) {
-                                        CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
-                                    } else {
-                                        Icon(Icons.Default.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
-                                    }
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(stringResource(R.string.gdrive_download))
-                                }
-                            }
-
-                            // Sign out
-                            TextButton(
-                                onClick = { settingsViewModel.signOutGoogle() },
-                                modifier = Modifier.align(Alignment.End)
-                            ) {
-                                Text(
-                                    stringResource(R.string.gdrive_sign_out),
-                                    style = MaterialTheme.typography.labelMedium
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // OneDrive section (via SAF)
-                SettingsGroupCard {
-                    SettingsListItem(
-                        icon = Icons.Default.Cloud,
-                        iconTint = MaterialTheme.colorScheme.secondary,
-                        title = stringResource(R.string.backup_onedrive),
-                        subtitle = stringResource(R.string.onedrive_desc),
-                        onClick = {}
-                    )
+                    // Share
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
-                            .padding(bottom = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(bottom = 12.dp)
                     ) {
                         OutlinedButton(
-                            onClick = { onedriveExportLauncher.launch("health_journal_backup.json") },
+                            onClick = { settingsViewModel.shareData(context) },
                             enabled = !isAnyLoading,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Icon(Icons.Default.CloudUpload, contentDescription = null, modifier = Modifier.size(18.dp))
+                            if (uiState.isSharing) {
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                            } else {
+                                Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
+                            }
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(stringResource(R.string.backup_export))
-                        }
-                        OutlinedButton(
-                            onClick = { onedriveImportLauncher.launch(arrayOf("application/json")) },
-                            enabled = !isAnyLoading,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(Icons.Default.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(stringResource(R.string.backup_import))
+                            Text(stringResource(R.string.backup_share))
                         }
                     }
                 }
