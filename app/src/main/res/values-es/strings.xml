@@ -159,8 +159,8 @@
     <string name="ai_max_tokens">Tokens máximos</string>
     <string name="ai_temperature">Temperatura</string>
     <string name="ai_validate_config">Validar configuración</string>
-    <string name="ai_provider_gemini_nano">Gemini Nano (en dispositivo)</string>
-    <string name="gemini_nano_desc">IA en dispositivo. Requiere Android 14+ y un dispositivo compatible (ej. Pixel 8+). No requiere internet.</string>
+    <string name="ai_provider_gemini_nano">IA del sistema (en dispositivo)</string>
+    <string name="gemini_nano_desc">IA en dispositivo: Google AI Core (Pixel 8+) o Samsung Galaxy AI (Galaxy S24+). No requiere internet ni clave API. Requiere Android 14+.</string>
     <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Requiere clave API</string>
     <string name="ai_local_model_desc">Cargar un modelo de IA personalizado desde el almacenamiento</string>

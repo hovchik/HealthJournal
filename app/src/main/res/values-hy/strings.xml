@@ -159,7 +159,7 @@
     <string name="ai_max_tokens">Առավելագույն տոկեններ</string>
     <string name="ai_temperature">Ջերմաստիճան</string>
     <string name="ai_validate_config">Ստուգել կարգավորումը</string>
-    <string name="ai_provider_gemini_nano">Gemini Nano (սարքում)</string>
+    <string name="ai_provider_gemini_nano">Համակարգի AI (սարքում)</string>
     <string name="gemini_nano_desc">AI սարքի վրա։ Պահանջվում է Android 14+ և համատեղելի սարք (օր. Pixel 8+)։ Ինտերնետ չի պահանջվում։</string>
     <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Պահանջվում է API բանալի</string>
