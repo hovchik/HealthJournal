@@ -2,6 +2,12 @@ package com.healthjournal.data.ai
 
 import android.content.Context
 import android.os.Build
+import com.google.mlkit.genai.common.DownloadStatus
+import com.google.mlkit.genai.common.FeatureStatus
+import com.google.mlkit.genai.prompt.Generation
+import com.google.mlkit.genai.prompt.GenerativeModel
+import com.google.mlkit.genai.prompt.TextPart
+import com.google.mlkit.genai.prompt.generateContentRequest
 import com.healthjournal.R
 import com.healthjournal.domain.ai.AiProvider
 import com.healthjournal.domain.ai.PromptTemplate
@@ -9,13 +15,13 @@ import com.healthjournal.domain.model.VitalType
 import com.healthjournal.domain.model.ai.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import java.time.format.DateTimeFormatter
 
 /**
- * On-device AI provider using Google AI Edge SDK (Gemini Nano) or Samsung Galaxy AI.
- * When no AI SDK is available, provides local rule-based health analysis
- * with trend detection, vital range checking, and symptom correlation.
- * Priority: Google AI Edge → ML Kit GenAI → Samsung Galaxy AI → local analysis.
+ * On-device AI provider using ML Kit GenAI Prompt API (Gemini Nano).
+ * Falls back to Samsung Galaxy AI or local rule-based analysis when unavailable.
+ * Priority: ML Kit GenAI → Samsung Galaxy AI → local analysis.
  */
 class GeminiNanoProviderImpl(
     private val context: Context
@@ -23,6 +29,12 @@ class GeminiNanoProviderImpl(
 
     override val id = AiProviderId.GEMINI_NANO
     override val displayNameResId = R.string.ai_provider_gemini_nano
+
+    private var mlKitModel: GenerativeModel? = null
+
+    private fun getOrCreateMlKitModel(): GenerativeModel {
+        return mlKitModel ?: Generation.getClient().also { mlKitModel = it }
+    }
 
     override suspend fun generateDoctorSummary(input: AiInput, config: AiSettings): AiTextResult {
         val prompt = PromptTemplate.buildSummaryPrompt(input)
@@ -48,12 +60,7 @@ class GeminiNanoProviderImpl(
 
     override fun validateConfig(config: AiSettings): ValidationResult {
         val availability = checkAvailability()
-        val label = if (availability != AvailabilityStatus.NONE) {
-            availability.label
-        } else {
-            "Local analysis"
-        }
-        return ValidationResult(true, "Available: $label")
+        return ValidationResult(true, "Available: ${availability.label}")
     }
 
     override fun isOnlineRequired(): Boolean = false
@@ -64,57 +71,49 @@ class GeminiNanoProviderImpl(
         prompt: String,
         config: GeminiNanoConfig
     ): Pair<String, String>? = withContext(Dispatchers.IO) {
+        // 1. ML Kit GenAI Prompt API (Gemini Nano) - primary path
         try {
-            return@withContext runViaAiCore(prompt, config) to "gemini-nano"
+            return@withContext runViaMlKit(prompt, config) to "gemini-nano"
         } catch (_: Exception) { }
-        try {
-            return@withContext runViaMlKit(prompt, config) to "mlkit-genai"
-        } catch (_: Exception) { }
+        // 2. Samsung Galaxy AI - Samsung-specific fallback
         try {
             return@withContext runViaSamsungAi(prompt, config) to "galaxy-ai"
         } catch (_: Exception) { }
         null
     }
 
-    private suspend fun runViaAiCore(prompt: String, config: GeminiNanoConfig): String {
-        val generationConfigClass = Class.forName("com.google.ai.edge.aicore.GenerationConfig")
-        val builderClass = Class.forName("com.google.ai.edge.aicore.GenerationConfig\$Builder")
-        val builder = builderClass.getDeclaredConstructor().newInstance()
-        builderClass.getMethod("setTemperature", Float::class.java)
-            .invoke(builder, config.temperature)
-        builderClass.getMethod("setTopK", Int::class.java)
-            .invoke(builder, config.topK)
-        builderClass.getMethod("setMaxOutputTokens", Int::class.java)
-            .invoke(builder, config.maxOutputTokens)
-        val genConfig = builderClass.getMethod("build").invoke(builder)
-
-        val modelClass = Class.forName("com.google.ai.edge.aicore.GenerativeModel")
-        val model = modelClass.getConstructor(generationConfigClass).newInstance(genConfig)
-
-        val response = modelClass.getMethod("generateContent", String::class.java)
-            .invoke(model, prompt)
-        val text = response.javaClass.getMethod("getText").invoke(response)
-        return text as? String ?: throw RuntimeException("Empty response from AI Core")
-    }
-
+    /**
+     * Run inference via ML Kit GenAI Prompt API (Gemini Nano on-device).
+     * Handles model download if the model is available but not yet downloaded.
+     */
     private suspend fun runViaMlKit(prompt: String, config: GeminiNanoConfig): String {
-        val inferenceClass = Class.forName("com.google.mlkit.genai.inference.GenerativeModel")
-        val configClass = Class.forName("com.google.mlkit.genai.inference.GenerationConfig")
-        val configBuilder = configClass.getMethod("builder").invoke(null)
-        val configBuilderClass = configBuilder.javaClass
-        configBuilderClass.getMethod("setTemperature", Float::class.java)
-            .invoke(configBuilder, config.temperature)
-        configBuilderClass.getMethod("setTopK", Int::class.java)
-            .invoke(configBuilder, config.topK)
-        configBuilderClass.getMethod("setMaxOutputTokens", Int::class.java)
-            .invoke(configBuilder, config.maxOutputTokens)
-        val genConfig = configBuilderClass.getMethod("build").invoke(configBuilder)
+        val model = getOrCreateMlKitModel()
+        val status = model.checkStatus()
 
-        val model = inferenceClass.getMethod("create", configClass).invoke(null, genConfig)
-        val response = inferenceClass.getMethod("generateContent", String::class.java)
-            .invoke(model, prompt)
-        val text = response.javaClass.getMethod("getText").invoke(response)
-        return text as? String ?: throw RuntimeException("Empty response from ML Kit")
+        if (status == FeatureStatus.UNAVAILABLE) {
+            throw RuntimeException("Gemini Nano is not available on this device")
+        }
+
+        if (status != FeatureStatus.AVAILABLE) {
+            // Model needs downloading - wait up to 2 minutes
+            withTimeout(120_000) {
+                model.download().collect { ds ->
+                    if (ds is DownloadStatus.DownloadFailed) throw ds.e
+                }
+            }
+            if (model.checkStatus() != FeatureStatus.AVAILABLE) {
+                throw RuntimeException("Gemini Nano model not available after download")
+            }
+        }
+
+        val request = generateContentRequest(TextPart(prompt)) {
+            temperature = config.temperature
+            topK = config.topK
+            maxOutputTokens = config.maxOutputTokens
+        }
+        val response = model.generateContent(request)
+        return response.candidates.firstOrNull()?.text
+            ?: throw RuntimeException("Empty response from Gemini Nano")
     }
 
     private fun runViaSamsungAi(prompt: String, config: GeminiNanoConfig): String {
@@ -163,41 +162,36 @@ class GeminiNanoProviderImpl(
     // ==================== Availability detection ====================
 
     private enum class AvailabilityStatus(val label: String) {
-        GOOGLE_AI_CORE("Google AI Core (Gemini Nano)"),
-        MLKIT_GENAI("ML Kit GenAI"),
+        GEMINI_NANO("Gemini Nano (on-device)"),
         SAMSUNG_GALAXY_AI("Samsung Galaxy AI"),
-        SAMSUNG_DEVICE("Samsung device (Galaxy AI expected)"),
-        GOOGLE_DEVICE("Google device (Gemini Nano expected)"),
-        NONE("Not available")
+        LOCAL_ANALYSIS("Local analysis")
     }
 
     private fun checkAvailability(): AvailabilityStatus {
-        if (Build.VERSION.SDK_INT < 34) return AvailabilityStatus.NONE
-
-        try { Class.forName("com.google.ai.edge.aicore.GenerativeModel"); return AvailabilityStatus.GOOGLE_AI_CORE }
-        catch (_: ClassNotFoundException) { }
-        try { Class.forName("com.google.mlkit.genai.inference.GenerativeModel"); return AvailabilityStatus.MLKIT_GENAI }
-        catch (_: ClassNotFoundException) { }
-        try { Class.forName("com.samsung.android.sdk.aiinference.InferenceEngine"); return AvailabilityStatus.SAMSUNG_GALAXY_AI }
-        catch (_: ClassNotFoundException) { }
-        try { Class.forName("com.samsung.android.sdk.ai.model.GenAIModel"); return AvailabilityStatus.SAMSUNG_GALAXY_AI }
-        catch (_: ClassNotFoundException) { }
-
         val pm = context.packageManager
-        for (pkg in listOf("com.google.android.aicore")) {
-            try { pm.getPackageInfo(pkg, 0); return AvailabilityStatus.GOOGLE_AI_CORE }
-            catch (_: Exception) { }
-        }
-        for (pkg in listOf("com.samsung.android.aicoreondevice", "com.samsung.android.galaxyai", "com.samsung.android.intelligence")) {
+
+        // Check for Google AI Core service (required for Gemini Nano / ML Kit GenAI)
+        try {
+            pm.getPackageInfo("com.google.android.aicore", 0)
+            return AvailabilityStatus.GEMINI_NANO
+        } catch (_: Exception) { }
+
+        // Check for Samsung AI packages
+        for (pkg in listOf(
+            "com.samsung.android.aicoreondevice",
+            "com.samsung.android.galaxyai",
+            "com.samsung.android.intelligence"
+        )) {
             try { pm.getPackageInfo(pkg, 0); return AvailabilityStatus.SAMSUNG_GALAXY_AI }
             catch (_: Exception) { }
         }
 
+        // Infer from manufacturer
         val manufacturer = Build.MANUFACTURER.lowercase()
-        if (manufacturer == "samsung") return AvailabilityStatus.SAMSUNG_DEVICE
-        if (manufacturer == "google") return AvailabilityStatus.GOOGLE_DEVICE
+        if (manufacturer == "google") return AvailabilityStatus.GEMINI_NANO
+        if (manufacturer == "samsung") return AvailabilityStatus.SAMSUNG_GALAXY_AI
 
-        return AvailabilityStatus.NONE
+        return AvailabilityStatus.LOCAL_ANALYSIS
     }
 
     // ==================== Local analysis engine ====================

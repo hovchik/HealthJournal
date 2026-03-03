@@ -85,6 +85,9 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
+    // ML Kit GenAI (Gemini Nano on-device)
+    implementation("com.google.mlkit:genai-prompt:1.0.0-beta1")
+
     // Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.7.0")
 
