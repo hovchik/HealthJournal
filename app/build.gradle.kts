@@ -85,7 +85,10 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // ML Kit GenAI (Gemini Nano on-device)
+    // Google AI Edge SDK (Gemini Nano on-device, requires API 31+)
+    implementation("com.google.ai.edge.aicore:aicore:0.0.1-exp01")
+
+    // ML Kit GenAI Prompt API (Gemini Nano on-device)
     implementation("com.google.mlkit:genai-prompt:1.0.0-beta1")
 
     // Coil (image loading)

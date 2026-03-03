@@ -2,6 +2,8 @@ package com.healthjournal.data.ai
 
 import android.content.Context
 import android.os.Build
+import com.google.ai.edge.aicore.GenerationConfig as AiCoreGenerationConfig
+import com.google.ai.edge.aicore.generationConfig as aiCoreGenerationConfig
 import com.google.mlkit.genai.common.DownloadStatus
 import com.google.mlkit.genai.common.FeatureStatus
 import com.google.mlkit.genai.prompt.Generation
@@ -19,9 +21,9 @@ import kotlinx.coroutines.withTimeout
 import java.time.format.DateTimeFormatter
 
 /**
- * On-device AI provider using ML Kit GenAI Prompt API (Gemini Nano).
+ * On-device AI provider combining Google AI Edge SDK and ML Kit GenAI Prompt API.
  * Falls back to Samsung Galaxy AI or local rule-based analysis when unavailable.
- * Priority: ML Kit GenAI → Samsung Galaxy AI → local analysis.
+ * Priority: AI Edge SDK → ML Kit GenAI → Samsung Galaxy AI → local analysis.
  */
 class GeminiNanoProviderImpl(
     private val context: Context
@@ -30,6 +32,7 @@ class GeminiNanoProviderImpl(
     override val id = AiProviderId.GEMINI_NANO
     override val displayNameResId = R.string.ai_provider_gemini_nano
 
+    private var aiEdgeModel: com.google.ai.edge.aicore.GenerativeModel? = null
     private var mlKitModel: GenerativeModel? = null
 
     private fun getOrCreateMlKitModel(): GenerativeModel {
@@ -71,15 +74,39 @@ class GeminiNanoProviderImpl(
         prompt: String,
         config: GeminiNanoConfig
     ): Pair<String, String>? = withContext(Dispatchers.IO) {
-        // 1. ML Kit GenAI Prompt API (Gemini Nano) - primary path
+        // 1. Google AI Edge SDK (Gemini Nano via AICore, API 31+)
+        if (Build.VERSION.SDK_INT >= 31) {
+            try {
+                return@withContext runViaAiEdge(prompt, config) to "gemini-nano-aicore"
+            } catch (_: Exception) { }
+        }
+        // 2. ML Kit GenAI Prompt API (Gemini Nano, broader device support)
         try {
             return@withContext runViaMlKit(prompt, config) to "gemini-nano"
         } catch (_: Exception) { }
-        // 2. Samsung Galaxy AI - Samsung-specific fallback
+        // 3. Samsung Galaxy AI - Samsung-specific fallback
         try {
             return@withContext runViaSamsungAi(prompt, config) to "galaxy-ai"
         } catch (_: Exception) { }
         null
+    }
+
+    /**
+     * Run inference via Google AI Edge SDK (AICore).
+     * Requires API 31+ and Google AI Core service on the device.
+     */
+    private suspend fun runViaAiEdge(prompt: String, config: GeminiNanoConfig): String {
+        val model = aiEdgeModel ?: run {
+            val genConfig = aiCoreGenerationConfig {
+                context = this@GeminiNanoProviderImpl.context
+                temperature = config.temperature
+                topK = config.topK
+                maxOutputTokens = config.maxOutputTokens
+            }
+            com.google.ai.edge.aicore.GenerativeModel(genConfig).also { aiEdgeModel = it }
+        }
+        val response = model.generateContent(prompt)
+        return response.text ?: throw RuntimeException("Empty response from AI Edge")
     }
 
     /**
@@ -162,7 +189,8 @@ class GeminiNanoProviderImpl(
     // ==================== Availability detection ====================
 
     private enum class AvailabilityStatus(val label: String) {
-        GEMINI_NANO("Gemini Nano (on-device)"),
+        AI_EDGE("Gemini Nano (AI Edge)"),
+        MLKIT_GENAI("Gemini Nano (ML Kit)"),
         SAMSUNG_GALAXY_AI("Samsung Galaxy AI"),
         LOCAL_ANALYSIS("Local analysis")
     }
@@ -170,10 +198,11 @@ class GeminiNanoProviderImpl(
     private fun checkAvailability(): AvailabilityStatus {
         val pm = context.packageManager
 
-        // Check for Google AI Core service (required for Gemini Nano / ML Kit GenAI)
+        // Check for Google AI Core service (required for AI Edge SDK and ML Kit GenAI)
         try {
             pm.getPackageInfo("com.google.android.aicore", 0)
-            return AvailabilityStatus.GEMINI_NANO
+            return if (Build.VERSION.SDK_INT >= 31) AvailabilityStatus.AI_EDGE
+            else AvailabilityStatus.MLKIT_GENAI
         } catch (_: Exception) { }
 
         // Check for Samsung AI packages
@@ -188,7 +217,10 @@ class GeminiNanoProviderImpl(
 
         // Infer from manufacturer
         val manufacturer = Build.MANUFACTURER.lowercase()
-        if (manufacturer == "google") return AvailabilityStatus.GEMINI_NANO
+        if (manufacturer == "google") {
+            return if (Build.VERSION.SDK_INT >= 31) AvailabilityStatus.AI_EDGE
+            else AvailabilityStatus.MLKIT_GENAI
+        }
         if (manufacturer == "samsung") return AvailabilityStatus.SAMSUNG_GALAXY_AI
 
         return AvailabilityStatus.LOCAL_ANALYSIS
