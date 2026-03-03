@@ -70,8 +70,8 @@
     <string name="reports_title">Reports</string>
     <string name="reports_tab_records">Records</string>
     <string name="reports_tab_ai">AI Analysis</string>
-    <string name="report_7_days">Report (7 days)</string>
-    <string name="patterns_30_days">Patterns (30 days)</string>
+    <string name="report_2_days">Report (2 days)</string>
+    <string name="patterns_4_days">Patterns (4 days)</string>
     <string name="ai_analyzing">AI is analyzing data…</string>
     <string name="no_reports_hint">No reports. Tap the button above to generate an AI report based on your data.</string>
     <string name="no_records_hint">No records for this period.</string>

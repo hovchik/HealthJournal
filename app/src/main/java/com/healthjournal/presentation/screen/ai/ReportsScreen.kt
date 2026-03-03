@@ -299,14 +299,14 @@ private fun AiAnalyzeTab(
                         enabled = !uiState.isLoading && hasEnoughData,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(stringResource(R.string.report_7_days))
+                        Text(stringResource(R.string.report_2_days))
                     }
                     OutlinedButton(
                         onClick = { viewModel.analyzePatterns() },
                         enabled = !uiState.isLoading && hasEnoughData,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(stringResource(R.string.patterns_30_days))
+                        Text(stringResource(R.string.patterns_4_days))
                     }
                 }
                 if (!hasEnoughData) {

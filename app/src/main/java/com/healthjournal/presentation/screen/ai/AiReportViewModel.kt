@@ -57,7 +57,7 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun generateReport(periodDays: Int = 7) {
+    fun generateReport(periodDays: Int = 2) {
         viewModelScope.launch {
             _uiState.value = AiReportUiState(isLoading = true)
             val settings = getAiSettings()
@@ -68,7 +68,7 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun analyzePatterns(periodDays: Int = 30) {
+    fun analyzePatterns(periodDays: Int = 4) {
         viewModelScope.launch {
             _uiState.value = AiReportUiState(isLoading = true)
             val settings = getAiSettings()

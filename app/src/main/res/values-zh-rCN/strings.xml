@@ -70,8 +70,8 @@
     <string name="reports_title">报告</string>
     <string name="reports_tab_records">记录</string>
     <string name="reports_tab_ai">AI 分析</string>
-    <string name="report_7_days">报告（7 天）</string>
-    <string name="patterns_30_days">模式分析（30 天）</string>
+    <string name="report_2_days">报告（2 天）</string>
+    <string name="patterns_4_days">模式分析（4 天）</string>
     <string name="ai_analyzing">AI 正在分析数据…</string>
     <string name="no_reports_hint">暂无报告。点击上方按钮，根据您的数据生成 AI 报告。</string>
     <string name="no_records_hint">该时间段暂无记录。</string>

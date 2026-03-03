@@ -195,13 +195,19 @@ data class FamilyMemberDto(
     val id: Long = 0,
     val name: String,
     val relationship: String = "",
-    val avatarColor: Int = 0xFF1B6B4D.toInt()
+    val avatarColor: Int = 0xFF1B6B4D.toInt(),
+    val weight: String = "",
+    val height: String = "",
+    val knownDiseases: List<String> = emptyList()
 ) {
     fun toDomain() = FamilyMember(
         id = id,
         name = name,
         relationship = relationship,
-        avatarColor = avatarColor
+        avatarColor = avatarColor,
+        weight = weight,
+        height = height,
+        knownDiseases = knownDiseases
     )
 
     companion object {
@@ -209,7 +215,10 @@ data class FamilyMemberDto(
             id = f.id,
             name = f.name,
             relationship = f.relationship,
-            avatarColor = f.avatarColor
+            avatarColor = f.avatarColor,
+            weight = f.weight,
+            height = f.height,
+            knownDiseases = f.knownDiseases
         )
     }
 }

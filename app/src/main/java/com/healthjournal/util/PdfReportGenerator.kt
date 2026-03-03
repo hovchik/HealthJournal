@@ -239,6 +239,55 @@ object PdfReportGenerator {
             }
         }
 
+        // Charts section
+        val vitalsByType = vitals.groupBy { it.type }
+        if (vitalsByType.isNotEmpty()) {
+            y += 20f
+            if (y > pageHeight - 250) {
+                document.finishPage(page)
+                pageNum++
+                pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create()
+                page = document.startPage(pageInfo)
+                canvas = page.canvas
+                y = margin
+            }
+
+            canvas.drawText("Vital Signs Charts", margin, y, subtitlePaint)
+            y += 20f
+
+            val chartDateFormatter = DateTimeFormatter.ofPattern("dd.MM")
+            for ((type, typeVitals) in vitalsByType) {
+                if (typeVitals.size < 2) continue
+
+                if (y > pageHeight - 200) {
+                    document.finishPage(page)
+                    pageNum++
+                    pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create()
+                    page = document.startPage(pageInfo)
+                    canvas = page.canvas
+                    y = margin
+                }
+
+                canvas.drawText(type.displayName, margin, y, subtitlePaint)
+                y += 10f
+
+                val dataPoints = typeVitals.sortedBy { it.recordedAt }.map { v ->
+                    ChartDataPoint(
+                        label = v.recordedAt.format(chartDateFormatter),
+                        value = v.value.toFloat(),
+                        secondaryValue = v.secondaryValue?.toFloat()
+                    )
+                }
+
+                val chartHeight = 150
+                canvas.save()
+                canvas.translate(margin, y)
+                drawChartToCanvas(canvas, (usableWidth).toInt(), chartHeight, dataPoints)
+                canvas.restore()
+                y += chartHeight + 30f
+            }
+        }
+
         document.finishPage(page)
         val dir = File(context.cacheDir, "reports")
         dir.mkdirs()

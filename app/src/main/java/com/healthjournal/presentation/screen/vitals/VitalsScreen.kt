@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthjournal.R
 import com.healthjournal.domain.model.VitalSign
+import com.healthjournal.presentation.components.VitalsChart
 import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
 import java.time.LocalDate
@@ -122,6 +123,36 @@ fun VitalsScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                // Charts section
+                val vitalsByType = vitals.groupBy { it.type }
+                val chartTypes = vitalsByType.filter { it.value.size >= 2 }
+                if (chartTypes.isNotEmpty()) {
+                    item(key = "charts_header") {
+                        Text(
+                            stringResource(R.string.vitals_charts_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                    chartTypes.forEach { (type, typeVitals) ->
+                        item(key = "chart_${type.name}") {
+                            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                                VitalsChart(
+                                    title = type.localizedDisplayName(),
+                                    vitals = typeVitals.sortedBy { it.recordedAt },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                )
+                            }
+                        }
+                    }
+                    item(key = "charts_divider") {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                    }
+                }
+
                 vitalsByDate.forEach { (date, vitalsForDate) ->
                     item(key = "date_$date") {
                         DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)

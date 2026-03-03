@@ -6,11 +6,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
@@ -48,11 +51,11 @@ class FamilyMembersViewModel(application: Application) : AndroidViewModel(applic
         .map { it.activeProfileId }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
 
-    fun addMember(name: String, relationship: String) {
+    fun addMember(name: String, relationship: String, weight: String = "", height: String = "", knownDiseases: List<String> = emptyList()) {
         viewModelScope.launch {
             val colors = listOf(0xFF1B6B4D, 0xFF3D6373, 0xFF6B4D1B, 0xFF6B1B4D, 0xFF4D1B6B, 0xFF1B4D6B)
             val color = colors.random().toInt()
-            repo.insertMember(FamilyMember(name = name, relationship = relationship, avatarColor = color))
+            repo.insertMember(FamilyMember(name = name, relationship = relationship, avatarColor = color, weight = weight, height = height, knownDiseases = knownDiseases))
         }
     }
 
@@ -304,9 +307,12 @@ fun FamilyMembersScreen(
             title = stringResource(R.string.add_family_member),
             initialName = "",
             initialRelationship = "",
+            initialWeight = "",
+            initialHeight = "",
+            initialKnownDiseases = emptyList(),
             onDismiss = { showAddDialog = false },
-            onConfirm = { name, rel ->
-                viewModel.addMember(name, rel)
+            onConfirm = { name, rel, weight, height, diseases ->
+                viewModel.addMember(name, rel, weight, height, diseases)
                 showAddDialog = false
             }
         )
@@ -317,9 +323,12 @@ fun FamilyMembersScreen(
             title = stringResource(R.string.edit_family_member),
             initialName = member.name,
             initialRelationship = member.relationship,
+            initialWeight = member.weight,
+            initialHeight = member.height,
+            initialKnownDiseases = member.knownDiseases,
             onDismiss = { editingMember = null },
-            onConfirm = { name, rel ->
-                viewModel.updateMember(member.copy(name = name, relationship = rel))
+            onConfirm = { name, rel, weight, height, diseases ->
+                viewModel.updateMember(member.copy(name = name, relationship = rel, weight = weight, height = height, knownDiseases = diseases))
                 editingMember = null
             }
         )
@@ -332,10 +341,17 @@ private fun FamilyMemberDialog(
     title: String,
     initialName: String,
     initialRelationship: String,
+    initialWeight: String,
+    initialHeight: String,
+    initialKnownDiseases: List<String>,
     onDismiss: () -> Unit,
-    onConfirm: (name: String, relationship: String) -> Unit
+    onConfirm: (name: String, relationship: String, weight: String, height: String, knownDiseases: List<String>) -> Unit
 ) {
     var name by remember { mutableStateOf(initialName) }
+    var weight by remember { mutableStateOf(initialWeight) }
+    var height by remember { mutableStateOf(initialHeight) }
+    var knownDiseases by remember { mutableStateOf(initialKnownDiseases) }
+    var newDisease by remember { mutableStateOf("") }
     val otherLabel = stringResource(R.string.rel_other)
 
     // Determine initial chip state from initialRelationship
@@ -359,7 +375,10 @@ private fun FamilyMemberDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -393,6 +412,73 @@ private fun FamilyMemberDialog(
                         singleLine = true
                     )
                 }
+
+                HorizontalDivider()
+
+                // Weight and Height
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = weight,
+                        onValueChange = { weight = it },
+                        label = { Text(stringResource(R.string.user_weight)) },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = height,
+                        onValueChange = { height = it },
+                        label = { Text(stringResource(R.string.user_height)) },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+                }
+
+                // Known diseases
+                Text(stringResource(R.string.known_diseases_title), style = MaterialTheme.typography.labelMedium)
+                if (knownDiseases.isNotEmpty()) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        knownDiseases.forEach { disease ->
+                            InputChip(
+                                selected = false,
+                                onClick = { knownDiseases = knownDiseases - disease },
+                                label = { Text(disease) },
+                                trailingIcon = {
+                                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.delete), modifier = Modifier.size(16.dp))
+                                }
+                            )
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = newDisease,
+                        onValueChange = { newDisease = it },
+                        label = { Text(stringResource(R.string.add_known_disease)) },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+                    FilledTonalIconButton(
+                        onClick = {
+                            if (newDisease.isNotBlank()) {
+                                knownDiseases = knownDiseases + newDisease.trim()
+                                newDisease = ""
+                            }
+                        },
+                        enabled = newDisease.isNotBlank()
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_known_disease))
+                    }
+                }
             }
         },
         confirmButton = {
@@ -403,7 +489,7 @@ private fun FamilyMemberDialog(
                     } else {
                         relationship
                     }
-                    onConfirm(name, rel)
+                    onConfirm(name, rel, weight.trim(), height.trim(), knownDiseases)
                 },
                 enabled = name.isNotBlank()
             ) { Text(stringResource(R.string.save)) }

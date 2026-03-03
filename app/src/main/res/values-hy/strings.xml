@@ -70,8 +70,8 @@
     <string name="reports_title">Հաշվետվություններ</string>
     <string name="reports_tab_records">Գրառումներ</string>
     <string name="reports_tab_ai">AI վերլուծություն</string>
-    <string name="report_7_days">Հաշվետվություն (7 օր)</string>
-    <string name="patterns_30_days">Օրինաչափեր (30 օր)</string>
+    <string name="report_2_days">Հաշվետվություն (2 օր)</string>
+    <string name="patterns_4_days">Օրինաչափեր (4 օր)</string>
     <string name="ai_analyzing">AI-ն վերլուծում է…</string>
     <string name="no_reports_hint">Հաշվետվություններ չկան։ Սեղմեք վերևի կոճակը AI հաշվետվություն ստեղծելու համար։</string>
     <string name="no_records_hint">Այս ժամանակահատվածում գրառումներ չկան։</string>

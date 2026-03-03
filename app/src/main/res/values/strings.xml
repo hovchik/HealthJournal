@@ -70,8 +70,8 @@
     <string name="reports_title">Отчёты</string>
     <string name="reports_tab_records">Записи</string>
     <string name="reports_tab_ai">AI Анализ</string>
-    <string name="report_7_days">Отчёт (7 дней)</string>
-    <string name="patterns_30_days">Паттерны (30 дн)</string>
+    <string name="report_2_days">Отчёт (2 дня)</string>
+    <string name="patterns_4_days">Паттерны (4 дня)</string>
     <string name="ai_analyzing">AI анализирует данные…</string>
     <string name="no_reports_hint">Нет отчётов. Нажмите кнопку выше, чтобы сгенерировать AI-отчёт.</string>
     <string name="no_records_hint">Нет записей за этот период.</string>
