@@ -1,5 +1,8 @@
 package com.healthjournal.presentation.screen.disease
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -64,16 +66,28 @@ fun DiseaseDetailScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
                 title = {
                     Column {
-                        Text(currentDisease.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(
+                            currentDisease.name,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                         if (!currentDisease.active) {
-                            Text(
-                                stringResource(R.string.disease_resolved),
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.error
-                            )
+                            Surface(
+                                shape = MaterialTheme.shapes.extraSmall,
+                                color = MaterialTheme.colorScheme.errorContainer,
+                                modifier = Modifier.padding(top = 4.dp)
+                            ) {
+                                Text(
+                                    stringResource(R.string.disease_resolved),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                )
+                            }
                         }
                     }
                 },
@@ -92,7 +106,7 @@ fun DiseaseDetailScreen(
         floatingActionButton = {
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 SmallFloatingActionButton(
                     onClick = { onAddMedication(diseaseId) },
@@ -121,95 +135,125 @@ fun DiseaseDetailScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Notes card
             if (currentDisease.notes.isNotBlank()) {
                 item(key = "notes") {
-                    Card(
+                    ElevatedCard(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        shape = MaterialTheme.shapes.medium
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
                     ) {
-                        Text(
-                            currentDisease.notes,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Description,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                currentDisease.notes,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }
 
-            // Symptoms section
-            item(key = "symptoms_header") {
-                SectionHeader(
+            // Summary chips
+            item(key = "summary") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SummaryChip(
+                        icon = Icons.Default.Sick,
+                        count = symptoms.size,
+                        color = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.weight(1f)
+                    )
+                    SummaryChip(
+                        icon = Icons.Default.MonitorHeart,
+                        count = vitals.size,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        modifier = Modifier.weight(1f)
+                    )
+                    SummaryChip(
+                        icon = Icons.Default.Medication,
+                        count = medications.size,
+                        color = MaterialTheme.colorScheme.secondary,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            // Symptoms section card
+            item(key = "symptoms_card") {
+                CollapsibleSectionCard(
                     icon = Icons.Default.Sick,
                     title = stringResource(R.string.symptoms_title),
                     count = symptoms.size,
-                    color = MaterialTheme.colorScheme.primary,
+                    accentColor = MaterialTheme.colorScheme.primary,
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     expanded = symptomsExpanded,
                     onToggle = { symptomsExpanded = !symptomsExpanded }
-                )
-            }
-            if (symptomsExpanded) {
-                if (symptoms.isEmpty()) {
-                    item(key = "empty_symptoms") {
+                ) {
+                    if (symptoms.isEmpty()) {
                         EmptyHint(stringResource(R.string.no_symptoms_hint))
-                    }
-                } else {
-                    items(symptoms.sortedByDescending { it.recordedAt }, key = { "s_${it.id}" }) { symptom ->
-                        SymptomMiniCard(symptom, onClick = { onEditSymptom(symptom.id) })
+                    } else {
+                        symptoms.sortedByDescending { it.recordedAt }.forEach { symptom ->
+                            SymptomMiniCard(symptom, onClick = { onEditSymptom(symptom.id) })
+                        }
                     }
                 }
             }
 
-            // Vitals section
-            item(key = "vitals_header") {
-                Spacer(modifier = Modifier.height(4.dp))
-                SectionHeader(
+            // Vitals section card
+            item(key = "vitals_card") {
+                CollapsibleSectionCard(
                     icon = Icons.Default.MonitorHeart,
                     title = stringResource(R.string.nav_vitals),
                     count = vitals.size,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    accentColor = MaterialTheme.colorScheme.tertiary,
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     expanded = vitalsExpanded,
                     onToggle = { vitalsExpanded = !vitalsExpanded }
-                )
-            }
-            if (vitalsExpanded) {
-                if (vitals.isEmpty()) {
-                    item(key = "empty_vitals") {
+                ) {
+                    if (vitals.isEmpty()) {
                         EmptyHint(stringResource(R.string.no_vitals_hint))
-                    }
-                } else {
-                    items(vitals.sortedByDescending { it.recordedAt }, key = { "v_${it.id}" }) { vital ->
-                        VitalMiniCard(vital, onClick = { onEditVital(vital.id) })
+                    } else {
+                        vitals.sortedByDescending { it.recordedAt }.forEach { vital ->
+                            VitalMiniCard(vital, onClick = { onEditVital(vital.id) })
+                        }
                     }
                 }
             }
 
-            // Medications section
-            item(key = "meds_header") {
-                Spacer(modifier = Modifier.height(4.dp))
-                SectionHeader(
+            // Medications section card
+            item(key = "meds_card") {
+                CollapsibleSectionCard(
                     icon = Icons.Default.Medication,
                     title = stringResource(R.string.nav_medications),
                     count = medications.size,
-                    color = MaterialTheme.colorScheme.secondary,
+                    accentColor = MaterialTheme.colorScheme.secondary,
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     expanded = medsExpanded,
                     onToggle = { medsExpanded = !medsExpanded }
-                )
-            }
-            if (medsExpanded) {
-                if (medications.isEmpty()) {
-                    item(key = "empty_meds") {
+                ) {
+                    if (medications.isEmpty()) {
                         EmptyHint(stringResource(R.string.no_medications_hint))
-                    }
-                } else {
-                    items(medications, key = { "m_${it.id}" }) { medication ->
-                        MedicationMiniCard(medication, onClick = { onEditMedication(medication.id) })
+                    } else {
+                        medications.forEach { medication ->
+                            MedicationMiniCard(medication, onClick = { onEditMedication(medication.id) })
+                        }
                     }
                 }
             }
@@ -233,52 +277,134 @@ fun DiseaseDetailScreen(
 }
 
 @Composable
-private fun SectionHeader(
+private fun SummaryChip(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String,
     count: Int,
     color: androidx.compose.ui.graphics.Color,
     containerColor: androidx.compose.ui.graphics.Color,
-    expanded: Boolean = true,
-    onToggle: () -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onToggle).padding(vertical = 4.dp)
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        color = containerColor.copy(alpha = 0.5f),
+        tonalElevation = 1.dp
     ) {
-        Surface(shape = CircleShape, color = containerColor, modifier = Modifier.size(32.dp)) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(16.dp))
-            }
-        }
-        Text(title, style = MaterialTheme.typography.titleMedium, color = color, modifier = Modifier.weight(1f))
-        Surface(shape = CircleShape, color = color.copy(alpha = 0.12f)) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(6.dp))
             Text(
                 "$count",
-                style = MaterialTheme.typography.labelSmall,
-                color = color,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                color = color
             )
         }
-        Icon(
-            if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(20.dp)
-        )
+    }
+}
+
+@Composable
+private fun CollapsibleSectionCard(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    count: Int,
+    accentColor: androidx.compose.ui.graphics.Color,
+    containerColor: androidx.compose.ui.graphics.Color,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioLowBouncy,
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            )
+        ) {
+            // Header row
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onToggle)
+                    .padding(16.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = containerColor,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(20.dp))
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        "$count ${if (count == 1) "record" else "records"}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Surface(
+                    shape = CircleShape,
+                    color = accentColor.copy(alpha = 0.12f)
+                ) {
+                    Icon(
+                        if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = null,
+                        tint = accentColor,
+                        modifier = Modifier.padding(4.dp).size(20.dp)
+                    )
+                }
+            }
+
+            // Content
+            if (expanded) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                )
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    content()
+                }
+            }
+        }
     }
 }
 
 @Composable
 private fun EmptyHint(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(start = 42.dp, bottom = 4.dp)
-    )
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow
+    ) {
+        Text(
+            text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
 }
 
 @Composable
@@ -289,23 +415,55 @@ private fun SymptomMiniCard(symptom: Symptom, onClick: () -> Unit) {
         symptom.intensity <= 6 -> MaterialTheme.colorScheme.tertiary
         else -> MaterialTheme.colorScheme.error
     }
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-        shape = MaterialTheme.shapes.medium
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
-        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            Box(modifier = Modifier.width(3.dp).fillMaxHeight().clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)).background(intensityColor))
-            Row(modifier = Modifier.weight(1f).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Surface(modifier = Modifier.size(36.dp), shape = MaterialTheme.shapes.small, color = intensityColor.copy(alpha = 0.1f)) {
+        Row(
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(topStart = 12.dp, bottomStart = 12.dp))
+                    .background(intensityColor)
+            )
+            Row(
+                modifier = Modifier.weight(1f).padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    modifier = Modifier.size(36.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    color = intensityColor.copy(alpha = 0.12f)
+                ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text("${symptom.intensity}", style = MaterialTheme.typography.titleSmall, color = intensityColor, fontWeight = FontWeight.Bold)
+                        Text(
+                            "${symptom.intensity}",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = intensityColor,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(symptom.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(symptom.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                    Text(
+                        symptom.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        symptom.recordedAt.format(formatter),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline
+                    )
                 }
             }
         }
@@ -315,42 +473,116 @@ private fun SymptomMiniCard(symptom: Symptom, onClick: () -> Unit) {
 @Composable
 private fun VitalMiniCard(vital: VitalSign, onClick: () -> Unit) {
     val formatter = remember { DateTimeFormatter.ofPattern("dd.MM HH:mm") }
-    val valueStr = if (vital.secondaryValue != null) "${vital.value.toInt()}/${vital.secondaryValue.toInt()}" else vital.value.toString()
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.25f)),
-        shape = MaterialTheme.shapes.medium
+    val valueStr = if (vital.secondaryValue != null) {
+        "${vital.value.toInt()}/${vital.secondaryValue.toInt()}"
+    } else {
+        vital.value.toString()
+    }
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Icon(Icons.Default.MonitorHeart, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(18.dp))
-                Column {
-                    Text(vital.type.localizedDisplayName(), style = MaterialTheme.typography.titleSmall)
-                    Text(vital.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                modifier = Modifier.size(36.dp),
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.tertiaryContainer
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.Default.MonitorHeart,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
-            Text("$valueStr ${vital.type.localizedUnit()}", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary)
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    vital.type.localizedDisplayName(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    vital.recordedAt.format(formatter),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+            ) {
+                Text(
+                    "$valueStr ${vital.type.localizedUnit()}",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun MedicationMiniCard(medication: Medication, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.25f)),
-        shape = MaterialTheme.shapes.medium
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Medication, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(18.dp))
-            Spacer(modifier = Modifier.width(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                modifier = Modifier.size(36.dp),
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.secondaryContainer
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.Default.Medication,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(medication.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                Text("${medication.dosage} — ${medication.frequency}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    medication.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    "${medication.dosage} — ${medication.frequency}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             if (!medication.active) {
-                Surface(shape = MaterialTheme.shapes.extraSmall, color = MaterialTheme.colorScheme.errorContainer) {
-                    Text(stringResource(R.string.inactive), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                Surface(
+                    shape = RoundedCornerShape(6.dp),
+                    color = MaterialTheme.colorScheme.errorContainer
+                ) {
+                    Text(
+                        stringResource(R.string.inactive),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                    )
                 }
             }
         }
