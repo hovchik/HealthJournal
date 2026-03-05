@@ -11,7 +11,7 @@ class AiProviderRegistryTest {
 
     @Test
     fun `getAll returns all providers`() {
-        assertEquals(4, registry.getAll().size)
+        assertEquals(3, registry.getAll().size)
     }
 
     @Test
@@ -38,9 +38,8 @@ class AiProviderRegistryTest {
     fun `AiProviderId fromKey parses correctly`() {
         assertEquals(AiProviderId.CLAUDE, AiProviderId.fromKey("claude"))
         assertEquals(AiProviderId.OPENAI_COMPATIBLE, AiProviderId.fromKey("openai"))
-        assertEquals(AiProviderId.GEMINI_NANO, AiProviderId.fromKey("gemini_nano"))
         assertEquals(AiProviderId.LOCAL, AiProviderId.fromKey("local"))
-        assertEquals(AiProviderId.CLAUDE, AiProviderId.fromKey("unknown"))
+        assertEquals(AiProviderId.LOCAL, AiProviderId.fromKey("unknown"))
     }
 }
 

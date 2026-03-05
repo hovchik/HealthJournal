@@ -1,14 +1,10 @@
 package com.healthjournal.presentation.screen.settings
 
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -18,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,16 +33,16 @@ fun AiSettingsScreen(
     val settings by viewModel.aiSettings.collectAsStateWithLifecycle()
     val validationMessage by viewModel.validationMessage.collectAsStateWithLifecycle()
     val validationSuccess by viewModel.validationSuccess.collectAsStateWithLifecycle()
+    val downloadState by viewModel.downloadState.collectAsStateWithLifecycle()
 
     val providerOptions = listOf(
-        AiProviderId.GEMINI_NANO.key to stringResource(R.string.ai_provider_system),
+        AiProviderId.LOCAL.key to stringResource(R.string.ai_provider_local),
         AiProviderId.CLAUDE.key to stringResource(R.string.ai_provider_claude),
-        AiProviderId.OPENAI_COMPATIBLE.key to stringResource(R.string.ai_provider_openai),
-        AiProviderId.LOCAL.key to stringResource(R.string.ai_provider_local)
+        AiProviderId.OPENAI_COMPATIBLE.key to stringResource(R.string.ai_provider_openai)
     )
     var providerMenuExpanded by remember { mutableStateOf(false) }
     val selectedProviderLabel = providerOptions.firstOrNull { it.first == settings.selectedProviderId }?.second
-        ?: stringResource(R.string.ai_provider_system)
+        ?: stringResource(R.string.ai_provider_local)
 
     Scaffold(
         topBar = {
@@ -141,19 +136,6 @@ fun AiSettingsScreen(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Text(label)
-                                            if (key == AiProviderId.GEMINI_NANO.key) {
-                                                Surface(
-                                                    shape = MaterialTheme.shapes.extraSmall,
-                                                    color = MaterialTheme.colorScheme.tertiaryContainer
-                                                ) {
-                                                    Text(
-                                                        stringResource(R.string.system_ai_recommended),
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                                    )
-                                                }
-                                            }
                                             if (key == AiProviderId.LOCAL.key) {
                                                 Surface(
                                                     shape = MaterialTheme.shapes.extraSmall,
@@ -176,10 +158,9 @@ fun AiSettingsScreen(
                                     leadingIcon = {
                                         Icon(
                                             when (key) {
-                                                AiProviderId.GEMINI_NANO.key -> Icons.Default.PhoneAndroid
                                                 AiProviderId.CLAUDE.key -> Icons.Default.Star
                                                 AiProviderId.OPENAI_COMPATIBLE.key -> Icons.Default.Cloud
-                                                else -> Icons.Default.Folder
+                                                else -> Icons.Default.PhoneAndroid
                                             },
                                             contentDescription = null,
                                             modifier = Modifier.size(20.dp)
@@ -192,9 +173,11 @@ fun AiSettingsScreen(
 
                     // Provider-specific config
                     when (settings.selectedProviderId) {
-                        AiProviderId.GEMINI_NANO.key -> GeminiNanoConfigSection(
-                            config = settings.geminiNanoConfig,
-                            onUpdate = { viewModel.updateGeminiNanoConfig(it) }
+                        AiProviderId.LOCAL.key -> LocalModelSection(
+                            viewModel = viewModel,
+                            downloadState = downloadState,
+                            config = settings.localAiConfig,
+                            onUpdateConfig = { viewModel.updateLocalConfig(it) }
                         )
                         AiProviderId.CLAUDE.key -> ClaudeConfigSection(
                             config = settings.claudeConfig,
@@ -204,7 +187,6 @@ fun AiSettingsScreen(
                             config = settings.openAiConfig,
                             onUpdate = { viewModel.updateOpenAiConfig(it) }
                         )
-                        AiProviderId.LOCAL.key -> LocalAnalysisInfoCard()
                     }
 
                     HorizontalDivider()
@@ -324,21 +306,13 @@ fun AiSettingsScreen(
 }
 
 @Composable
-private fun GeminiNanoConfigSection(
-    config: GeminiNanoConfig,
-    onUpdate: (GeminiNanoConfig) -> Unit
+private fun LocalModelSection(
+    viewModel: AiSettingsViewModel,
+    downloadState: ModelDownloadState,
+    config: LocalAiConfig,
+    onUpdateConfig: (LocalAiConfig) -> Unit
 ) {
-    val context = LocalContext.current
-
-    // Check AI Core package availability
-    var aiCoreInstalled by remember {
-        mutableStateOf(
-            try { context.packageManager.getPackageInfo("com.google.android.aicore", 0); true }
-            catch (_: PackageManager.NameNotFoundException) { false }
-        )
-    }
-    var statusMessage by remember { mutableStateOf<String?>(null) }
-    var statusIsPositive by remember { mutableStateOf(false) }
+    val models = viewModel.modelRepository.availableModels
 
     Card(
         colors = CardDefaults.cardColors(
@@ -350,118 +324,126 @@ private fun GeminiNanoConfigSection(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Header
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.SmartToy,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    stringResource(R.string.local_model_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
             Text(
-                stringResource(R.string.gemini_nano_desc),
+                stringResource(R.string.local_model_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // AI Core status card
-            if (!aiCoreInstalled) {
+            HorizontalDivider()
+
+            // Model list
+            models.forEach { model ->
+                val isDownloaded = viewModel.modelRepository.isModelDownloaded(model)
+                val isThisDownloading = downloadState is ModelDownloadState.Downloading
+
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
-                    )
+                        containerColor = if (isDownloaded)
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                        else MaterialTheme.colorScheme.surfaceContainerHighest
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                Icons.Default.Warning,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Text(
-                                stringResource(R.string.gemini_nano_not_installed),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    model.name,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    model.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    formatSize(model.sizeBytes),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.outline
+                                )
+                            }
+
+                            if (isDownloaded) {
+                                Icon(
+                                    Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
-                        FilledTonalButton(
-                            onClick = {
-                                try {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(
-                                        "market://details?id=com.google.android.aicore"
-                                    ))
-                                    context.startActivity(intent)
-                                } catch (_: Exception) {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(
-                                        "https://play.google.com/store/apps/details?id=com.google.android.aicore"
-                                    ))
-                                    context.startActivity(intent)
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Icon(Icons.Default.GetApp, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(stringResource(R.string.gemini_nano_install))
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        if (isDownloaded) {
+                            OutlinedButton(
+                                onClick = { viewModel.deleteModel(model) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) {
+                                Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(stringResource(R.string.local_model_delete))
+                            }
+                        } else if (isThisDownloading) {
+                            val progress = (downloadState as ModelDownloadState.Downloading).progress
+                            Column {
+                                LinearProgressIndicator(
+                                    progress = { progress },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    stringResource(R.string.local_model_downloading, (progress * 100).toInt()),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        } else {
+                            Button(
+                                onClick = { viewModel.downloadModel(model) },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(stringResource(R.string.local_model_download))
+                            }
                         }
                     }
                 }
             }
 
-            // Check/refresh status button
-            OutlinedButton(
-                onClick = {
-                    aiCoreInstalled = try {
-                        context.packageManager.getPackageInfo("com.google.android.aicore", 0); true
-                    } catch (_: PackageManager.NameNotFoundException) { false }
-
-                    if (aiCoreInstalled) {
-                        // Also check Samsung AI packages
-                        val hasSamsungAi = listOf(
-                            "com.samsung.android.aicoreondevice",
-                            "com.samsung.android.galaxyai",
-                            "com.samsung.android.intelligence"
-                        ).any { pkg ->
-                            try { context.packageManager.getPackageInfo(pkg, 0); true }
-                            catch (_: Exception) { false }
-                        }
-                        statusMessage = if (hasSamsungAi) {
-                            context.getString(R.string.gemini_nano_status_available) + " + Samsung Galaxy AI"
-                        } else {
-                            context.getString(R.string.gemini_nano_status_available)
-                        }
-                        statusIsPositive = true
-                    } else {
-                        // Check Samsung AI as alternative
-                        val hasSamsungAi = listOf(
-                            "com.samsung.android.aicoreondevice",
-                            "com.samsung.android.galaxyai",
-                            "com.samsung.android.intelligence"
-                        ).any { pkg ->
-                            try { context.packageManager.getPackageInfo(pkg, 0); true }
-                            catch (_: Exception) { false }
-                        }
-                        if (hasSamsungAi) {
-                            statusMessage = "Samsung Galaxy AI " + context.getString(R.string.gemini_nano_status_available)
-                            statusIsPositive = true
-                        } else {
-                            statusMessage = context.getString(R.string.gemini_nano_status_unavailable)
-                            statusIsPositive = false
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.gemini_nano_check_status))
-            }
-
-            // Status message
-            statusMessage?.let { msg ->
+            // Download error
+            if (downloadState is ModelDownloadState.Error) {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = if (statusIsPositive) MaterialTheme.colorScheme.primaryContainer
-                        else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                        containerColor = MaterialTheme.colorScheme.errorContainer
                     )
                 ) {
                     Row(
@@ -470,19 +452,43 @@ private fun GeminiNanoConfigSection(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(
-                            if (statusIsPositive) Icons.Default.CheckCircle else Icons.Default.Info,
+                            Icons.Default.Warning,
                             contentDescription = null,
-                            tint = if (statusIsPositive) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onErrorContainer,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
                             modifier = Modifier.size(18.dp)
                         )
                         Text(
-                            msg,
+                            (downloadState as ModelDownloadState.Error).message,
                             style = MaterialTheme.typography.bodySmall,
-                            color = if (statusIsPositive) MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.onErrorContainer
+                            color = MaterialTheme.colorScheme.onErrorContainer
                         )
                     }
+                }
+            }
+
+            // Fallback info
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        stringResource(R.string.local_model_fallback_info),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 
@@ -495,21 +501,13 @@ private fun GeminiNanoConfigSection(
             )
             Slider(
                 value = config.temperature,
-                onValueChange = { onUpdate(config.copy(temperature = it)) },
+                onValueChange = { onUpdateConfig(config.copy(temperature = it)) },
                 valueRange = 0f..1f,
                 steps = 9
             )
             OutlinedTextField(
-                value = config.topK.toString(),
-                onValueChange = { onUpdate(config.copy(topK = it.toIntOrNull() ?: 40)) },
-                label = { Text(stringResource(R.string.gemini_top_k)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-            OutlinedTextField(
-                value = config.maxOutputTokens.toString(),
-                onValueChange = { onUpdate(config.copy(maxOutputTokens = it.toIntOrNull() ?: 1024)) },
+                value = config.maxTokens.toString(),
+                onValueChange = { onUpdateConfig(config.copy(maxTokens = it.toIntOrNull() ?: 1024)) },
                 label = { Text(stringResource(R.string.ai_max_tokens)) },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -517,6 +515,11 @@ private fun GeminiNanoConfigSection(
             )
         }
     }
+}
+
+private fun formatSize(bytes: Long): String {
+    val mb = bytes / (1024.0 * 1024.0)
+    return if (mb >= 1024) "%.1f GB".format(mb / 1024.0) else "%.0f MB".format(mb)
 }
 
 @Composable
@@ -604,113 +607,6 @@ private fun OpenAiConfigSection(
                 label = { Text(stringResource(R.string.ai_base_url)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
-            )
-        }
-    }
-}
-
-@Composable
-private fun LocalAnalysisInfoCard() {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        ),
-        shape = MaterialTheme.shapes.large
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(20.dp)
-                )
-                Text(
-                    stringResource(R.string.ai_local_analysis_always_available),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            Text(
-                stringResource(R.string.ai_local_analysis_desc),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-private fun LocalConfigSection(
-    config: LocalAiConfig,
-    onUpdate: (LocalAiConfig) -> Unit
-) {
-    val context = LocalContext.current
-    val filePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-            context.contentResolver.takePersistableUriPermission(
-                it, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-            onUpdate(config.copy(modelPath = it.toString()))
-        }
-    }
-
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        shape = MaterialTheme.shapes.large
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            OutlinedTextField(
-                value = config.modelPath,
-                onValueChange = { onUpdate(config.copy(modelPath = it)) },
-                label = { Text(stringResource(R.string.ai_model_path)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                trailingIcon = {
-                    IconButton(onClick = { filePicker.launch(arrayOf("*/*")) }) {
-                        Icon(Icons.Default.FolderOpen, contentDescription = stringResource(R.string.ai_browse_model))
-                    }
-                }
-            )
-            OutlinedTextField(
-                value = config.contextSize.toString(),
-                onValueChange = { onUpdate(config.copy(contextSize = it.toIntOrNull() ?: 2048)) },
-                label = { Text(stringResource(R.string.ai_context_size)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-            OutlinedTextField(
-                value = config.maxTokens.toString(),
-                onValueChange = { onUpdate(config.copy(maxTokens = it.toIntOrNull() ?: 1024)) },
-                label = { Text(stringResource(R.string.ai_max_tokens)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-            Text(
-                stringResource(R.string.ai_temperature) + ": %.1f".format(config.temperature),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Slider(
-                value = config.temperature,
-                onValueChange = { onUpdate(config.copy(temperature = it)) },
-                valueRange = 0f..1f,
-                steps = 9
             )
         }
     }

@@ -14,17 +14,25 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
     private val aiService = container.aiService
     private val registry = container.aiProviderRegistry
 
+    val modelRepository = container.modelRepository
+
     val aiSettings: StateFlow<AiSettings> = settingsRepo.getUserSettings()
         .map { it.aiSettings }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiSettings())
 
     val providers = registry.getAll()
 
+    val downloadState = modelRepository.downloadState
+
     private val _validationMessage = MutableStateFlow<String?>(null)
     val validationMessage = _validationMessage.asStateFlow()
 
     private val _validationSuccess = MutableStateFlow<Boolean?>(null)
     val validationSuccess = _validationSuccess.asStateFlow()
+
+    init {
+        modelRepository.refreshState()
+    }
 
     fun selectProvider(providerId: String) {
         viewModelScope.launch {
@@ -56,16 +64,20 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun updateGeminiNanoConfig(config: GeminiNanoConfig) {
-        viewModelScope.launch {
-            settingsRepo.setAiSettings(aiSettings.value.copy(geminiNanoConfig = config))
-        }
-    }
-
     fun updateLocalConfig(config: LocalAiConfig) {
         viewModelScope.launch {
             settingsRepo.setAiSettings(aiSettings.value.copy(localAiConfig = config))
         }
+    }
+
+    fun downloadModel(model: DownloadableModel) {
+        viewModelScope.launch {
+            modelRepository.downloadModel(model)
+        }
+    }
+
+    fun deleteModel(model: DownloadableModel) {
+        modelRepository.deleteModel(model)
     }
 
     fun validateCurrentProvider() {

@@ -148,9 +148,6 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-համատեղելի</string>
     <string name="ai_provider_local">Տեղական մոդել</string>
-    <string name="ai_provider_system">Համակարգի AI (Google / Samsung)</string>
-    <string name="system_ai_desc">Օգտագործում է սարքի ներկառուցված AI-ն: Google AI Core կամ Samsung Galaxy AI։ Չի պահանջում ինտերնետ կամ API բանալի։ Հասանելի է Android 14+ համատեղելի սարքում։</string>
-    <string name="system_ai_recommended">(Առաջարկվում է)</string>
     <string name="ai_privacy_redact">Տվյալների խմբագրում</string>
     <string name="ai_privacy_redact_desc">Հեռացնել հեռախոսները և էլ. հասցեները ուղարկելից առաջ</string>
     <string name="ai_api_key">API բանալի</string>
@@ -162,21 +159,8 @@
     <string name="ai_max_tokens">Առավելագույն տոկեններ</string>
     <string name="ai_temperature">Ջերմաստիճան</string>
     <string name="ai_validate_config">Ստուգել կարգավորումը</string>
-    <string name="ai_provider_gemini_nano">Համակարգի AI (սարքում)</string>
-    <string name="gemini_nano_desc">AI սարքի վրա։ Պահանջվում է Android 14+ և համատեղելի սարք (օր. Pixel 8+)։ Ինտերնետ չի պահանջվում։</string>
-    <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Պահանջվում է API բանալի</string>
     <string name="ai_local_model_desc">Բեռնել սեփական AI մոդել սարքի հիշողությունից</string>
-
-    <string name="gemini_nano_not_installed">Google AI Core-ը տեղադրված չէ ձեր սարքուм</string>
-    <string name="gemini_nano_install">Տեղադրել Google AI Core</string>
-    <string name="gemini_nano_download_model">Ներբեռնել AI моդելը</string>
-    <string name="gemini_nano_downloading">AI моդելը ներբեռնվուм է…</string>
-    <string name="gemini_nano_ready">AI моդելը пատրաստ է</string>
-    <string name="gemini_nano_check_status">Ստուգել հասանելիությունը</string>
-    <string name="gemini_nano_status_available">Gemini Nano-ն հասանելի է և пատրաստ</string>
-    <string name="gemini_nano_status_downloadable">AI моդելը հասանելի է ներբեռնման հաмար</string>
-    <string name="gemini_nano_status_unavailable">Gemini Nano-ն հասանելի չէ այս սարքուм։ Կօգտագоրծվի տեղական վերլուծությունը։</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Ընտրեք պրոֆիլը հաշվետվության համար</string>
@@ -248,7 +232,6 @@
     <string name="perm_grant">Թույլատրել</string>
     <string name="perm_ai_status">AI-ի կարգավիճակը սարքում</string>
     <string name="perm_ai_available">AI-ն սարքում հասանելի է</string>
-    <string name="perm_ai_unavailable">AI-ն սարքում հասանելի չէ</string>
     <string name="perm_ai_check">Ստուգել</string>
     <string name="perm_open_settings">Բացել կարգավորումները</string>
 
@@ -435,4 +418,13 @@
     <string name="theme_system">Համակարգ</string>
     <string name="theme_light">Բաց</string>
     <string name="theme_dark">Մութ</string>
+
+    <!-- On-device model -->
+    <string name="local_model_title">Սարքի LLM մոդել</string>
+    <string name="local_model_desc">Ներբեռնել փոքր AI մոդել՝ անմիջապես սարքում վերլուծելու համար։</string>
+    <string name="local_model_download">Ներբեռնել մոդել</string>
+    <string name="local_model_downloading">Ներբեռնում… %1$d%%</string>
+    <string name="local_model_delete">Ջնջել մոդելը</string>
+    <string name="local_model_fallback_info">Առանց ներբեռնելի մոդելի՝ կանոնների վրա կատարող վերլուծություն միշտ հասանելի է։</string>
+    <string name="perm_ai_no_model">AI մոդել չի ներբեռնվել։ Ներբեռնեք AI կարգավորումներում։</string>
 </resources>

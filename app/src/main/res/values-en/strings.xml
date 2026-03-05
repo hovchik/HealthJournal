@@ -148,9 +148,6 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-compatible</string>
     <string name="ai_provider_local">Local analysis (on-device)</string>
-    <string name="ai_provider_system">System AI (Google / Samsung)</string>
-    <string name="system_ai_desc">Uses the built-in on-device AI: Google AI Core or Samsung Galaxy AI. Does not require internet or an API key. Available on Android 14+ with a compatible device.</string>
-    <string name="system_ai_recommended">(Recommended)</string>
     <string name="ai_privacy_redact">Data redaction</string>
     <string name="ai_privacy_redact_desc">Remove phone numbers and emails before sending</string>
     <string name="ai_api_key">API key</string>
@@ -162,22 +159,10 @@
     <string name="ai_max_tokens">Max tokens</string>
     <string name="ai_temperature">Temperature</string>
     <string name="ai_validate_config">Validate configuration</string>
-    <string name="ai_provider_gemini_nano">System AI (on-device)</string>
-    <string name="gemini_nano_desc">On-device AI: Google AI Core (Pixel 8+) or Samsung Galaxy AI (Galaxy S24+). No internet or API key required. Requires Android 14+.</string>
-    <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Requires API key</string>
     <string name="ai_local_model_desc">Load a custom AI model from device storage</string>
     <string name="ai_local_analysis_desc">Analyzes health data on your device. Always available, no internet, API key, or model download required. Your data stays private.</string>
     <string name="ai_local_analysis_always_available">Always available</string>
-    <string name="gemini_nano_not_installed">Google AI Core is not installed on your device</string>
-    <string name="gemini_nano_install">Install Google AI Core</string>
-    <string name="gemini_nano_download_model">Download AI model</string>
-    <string name="gemini_nano_downloading">Downloading AI model…</string>
-    <string name="gemini_nano_ready">AI model is ready to use</string>
-    <string name="gemini_nano_check_status">Check availability</string>
-    <string name="gemini_nano_status_available">Gemini Nano is available and ready</string>
-    <string name="gemini_nano_status_downloadable">AI model is available for download</string>
-    <string name="gemini_nano_status_unavailable">Gemini Nano is not available on this device. Local analysis will be used instead.</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Select profile for report</string>
@@ -249,7 +234,6 @@
     <string name="perm_grant">Grant</string>
     <string name="perm_ai_status">On-device AI status</string>
     <string name="perm_ai_available">On-device AI is available</string>
-    <string name="perm_ai_unavailable">On-device AI is not available</string>
     <string name="perm_ai_check">Check</string>
     <string name="perm_open_settings">Open settings</string>
 
@@ -436,4 +420,13 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+
+    <!-- On-device model -->
+    <string name="local_model_title">On-device LLM model</string>
+    <string name="local_model_desc">Download a small AI model to run predictions directly on your device. Your data stays private — nothing is sent to the cloud.</string>
+    <string name="local_model_download">Download model</string>
+    <string name="local_model_downloading">Downloading… %1$d%%</string>
+    <string name="local_model_delete">Delete model</string>
+    <string name="local_model_fallback_info">Without a downloaded model, rule-based local analysis is always available as a fallback.</string>
+    <string name="perm_ai_no_model">No AI model downloaded. Download one in AI Settings.</string>
 </resources>

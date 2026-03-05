@@ -148,9 +148,6 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-совместимый</string>
     <string name="ai_provider_local">Локальный анализ (на устройстве)</string>
-    <string name="ai_provider_system">Системный AI (Google / Samsung)</string>
-    <string name="system_ai_desc">Использует встроенный AI на устройстве: Google AI Core или Samsung Galaxy AI. Не требует интернета или API-ключа. Доступно на Android 14+ с совместимым устройством.</string>
-    <string name="system_ai_recommended">(Рекомендуется)</string>
     <string name="ai_privacy_redact">Редактирование данных</string>
     <string name="ai_privacy_redact_desc">Удалять телефоны и email перед отправкой</string>
     <string name="ai_api_key">API-ключ</string>
@@ -162,22 +159,10 @@
     <string name="ai_max_tokens">Макс. токенов</string>
     <string name="ai_temperature">Температура</string>
     <string name="ai_validate_config">Проверить конфигурацию</string>
-    <string name="ai_provider_gemini_nano">Системный AI (на устройстве)</string>
-    <string name="gemini_nano_desc">AI на устройстве: Google AI Core (Pixel 8+) или Samsung Galaxy AI (Galaxy S24+). Не требует интернета и API-ключа. Требуется Android 14+.</string>
-    <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Требуется API-ключ</string>
     <string name="ai_local_model_desc">Загрузить свою модель AI из памяти устройства</string>
     <string name="ai_local_analysis_desc">Анализирует данные о здоровье на устройстве. Всегда доступен, не требует интернета, API-ключа или загрузки модели. Данные остаются приватными.</string>
     <string name="ai_local_analysis_always_available">Всегда доступен</string>
-    <string name="gemini_nano_not_installed">Google AI Core не установлен на вашем устройстве</string>
-    <string name="gemini_nano_install">Установить Google AI Core</string>
-    <string name="gemini_nano_download_model">Загрузить AI-модель</string>
-    <string name="gemini_nano_downloading">Загрузка AI-модели…</string>
-    <string name="gemini_nano_ready">AI-модель готова к использованию</string>
-    <string name="gemini_nano_check_status">Проверить доступность</string>
-    <string name="gemini_nano_status_available">Gemini Nano доступен и готов к работе</string>
-    <string name="gemini_nano_status_downloadable">AI-модель доступна для загрузки</string>
-    <string name="gemini_nano_status_unavailable">Gemini Nano недоступен на этом устройстве. Будет использован локальный анализ.</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Выберите профиль для отчёта</string>
@@ -249,7 +234,6 @@
     <string name="perm_grant">Разрешить</string>
     <string name="perm_ai_status">Статус AI на устройстве</string>
     <string name="perm_ai_available">AI на устройстве доступен</string>
-    <string name="perm_ai_unavailable">AI на устройстве недоступен</string>
     <string name="perm_ai_check">Проверить</string>
     <string name="perm_open_settings">Открыть настройки</string>
 
@@ -440,4 +424,13 @@
     <string name="theme_system">Система</string>
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
+
+    <!-- On-device model -->
+    <string name="local_model_title">Модель LLM на устройстве</string>
+    <string name="local_model_desc">Скачайте небольшую AI-модель для анализа прямо на вашем устройстве. Ваши данные остаются приватными.</string>
+    <string name="local_model_download">Скачать модель</string>
+    <string name="local_model_downloading">Загрузка… %1$d%%</string>
+    <string name="local_model_delete">Удалить модель</string>
+    <string name="local_model_fallback_info">Без скачанной модели всегда доступен локальный анализ на основе правил.</string>
+    <string name="perm_ai_no_model">Модель AI не скачана. Скачайте в настройках AI.</string>
 </resources>

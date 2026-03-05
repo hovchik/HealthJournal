@@ -8,12 +8,11 @@ import kotlinx.serialization.Serializable
 enum class AiProviderId(val key: String) {
     CLAUDE("claude"),
     OPENAI_COMPATIBLE("openai"),
-    GEMINI_NANO("gemini_nano"),
     LOCAL("local");
 
     companion object {
         fun fromKey(key: String): AiProviderId =
-            entries.firstOrNull { it.key == key } ?: GEMINI_NANO
+            entries.firstOrNull { it.key == key } ?: LOCAL
     }
 }
 
@@ -63,13 +62,6 @@ data class OpenAiConfig(
 )
 
 @Serializable
-data class GeminiNanoConfig(
-    val temperature: Float = 0.7f,
-    val topK: Int = 40,
-    val maxOutputTokens: Int = 1024
-)
-
-@Serializable
 data class LocalAiConfig(
     val modelPath: String = "",
     val contextSize: Int = 2048,
@@ -80,11 +72,10 @@ data class LocalAiConfig(
 @Serializable
 data class AiSettings(
     val enabled: Boolean = true,
-    val selectedProviderId: String = AiProviderId.GEMINI_NANO.key,
+    val selectedProviderId: String = AiProviderId.LOCAL.key,
     val privacyRedactEnabled: Boolean = false,
     val claudeConfig: ClaudeConfig = ClaudeConfig(),
     val openAiConfig: OpenAiConfig = OpenAiConfig(),
-    val geminiNanoConfig: GeminiNanoConfig = GeminiNanoConfig(),
     val localAiConfig: LocalAiConfig = LocalAiConfig()
 )
 
@@ -99,3 +90,26 @@ data class GenerationParams(
     val temperature: Float = 0.7f,
     val stopSequences: List<String> = emptyList()
 )
+
+/**
+ * Represents a downloadable LLM model for on-device inference.
+ */
+@Serializable
+data class DownloadableModel(
+    val id: String,
+    val name: String,
+    val description: String,
+    val sizeBytes: Long,
+    val url: String,
+    val fileName: String
+)
+
+/**
+ * State of an on-device model.
+ */
+sealed class ModelDownloadState {
+    data object NotDownloaded : ModelDownloadState()
+    data class Downloading(val progress: Float) : ModelDownloadState()
+    data object Downloaded : ModelDownloadState()
+    data class Error(val message: String) : ModelDownloadState()
+}

@@ -360,27 +360,16 @@ private fun PermissionsSection() {
         notificationGranted = granted
     }
 
-    // On-device AI availability check
+    // On-device AI: check if a model is downloaded
+    val app = context.applicationContext as com.healthjournal.HealthJournalApp
+    val modelRepo = app.container.modelRepository
     var aiAvailable by remember { mutableStateOf<Boolean?>(null) }
     var aiStatusLabel by remember { mutableStateOf("") }
 
     fun checkAiAvailability() {
-        val pm = context.packageManager
-        val aiPackages = listOf(
-            "com.google.android.aicore",
-            "com.samsung.android.aicoreondevice",
-            "com.samsung.android.galaxyai",
-            "com.samsung.android.intelligence"
-        )
-        val found = aiPackages.firstOrNull { pkg ->
-            try { pm.getPackageInfo(pkg, 0); true } catch (_: Exception) { false }
-        }
-        aiAvailable = found != null
-        aiStatusLabel = when {
-            found == "com.google.android.aicore" -> "Google AI Core"
-            found?.startsWith("com.samsung") == true -> "Samsung Galaxy AI"
-            else -> ""
-        }
+        val downloaded = modelRepo.getDownloadedModel()
+        aiAvailable = downloaded != null
+        aiStatusLabel = downloaded?.name ?: ""
     }
 
     SettingsSection(
@@ -486,9 +475,9 @@ private fun PermissionsSection() {
                             color = MaterialTheme.colorScheme.primary
                         )
                         false -> Text(
-                            stringResource(R.string.perm_ai_unavailable),
+                            stringResource(R.string.perm_ai_no_model),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         null -> Text(
                             stringResource(R.string.perm_ai_status),
