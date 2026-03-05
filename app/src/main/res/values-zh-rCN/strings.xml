@@ -383,6 +383,7 @@
     <string name="undo">撤销</string>
     <string name="deleted_diseases">已删除的疾病</string>
     <string name="no_deleted_diseases_hint">没有已删除的疾病。</string>
+    <string name="deleted_diseases_desc">查看和恢复已删除的疾病</string>
     <string name="restore">恢复</string>
     <string name="permanently_delete">永久删除</string>
     <string name="created_date">创建于：%1$s</string>

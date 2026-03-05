@@ -389,6 +389,7 @@
     <string name="undo">Отменить</string>
     <string name="deleted_diseases">Удалённые болезни</string>
     <string name="no_deleted_diseases_hint">Нет удалённых болезней.</string>
+    <string name="deleted_diseases_desc">Просмотр и восстановление удалённых болезней</string>
     <string name="restore">Восстановить</string>
     <string name="permanently_delete">Удалить навсегда</string>
     <string name="created_date">Создана: %1$s</string>

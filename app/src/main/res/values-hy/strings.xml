@@ -385,6 +385,7 @@
     <string name="undo">Հետարկել</string>
     <string name="deleted_diseases">Ջնջված հիվանդություններ</string>
     <string name="no_deleted_diseases_hint">Ջնջված հիվանդություններ չկան։</string>
+    <string name="deleted_diseases_desc">Դիտել և վերականգնել ջնջված հիվանդությունները</string>
     <string name="restore">Վերականգնել</string>
     <string name="permanently_delete">Ջնջել ընդմիշտ</string>
     <string name="created_date">Ստեղծվել է՝ %1$s</string>

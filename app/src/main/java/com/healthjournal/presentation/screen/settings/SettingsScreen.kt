@@ -32,6 +32,7 @@ fun SettingsScreen(
     onUserInfo: () -> Unit,
     onFamilyMembers: () -> Unit,
     onPredefinedData: () -> Unit,
+    onDeletedDiseases: () -> Unit,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -110,6 +111,14 @@ fun SettingsScreen(
                         title = stringResource(R.string.predefined_data_title),
                         subtitle = stringResource(R.string.predefined_data_desc),
                         onClick = onPredefinedData
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.RestoreFromTrash,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.deleted_diseases),
+                        subtitle = stringResource(R.string.deleted_diseases_desc),
+                        onClick = onDeletedDiseases
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 

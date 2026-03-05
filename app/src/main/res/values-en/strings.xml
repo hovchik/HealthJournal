@@ -385,6 +385,7 @@
     <string name="undo">Undo</string>
     <string name="deleted_diseases">Deleted diseases</string>
     <string name="no_deleted_diseases_hint">No deleted diseases.</string>
+    <string name="deleted_diseases_desc">View and recover deleted diseases</string>
     <string name="restore">Restore</string>
     <string name="permanently_delete">Delete permanently</string>
     <string name="created_date">Created: %1$s</string>
