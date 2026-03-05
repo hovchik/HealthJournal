@@ -1,6 +1,7 @@
 package com.healthjournal.domain.usecase
 
 import com.healthjournal.domain.ai.AiService
+import com.healthjournal.domain.ai.PromptTemplate
 import com.healthjournal.domain.model.AiReport
 import com.healthjournal.domain.model.ReportType
 import com.healthjournal.domain.model.ai.AiInput
@@ -66,14 +67,19 @@ class GenerateAiSummaryUseCase(
             height = patientHeight
         )
 
+        val prompt = PromptTemplate.buildSummaryPrompt(input)
         val result = aiService.generateDoctorSummary(input, aiSettings)
+        val providerName = result.modelUsed.ifBlank { result.providerId.key }
         val report = AiReport(
             content = result.text,
             type = ReportType.SUMMARY,
             periodDays = periodDays,
             generatedAt = LocalDateTime.now(),
             profileId = profileId,
-            diseaseId = diseaseId
+            diseaseId = diseaseId,
+            providerName = providerName,
+            modelUsed = result.modelUsed,
+            prompt = prompt.user
         )
         val id = reportRepository.insertReport(report)
         report.copy(id = id)
@@ -127,14 +133,19 @@ class GeneratePatternAnalysisUseCase(
             height = patientHeight
         )
 
+        val prompt = PromptTemplate.buildPatternPrompt(input)
         val result = aiService.analyzePatterns(input, aiSettings)
+        val providerName = result.modelUsed.ifBlank { result.providerId.key }
         val report = AiReport(
             content = result.text,
             type = ReportType.PATTERN_ANALYSIS,
             periodDays = periodDays,
             generatedAt = LocalDateTime.now(),
             profileId = profileId,
-            diseaseId = diseaseId
+            diseaseId = diseaseId,
+            providerName = providerName,
+            modelUsed = result.modelUsed,
+            prompt = prompt.user
         )
         val id = reportRepository.insertReport(report)
         report.copy(id = id)

@@ -77,6 +77,9 @@
     <string name="no_records_hint">Sin registros para este período.</string>
     <string name="report_type_summary">Resumen médico</string>
     <string name="report_type_patterns">Análisis de patrones</string>
+    <string name="report_ai_model">AI: %s</string>
+    <string name="report_show_prompt">Mostrar consulta</string>
+    <string name="report_hide_prompt">Ocultar consulta</string>
     <string name="days_format">%1$d días</string>
     <string name="records_export_pdf">Exportar registros a PDF</string>
 

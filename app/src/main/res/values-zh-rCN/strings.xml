@@ -77,6 +77,9 @@
     <string name="no_records_hint">该时间段暂无记录。</string>
     <string name="report_type_summary">医疗摘要</string>
     <string name="report_type_patterns">模式分析</string>
+    <string name="report_ai_model">AI: %s</string>
+    <string name="report_show_prompt">显示提示词</string>
+    <string name="report_hide_prompt">隐藏提示词</string>
     <string name="days_format">%1$d 天</string>
     <string name="records_export_pdf">导出记录为 PDF</string>
 

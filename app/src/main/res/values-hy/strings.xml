@@ -77,6 +77,9 @@
     <string name="no_records_hint">Այս ժամանակահատվածում գրառումներ չկան։</string>
     <string name="report_type_summary">Բժշկական ամֆոփում</string>
     <string name="report_type_patterns">Օրինաչափերի վերլուծություն</string>
+    <string name="report_ai_model">AI: %s</string>
+    <string name="report_show_prompt">Ցույց տալ հարցումը</string>
+    <string name="report_hide_prompt">Թաքցնել հարցումը</string>
     <string name="days_format">%1$d օր</string>
     <string name="records_export_pdf">Արտահանել գրառումները PDF</string>
 

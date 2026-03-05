@@ -77,6 +77,9 @@
     <string name="no_records_hint">Нет записей за этот период.</string>
     <string name="report_type_summary">Медицинское резюме</string>
     <string name="report_type_patterns">Анализ паттернов</string>
+    <string name="report_ai_model">AI: %s</string>
+    <string name="report_show_prompt">Показать запрос</string>
+    <string name="report_hide_prompt">Скрыть запрос</string>
     <string name="days_format">%1$d дн.</string>
     <string name="records_export_pdf">Экспорт записей в PDF</string>
 
