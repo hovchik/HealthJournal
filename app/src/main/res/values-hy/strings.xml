@@ -399,4 +399,6 @@
     <string name="confirm_permanent_delete">Վստավ՞ եք որ ցանկանում եք ընդմիշտ ջնջել այս հիվանդությունը՞ Այս գործողությունը հնարավոր չէ հետարկել։</string>
     <string name="confirm">Հաստատել</string>
     <string name="cancel">Չեղարկել</string>
+    <string name="all_diseases">All diseases</string>
+    <string name="disease_filter">Disease</string>
 </resources>

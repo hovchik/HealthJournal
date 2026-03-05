@@ -2,6 +2,9 @@ package com.healthjournal.domain.usecase
 
 import com.healthjournal.domain.model.Disease
 import com.healthjournal.domain.repository.DiseaseRepository
+import com.healthjournal.domain.repository.MedicationRepository
+import com.healthjournal.domain.repository.SymptomRepository
+import com.healthjournal.domain.repository.VitalSignRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetAllDiseasesUseCase(private val repository: DiseaseRepository) {
@@ -29,12 +32,32 @@ class DeleteDiseaseUseCase(private val repository: DiseaseRepository) {
     suspend operator fun invoke(disease: Disease) = repository.deleteDisease(disease)
 }
 
-class SoftDeleteDiseaseUseCase(private val repository: DiseaseRepository) {
-    suspend operator fun invoke(disease: Disease) = repository.softDeleteDisease(disease)
+class SoftDeleteDiseaseUseCase(
+    private val repository: DiseaseRepository,
+    private val symptomRepository: SymptomRepository,
+    private val vitalSignRepository: VitalSignRepository,
+    private val medicationRepository: MedicationRepository
+) {
+    suspend operator fun invoke(disease: Disease) {
+        repository.softDeleteDisease(disease)
+        symptomRepository.softDeleteByDiseaseId(disease.id)
+        vitalSignRepository.softDeleteByDiseaseId(disease.id)
+        medicationRepository.softDeleteByDiseaseId(disease.id)
+    }
 }
 
-class RestoreDiseaseUseCase(private val repository: DiseaseRepository) {
-    suspend operator fun invoke(disease: Disease) = repository.restoreDisease(disease)
+class RestoreDiseaseUseCase(
+    private val repository: DiseaseRepository,
+    private val symptomRepository: SymptomRepository,
+    private val vitalSignRepository: VitalSignRepository,
+    private val medicationRepository: MedicationRepository
+) {
+    suspend operator fun invoke(disease: Disease) {
+        repository.restoreDisease(disease)
+        symptomRepository.restoreByDiseaseId(disease.id)
+        vitalSignRepository.restoreByDiseaseId(disease.id)
+        medicationRepository.restoreByDiseaseId(disease.id)
+    }
 }
 
 class GetDeletedDiseasesUseCase(private val repository: DiseaseRepository) {

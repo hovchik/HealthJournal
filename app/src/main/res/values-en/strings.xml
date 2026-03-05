@@ -399,4 +399,6 @@
     <string name="confirm_permanent_delete">Are you sure you want to permanently delete this disease? This action cannot be undone.</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="all_diseases">All diseases</string>
+    <string name="disease_filter">Disease</string>
 </resources>

@@ -403,4 +403,6 @@
     <string name="confirm_permanent_delete">Вы уверены, что хотите удалить эту болезнь навсегда? Это действие нельзя отменить.</string>
     <string name="confirm">Подтвердить</string>
     <string name="cancel">Отмена</string>
+    <string name="all_diseases">Все болезни</string>
+    <string name="disease_filter">Болезнь</string>
 </resources>

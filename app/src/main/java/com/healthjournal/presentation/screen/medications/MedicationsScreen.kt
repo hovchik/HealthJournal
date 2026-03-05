@@ -40,12 +40,15 @@ fun MedicationsScreen(
     val medications by viewModel.medications.collectAsStateWithLifecycle()
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
     val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
+    val diseases by viewModel.diseases.collectAsStateWithLifecycle()
 
     val activeProfileName = if (activeProfileId == 0L) {
         stringResource(R.string.rel_self)
     } else {
         familyMembers.find { it.id == activeProfileId }?.name ?: stringResource(R.string.rel_self)
     }
+
+    val ungroupedLabel = stringResource(R.string.ungrouped)
 
     Scaffold(
         topBar = {
@@ -106,6 +109,17 @@ fun MedicationsScreen(
                 }
             }
         } else {
+            val medicationsByDisease = remember(medications, diseases) {
+                val diseaseMap = diseases.associateBy { it.id }
+                val grouped = medications.groupBy { it.diseaseId }
+                grouped.entries.sortedWith(compareBy {
+                    if (it.key == 0L) "\uFFFF" else diseaseMap[it.key]?.name ?: "\uFFFE"
+                }).map { (diseaseId, meds) ->
+                    val name = if (diseaseId == 0L) ungroupedLabel else diseaseMap[diseaseId]?.name ?: ungroupedLabel
+                    DiseaseMedicationsGroup(diseaseId, name, meds)
+                }
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -113,21 +127,40 @@ fun MedicationsScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(medications, key = { it.id }) { medication ->
-                    AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
-                        MedicationCard(
-                            medication = medication,
-                            onEdit = { onEditMedication(medication.id) },
-                            onLogTaken = { viewModel.logTaken(medication) },
-                            onToggleActive = { viewModel.toggleMedicationActive(medication) },
-                            onDelete = { viewModel.removeMedication(medication) }
+                medicationsByDisease.forEach { group ->
+                    item(key = "disease_header_${group.diseaseId}") {
+                        Text(
+                            group.diseaseName,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (group.diseaseId != 0L) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         )
+                    }
+
+                    items(group.medications, key = { it.id }) { medication ->
+                        AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
+                            MedicationCard(
+                                medication = medication,
+                                onEdit = { onEditMedication(medication.id) },
+                                onLogTaken = { viewModel.logTaken(medication) },
+                                onToggleActive = { viewModel.toggleMedicationActive(medication) },
+                                onDelete = { viewModel.removeMedication(medication) }
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
+private data class DiseaseMedicationsGroup(
+    val diseaseId: Long,
+    val diseaseName: String,
+    val medications: List<Medication>
+)
 
 @Composable
 private fun MedicationCard(

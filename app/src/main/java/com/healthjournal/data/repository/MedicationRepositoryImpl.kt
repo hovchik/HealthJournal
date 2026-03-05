@@ -16,11 +16,11 @@ class MedicationRepositoryImpl constructor(
 
     override fun getAllMedications(): Flow<List<Medication>> =
         medicationStore.observeAll().map { list ->
-            list.sortedBy { it.name }.map { it.toDomain() }
+            list.filter { !it.isDeleted }.sortedBy { it.name }.map { it.toDomain() }
         }
 
     override fun getActiveMedications(): Flow<List<Medication>> =
-        medicationStore.observe { it.active }
+        medicationStore.observe { it.active && !it.isDeleted }
             .map { list -> list.sortedBy { it.name }.map { it.toDomain() } }
 
     override suspend fun getMedicationById(id: Long): Medication? =
@@ -46,4 +46,10 @@ class MedicationRepositoryImpl constructor(
 
     override suspend fun deleteMedicationLog(log: MedicationLog) =
         logStore.delete(MedicationLogDto.from(log))
+
+    override suspend fun softDeleteByDiseaseId(diseaseId: Long) =
+        medicationStore.updateWhere({ it.diseaseId == diseaseId && !it.isDeleted }) { it.copy(isDeleted = true) }
+
+    override suspend fun restoreByDiseaseId(diseaseId: Long) =
+        medicationStore.updateWhere({ it.diseaseId == diseaseId && it.isDeleted }) { it.copy(isDeleted = false) }
 }

@@ -1,9 +1,11 @@
 package com.healthjournal.presentation.screen.ai
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -46,6 +48,8 @@ fun ReportsScreen(
     val aiEnabled by viewModel.aiEnabled.collectAsStateWithLifecycle()
     val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
+    val diseases by viewModel.diseases.collectAsStateWithLifecycle()
+    val selectedDiseaseId by viewModel.selectedDiseaseId.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -112,6 +116,30 @@ fun ReportsScreen(
                 }
             }
 
+            // Disease filter
+            if (diseases.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilterChip(
+                        selected = selectedDiseaseId == 0L,
+                        onClick = { viewModel.selectDisease(0L) },
+                        label = { Text(stringResource(R.string.all_diseases)) }
+                    )
+                    diseases.forEach { disease ->
+                        FilterChip(
+                            selected = selectedDiseaseId == disease.id,
+                            onClick = { viewModel.selectDisease(disease.id) },
+                            label = { Text(disease.name) }
+                        )
+                    }
+                }
+            }
+
             // Tabs
             TabRow(selectedTabIndex = selectedTab) {
                 tabs.forEachIndexed { index, title ->
@@ -125,9 +153,20 @@ fun ReportsScreen(
                 }
             }
 
+            // Filter data by selected disease
+            val filteredVitals = remember(vitals, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) vitals else vitals.filter { it.diseaseId == selectedDiseaseId }
+            }
+            val filteredSymptoms = remember(symptoms, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) symptoms else symptoms.filter { it.diseaseId == selectedDiseaseId }
+            }
+            val filteredMedications = remember(medications, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) medications else medications.filter { it.diseaseId == selectedDiseaseId }
+            }
+
             when (selectedTab) {
-                0 -> RecordsTab(symptoms, vitals, medications, context, viewModel)
-                1 -> AiAnalyzeTab(reports, vitals, symptoms, uiState, aiEnabled, context, viewModel)
+                0 -> RecordsTab(filteredSymptoms, filteredVitals, filteredMedications, context, viewModel)
+                1 -> AiAnalyzeTab(reports, filteredVitals, filteredSymptoms, uiState, aiEnabled, context, viewModel)
             }
         }
     }
@@ -384,16 +423,20 @@ private fun AiAnalyzeTab(
 
         // Report list
         items(reports, key = { "report_${it.id}" }) { report ->
-            ReportCard(report = report, onExportPdf = {
-                val memberName = viewModel.getProfileName(report.profileId)
-                PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
-            })
+            ReportCard(
+                report = report,
+                diseaseName = if (report.diseaseId != 0L) viewModel.getDiseaseName(report.diseaseId) else null,
+                onExportPdf = {
+                    val memberName = viewModel.getProfileName(report.profileId)
+                    PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
+                }
+            )
         }
     }
 }
 
 @Composable
-private fun ReportCard(report: AiReport, onExportPdf: () -> Unit) {
+private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPdf: () -> Unit) {
     val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
     val typeLabel = when (report.type) {
         ReportType.SUMMARY -> stringResource(R.string.report_type_summary)
@@ -404,6 +447,9 @@ private fun ReportCard(report: AiReport, onExportPdf: () -> Unit) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(typeLabel, style = MaterialTheme.typography.titleSmall)
+                    if (diseaseName != null) {
+                        Text(diseaseName, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.tertiary, fontWeight = FontWeight.SemiBold)
+                    }
                     Text(stringResource(R.string.days_format, report.periodDays), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                 }
                 IconButton(onClick = onExportPdf) {
