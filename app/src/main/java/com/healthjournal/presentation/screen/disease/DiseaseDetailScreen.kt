@@ -48,6 +48,9 @@ fun DiseaseDetailScreen(
 
     var disease by remember { mutableStateOf<Disease?>(null) }
     var showEditDialog by remember { mutableStateOf(false) }
+    var symptomsExpanded by remember { mutableStateOf(false) }
+    var vitalsExpanded by remember { mutableStateOf(false) }
+    var medsExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(diseaseId) {
         disease = viewModel.getDiseaseById(diseaseId)
@@ -144,16 +147,20 @@ fun DiseaseDetailScreen(
                     title = stringResource(R.string.symptoms_title),
                     count = symptoms.size,
                     color = MaterialTheme.colorScheme.primary,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    expanded = symptomsExpanded,
+                    onToggle = { symptomsExpanded = !symptomsExpanded }
                 )
             }
-            if (symptoms.isEmpty()) {
-                item(key = "empty_symptoms") {
-                    EmptyHint(stringResource(R.string.no_symptoms_hint))
-                }
-            } else {
-                items(symptoms.sortedByDescending { it.recordedAt }, key = { "s_${it.id}" }) { symptom ->
-                    SymptomMiniCard(symptom, onClick = { onEditSymptom(symptom.id) })
+            if (symptomsExpanded) {
+                if (symptoms.isEmpty()) {
+                    item(key = "empty_symptoms") {
+                        EmptyHint(stringResource(R.string.no_symptoms_hint))
+                    }
+                } else {
+                    items(symptoms.sortedByDescending { it.recordedAt }, key = { "s_${it.id}" }) { symptom ->
+                        SymptomMiniCard(symptom, onClick = { onEditSymptom(symptom.id) })
+                    }
                 }
             }
 
@@ -165,16 +172,20 @@ fun DiseaseDetailScreen(
                     title = stringResource(R.string.nav_vitals),
                     count = vitals.size,
                     color = MaterialTheme.colorScheme.tertiary,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    expanded = vitalsExpanded,
+                    onToggle = { vitalsExpanded = !vitalsExpanded }
                 )
             }
-            if (vitals.isEmpty()) {
-                item(key = "empty_vitals") {
-                    EmptyHint(stringResource(R.string.no_vitals_hint))
-                }
-            } else {
-                items(vitals.sortedByDescending { it.recordedAt }, key = { "v_${it.id}" }) { vital ->
-                    VitalMiniCard(vital, onClick = { onEditVital(vital.id) })
+            if (vitalsExpanded) {
+                if (vitals.isEmpty()) {
+                    item(key = "empty_vitals") {
+                        EmptyHint(stringResource(R.string.no_vitals_hint))
+                    }
+                } else {
+                    items(vitals.sortedByDescending { it.recordedAt }, key = { "v_${it.id}" }) { vital ->
+                        VitalMiniCard(vital, onClick = { onEditVital(vital.id) })
+                    }
                 }
             }
 
@@ -186,16 +197,20 @@ fun DiseaseDetailScreen(
                     title = stringResource(R.string.nav_medications),
                     count = medications.size,
                     color = MaterialTheme.colorScheme.secondary,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    expanded = medsExpanded,
+                    onToggle = { medsExpanded = !medsExpanded }
                 )
             }
-            if (medications.isEmpty()) {
-                item(key = "empty_meds") {
-                    EmptyHint(stringResource(R.string.no_medications_hint))
-                }
-            } else {
-                items(medications, key = { "m_${it.id}" }) { medication ->
-                    MedicationMiniCard(medication, onClick = { onEditMedication(medication.id) })
+            if (medsExpanded) {
+                if (medications.isEmpty()) {
+                    item(key = "empty_meds") {
+                        EmptyHint(stringResource(R.string.no_medications_hint))
+                    }
+                } else {
+                    items(medications, key = { "m_${it.id}" }) { medication ->
+                        MedicationMiniCard(medication, onClick = { onEditMedication(medication.id) })
+                    }
                 }
             }
 
@@ -223,19 +238,21 @@ private fun SectionHeader(
     title: String,
     count: Int,
     color: androidx.compose.ui.graphics.Color,
-    containerColor: androidx.compose.ui.graphics.Color
+    containerColor: androidx.compose.ui.graphics.Color,
+    expanded: Boolean = true,
+    onToggle: () -> Unit = {}
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.padding(vertical = 4.dp)
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onToggle).padding(vertical = 4.dp)
     ) {
         Surface(shape = CircleShape, color = containerColor, modifier = Modifier.size(32.dp)) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(16.dp))
             }
         }
-        Text(title, style = MaterialTheme.typography.titleMedium, color = color)
+        Text(title, style = MaterialTheme.typography.titleMedium, color = color, modifier = Modifier.weight(1f))
         Surface(shape = CircleShape, color = color.copy(alpha = 0.12f)) {
             Text(
                 "$count",
@@ -245,6 +262,12 @@ private fun SectionHeader(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
             )
         }
+        Icon(
+            if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }
 
