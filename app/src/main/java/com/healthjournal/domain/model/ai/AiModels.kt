@@ -13,7 +13,7 @@ enum class AiProviderId(val key: String) {
 
     companion object {
         fun fromKey(key: String): AiProviderId =
-            entries.firstOrNull { it.key == key } ?: CLAUDE
+            entries.firstOrNull { it.key == key } ?: GEMINI_NANO
     }
 }
 
@@ -80,7 +80,7 @@ data class LocalAiConfig(
 @Serializable
 data class AiSettings(
     val enabled: Boolean = true,
-    val selectedProviderId: String = AiProviderId.CLAUDE.key,
+    val selectedProviderId: String = AiProviderId.GEMINI_NANO.key,
     val privacyRedactEnabled: Boolean = false,
     val claudeConfig: ClaudeConfig = ClaudeConfig(),
     val openAiConfig: OpenAiConfig = OpenAiConfig(),

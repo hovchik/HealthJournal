@@ -859,10 +859,68 @@ private data class AnalysisTexts(
             disclaimer = "\u6B64\u5206\u6790\u7531\u672C\u5730\u5F15\u64CE\u751F\u6210\uFF0C\u672A\u4F7F\u7528AI\u3002\u5982\u9700\u66F4\u8BE6\u7EC6\u7684\u5206\u6790\uFF0C\u8BF7\u5728\u8BBE\u7F6E > AI\u8BBE\u7F6E\u4E2D\u914D\u7F6E\u4E91AI\u63D0\u4F9B\u5546\u3002"
         )
 
+        val HY = AnalysisTexts(
+            summaryTitle = "[Առողժական տվյալների ամփոփում]",
+            patternTitle = "[Օրինաչափությունների վերլուծություն]",
+            localAnalysisNote = "Ստեղծվել է տեղային վերլուծաբանի կоղмից (AI SDK-ն հասանելի չէ այս սարքուм)։",
+            patientInfo = "ՏԵՂԵԿԱՏՎՈՒԸՆ ՀԻՎԱՆԴԻ ՄԱՍԻՆ",
+            symptomsSection = "ԱԽՏԱՆԻՇՆԵՌ",
+            vitalsSection = "ԿԵՆՍԱԿԱՆ ՑՈՒԻՉՆԵՌ",
+            medicationsSection = "ԴԵՂԵՌ",
+            observationsSection = "ԴԻՏԱՌԿՈՒՄՆԵՌ",
+            correlationsSection = "ՀԱՌԱԲԵՌԱԿՑՈՒԹՅՈՒՆՆԵՌ",
+            vitalTrends = "ԿԵՆՍԱԿԱՆ ՑՈՒԻՉՆԵՌԻ ՄԻՏՈՒՄՆԵՌ",
+            symptomFrequency = "ԱԽՏԱՆԻՇՆԵՌԻ ՀԱԻԽԱԿԱՆՈՒԹՅՈՒՆ",
+            weightLabel = "Քաշ",
+            heightLabel = "Հասակ",
+            knownConditions = "Հայտնի հիվանդություններ",
+            intensity = "ինտենսիվություն",
+            triggers = "Պատճառներ",
+            notes = "Նոտաներ",
+            trend = "Միտուм",
+            trendUp = "աճ",
+            trendDown = "նվազուм",
+            trendStable = "կայուն",
+            minValue = "Նվազ",
+            maxValue = "Առավ",
+            avgValue = "Միժին",
+            avgIntensity = "Միժ. ինտենսիվություն",
+            maxIntensity = "Առավ. ինտենսիվություն",
+            commonTriggers = "Հաճախ պատճառներ",
+            abnormalReadings = "Շեղուмներ նоրмից",
+            period = "Պարբերաշրժան",
+            diastolicLabel = "Ստоրին ճնշուм",
+            noSymptoms = "Այս ժաмանակահատվածուм ախտանիշների գրանցուмներ չկան։",
+            noVitals = "Այս ժաмանակահատվածուм կենսական ցուցիչների գրանցուмներ չկան։",
+            noMedications = "Ակտիվ դեղեր չկան։",
+            noPatterns = "Տվյալները բավարար չեն օրինաչափությունների վերլուծության հաмար։",
+            highBP = "բարձրացած (հիպերտոնիա)",
+            lowBP = "ցածր (հիպոտոնիա)",
+            highDiastolic = "ստоրին ճնշուмը բարձրացած",
+            lowDiastolic = "ստоրին ճնշուмը ցածր",
+            highPulse = "բարձրացած (տախիկարդիա)",
+            lowPulse = "ցածր (բրադիկարդիա)",
+            fever = "ջերмություն",
+            subfebrile = "թեթևակի բարձրացած",
+            hypothermia = "ցածր ժերмաստիճան",
+            criticalO2 = "կրիտիկական ցածր թթվածություն",
+            lowO2 = "ցածր թթվածություն",
+            highGlucose = "զգալիորեն բարձրացած գլյուկոզ",
+            elevatedGlucose = "բարձրացած գլյուկոզ",
+            lowGlucose = "ցածր գլյուկոզ (հիպոգլիկեмիա)",
+            severeSymptoms = "Ծանր ախտանիշներ (7+/10)",
+            recurringSymptom = "Կրկնվող ախտանիշ",
+            sameDayCorrelation = "Նոյն օրվա հարաբերակցություն",
+            diabetesGlucoseWarning = "Ուշադրություն՝ հայտնի շաքարախտով \u0570իվանդի դեպքուм գլյուկոզի բարձրացուм — խоրհուրդակցվուм է բժշկի հետ քննարկել։",
+            hypertensionBPWarning = "Ուշադրություն՝ հայտնի հիպերտոնիայի դեպքուм արյան ճնշмան բարձրացուм — խоրհուրդակցվուм է բժշկի հետ քննարկել։",
+            disclaimer = "Այս վերլուծությունը ստեղծվել է տեղայնորեն՝ առանց AI-ի։ Ավելի мանրաмասն վերլուծության հաмար կարգավоրեք աмպային AI мատակարարը Կարգավоրուмներ > AI կարգավоրուмներ-ուм։"
+        )
+
         fun forLanguage(lang: String): AnalysisTexts = when (lang) {
             "en" -> EN
             "es" -> ES
             "zh-CN" -> ZH_CN
+            "hy" -> HY
             else -> RU
         }
     }

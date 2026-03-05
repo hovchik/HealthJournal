@@ -43,6 +43,7 @@ fun ReportsScreen(
     val symptoms by viewModel.symptoms.collectAsStateWithLifecycle()
     val medications by viewModel.medications.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val aiEnabled by viewModel.aiEnabled.collectAsStateWithLifecycle()
     val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -126,7 +127,7 @@ fun ReportsScreen(
 
             when (selectedTab) {
                 0 -> RecordsTab(symptoms, vitals, medications, context, viewModel)
-                1 -> AiAnalyzeTab(reports, vitals, symptoms, uiState, context, viewModel)
+                1 -> AiAnalyzeTab(reports, vitals, symptoms, uiState, aiEnabled, context, viewModel)
             }
         }
     }
@@ -273,6 +274,7 @@ private fun AiAnalyzeTab(
     vitals: List<VitalSign>,
     symptoms: List<Symptom>,
     uiState: AiReportUiState,
+    aiEnabled: Boolean,
     context: android.content.Context,
     viewModel: AiReportViewModel
 ) {
@@ -296,20 +298,26 @@ private fun AiAnalyzeTab(
                 ) {
                     Button(
                         onClick = { viewModel.generateReport() },
-                        enabled = !uiState.isLoading && hasEnoughData,
+                        enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(stringResource(R.string.report_2_days))
                     }
                     OutlinedButton(
                         onClick = { viewModel.analyzePatterns() },
-                        enabled = !uiState.isLoading && hasEnoughData,
+                        enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(stringResource(R.string.patterns_4_days))
                     }
                 }
-                if (!hasEnoughData) {
+                if (!aiEnabled) {
+                    Text(
+                        stringResource(R.string.ai_disabled_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else if (!hasEnoughData) {
                     Text(
                         stringResource(R.string.ai_need_more_data),
                         style = MaterialTheme.typography.bodySmall,
