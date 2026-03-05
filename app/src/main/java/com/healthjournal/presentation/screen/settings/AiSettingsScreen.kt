@@ -1,5 +1,7 @@
 package com.healthjournal.presentation.screen.settings
 
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -152,6 +154,19 @@ fun AiSettingsScreen(
                                                     )
                                                 }
                                             }
+                                            if (key == AiProviderId.LOCAL.key) {
+                                                Surface(
+                                                    shape = MaterialTheme.shapes.extraSmall,
+                                                    color = MaterialTheme.colorScheme.primaryContainer
+                                                ) {
+                                                    Text(
+                                                        stringResource(R.string.ai_local_analysis_always_available),
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                    )
+                                                }
+                                            }
                                         }
                                     },
                                     onClick = {
@@ -189,10 +204,7 @@ fun AiSettingsScreen(
                             config = settings.openAiConfig,
                             onUpdate = { viewModel.updateOpenAiConfig(it) }
                         )
-                        AiProviderId.LOCAL.key -> LocalConfigSection(
-                            config = settings.localAiConfig,
-                            onUpdate = { viewModel.updateLocalConfig(it) }
-                        )
+                        AiProviderId.LOCAL.key -> LocalAnalysisInfoCard()
                     }
 
                     HorizontalDivider()
@@ -316,6 +328,18 @@ private fun GeminiNanoConfigSection(
     config: GeminiNanoConfig,
     onUpdate: (GeminiNanoConfig) -> Unit
 ) {
+    val context = LocalContext.current
+
+    // Check AI Core package availability
+    var aiCoreInstalled by remember {
+        mutableStateOf(
+            try { context.packageManager.getPackageInfo("com.google.android.aicore", 0); true }
+            catch (_: PackageManager.NameNotFoundException) { false }
+        )
+    }
+    var statusMessage by remember { mutableStateOf<String?>(null) }
+    var statusIsPositive by remember { mutableStateOf(false) }
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -331,6 +355,140 @@ private fun GeminiNanoConfigSection(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            // AI Core status card
+            if (!aiCoreInstalled) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                stringResource(R.string.gemini_nano_not_installed),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                        FilledTonalButton(
+                            onClick = {
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(
+                                        "market://details?id=com.google.android.aicore"
+                                    ))
+                                    context.startActivity(intent)
+                                } catch (_: Exception) {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(
+                                        "https://play.google.com/store/apps/details?id=com.google.android.aicore"
+                                    ))
+                                    context.startActivity(intent)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.GetApp, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.gemini_nano_install))
+                        }
+                    }
+                }
+            }
+
+            // Check/refresh status button
+            OutlinedButton(
+                onClick = {
+                    aiCoreInstalled = try {
+                        context.packageManager.getPackageInfo("com.google.android.aicore", 0); true
+                    } catch (_: PackageManager.NameNotFoundException) { false }
+
+                    if (aiCoreInstalled) {
+                        // Also check Samsung AI packages
+                        val hasSamsungAi = listOf(
+                            "com.samsung.android.aicoreondevice",
+                            "com.samsung.android.galaxyai",
+                            "com.samsung.android.intelligence"
+                        ).any { pkg ->
+                            try { context.packageManager.getPackageInfo(pkg, 0); true }
+                            catch (_: Exception) { false }
+                        }
+                        statusMessage = if (hasSamsungAi) {
+                            context.getString(R.string.gemini_nano_status_available) + " + Samsung Galaxy AI"
+                        } else {
+                            context.getString(R.string.gemini_nano_status_available)
+                        }
+                        statusIsPositive = true
+                    } else {
+                        // Check Samsung AI as alternative
+                        val hasSamsungAi = listOf(
+                            "com.samsung.android.aicoreondevice",
+                            "com.samsung.android.galaxyai",
+                            "com.samsung.android.intelligence"
+                        ).any { pkg ->
+                            try { context.packageManager.getPackageInfo(pkg, 0); true }
+                            catch (_: Exception) { false }
+                        }
+                        if (hasSamsungAi) {
+                            statusMessage = "Samsung Galaxy AI " + context.getString(R.string.gemini_nano_status_available)
+                            statusIsPositive = true
+                        } else {
+                            statusMessage = context.getString(R.string.gemini_nano_status_unavailable)
+                            statusIsPositive = false
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.gemini_nano_check_status))
+            }
+
+            // Status message
+            statusMessage?.let { msg ->
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (statusIsPositive) MaterialTheme.colorScheme.primaryContainer
+                        else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            if (statusIsPositive) Icons.Default.CheckCircle else Icons.Default.Info,
+                            contentDescription = null,
+                            tint = if (statusIsPositive) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            msg,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (statusIsPositive) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+            }
+
+            HorizontalDivider()
+
+            // Config parameters
             Text(
                 stringResource(R.string.ai_temperature) + ": %.1f".format(config.temperature),
                 style = MaterialTheme.typography.bodySmall
@@ -446,6 +604,44 @@ private fun OpenAiConfigSection(
                 label = { Text(stringResource(R.string.ai_base_url)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
+            )
+        }
+    }
+}
+
+@Composable
+private fun LocalAnalysisInfoCard() {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    stringResource(R.string.ai_local_analysis_always_available),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Text(
+                stringResource(R.string.ai_local_analysis_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

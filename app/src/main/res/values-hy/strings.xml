@@ -165,6 +165,16 @@
     <string name="ai_api_key_required">Պահանջվում է API բանալի</string>
     <string name="ai_local_model_desc">Բեռնել սեփական AI մոդել սարքի հիշողությունից</string>
 
+    <string name="gemini_nano_not_installed">Google AI Core-ը տեղադրված չէ ձեր սարքուм</string>
+    <string name="gemini_nano_install">Տեղադրել Google AI Core</string>
+    <string name="gemini_nano_download_model">Ներբեռնել AI моդելը</string>
+    <string name="gemini_nano_downloading">AI моդելը ներբեռնվուм է…</string>
+    <string name="gemini_nano_ready">AI моդելը пատրաստ է</string>
+    <string name="gemini_nano_check_status">Ստուգել հասանելիությունը</string>
+    <string name="gemini_nano_status_available">Gemini Nano-ն հասանելի է և пատրաստ</string>
+    <string name="gemini_nano_status_downloadable">AI моդելը հասանելի է ներբեռնման հաмար</string>
+    <string name="gemini_nano_status_unavailable">Gemini Nano-ն հասանելի չէ այս սարքուм։ Կօգտագоրծվի տեղական վերլուծությունը։</string>
+
     <!-- Reports -->
     <string name="report_select_profile">Ընտրեք պրոֆիլը հաշվետվության համար</string>
     <string name="vitals_charts_title">Ցուցանիշների գրաֆիկներ</string>

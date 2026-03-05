@@ -144,7 +144,7 @@
     <string name="ai_select_provider">Выберите провайдера</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-совместимый</string>
-    <string name="ai_provider_local">Локальная модель</string>
+    <string name="ai_provider_local">Локальный анализ (на устройстве)</string>
     <string name="ai_provider_system">Системный AI (Google / Samsung)</string>
     <string name="system_ai_desc">Использует встроенный AI на устройстве: Google AI Core или Samsung Galaxy AI. Не требует интернета или API-ключа. Доступно на Android 14+ с совместимым устройством.</string>
     <string name="system_ai_recommended">(Рекомендуется)</string>
@@ -164,6 +164,17 @@
     <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Требуется API-ключ</string>
     <string name="ai_local_model_desc">Загрузить свою модель AI из памяти устройства</string>
+    <string name="ai_local_analysis_desc">Анализирует данные о здоровье на устройстве. Всегда доступен, не требует интернета, API-ключа или загрузки модели. Данные остаются приватными.</string>
+    <string name="ai_local_analysis_always_available">Всегда доступен</string>
+    <string name="gemini_nano_not_installed">Google AI Core не установлен на вашем устройстве</string>
+    <string name="gemini_nano_install">Установить Google AI Core</string>
+    <string name="gemini_nano_download_model">Загрузить AI-модель</string>
+    <string name="gemini_nano_downloading">Загрузка AI-модели…</string>
+    <string name="gemini_nano_ready">AI-модель готова к использованию</string>
+    <string name="gemini_nano_check_status">Проверить доступность</string>
+    <string name="gemini_nano_status_available">Gemini Nano доступен и готов к работе</string>
+    <string name="gemini_nano_status_downloadable">AI-модель доступна для загрузки</string>
+    <string name="gemini_nano_status_unavailable">Gemini Nano недоступен на этом устройстве. Будет использован локальный анализ.</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Выберите профиль для отчёта</string>

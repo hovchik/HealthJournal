@@ -144,7 +144,7 @@
     <string name="ai_select_provider">Seleccionar proveedor</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">Compatible con OpenAI</string>
-    <string name="ai_provider_local">Modelo local</string>
+    <string name="ai_provider_local">An\u00E1lisis local (en el dispositivo)</string>
     <string name="ai_provider_system">IA del sistema (Google / Samsung)</string>
     <string name="system_ai_desc">Utiliza la IA integrada en el dispositivo: Google AI Core o Samsung Galaxy AI. No requiere internet ni clave API. Disponible en Android 14+ con un dispositivo compatible.</string>
     <string name="system_ai_recommended">(Recomendado)</string>
@@ -164,6 +164,17 @@
     <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Requiere clave API</string>
     <string name="ai_local_model_desc">Cargar un modelo de IA personalizado desde el almacenamiento</string>
+    <string name="ai_local_analysis_desc">Analiza los datos de salud en su dispositivo. Siempre disponible, sin internet, clave API ni descarga de modelo. Sus datos permanecen privados.</string>
+    <string name="ai_local_analysis_always_available">Siempre disponible</string>
+    <string name="gemini_nano_not_installed">Google AI Core no est\u00E1 instalado en su dispositivo</string>
+    <string name="gemini_nano_install">Instalar Google AI Core</string>
+    <string name="gemini_nano_download_model">Descargar modelo de IA</string>
+    <string name="gemini_nano_downloading">Descargando modelo de IA…</string>
+    <string name="gemini_nano_ready">El modelo de IA est\u00E1 listo</string>
+    <string name="gemini_nano_check_status">Verificar disponibilidad</string>
+    <string name="gemini_nano_status_available">Gemini Nano disponible y listo</string>
+    <string name="gemini_nano_status_downloadable">Modelo de IA disponible para descarga</string>
+    <string name="gemini_nano_status_unavailable">Gemini Nano no disponible en este dispositivo. Se usar\u00E1 an\u00E1lisis local.</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Seleccionar perfil para el informe</string>

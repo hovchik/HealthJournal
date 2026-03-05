@@ -144,7 +144,7 @@
     <string name="ai_select_provider">Select provider</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-compatible</string>
-    <string name="ai_provider_local">Local model</string>
+    <string name="ai_provider_local">Local analysis (on-device)</string>
     <string name="ai_provider_system">System AI (Google / Samsung)</string>
     <string name="system_ai_desc">Uses the built-in on-device AI: Google AI Core or Samsung Galaxy AI. Does not require internet or an API key. Available on Android 14+ with a compatible device.</string>
     <string name="system_ai_recommended">(Recommended)</string>
@@ -164,6 +164,17 @@
     <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Requires API key</string>
     <string name="ai_local_model_desc">Load a custom AI model from device storage</string>
+    <string name="ai_local_analysis_desc">Analyzes health data on your device. Always available, no internet, API key, or model download required. Your data stays private.</string>
+    <string name="ai_local_analysis_always_available">Always available</string>
+    <string name="gemini_nano_not_installed">Google AI Core is not installed on your device</string>
+    <string name="gemini_nano_install">Install Google AI Core</string>
+    <string name="gemini_nano_download_model">Download AI model</string>
+    <string name="gemini_nano_downloading">Downloading AI model…</string>
+    <string name="gemini_nano_ready">AI model is ready to use</string>
+    <string name="gemini_nano_check_status">Check availability</string>
+    <string name="gemini_nano_status_available">Gemini Nano is available and ready</string>
+    <string name="gemini_nano_status_downloadable">AI model is available for download</string>
+    <string name="gemini_nano_status_unavailable">Gemini Nano is not available on this device. Local analysis will be used instead.</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Select profile for report</string>

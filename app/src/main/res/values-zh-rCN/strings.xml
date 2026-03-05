@@ -144,7 +144,7 @@
     <string name="ai_select_provider">选择提供商</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI 兼容</string>
-    <string name="ai_provider_local">本地模型</string>
+    <string name="ai_provider_local">本地分析（设备端）</string>
     <string name="ai_provider_system">系统 AI（Google / Samsung）</string>
     <string name="system_ai_desc">使用设备内置 AI：Google AI Core 或 Samsung Galaxy AI。无需联网或 API 密钥。需要 Android 14+ 及兼容设备。</string>
     <string name="system_ai_recommended">（推荐）</string>
@@ -164,6 +164,17 @@
     <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">需要 API 密钥</string>
     <string name="ai_local_model_desc">从设备存储加载自定义 AI 模型</string>
+    <string name="ai_local_analysis_desc">在设备上分析健康数据。始终可用，无需网络、API密钥或模型下载。数据保持私密。</string>
+    <string name="ai_local_analysis_always_available">始终可用</string>
+    <string name="gemini_nano_not_installed">您的设备未安装 Google AI Core</string>
+    <string name="gemini_nano_install">安装 Google AI Core</string>
+    <string name="gemini_nano_download_model">下载 AI 模型</string>
+    <string name="gemini_nano_downloading">正在下载 AI 模型…</string>
+    <string name="gemini_nano_ready">AI 模型已准备就绪</string>
+    <string name="gemini_nano_check_status">检查可用性</string>
+    <string name="gemini_nano_status_available">Gemini Nano 可用且已准备就绪</string>
+    <string name="gemini_nano_status_downloadable">AI 模型可供下载</string>
+    <string name="gemini_nano_status_unavailable">Gemini Nano 在此设备上不可用。将使用本地分析。</string>
 
     <!-- Reports -->
     <string name="report_select_profile">选择报告的档案</string>
