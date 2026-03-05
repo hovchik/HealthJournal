@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -163,193 +164,216 @@ fun AddSymptomScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(stringResource(if (isEditing) R.string.edit_symptom_title else R.string.add_symptom_title))
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Date & Time picker row
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Drag handle
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier.width(40.dp).height(4.dp),
+                    shape = RoundedCornerShape(2.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                ) {}
+            }
+
+            // Header row with title and close button
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                OutlinedTextField(
-                    value = selectedDate.format(dateFormatter),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.date_label)) },
-                    leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp)) },
-                    modifier = Modifier.weight(1f).clickable { showDatePicker = true },
-                    singleLine = true,
-                    enabled = false,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledBorderColor = MaterialTheme.colorScheme.outline,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                Text(
+                    stringResource(if (isEditing) R.string.edit_symptom_title else R.string.add_symptom_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
                 )
-                OutlinedTextField(
-                    value = selectedTime.format(timeFormatter),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.time_label)) },
-                    leadingIcon = { Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(20.dp)) },
-                    modifier = Modifier.weight(1f).clickable { showTimePicker = true },
-                    singleLine = true,
-                    enabled = false,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledBorderColor = MaterialTheme.colorScheme.outline,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
+                IconButton(onClick = onBack) {
+                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
+                }
             }
 
-            // Symptom name dropdown with search
-            ExposedDropdownMenuBox(
-                expanded = dropdownExpanded,
-                onExpandedChange = { dropdownExpanded = it }
+            HorizontalDivider()
+
+            // Scrollable content
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(16.dp).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it; dropdownExpanded = true },
-                    label = { Text(stringResource(R.string.symptom_name)) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryEditable),
-                    singleLine = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) }
-                )
-                val filteredPredefined = allSymptomLabels.first.filter { (_, resId) ->
-                    name.isBlank() || context.getString(resId).contains(name, ignoreCase = true)
+                // Date & Time picker row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = selectedDate.format(dateFormatter),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.date_label)) },
+                        leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                        modifier = Modifier.weight(1f).clickable { showDatePicker = true },
+                        singleLine = true,
+                        enabled = false,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                    OutlinedTextField(
+                        value = selectedTime.format(timeFormatter),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.time_label)) },
+                        leadingIcon = { Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                        modifier = Modifier.weight(1f).clickable { showTimePicker = true },
+                        singleLine = true,
+                        enabled = false,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                            disabledBorderColor = MaterialTheme.colorScheme.outline,
+                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
                 }
-                val filteredCustom = allSymptomLabels.second.filter {
-                    name.isBlank() || it.contains(name, ignoreCase = true)
-                }
-                if (filteredPredefined.isNotEmpty() || filteredCustom.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = dropdownExpanded,
-                        onDismissRequest = { dropdownExpanded = false }
-                    ) {
-                        filteredPredefined.forEach { (_, resId) ->
-                            val label = stringResource(resId)
-                            DropdownMenuItem(
-                                text = { Text(label) },
-                                onClick = { name = label; dropdownExpanded = false }
-                            )
-                        }
-                        filteredCustom.forEach { custom ->
-                            DropdownMenuItem(
-                                text = { Text(custom) },
-                                onClick = { name = custom; dropdownExpanded = false }
-                            )
-                        }
+
+                // Symptom name dropdown with search
+                ExposedDropdownMenuBox(
+                    expanded = dropdownExpanded,
+                    onExpandedChange = { dropdownExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it; dropdownExpanded = true },
+                        label = { Text(stringResource(R.string.symptom_name)) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryEditable),
+                        singleLine = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) }
+                    )
+                    val filteredPredefined = allSymptomLabels.first.filter { (_, resId) ->
+                        name.isBlank() || context.getString(resId).contains(name, ignoreCase = true)
                     }
-                }
-            }
-
-            // Intensity slider
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = intensityColor.copy(alpha = 0.08f)
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(stringResource(R.string.intensity_label, intensity.toInt()),
-                            style = MaterialTheme.typography.titleSmall)
-                        Surface(
-                            shape = CircleShape,
-                            color = intensityColor.copy(alpha = 0.15f),
-                            modifier = Modifier.size(40.dp)
+                    val filteredCustom = allSymptomLabels.second.filter {
+                        name.isBlank() || it.contains(name, ignoreCase = true)
+                    }
+                    if (filteredPredefined.isNotEmpty() || filteredCustom.isNotEmpty()) {
+                        ExposedDropdownMenu(
+                            expanded = dropdownExpanded,
+                            onDismissRequest = { dropdownExpanded = false }
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text("${intensity.toInt()}", color = intensityColor,
-                                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            filteredPredefined.forEach { (_, resId) ->
+                                val label = stringResource(resId)
+                                DropdownMenuItem(
+                                    text = { Text(label) },
+                                    onClick = { name = label; dropdownExpanded = false }
+                                )
+                            }
+                            filteredCustom.forEach { custom ->
+                                DropdownMenuItem(
+                                    text = { Text(custom) },
+                                    onClick = { name = custom; dropdownExpanded = false }
+                                )
                             }
                         }
                     }
-                    Slider(
-                        value = intensity, onValueChange = { intensity = it },
-                        valueRange = 0f..10f, steps = 9,
-                        colors = SliderDefaults.colors(thumbColor = intensityColor, activeTrackColor = intensityColor)
-                    )
                 }
-            }
 
-            // Value field
-            OutlinedTextField(
-                value = value, onValueChange = { value = it },
-                label = { Text(stringResource(R.string.symptom_value_label)) },
-                placeholder = { Text(stringResource(R.string.symptom_value_hint)) },
-                modifier = Modifier.fillMaxWidth(), singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-            )
-
-            OutlinedTextField(
-                value = duration, onValueChange = { duration = it },
-                label = { Text(stringResource(R.string.duration_minutes)) },
-                modifier = Modifier.fillMaxWidth(), singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            OutlinedTextField(
-                value = triggers, onValueChange = { triggers = it },
-                label = { Text(stringResource(R.string.triggers_hint)) },
-                modifier = Modifier.fillMaxWidth(), singleLine = true
-            )
-
-            OutlinedTextField(
-                value = notes, onValueChange = { notes = it },
-                label = { Text(stringResource(R.string.notes)) },
-                modifier = Modifier.fillMaxWidth(), minLines = 2
-            )
-
-            // Attachments section
-            FilledTonalButton(
-                onClick = { filePicker.launch("*/*") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.AttachFile, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.attach_file))
-            }
-
-            if (attachmentPaths.isNotEmpty()) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    attachmentPaths.forEachIndexed { index, path ->
-                        val fileName = File(path).name
-                        OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                // Intensity slider
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = intensityColor.copy(alpha = 0.08f)
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(stringResource(R.string.intensity_label, intensity.toInt()),
+                                style = MaterialTheme.typography.titleSmall)
+                            Surface(
+                                shape = CircleShape,
+                                color = intensityColor.copy(alpha = 0.15f),
+                                modifier = Modifier.size(40.dp)
                             ) {
-                                Icon(Icons.Default.InsertDriveFile, contentDescription = null,
-                                    modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.tertiary)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(fileName, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), maxLines = 1)
-                                IconButton(onClick = { attachmentPaths = attachmentPaths.toMutableList().also { it.removeAt(index) } },
-                                    modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.delete),
-                                        modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text("${intensity.toInt()}", color = intensityColor,
+                                        style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                        Slider(
+                            value = intensity, onValueChange = { intensity = it },
+                            valueRange = 0f..10f, steps = 9,
+                            colors = SliderDefaults.colors(thumbColor = intensityColor, activeTrackColor = intensityColor)
+                        )
+                    }
+                }
+
+                // Value field
+                OutlinedTextField(
+                    value = value, onValueChange = { value = it },
+                    label = { Text(stringResource(R.string.symptom_value_label)) },
+                    placeholder = { Text(stringResource(R.string.symptom_value_hint)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                )
+
+                OutlinedTextField(
+                    value = duration, onValueChange = { duration = it },
+                    label = { Text(stringResource(R.string.duration_minutes)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+
+                OutlinedTextField(
+                    value = triggers, onValueChange = { triggers = it },
+                    label = { Text(stringResource(R.string.triggers_hint)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = notes, onValueChange = { notes = it },
+                    label = { Text(stringResource(R.string.notes)) },
+                    modifier = Modifier.fillMaxWidth(), minLines = 2
+                )
+
+                // Attachments section
+                FilledTonalButton(
+                    onClick = { filePicker.launch("*/*") },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.AttachFile, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.attach_file))
+                }
+
+                if (attachmentPaths.isNotEmpty()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        attachmentPaths.forEachIndexed { index, path ->
+                            val fileName = File(path).name
+                            OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(Icons.Default.InsertDriveFile, contentDescription = null,
+                                        modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.tertiary)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(fileName, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), maxLines = 1)
+                                    IconButton(onClick = { attachmentPaths = attachmentPaths.toMutableList().also { it.removeAt(index) } },
+                                        modifier = Modifier.size(32.dp)) {
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.delete),
+                                            modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                                    }
                                 }
                             }
                         }
@@ -357,43 +381,47 @@ fun AddSymptomScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                onClick = {
-                    if (name.isNotBlank()) {
-                        val triggerList = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() }
-                        val recordedAt = LocalDateTime.of(selectedDate, selectedTime)
-                        if (isEditing && editingSymptom != null) {
-                            viewModel.updateSymptom(
-                                editingSymptom!!.copy(
-                                    name = name,
-                                    intensity = intensity.toInt(),
-                                    value = value.takeIf { it.isNotBlank() },
+            // Save button pinned at bottom
+            Surface(
+                tonalElevation = 3.dp,
+                shadowElevation = 8.dp
+            ) {
+                Button(
+                    onClick = {
+                        if (name.isNotBlank()) {
+                            val triggerList = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                            val recordedAt = LocalDateTime.of(selectedDate, selectedTime)
+                            if (isEditing && editingSymptom != null) {
+                                viewModel.updateSymptom(
+                                    editingSymptom!!.copy(
+                                        name = name,
+                                        intensity = intensity.toInt(),
+                                        value = value.takeIf { it.isNotBlank() },
+                                        durationMinutes = duration.toIntOrNull(),
+                                        triggers = triggerList,
+                                        notes = notes,
+                                        attachmentPaths = attachmentPaths,
+                                        recordedAt = recordedAt
+                                    )
+                                )
+                            } else {
+                                viewModel.addNewSymptom(
+                                    name = name, intensity = intensity.toInt(),
+                                    value = value,
                                     durationMinutes = duration.toIntOrNull(),
                                     triggers = triggerList,
-                                    notes = notes,
-                                    attachmentPaths = attachmentPaths,
+                                    notes = notes, attachmentPaths = attachmentPaths,
+                                    diseaseId = diseaseId,
                                     recordedAt = recordedAt
                                 )
-                            )
-                        } else {
-                            viewModel.addNewSymptom(
-                                name = name, intensity = intensity.toInt(),
-                                value = value,
-                                durationMinutes = duration.toIntOrNull(),
-                                triggers = triggerList,
-                                notes = notes, attachmentPaths = attachmentPaths,
-                                diseaseId = diseaseId,
-                                recordedAt = recordedAt
-                            )
+                            }
                         }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                enabled = name.isNotBlank()
-            ) {
-                Text(stringResource(R.string.save), style = MaterialTheme.typography.titleSmall)
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp),
+                    enabled = name.isNotBlank()
+                ) {
+                    Text(stringResource(R.string.save), style = MaterialTheme.typography.titleSmall)
+                }
             }
         }
     }

@@ -15,34 +15,67 @@ class LocalAiProviderImpl(
     override val displayNameResId = R.string.ai_provider_local
 
     override suspend fun generateDoctorSummary(input: AiInput, config: AiSettings): AiTextResult {
-        val lc = config.localAiConfig
-        ensureModelLoaded(lc)
-        val prompt = PromptTemplate.buildSummaryPrompt(input)
-        val fullPrompt = "${prompt.system}\n\n${prompt.user}"
-        val result = engine.generate(fullPrompt, GenerationParams(
-            maxTokens = lc.maxTokens,
-            temperature = lc.temperature
-        ))
-        return AiTextResult(text = result, providerId = id, modelUsed = lc.modelPath)
+        // If engine is a stub, skip it and go straight to LocalAnalysisEngine
+        if (engine is StubLocalInferenceEngine) {
+            return AiTextResult(
+                text = LocalAnalysisEngine.buildLocalSummary(input),
+                providerId = id,
+                modelUsed = "local-analysis"
+            )
+        }
+
+        return try {
+            val lc = config.localAiConfig
+            ensureModelLoaded(lc)
+            val prompt = PromptTemplate.buildSummaryPrompt(input)
+            val fullPrompt = "${prompt.system}\n\n${prompt.user}"
+            val result = engine.generate(fullPrompt, GenerationParams(
+                maxTokens = lc.maxTokens,
+                temperature = lc.temperature
+            ))
+            AiTextResult(text = result, providerId = id, modelUsed = lc.modelPath)
+        } catch (_: Exception) {
+            // Fall back to local rule-based analysis
+            AiTextResult(
+                text = LocalAnalysisEngine.buildLocalSummary(input),
+                providerId = id,
+                modelUsed = "local-analysis"
+            )
+        }
     }
 
     override suspend fun analyzePatterns(input: AiInput, config: AiSettings): AiFlagsResult {
-        val lc = config.localAiConfig
-        ensureModelLoaded(lc)
-        val prompt = PromptTemplate.buildPatternPrompt(input)
-        val fullPrompt = "${prompt.system}\n\n${prompt.user}"
-        val result = engine.generate(fullPrompt, GenerationParams(
-            maxTokens = lc.maxTokens,
-            temperature = lc.temperature
-        ))
-        return AiFlagsResult(text = result, providerId = id, modelUsed = lc.modelPath)
+        // If engine is a stub, skip it and go straight to LocalAnalysisEngine
+        if (engine is StubLocalInferenceEngine) {
+            return AiFlagsResult(
+                text = LocalAnalysisEngine.buildLocalPatternAnalysis(input),
+                providerId = id,
+                modelUsed = "local-analysis"
+            )
+        }
+
+        return try {
+            val lc = config.localAiConfig
+            ensureModelLoaded(lc)
+            val prompt = PromptTemplate.buildPatternPrompt(input)
+            val fullPrompt = "${prompt.system}\n\n${prompt.user}"
+            val result = engine.generate(fullPrompt, GenerationParams(
+                maxTokens = lc.maxTokens,
+                temperature = lc.temperature
+            ))
+            AiFlagsResult(text = result, providerId = id, modelUsed = lc.modelPath)
+        } catch (_: Exception) {
+            // Fall back to local rule-based analysis
+            AiFlagsResult(
+                text = LocalAnalysisEngine.buildLocalPatternAnalysis(input),
+                providerId = id,
+                modelUsed = "local-analysis"
+            )
+        }
     }
 
     override fun validateConfig(config: AiSettings): ValidationResult {
-        val lc = config.localAiConfig
-        if (lc.modelPath.isBlank()) return ValidationResult(false, "Model path is required")
-        if (lc.contextSize <= 0) return ValidationResult(false, "Context size must be positive")
-        if (lc.maxTokens <= 0) return ValidationResult(false, "Max tokens must be positive")
+        // Local analysis is always available via LocalAnalysisEngine
         return ValidationResult(true)
     }
 

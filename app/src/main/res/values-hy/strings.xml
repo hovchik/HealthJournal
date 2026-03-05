@@ -401,4 +401,10 @@
     <string name="cancel">Չեղարկել</string>
     <string name="all_diseases">All diseases</string>
     <string name="disease_filter">Disease</string>
+
+    <!-- Theme Settings -->
+    <string name="theme_settings_title">Թեմա</string>
+    <string name="theme_system">Համակարգ</string>
+    <string name="theme_light">Բաց</string>
+    <string name="theme_dark">Մութ</string>
 </resources>

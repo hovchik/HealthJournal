@@ -36,6 +36,7 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+    val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val exportSuccessMsg = stringResource(R.string.export_success)
@@ -248,6 +249,72 @@ fun SettingsScreen(
                         subtitle = stringResource(R.string.language_select_prompt),
                         onClick = onLanguageSettings
                     )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+                    // Theme selector
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Palette,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                stringResource(R.string.theme_settings_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                                val themeOptions = listOf(
+                                    "SYSTEM" to stringResource(R.string.theme_system),
+                                    "LIGHT" to stringResource(R.string.theme_light),
+                                    "DARK" to stringResource(R.string.theme_dark)
+                                )
+                                themeOptions.forEachIndexed { index, (mode, label) ->
+                                    SegmentedButton(
+                                        selected = settings.themeMode == mode,
+                                        onClick = { settingsViewModel.setThemeMode(mode) },
+                                        shape = SegmentedButtonDefaults.itemShape(
+                                            index = index,
+                                            count = themeOptions.size
+                                        ),
+                                        icon = {
+                                            SegmentedButtonDefaults.Icon(active = settings.themeMode == mode) {
+                                                Icon(
+                                                    when (mode) {
+                                                        "LIGHT" -> Icons.Default.LightMode
+                                                        "DARK" -> Icons.Default.DarkMode
+                                                        else -> Icons.Default.SettingsBrightness
+                                                    },
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                    ) {
+                                        Text(label, style = MaterialTheme.typography.labelSmall)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                     SettingsListItem(
                         icon = Icons.Default.Psychology,

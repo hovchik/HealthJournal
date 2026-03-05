@@ -401,4 +401,10 @@
     <string name="cancel">Cancelar</string>
     <string name="all_diseases">Todas las enfermedades</string>
     <string name="disease_filter">Enfermedad</string>
+
+    <!-- Theme Settings -->
+    <string name="theme_settings_title">Tema</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
 </resources>

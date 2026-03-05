@@ -405,4 +405,10 @@
     <string name="cancel">Отмена</string>
     <string name="all_diseases">Все болезни</string>
     <string name="disease_filter">Болезнь</string>
+
+    <!-- Theme -->
+    <string name="theme_settings_title">Тема</string>
+    <string name="theme_system">Система</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
 </resources>

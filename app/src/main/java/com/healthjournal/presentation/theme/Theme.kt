@@ -161,9 +161,15 @@ private val AppShapes = Shapes(
 
 @Composable
 fun HealthJournalTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: String = "SYSTEM",
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (themeMode) {
+        "DARK" -> true
+        "LIGHT" -> false
+        else -> isSystemInDarkTheme()
+    }
+
     val colorScheme = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

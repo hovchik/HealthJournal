@@ -35,6 +35,7 @@ class UserSettingsRepositoryImpl constructor(
         val AI_CONSENT = booleanPreferencesKey("ai_consent")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val LANGUAGE_MODE = stringPreferencesKey("language_mode")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
         val AI_SETTINGS = stringPreferencesKey("ai_settings")
         val ACTIVE_PROFILE_ID = longPreferencesKey("active_profile_id")
     }
@@ -60,6 +61,7 @@ class UserSettingsRepositoryImpl constructor(
             aiConsentGiven = prefs[Keys.AI_CONSENT] ?: false,
             onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
             languageMode = prefs[Keys.LANGUAGE_MODE] ?: "SYSTEM",
+            themeMode = prefs[Keys.THEME_MODE] ?: "SYSTEM",
             aiSettings = aiSettings,
             activeProfileId = prefs[Keys.ACTIVE_PROFILE_ID] ?: 0
         )
@@ -78,6 +80,7 @@ class UserSettingsRepositoryImpl constructor(
             prefs[Keys.AI_CONSENT] = settings.aiConsentGiven
             prefs[Keys.ONBOARDING_COMPLETED] = settings.onboardingCompleted
             prefs[Keys.LANGUAGE_MODE] = settings.languageMode
+            prefs[Keys.THEME_MODE] = settings.themeMode
             prefs[Keys.AI_SETTINGS] = json.encodeToString(AiSettings.serializer(), settings.aiSettings)
         }
     }
@@ -97,6 +100,12 @@ class UserSettingsRepositoryImpl constructor(
     override suspend fun setLanguageMode(languageMode: String) {
         context.dataStore.edit { prefs ->
             prefs[Keys.LANGUAGE_MODE] = languageMode
+        }
+    }
+
+    override suspend fun setThemeMode(themeMode: String) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.THEME_MODE] = themeMode
         }
     }
 
