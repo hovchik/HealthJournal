@@ -4,9 +4,18 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- AI Edge SDK requires API 31+ but we guard usage with runtime checks -->
     <uses-sdk tools:overrideLibrary="com.google.ai.edge.aicore" />
+
+    <!-- Package visibility for on-device AI (required on API 30+) -->
+    <queries>
+        <package android:name="com.google.android.aicore" />
+        <package android:name="com.samsung.android.aicoreondevice" />
+        <package android:name="com.samsung.android.galaxyai" />
+        <package android:name="com.samsung.android.intelligence" />
+    </queries>
 
     <application
         android:name=".HealthJournalApp"

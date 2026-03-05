@@ -223,6 +223,21 @@
     <string name="settings_section_profile">Perfil</string>
     <string name="settings_section_data">Datos</string>
     <string name="settings_section_preferences">Preferencias</string>
+    <string name="settings_section_permissions">Permisos</string>
+
+    <!-- Permissions -->
+    <string name="perm_title">Permisos de la aplicación</string>
+    <string name="perm_desc">Gestionar permisos para IA y otras funciones</string>
+    <string name="perm_notifications">Notificaciones</string>
+    <string name="perm_notifications_desc">Para descarga del modelo de IA y recordatorios</string>
+    <string name="perm_granted">Concedido</string>
+    <string name="perm_denied">No concedido</string>
+    <string name="perm_grant">Conceder</string>
+    <string name="perm_ai_status">Estado de IA en el dispositivo</string>
+    <string name="perm_ai_available">IA en el dispositivo disponible</string>
+    <string name="perm_ai_unavailable">IA en el dispositivo no disponible</string>
+    <string name="perm_ai_check">Verificar</string>
+    <string name="perm_open_settings">Abrir ajustes</string>
 
     <!-- Date Grouping -->
     <string name="date_today">Hoy</string>

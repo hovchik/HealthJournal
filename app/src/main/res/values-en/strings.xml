@@ -223,6 +223,21 @@
     <string name="settings_section_profile">Profile</string>
     <string name="settings_section_data">Data</string>
     <string name="settings_section_preferences">Preferences</string>
+    <string name="settings_section_permissions">Permissions</string>
+
+    <!-- Permissions -->
+    <string name="perm_title">App Permissions</string>
+    <string name="perm_desc">Manage permissions for AI and other features</string>
+    <string name="perm_notifications">Notifications</string>
+    <string name="perm_notifications_desc">For AI model download and reminders</string>
+    <string name="perm_granted">Granted</string>
+    <string name="perm_denied">Not granted</string>
+    <string name="perm_grant">Grant</string>
+    <string name="perm_ai_status">On-device AI status</string>
+    <string name="perm_ai_available">On-device AI is available</string>
+    <string name="perm_ai_unavailable">On-device AI is not available</string>
+    <string name="perm_ai_check">Check</string>
+    <string name="perm_open_settings">Open settings</string>
 
     <!-- Date Grouping -->
     <string name="date_today">Today</string>

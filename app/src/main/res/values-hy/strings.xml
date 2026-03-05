@@ -223,6 +223,21 @@
     <string name="settings_section_profile">Պրոֆիլ</string>
     <string name="settings_section_data">Տվյալներ</string>
     <string name="settings_section_preferences">Կարգավորումներ</string>
+    <string name="settings_section_permissions">Թույլտվություններ</string>
+
+    <!-- Permissions -->
+    <string name="perm_title">Հավելվածի թույլտվություններ</string>
+    <string name="perm_desc">Կառավարեք AI-ի և այլ գործառույթների թույլտվությունները</string>
+    <string name="perm_notifications">Ծանուցումներ</string>
+    <string name="perm_notifications_desc">AI մոդելի ներբեռնման և հիշեցումների համար</string>
+    <string name="perm_granted">Թույլատրված</string>
+    <string name="perm_denied">Թույլատրված չէ</string>
+    <string name="perm_grant">Թույլատրել</string>
+    <string name="perm_ai_status">AI-ի կարգավիճակը սարքում</string>
+    <string name="perm_ai_available">AI-ն սարքում հասանելի է</string>
+    <string name="perm_ai_unavailable">AI-ն սարքում հասանելի չէ</string>
+    <string name="perm_ai_check">Ստուգել</string>
+    <string name="perm_open_settings">Բացել կարգավորումները</string>
 
     <!-- Date Grouping -->
     <string name="date_today">Այսօր</string>

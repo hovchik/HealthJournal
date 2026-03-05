@@ -223,6 +223,21 @@
     <string name="settings_section_profile">个人资料</string>
     <string name="settings_section_data">数据</string>
     <string name="settings_section_preferences">偏好设置</string>
+    <string name="settings_section_permissions">权限</string>
+
+    <!-- Permissions -->
+    <string name="perm_title">应用权限</string>
+    <string name="perm_desc">管理AI和其他功能的权限</string>
+    <string name="perm_notifications">通知</string>
+    <string name="perm_notifications_desc">用于AI模型下载和提醒</string>
+    <string name="perm_granted">已授权</string>
+    <string name="perm_denied">未授权</string>
+    <string name="perm_grant">授权</string>
+    <string name="perm_ai_status">设备端AI状态</string>
+    <string name="perm_ai_available">设备端AI可用</string>
+    <string name="perm_ai_unavailable">设备端AI不可用</string>
+    <string name="perm_ai_check">检查</string>
+    <string name="perm_open_settings">打开设置</string>
 
     <!-- Date Grouping -->
     <string name="date_today">今天</string>

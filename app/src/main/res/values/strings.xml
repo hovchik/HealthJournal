@@ -223,6 +223,21 @@
     <string name="settings_section_profile">Профиль</string>
     <string name="settings_section_data">Данные</string>
     <string name="settings_section_preferences">Настройки</string>
+    <string name="settings_section_permissions">Разрешения</string>
+
+    <!-- Permissions -->
+    <string name="perm_title">Разрешения приложения</string>
+    <string name="perm_desc">Управление разрешениями для AI и других функций</string>
+    <string name="perm_notifications">Уведомления</string>
+    <string name="perm_notifications_desc">Для загрузки AI-модели и напоминаний</string>
+    <string name="perm_granted">Разрешено</string>
+    <string name="perm_denied">Не разрешено</string>
+    <string name="perm_grant">Разрешить</string>
+    <string name="perm_ai_status">Статус AI на устройстве</string>
+    <string name="perm_ai_available">AI на устройстве доступен</string>
+    <string name="perm_ai_unavailable">AI на устройстве недоступен</string>
+    <string name="perm_ai_check">Проверить</string>
+    <string name="perm_open_settings">Открыть настройки</string>
 
     <!-- Date Grouping -->
     <string name="date_today">Сегодня</string>
