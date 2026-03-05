@@ -42,7 +42,7 @@ object LocalAnalysisEngine {
             value.toInt().toString()
         }
 
-    fun checkVitalRange(value: Double, secondary: Double?, type: VitalType, t: AnalysisTexts): String {
+    internal fun checkVitalRange(value: Double, secondary: Double?, type: VitalType, t: AnalysisTexts): String {
         return when (type) {
             VitalType.BLOOD_PRESSURE -> {
                 val flags = mutableListOf<String>()
@@ -80,7 +80,7 @@ object LocalAnalysisEngine {
         }
     }
 
-    fun generateObservations(input: AiInput, t: AnalysisTexts): List<String> {
+    internal fun generateObservations(input: AiInput, t: AnalysisTexts): List<String> {
         val obs = mutableListOf<String>()
 
         val severe = input.symptoms.filter { it.intensity >= 7 }
@@ -133,7 +133,7 @@ object LocalAnalysisEngine {
         return obs
     }
 
-    fun findCorrelations(input: AiInput, t: AnalysisTexts): List<String> {
+    internal fun findCorrelations(input: AiInput, t: AnalysisTexts): List<String> {
         val correlations = mutableListOf<String>()
         if (input.symptoms.isEmpty() || input.vitals.isEmpty()) return correlations
 
