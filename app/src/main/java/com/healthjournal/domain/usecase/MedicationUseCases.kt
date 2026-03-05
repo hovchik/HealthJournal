@@ -30,6 +30,12 @@ class UpdateMedicationUseCase constructor(
     suspend operator fun invoke(medication: Medication) = repository.updateMedication(medication)
 }
 
+class GetMedicationByIdUseCase constructor(
+    private val repository: MedicationRepository
+) {
+    suspend operator fun invoke(id: Long): Medication? = repository.getMedicationById(id)
+}
+
 class DeleteMedicationUseCase constructor(
     private val repository: MedicationRepository
 ) {

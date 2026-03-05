@@ -6,7 +6,7 @@
     <string name="nav_home">首页</string>
     <string name="nav_vitals">生命体征</string>
     <string name="nav_medications">药物</string>
-    <string name="nav_ai_report">AI 报告</string>
+    <string name="nav_reports">报告</string>
     <string name="nav_settings">设置</string>
 
     <!-- Common -->
@@ -15,7 +15,13 @@
     <string name="delete">删除</string>
     <string name="close">关闭</string>
     <string name="notes">备注</string>
+    <string name="date_label">日期</string>
+    <string name="time_label">时间</string>
+    <string name="start_date_label">开始日期</string>
     <string name="error_format">错误：%1$s</string>
+    <string name="edit">编辑</string>
+    <string name="search">搜索</string>
+    <string name="search_hint">搜索…</string>
 
     <!-- Home Screen -->
     <string name="home_title">健康日记</string>
@@ -29,13 +35,17 @@
 
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">添加症状</string>
+    <string name="edit_symptom_title">编辑症状</string>
     <string name="symptom_name">症状名称</string>
+    <string name="symptom_value_label">值</string>
+    <string name="symptom_value_hint">例如 38.5°C, 120/80</string>
     <string name="intensity_label">强度：%1$d/10</string>
     <string name="duration_minutes">持续时间（分钟）</string>
     <string name="triggers_hint">诱因（用逗号分隔）</string>
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">添加生命体征</string>
+    <string name="edit_vital_title">编辑生命体征</string>
     <string name="vital_type_label">体征类型</string>
     <string name="systolic_upper">收缩压（高压）</string>
     <string name="value_with_unit">数值（%1$s）</string>
@@ -51,19 +61,24 @@
 
     <!-- Add Medication Screen -->
     <string name="add_medication_title">添加药物</string>
+    <string name="edit_medication_title">编辑药物</string>
     <string name="medication_name">药物名称</string>
     <string name="dosage_hint">剂量（如 500 毫克）</string>
     <string name="schedule_hint">用药频率（如 每日两次）</string>
 
-    <!-- AI Report Screen -->
-    <string name="ai_reports_title">AI 报告</string>
-    <string name="report_7_days">报告（7 天）</string>
-    <string name="patterns_30_days">模式分析（30 天）</string>
+    <!-- Reports Screen -->
+    <string name="reports_title">报告</string>
+    <string name="reports_tab_records">记录</string>
+    <string name="reports_tab_ai">AI 分析</string>
+    <string name="report_2_days">报告（2 天）</string>
+    <string name="patterns_4_days">模式分析（4 天）</string>
     <string name="ai_analyzing">AI 正在分析数据…</string>
     <string name="no_reports_hint">暂无报告。点击上方按钮，根据您的数据生成 AI 报告。</string>
+    <string name="no_records_hint">该时间段暂无记录。</string>
     <string name="report_type_summary">医疗摘要</string>
     <string name="report_type_patterns">模式分析</string>
     <string name="days_format">%1$d 天</string>
+    <string name="records_export_pdf">导出记录为 PDF</string>
 
     <!-- Vitals Screen -->
     <string name="vitals_title">健康指标</string>
@@ -107,6 +122,7 @@
     <string name="language_english">English</string>
     <string name="language_chinese">中文 (简体)</string>
     <string name="language_spanish">Español</string>
+    <string name="language_armenian">Հայերեն</string>
     <string name="language_current">当前语言</string>
     <string name="language_select_prompt">选择应用语言</string>
 
@@ -129,6 +145,9 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI 兼容</string>
     <string name="ai_provider_local">本地模型</string>
+    <string name="ai_provider_system">系统 AI（Google / Samsung）</string>
+    <string name="system_ai_desc">使用设备内置 AI：Google AI Core 或 Samsung Galaxy AI。无需联网或 API 密钥。需要 Android 14+ 及兼容设备。</string>
+    <string name="system_ai_recommended">（推荐）</string>
     <string name="ai_privacy_redact">数据脱敏</string>
     <string name="ai_privacy_redact_desc">发送前删除电话号码和电子邮件</string>
     <string name="ai_api_key">API 密钥</string>
@@ -140,9 +159,11 @@
     <string name="ai_max_tokens">最大令牌数</string>
     <string name="ai_temperature">温度</string>
     <string name="ai_validate_config">验证配置</string>
-    <string name="ai_provider_gemini_nano">Gemini Nano（设备端）</string>
-    <string name="gemini_nano_desc">设备端 AI。需要 Android 14+ 和受支持的设备（如 Pixel 8+）。无需联网。</string>
+    <string name="ai_provider_gemini_nano">系统 AI（设备端）</string>
+    <string name="gemini_nano_desc">设备端 AI：Google AI Core（Pixel 8+）或三星 Galaxy AI（Galaxy S24+）。无需联网和 API 密钥。需要 Android 14+。</string>
     <string name="gemini_top_k">Top-K</string>
+    <string name="ai_api_key_required">需要 API 密钥</string>
+    <string name="ai_local_model_desc">从设备存储加载自定义 AI 模型</string>
 
     <!-- Reports -->
     <string name="report_select_profile">选择报告的档案</string>
@@ -154,15 +175,22 @@
     <string name="user_info_desc">姓名、医生、联系方式</string>
     <string name="doctor_name">医生姓名</string>
     <string name="doctor_phone">医生电话</string>
+    <string name="user_weight">体重（公斤）</string>
+    <string name="user_height">身高（厘米）</string>
+    <string name="known_diseases_title">已知疾病</string>
+    <string name="known_diseases_hint">列出您的慢性或已知疾病（如糖尿病、哮喘）。此数据将传递给AI以进行更准确的分析。</string>
+    <string name="add_known_disease">添加疾病</string>
     <string name="saved_successfully">保存成功</string>
 
     <!-- Family Members -->
     <string name="family_members_title">家庭成员</string>
     <string name="family_members_desc">个人档案和健康日记</string>
     <string name="add_family_member">添加家庭成员</string>
+    <string name="edit_family_member">编辑</string>
     <string name="member_name">姓名</string>
     <string name="relationship">关系</string>
     <string name="default_profile">默认档案</string>
+    <string name="select_member_first">请先选择添加对象</string>
 
     <!-- Relationships -->
     <string name="rel_self">本人</string>
@@ -171,6 +199,13 @@
     <string name="rel_parent">父母</string>
     <string name="rel_sibling">兄弟姐妹</string>
     <string name="rel_grandparent">祖父母</string>
+    <string name="rel_grandchild">孙子/孙女</string>
+    <string name="rel_uncle_aunt">叔叔/阿姨</string>
+    <string name="rel_cousin">表亲</string>
+    <string name="rel_friend">朋友</string>
+    <string name="rel_other">其他</string>
+    <string name="custom_relationship_hint">输入关系类型</string>
+    <string name="recording_for">对象：%1$s</string>
 
     <!-- Predefined Data Settings -->
     <string name="predefined_data_title">预设数据</string>
@@ -180,38 +215,90 @@
     <string name="add_custom_symptom">添加自定义症状</string>
     <string name="add_custom_medication">添加自定义药物</string>
     <string name="custom_label">自定义</string>
+    <string name="predefined_relations_section">关系</string>
+    <string name="add_custom_relation">添加自定义关系</string>
+    <string name="ai_browse_model">浏览</string>
+
+    <!-- Settings Sections -->
+    <string name="settings_section_profile">个人资料</string>
+    <string name="settings_section_data">数据</string>
+    <string name="settings_section_preferences">偏好设置</string>
+
+    <!-- Date Grouping -->
+    <string name="date_today">今天</string>
+    <string name="date_yesterday">昨天</string>
+
+    <!-- Validation -->
+    <string name="ai_config_valid">配置有效</string>
+
+    <!-- AI Data Requirements -->
+    <string name="ai_need_more_data">分析需要至少2天的记录数据</string>
+
+    <!-- Export/Import & Backup -->
+    <string name="export_import_title">导出和导入</string>
+    <string name="export_import_desc">备份和恢复数据</string>
+    <string name="backup_export">导出数据</string>
+    <string name="backup_import">导入数据</string>
+    <string name="backup_share">分享数据</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">头痛</string>
+    <string name="symptom_migraine">偏头痛</string>
     <string name="symptom_stomachache">胃痛</string>
     <string name="symptom_back_pain">背痛</string>
     <string name="symptom_fatigue">疲劳</string>
     <string name="symptom_dizziness">头晕</string>
     <string name="symptom_nausea">恶心</string>
+    <string name="symptom_vomiting">呕吐</string>
     <string name="symptom_insomnia">失眠</string>
     <string name="symptom_cough">咳嗽</string>
     <string name="symptom_sore_throat">喉咙痛</string>
     <string name="symptom_runny_nose">流鼻涕</string>
+    <string name="symptom_sneezing">打喷嚏</string>
+    <string name="symptom_nasal_congestion">鼻塞</string>
+    <string name="symptom_wheezing">喘息</string>
     <string name="symptom_joint_pain">关节痛</string>
     <string name="symptom_chest_pain">胸痛</string>
     <string name="symptom_shortness_of_breath">呼吸困难</string>
     <string name="symptom_fever">发烧</string>
+    <string name="symptom_chills">畏寒</string>
+    <string name="symptom_night_sweats">盗汗</string>
     <string name="symptom_anxiety">焦虑</string>
+    <string name="symptom_depression">抑郁</string>
+    <string name="symptom_irritability">易怒</string>
+    <string name="symptom_mood_swings">情绪波动</string>
+    <string name="symptom_panic_attacks">恐慌发作</string>
     <string name="symptom_muscle_pain">肌肉痛</string>
+    <string name="symptom_neck_pain">颈痛</string>
+    <string name="symptom_stiffness">僵硬</string>
+    <string name="symptom_muscle_cramps">肌肉痉挛</string>
     <string name="symptom_rash">皮疹</string>
+    <string name="symptom_itching">瘙痒</string>
+    <string name="symptom_dry_skin">皮肤干燥</string>
+    <string name="symptom_bruising">瘀伤</string>
+    <string name="symptom_hair_loss">脱发</string>
     <string name="symptom_palpitations">心悸</string>
     <string name="symptom_blurred_vision">视力模糊</string>
+    <string name="symptom_tinnitus">耳鸣</string>
     <string name="symptom_earache">耳痛</string>
     <string name="symptom_constipation">便秘</string>
     <string name="symptom_diarrhea">腹泻</string>
     <string name="symptom_bloating">腹胀</string>
-    <string name="symptom_numbness">麻木</string>
-    <string name="symptom_swelling">肿胀</string>
-    <string name="symptom_depression">抑郁</string>
     <string name="symptom_heartburn">胃灼热</string>
     <string name="symptom_loss_of_appetite">食欲不振</string>
-    <string name="symptom_sneezing">打喷嚏</string>
+    <string name="symptom_excessive_thirst">过度口渴</string>
+    <string name="symptom_numbness">麻木</string>
+    <string name="symptom_tremor">震颤</string>
+    <string name="symptom_memory_problems">记忆力减退</string>
+    <string name="symptom_confusion">意识混乱</string>
+    <string name="symptom_swelling">肿胀</string>
+    <string name="symptom_cold_hands_feet">手脚冰凉</string>
+    <string name="symptom_weight_loss">体重下降</string>
+    <string name="symptom_weight_gain">体重增加</string>
     <string name="symptom_dry_mouth">口干</string>
+    <string name="symptom_toothache">牙痛</string>
+    <string name="symptom_frequent_urination">尿频</string>
+    <string name="symptom_painful_urination">排尿疼痛</string>
     <string name="common_symptoms">常见症状</string>
 
     <!-- Predefined Medications -->
@@ -219,28 +306,49 @@
     <string name="med_paracetamol">对乙酰氨基酚</string>
     <string name="med_aspirin">阿司匹林</string>
     <string name="med_amoxicillin">阿莫西林</string>
+    <string name="med_azithromycin">阿奇霉素</string>
+    <string name="med_ciprofloxacin">环丙沙星</string>
+    <string name="med_doxycycline">多西环素</string>
     <string name="med_omeprazole">奥美拉唑</string>
+    <string name="med_pantoprazole">泮托拉唑</string>
+    <string name="med_metoclopramide">甲氧氯普胺</string>
     <string name="med_metformin">二甲双胍</string>
+    <string name="med_insulin">胰岛素</string>
     <string name="med_lisinopril">赖诺普利</string>
     <string name="med_amlodipine">氨氯地平</string>
     <string name="med_metoprolol">美托洛尔</string>
+    <string name="med_losartan">氯沙坦</string>
+    <string name="med_atorvastatin">阿托伐他汀</string>
+    <string name="med_simvastatin">辛伐他汀</string>
+    <string name="med_warfarin">华法林</string>
+    <string name="med_clopidogrel">氯吡格雷</string>
     <string name="med_loratadine">氯雷他定</string>
+    <string name="med_cetirizine">西替利嗪</string>
+    <string name="med_diphenhydramine">苯海拉明</string>
+    <string name="med_levothyroxine">左甲状腺素</string>
+    <string name="med_gabapentin">加巴喷丁</string>
+    <string name="med_sertraline">舍曲林</string>
+    <string name="med_amitriptyline">阿米替林</string>
+    <string name="med_diazepam">地西泮</string>
+    <string name="med_prednisone">泼尼松</string>
+    <string name="med_dexamethasone">地塞米松</string>
+    <string name="med_diclofenac">双氯芬酸</string>
+    <string name="med_naproxen">萘普生</string>
+    <string name="med_tramadol">曲马多</string>
+    <string name="med_salbutamol">沙丁胺醇</string>
+    <string name="med_montelukast">孟鲁司特</string>
     <string name="med_vitamin_d">维生素 D</string>
     <string name="med_vitamin_c">维生素 C</string>
+    <string name="med_vitamin_b12">维生素 B12</string>
     <string name="med_omega3">Omega-3</string>
-    <string name="med_atorvastatin">阿托伐他汀</string>
-    <string name="med_levothyroxine">左甲状腺素</string>
-    <string name="med_losartan">氯沙坦</string>
-    <string name="med_gabapentin">加巴喷丁</string>
-    <string name="med_pantoprazole">泮托拉唑</string>
-    <string name="med_cetirizine">西替利嗪</string>
-    <string name="med_prednisone">泼尼松</string>
-    <string name="med_diclofenac">双氯芬酸</string>
     <string name="med_magnesium">镁</string>
-    <string name="med_probiotics">益生菌</string>
     <string name="med_iron">铁剂</string>
     <string name="med_folic_acid">叶酸</string>
+    <string name="med_calcium">钙</string>
+    <string name="med_zinc">锌</string>
+    <string name="med_probiotics">益生菌</string>
     <string name="med_melatonin">褪黑素</string>
+    <string name="med_multivitamin">复合维生素</string>
     <string name="common_medications">常见药物</string>
 
     <!-- Attachments -->
@@ -254,4 +362,21 @@
     <plurals name="days_count">
         <item quantity="other">%1$d 天</item>
     </plurals>
+
+    <!-- Profile Selection -->
+    <string name="profile_selection_title">谁在使用日记？</string>
+    <string name="profile_selection_subtitle">选择一个档案以继续</string>
+    <string name="profile_continue">继续</string>
+    <string name="profile_add_new">添加成员</string>
+
+    <!-- Diseases -->
+    <string name="disease_name">疾病名称</string>
+    <string name="add_disease">添加疾病</string>
+    <string name="edit_disease">编辑疾病</string>
+    <string name="disease_active">活跃</string>
+    <string name="disease_resolved">已治愈</string>
+    <string name="no_diseases_hint">暂无疾病。点击 + 添加。</string>
+    <string name="family_diseases_title">家庭疾病</string>
+    <string name="no_family_diseases_hint">家庭成员之间没有共同疾病。</string>
+    <string name="family_members_count">%1$d 人</string>
 </resources>

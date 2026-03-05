@@ -18,6 +18,7 @@ import com.healthjournal.domain.model.ai.ClaudeConfig
 import com.healthjournal.domain.model.ai.OpenAiConfig
 import com.healthjournal.domain.repository.*
 import com.healthjournal.domain.usecase.*
+import com.healthjournal.util.DataExportImportManager
 import com.healthjournal.util.PrivacyRedactor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -65,6 +66,11 @@ class AppContainer(context: Context) {
     private val familyMemberStore = JsonFileStore(
         context = context, fileName = "family_members.json",
         serializer = FamilyMemberDto.serializer(), json = json,
+        getId = { it.id }, setId = { item, id -> item.copy(id = id) }
+    )
+    private val diseaseStore = JsonFileStore(
+        context = context, fileName = "diseases.json",
+        serializer = DiseaseDto.serializer(), json = json,
         getId = { it.id }, setId = { item, id -> item.copy(id = id) }
     )
 
@@ -145,28 +151,54 @@ class AppContainer(context: Context) {
     val aiReportRepository: AiReportRepository = AiReportRepositoryImpl(aiReportStore)
     val userSettingsRepository: UserSettingsRepository = UserSettingsRepositoryImpl(context)
     val familyMemberRepository: FamilyMemberRepository = FamilyMemberRepositoryImpl(familyMemberStore)
+    val diseaseRepository: DiseaseRepository = DiseaseRepositoryImpl(diseaseStore)
 
     // Use Cases
     val getAllSymptoms = GetAllSymptomsUseCase(symptomRepository)
     val getSymptomsByDateRange = GetSymptomsByDateRangeUseCase(symptomRepository)
     val addSymptom = AddSymptomUseCase(symptomRepository)
+    val updateSymptom = UpdateSymptomUseCase(symptomRepository)
+    val getSymptomById = GetSymptomByIdUseCase(symptomRepository)
     val deleteSymptom = DeleteSymptomUseCase(symptomRepository)
 
     val getAllVitalSigns = GetAllVitalSignsUseCase(vitalSignRepository)
     val getVitalSignsByType = GetVitalSignsByTypeUseCase(vitalSignRepository)
     val getVitalSignsByDateRange = GetVitalSignsByDateRangeUseCase(vitalSignRepository)
     val addVitalSign = AddVitalSignUseCase(vitalSignRepository)
+    val updateVitalSign = UpdateVitalSignUseCase(vitalSignRepository)
+    val getVitalSignById = GetVitalSignByIdUseCase(vitalSignRepository)
     val deleteVitalSign = DeleteVitalSignUseCase(vitalSignRepository)
 
     val getAllMedications = GetAllMedicationsUseCase(medicationRepository)
     val getActiveMedications = GetActiveMedicationsUseCase(medicationRepository)
     val addMedication = AddMedicationUseCase(medicationRepository)
     val updateMedication = UpdateMedicationUseCase(medicationRepository)
+    val getMedicationById = GetMedicationByIdUseCase(medicationRepository)
     val deleteMedication = DeleteMedicationUseCase(medicationRepository)
     val logMedicationTaken = LogMedicationTakenUseCase(medicationRepository)
     val getMedicationLogs = GetMedicationLogsUseCase(medicationRepository)
 
-    val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository)
-    val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository)
+    val getAllDiseases = GetAllDiseasesUseCase(diseaseRepository)
+    val getDiseasesByProfileId = GetDiseasesByProfileIdUseCase(diseaseRepository)
+    val getDiseaseById = GetDiseaseByIdUseCase(diseaseRepository)
+    val addDisease = AddDiseaseUseCase(diseaseRepository)
+    val updateDisease = UpdateDiseaseUseCase(diseaseRepository)
+    val deleteDisease = DeleteDiseaseUseCase(diseaseRepository)
+
+    val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository)
+    val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, userSettingsRepository, familyMemberRepository)
     val getAllReports = GetAllReportsUseCase(aiReportRepository)
+
+    // Export/Import
+    val dataExportImportManager = DataExportImportManager(
+        context = context,
+        symptomStore = symptomStore,
+        vitalSignStore = vitalSignStore,
+        medicationStore = medicationStore,
+        medicationLogStore = medicationLogStore,
+        aiReportStore = aiReportStore,
+        familyMemberStore = familyMemberStore,
+        diseaseStore = diseaseStore,
+        userSettingsRepository = userSettingsRepository
+    )
 }

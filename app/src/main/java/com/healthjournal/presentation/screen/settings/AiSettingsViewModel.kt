@@ -23,6 +23,9 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
     private val _validationMessage = MutableStateFlow<String?>(null)
     val validationMessage = _validationMessage.asStateFlow()
 
+    private val _validationSuccess = MutableStateFlow<Boolean?>(null)
+    val validationSuccess = _validationSuccess.asStateFlow()
+
     fun selectProvider(providerId: String) {
         viewModelScope.launch {
             settingsRepo.setAiSettings(aiSettings.value.copy(selectedProviderId = providerId))
@@ -66,7 +69,11 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun validateCurrentProvider() {
-        val result = aiService.validateActiveProvider(aiSettings.value)
-        _validationMessage.value = if (result.valid) null else result.errorMessage
+        viewModelScope.launch {
+            val currentSettings = settingsRepo.getUserSettings().first().aiSettings
+            val result = aiService.validateActiveProvider(currentSettings)
+            _validationSuccess.value = result.valid
+            _validationMessage.value = result.errorMessage
+        }
     }
 }

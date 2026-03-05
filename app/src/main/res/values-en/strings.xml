@@ -6,7 +6,7 @@
     <string name="nav_home">Home</string>
     <string name="nav_vitals">Vitals</string>
     <string name="nav_medications">Medications</string>
-    <string name="nav_ai_report">AI Report</string>
+    <string name="nav_reports">Reports</string>
     <string name="nav_settings">Settings</string>
 
     <!-- Common -->
@@ -15,7 +15,13 @@
     <string name="delete">Delete</string>
     <string name="close">Close</string>
     <string name="notes">Notes</string>
+    <string name="date_label">Date</string>
+    <string name="time_label">Time</string>
+    <string name="start_date_label">Start date</string>
     <string name="error_format">Error: %1$s</string>
+    <string name="edit">Edit</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Search…</string>
 
     <!-- Home Screen -->
     <string name="home_title">Health Journal</string>
@@ -29,13 +35,17 @@
 
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">Add symptom</string>
+    <string name="edit_symptom_title">Edit symptom</string>
     <string name="symptom_name">Symptom name</string>
+    <string name="symptom_value_label">Value</string>
+    <string name="symptom_value_hint">E.g. 38.5°C, 120/80</string>
     <string name="intensity_label">Intensity: %1$d/10</string>
     <string name="duration_minutes">Duration (min)</string>
     <string name="triggers_hint">Triggers (comma-separated)</string>
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">Add vital sign</string>
+    <string name="edit_vital_title">Edit vital sign</string>
     <string name="vital_type_label">Vital type</string>
     <string name="systolic_upper">Systolic (upper)</string>
     <string name="value_with_unit">Value (%1$s)</string>
@@ -51,19 +61,24 @@
 
     <!-- Add Medication Screen -->
     <string name="add_medication_title">Add medication</string>
+    <string name="edit_medication_title">Edit medication</string>
     <string name="medication_name">Medication name</string>
     <string name="dosage_hint">Dosage (e.g. 500 mg)</string>
     <string name="schedule_hint">Schedule (e.g. twice a day)</string>
 
-    <!-- AI Report Screen -->
-    <string name="ai_reports_title">AI Reports</string>
-    <string name="report_7_days">Report (7 days)</string>
-    <string name="patterns_30_days">Patterns (30 days)</string>
+    <!-- Reports Screen -->
+    <string name="reports_title">Reports</string>
+    <string name="reports_tab_records">Records</string>
+    <string name="reports_tab_ai">AI Analysis</string>
+    <string name="report_2_days">Report (2 days)</string>
+    <string name="patterns_4_days">Patterns (4 days)</string>
     <string name="ai_analyzing">AI is analyzing data…</string>
     <string name="no_reports_hint">No reports. Tap the button above to generate an AI report based on your data.</string>
+    <string name="no_records_hint">No records for this period.</string>
     <string name="report_type_summary">Medical summary</string>
     <string name="report_type_patterns">Pattern analysis</string>
     <string name="days_format">%1$d days</string>
+    <string name="records_export_pdf">Export records to PDF</string>
 
     <!-- Vitals Screen -->
     <string name="vitals_title">Health vitals</string>
@@ -107,6 +122,7 @@
     <string name="language_english">English</string>
     <string name="language_chinese">中文 (简体)</string>
     <string name="language_spanish">Español</string>
+    <string name="language_armenian">Հայերեն</string>
     <string name="language_current">Current language</string>
     <string name="language_select_prompt">Choose app language</string>
 
@@ -129,6 +145,9 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-compatible</string>
     <string name="ai_provider_local">Local model</string>
+    <string name="ai_provider_system">System AI (Google / Samsung)</string>
+    <string name="system_ai_desc">Uses the built-in on-device AI: Google AI Core or Samsung Galaxy AI. Does not require internet or an API key. Available on Android 14+ with a compatible device.</string>
+    <string name="system_ai_recommended">(Recommended)</string>
     <string name="ai_privacy_redact">Data redaction</string>
     <string name="ai_privacy_redact_desc">Remove phone numbers and emails before sending</string>
     <string name="ai_api_key">API key</string>
@@ -140,9 +159,11 @@
     <string name="ai_max_tokens">Max tokens</string>
     <string name="ai_temperature">Temperature</string>
     <string name="ai_validate_config">Validate configuration</string>
-    <string name="ai_provider_gemini_nano">Gemini Nano (on-device)</string>
-    <string name="gemini_nano_desc">On-device AI. Requires Android 14+ and a supported device (e.g. Pixel 8+). No internet needed.</string>
+    <string name="ai_provider_gemini_nano">System AI (on-device)</string>
+    <string name="gemini_nano_desc">On-device AI: Google AI Core (Pixel 8+) or Samsung Galaxy AI (Galaxy S24+). No internet or API key required. Requires Android 14+.</string>
     <string name="gemini_top_k">Top-K</string>
+    <string name="ai_api_key_required">Requires API key</string>
+    <string name="ai_local_model_desc">Load a custom AI model from device storage</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Select profile for report</string>
@@ -154,15 +175,22 @@
     <string name="user_info_desc">Name, doctor, contacts</string>
     <string name="doctor_name">Doctor\'s name</string>
     <string name="doctor_phone">Doctor\'s phone</string>
+    <string name="user_weight">Weight (kg)</string>
+    <string name="user_height">Height (cm)</string>
+    <string name="known_diseases_title">Known diseases</string>
+    <string name="known_diseases_hint">List your chronic or known conditions (e.g. diabetes, asthma). This data will be shared with AI for more accurate analysis.</string>
+    <string name="add_known_disease">Add disease</string>
     <string name="saved_successfully">Saved successfully</string>
 
     <!-- Family Members -->
     <string name="family_members_title">Family Members</string>
     <string name="family_members_desc">Profiles and health journals</string>
     <string name="add_family_member">Add family member</string>
+    <string name="edit_family_member">Edit</string>
     <string name="member_name">Name</string>
     <string name="relationship">Relationship</string>
     <string name="default_profile">Default profile</string>
+    <string name="select_member_first">Select who to add for</string>
 
     <!-- Relationships -->
     <string name="rel_self">Self</string>
@@ -171,6 +199,13 @@
     <string name="rel_parent">Parent</string>
     <string name="rel_sibling">Sibling</string>
     <string name="rel_grandparent">Grandparent</string>
+    <string name="rel_grandchild">Grandchild</string>
+    <string name="rel_uncle_aunt">Uncle/Aunt</string>
+    <string name="rel_cousin">Cousin</string>
+    <string name="rel_friend">Friend</string>
+    <string name="rel_other">Other</string>
+    <string name="custom_relationship_hint">Enter relationship type</string>
+    <string name="recording_for">For: %1$s</string>
 
     <!-- Predefined Data Settings -->
     <string name="predefined_data_title">Predefined Data</string>
@@ -180,38 +215,90 @@
     <string name="add_custom_symptom">Add custom symptom</string>
     <string name="add_custom_medication">Add custom medication</string>
     <string name="custom_label">Custom</string>
+    <string name="predefined_relations_section">Relationships</string>
+    <string name="add_custom_relation">Add custom relationship</string>
+    <string name="ai_browse_model">Browse</string>
+
+    <!-- Settings Sections -->
+    <string name="settings_section_profile">Profile</string>
+    <string name="settings_section_data">Data</string>
+    <string name="settings_section_preferences">Preferences</string>
+
+    <!-- Date Grouping -->
+    <string name="date_today">Today</string>
+    <string name="date_yesterday">Yesterday</string>
+
+    <!-- Validation -->
+    <string name="ai_config_valid">Configuration is valid</string>
+
+    <!-- AI Data Requirements -->
+    <string name="ai_need_more_data">At least 2 days of records needed for analysis</string>
+
+    <!-- Export/Import & Backup -->
+    <string name="export_import_title">Export &amp; Import</string>
+    <string name="export_import_desc">Backup and restore your data</string>
+    <string name="backup_export">Export data</string>
+    <string name="backup_import">Import data</string>
+    <string name="backup_share">Share data</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Headache</string>
+    <string name="symptom_migraine">Migraine</string>
     <string name="symptom_stomachache">Stomachache</string>
     <string name="symptom_back_pain">Back pain</string>
     <string name="symptom_fatigue">Fatigue</string>
     <string name="symptom_dizziness">Dizziness</string>
     <string name="symptom_nausea">Nausea</string>
+    <string name="symptom_vomiting">Vomiting</string>
     <string name="symptom_insomnia">Insomnia</string>
     <string name="symptom_cough">Cough</string>
     <string name="symptom_sore_throat">Sore throat</string>
     <string name="symptom_runny_nose">Runny nose</string>
+    <string name="symptom_sneezing">Sneezing</string>
+    <string name="symptom_nasal_congestion">Nasal congestion</string>
+    <string name="symptom_wheezing">Wheezing</string>
     <string name="symptom_joint_pain">Joint pain</string>
     <string name="symptom_chest_pain">Chest pain</string>
     <string name="symptom_shortness_of_breath">Shortness of breath</string>
     <string name="symptom_fever">Fever</string>
+    <string name="symptom_chills">Chills</string>
+    <string name="symptom_night_sweats">Night sweats</string>
     <string name="symptom_anxiety">Anxiety</string>
+    <string name="symptom_depression">Depression</string>
+    <string name="symptom_irritability">Irritability</string>
+    <string name="symptom_mood_swings">Mood swings</string>
+    <string name="symptom_panic_attacks">Panic attacks</string>
     <string name="symptom_muscle_pain">Muscle pain</string>
+    <string name="symptom_neck_pain">Neck pain</string>
+    <string name="symptom_stiffness">Stiffness</string>
+    <string name="symptom_muscle_cramps">Muscle cramps</string>
     <string name="symptom_rash">Rash</string>
+    <string name="symptom_itching">Itching</string>
+    <string name="symptom_dry_skin">Dry skin</string>
+    <string name="symptom_bruising">Bruising</string>
+    <string name="symptom_hair_loss">Hair loss</string>
     <string name="symptom_palpitations">Palpitations</string>
     <string name="symptom_blurred_vision">Blurred vision</string>
+    <string name="symptom_tinnitus">Tinnitus</string>
     <string name="symptom_earache">Earache</string>
     <string name="symptom_constipation">Constipation</string>
     <string name="symptom_diarrhea">Diarrhea</string>
     <string name="symptom_bloating">Bloating</string>
-    <string name="symptom_numbness">Numbness</string>
-    <string name="symptom_swelling">Swelling</string>
-    <string name="symptom_depression">Depression</string>
     <string name="symptom_heartburn">Heartburn</string>
     <string name="symptom_loss_of_appetite">Loss of appetite</string>
-    <string name="symptom_sneezing">Sneezing</string>
+    <string name="symptom_excessive_thirst">Excessive thirst</string>
+    <string name="symptom_numbness">Numbness</string>
+    <string name="symptom_tremor">Tremor</string>
+    <string name="symptom_memory_problems">Memory problems</string>
+    <string name="symptom_confusion">Confusion</string>
+    <string name="symptom_swelling">Swelling</string>
+    <string name="symptom_cold_hands_feet">Cold hands/feet</string>
+    <string name="symptom_weight_loss">Weight loss</string>
+    <string name="symptom_weight_gain">Weight gain</string>
     <string name="symptom_dry_mouth">Dry mouth</string>
+    <string name="symptom_toothache">Toothache</string>
+    <string name="symptom_frequent_urination">Frequent urination</string>
+    <string name="symptom_painful_urination">Painful urination</string>
     <string name="common_symptoms">Common symptoms</string>
 
     <!-- Predefined Medications -->
@@ -219,28 +306,49 @@
     <string name="med_paracetamol">Paracetamol</string>
     <string name="med_aspirin">Aspirin</string>
     <string name="med_amoxicillin">Amoxicillin</string>
+    <string name="med_azithromycin">Azithromycin</string>
+    <string name="med_ciprofloxacin">Ciprofloxacin</string>
+    <string name="med_doxycycline">Doxycycline</string>
     <string name="med_omeprazole">Omeprazole</string>
+    <string name="med_pantoprazole">Pantoprazole</string>
+    <string name="med_metoclopramide">Metoclopramide</string>
     <string name="med_metformin">Metformin</string>
+    <string name="med_insulin">Insulin</string>
     <string name="med_lisinopril">Lisinopril</string>
     <string name="med_amlodipine">Amlodipine</string>
     <string name="med_metoprolol">Metoprolol</string>
+    <string name="med_losartan">Losartan</string>
+    <string name="med_atorvastatin">Atorvastatin</string>
+    <string name="med_simvastatin">Simvastatin</string>
+    <string name="med_warfarin">Warfarin</string>
+    <string name="med_clopidogrel">Clopidogrel</string>
     <string name="med_loratadine">Loratadine</string>
+    <string name="med_cetirizine">Cetirizine</string>
+    <string name="med_diphenhydramine">Diphenhydramine</string>
+    <string name="med_levothyroxine">Levothyroxine</string>
+    <string name="med_gabapentin">Gabapentin</string>
+    <string name="med_sertraline">Sertraline</string>
+    <string name="med_amitriptyline">Amitriptyline</string>
+    <string name="med_diazepam">Diazepam</string>
+    <string name="med_prednisone">Prednisone</string>
+    <string name="med_dexamethasone">Dexamethasone</string>
+    <string name="med_diclofenac">Diclofenac</string>
+    <string name="med_naproxen">Naproxen</string>
+    <string name="med_tramadol">Tramadol</string>
+    <string name="med_salbutamol">Salbutamol</string>
+    <string name="med_montelukast">Montelukast</string>
     <string name="med_vitamin_d">Vitamin D</string>
     <string name="med_vitamin_c">Vitamin C</string>
+    <string name="med_vitamin_b12">Vitamin B12</string>
     <string name="med_omega3">Omega-3</string>
-    <string name="med_atorvastatin">Atorvastatin</string>
-    <string name="med_levothyroxine">Levothyroxine</string>
-    <string name="med_losartan">Losartan</string>
-    <string name="med_gabapentin">Gabapentin</string>
-    <string name="med_pantoprazole">Pantoprazole</string>
-    <string name="med_cetirizine">Cetirizine</string>
-    <string name="med_prednisone">Prednisone</string>
-    <string name="med_diclofenac">Diclofenac</string>
     <string name="med_magnesium">Magnesium</string>
-    <string name="med_probiotics">Probiotics</string>
     <string name="med_iron">Iron supplement</string>
     <string name="med_folic_acid">Folic acid</string>
+    <string name="med_calcium">Calcium</string>
+    <string name="med_zinc">Zinc</string>
+    <string name="med_probiotics">Probiotics</string>
     <string name="med_melatonin">Melatonin</string>
+    <string name="med_multivitamin">Multivitamin</string>
     <string name="common_medications">Common medications</string>
 
     <!-- Attachments -->
@@ -256,4 +364,21 @@
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
+
+    <!-- Profile Selection -->
+    <string name="profile_selection_title">Who is using the journal?</string>
+    <string name="profile_selection_subtitle">Select a profile to continue</string>
+    <string name="profile_continue">Continue</string>
+    <string name="profile_add_new">Add member</string>
+
+    <!-- Diseases -->
+    <string name="disease_name">Disease name</string>
+    <string name="add_disease">Add disease</string>
+    <string name="edit_disease">Edit disease</string>
+    <string name="disease_active">Active</string>
+    <string name="disease_resolved">Resolved</string>
+    <string name="no_diseases_hint">No diseases. Tap + to add one.</string>
+    <string name="family_diseases_title">Family diseases</string>
+    <string name="no_family_diseases_hint">No shared diseases among family members.</string>
+    <string name="family_members_count">%1$d members</string>
 </resources>

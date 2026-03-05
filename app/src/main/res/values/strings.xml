@@ -6,7 +6,7 @@
     <string name="nav_home">Главная</string>
     <string name="nav_vitals">Показатели</string>
     <string name="nav_medications">Лекарства</string>
-    <string name="nav_ai_report">AI Отчёт</string>
+    <string name="nav_reports">Отчёты</string>
     <string name="nav_settings">Настройки</string>
 
     <!-- Common -->
@@ -15,7 +15,13 @@
     <string name="delete">Удалить</string>
     <string name="close">Закрыть</string>
     <string name="notes">Заметки</string>
+    <string name="date_label">Дата</string>
+    <string name="time_label">Время</string>
+    <string name="start_date_label">Дата начала</string>
     <string name="error_format">Ошибка: %1$s</string>
+    <string name="edit">Редактировать</string>
+    <string name="search">Поиск</string>
+    <string name="search_hint">Поиск…</string>
 
     <!-- Home Screen -->
     <string name="home_title">Медицинский дневник</string>
@@ -29,13 +35,17 @@
 
     <!-- Add Symptom Screen -->
     <string name="add_symptom_title">Добавить симптом</string>
+    <string name="edit_symptom_title">Редактировать симптом</string>
     <string name="symptom_name">Название симптома</string>
+    <string name="symptom_value_label">Значение</string>
+    <string name="symptom_value_hint">Напр. 38.5°C, 120/80</string>
     <string name="intensity_label">Интенсивность: %1$d/10</string>
     <string name="duration_minutes">Длительность (мин)</string>
     <string name="triggers_hint">Триггеры (через запятую)</string>
 
     <!-- Add Vital Screen -->
     <string name="add_vital_title">Добавить показатель</string>
+    <string name="edit_vital_title">Редактировать показатель</string>
     <string name="vital_type_label">Тип показателя</string>
     <string name="systolic_upper">Систолическое (верхнее)</string>
     <string name="value_with_unit">Значение (%1$s)</string>
@@ -51,19 +61,24 @@
 
     <!-- Add Medication Screen -->
     <string name="add_medication_title">Добавить лекарство</string>
+    <string name="edit_medication_title">Редактировать лекарство</string>
     <string name="medication_name">Название лекарства</string>
     <string name="dosage_hint">Дозировка (напр. 500 мг)</string>
     <string name="schedule_hint">Расписание (напр. 2 раза в день)</string>
 
-    <!-- AI Report Screen -->
-    <string name="ai_reports_title">AI Отчёты</string>
-    <string name="report_7_days">Отчёт (7 дней)</string>
-    <string name="patterns_30_days">Паттерны (30 дн)</string>
+    <!-- Reports Screen -->
+    <string name="reports_title">Отчёты</string>
+    <string name="reports_tab_records">Записи</string>
+    <string name="reports_tab_ai">AI Анализ</string>
+    <string name="report_2_days">Отчёт (2 дня)</string>
+    <string name="patterns_4_days">Паттерны (4 дня)</string>
     <string name="ai_analyzing">AI анализирует данные…</string>
-    <string name="no_reports_hint">Нет отчётов. Нажмите кнопку выше, чтобы сгенерировать AI-отчёт на основе ваших данных.</string>
+    <string name="no_reports_hint">Нет отчётов. Нажмите кнопку выше, чтобы сгенерировать AI-отчёт.</string>
+    <string name="no_records_hint">Нет записей за этот период.</string>
     <string name="report_type_summary">Медицинское резюме</string>
     <string name="report_type_patterns">Анализ паттернов</string>
     <string name="days_format">%1$d дн.</string>
+    <string name="records_export_pdf">Экспорт записей в PDF</string>
 
     <!-- Vitals Screen -->
     <string name="vitals_title">Показатели здоровья</string>
@@ -107,6 +122,7 @@
     <string name="language_english">English</string>
     <string name="language_chinese">中文 (简体)</string>
     <string name="language_spanish">Español</string>
+    <string name="language_armenian">Հայերեն</string>
     <string name="language_current">Текущий язык</string>
     <string name="language_select_prompt">Выберите язык приложения</string>
 
@@ -129,6 +145,9 @@
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-совместимый</string>
     <string name="ai_provider_local">Локальная модель</string>
+    <string name="ai_provider_system">Системный AI (Google / Samsung)</string>
+    <string name="system_ai_desc">Использует встроенный AI на устройстве: Google AI Core или Samsung Galaxy AI. Не требует интернета или API-ключа. Доступно на Android 14+ с совместимым устройством.</string>
+    <string name="system_ai_recommended">(Рекомендуется)</string>
     <string name="ai_privacy_redact">Редактирование данных</string>
     <string name="ai_privacy_redact_desc">Удалять телефоны и email перед отправкой</string>
     <string name="ai_api_key">API-ключ</string>
@@ -140,9 +159,11 @@
     <string name="ai_max_tokens">Макс. токенов</string>
     <string name="ai_temperature">Температура</string>
     <string name="ai_validate_config">Проверить конфигурацию</string>
-    <string name="ai_provider_gemini_nano">Gemini Nano (на устройстве)</string>
-    <string name="gemini_nano_desc">AI на устройстве. Требуется Android 14+ и поддерживаемое устройство (напр. Pixel 8+). Не требует интернета.</string>
+    <string name="ai_provider_gemini_nano">Системный AI (на устройстве)</string>
+    <string name="gemini_nano_desc">AI на устройстве: Google AI Core (Pixel 8+) или Samsung Galaxy AI (Galaxy S24+). Не требует интернета и API-ключа. Требуется Android 14+.</string>
     <string name="gemini_top_k">Top-K</string>
+    <string name="ai_api_key_required">Требуется API-ключ</string>
+    <string name="ai_local_model_desc">Загрузить свою модель AI из памяти устройства</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Выберите профиль для отчёта</string>
@@ -154,15 +175,22 @@
     <string name="user_info_desc">Имя, врач, контакты</string>
     <string name="doctor_name">Имя врача</string>
     <string name="doctor_phone">Телефон врача</string>
+    <string name="user_weight">Вес (кг)</string>
+    <string name="user_height">Рост (см)</string>
+    <string name="known_diseases_title">Известные заболевания</string>
+    <string name="known_diseases_hint">Укажите ваши хронические или известные заболевания (напр. диабет, астма). Эти данные будут переданы AI для более точного анализа.</string>
+    <string name="add_known_disease">Добавить заболевание</string>
     <string name="saved_successfully">Сохранено успешно</string>
 
     <!-- Family Members -->
     <string name="family_members_title">Члены семьи</string>
     <string name="family_members_desc">Профили и журналы здоровья</string>
     <string name="add_family_member">Добавить члена семьи</string>
+    <string name="edit_family_member">Редактировать</string>
     <string name="member_name">Имя</string>
     <string name="relationship">Родство</string>
     <string name="default_profile">Профиль по умолчанию</string>
+    <string name="select_member_first">Выберите кого добавляете</string>
 
     <!-- Relationships -->
     <string name="rel_self">Я</string>
@@ -171,6 +199,13 @@
     <string name="rel_parent">Родитель</string>
     <string name="rel_sibling">Брат/Сестра</string>
     <string name="rel_grandparent">Бабушка/Дедушка</string>
+    <string name="rel_grandchild">Внук/Внучка</string>
+    <string name="rel_uncle_aunt">Дядя/Тётя</string>
+    <string name="rel_cousin">Кузен/Кузина</string>
+    <string name="rel_friend">Друг</string>
+    <string name="rel_other">Другое</string>
+    <string name="custom_relationship_hint">Введите тип родства</string>
+    <string name="recording_for">Для: %1$s</string>
 
     <!-- Predefined Data Settings -->
     <string name="predefined_data_title">Предустановленные данные</string>
@@ -180,38 +215,90 @@
     <string name="add_custom_symptom">Добавить свой симптом</string>
     <string name="add_custom_medication">Добавить своё лекарство</string>
     <string name="custom_label">Своё</string>
+    <string name="predefined_relations_section">Родство</string>
+    <string name="add_custom_relation">Добавить своё родство</string>
+    <string name="ai_browse_model">Обзор</string>
+
+    <!-- Settings Sections -->
+    <string name="settings_section_profile">Профиль</string>
+    <string name="settings_section_data">Данные</string>
+    <string name="settings_section_preferences">Настройки</string>
+
+    <!-- Date Grouping -->
+    <string name="date_today">Сегодня</string>
+    <string name="date_yesterday">Вчера</string>
+
+    <!-- Validation -->
+    <string name="ai_config_valid">Конфигурация корректна</string>
+
+    <!-- AI Data Requirements -->
+    <string name="ai_need_more_data">Необходимы данные минимум за 2 дня для анализа</string>
+
+    <!-- Export/Import & Backup -->
+    <string name="export_import_title">Экспорт и импорт</string>
+    <string name="export_import_desc">Резервное копирование и восстановление данных</string>
+    <string name="backup_export">Экспорт данных</string>
+    <string name="backup_import">Импорт данных</string>
+    <string name="backup_share">Поделиться данными</string>
 
     <!-- Predefined Symptoms -->
     <string name="symptom_headache">Головная боль</string>
+    <string name="symptom_migraine">Мигрень</string>
     <string name="symptom_stomachache">Боль в животе</string>
     <string name="symptom_back_pain">Боль в спине</string>
     <string name="symptom_fatigue">Усталость</string>
     <string name="symptom_dizziness">Головокружение</string>
     <string name="symptom_nausea">Тошнота</string>
+    <string name="symptom_vomiting">Рвота</string>
     <string name="symptom_insomnia">Бессонница</string>
     <string name="symptom_cough">Кашель</string>
     <string name="symptom_sore_throat">Боль в горле</string>
     <string name="symptom_runny_nose">Насморк</string>
+    <string name="symptom_sneezing">Чихание</string>
+    <string name="symptom_nasal_congestion">Заложенность носа</string>
+    <string name="symptom_wheezing">Свистящее дыхание</string>
     <string name="symptom_joint_pain">Боль в суставах</string>
     <string name="symptom_chest_pain">Боль в груди</string>
     <string name="symptom_shortness_of_breath">Одышка</string>
     <string name="symptom_fever">Жар</string>
+    <string name="symptom_chills">Озноб</string>
+    <string name="symptom_night_sweats">Ночная потливость</string>
     <string name="symptom_anxiety">Тревожность</string>
+    <string name="symptom_depression">Депрессия</string>
+    <string name="symptom_irritability">Раздражительность</string>
+    <string name="symptom_mood_swings">Перепады настроения</string>
+    <string name="symptom_panic_attacks">Панические атаки</string>
     <string name="symptom_muscle_pain">Боль в мышцах</string>
+    <string name="symptom_neck_pain">Боль в шее</string>
+    <string name="symptom_stiffness">Скованность</string>
+    <string name="symptom_muscle_cramps">Мышечные судороги</string>
     <string name="symptom_rash">Сыпь</string>
+    <string name="symptom_itching">Зуд</string>
+    <string name="symptom_dry_skin">Сухость кожи</string>
+    <string name="symptom_bruising">Синяки</string>
+    <string name="symptom_hair_loss">Выпадение волос</string>
     <string name="symptom_palpitations">Учащённое сердцебиение</string>
     <string name="symptom_blurred_vision">Нечёткое зрение</string>
+    <string name="symptom_tinnitus">Шум в ушах</string>
     <string name="symptom_earache">Боль в ухе</string>
     <string name="symptom_constipation">Запор</string>
     <string name="symptom_diarrhea">Диарея</string>
     <string name="symptom_bloating">Вздутие живота</string>
-    <string name="symptom_numbness">Онемение</string>
-    <string name="symptom_swelling">Отёк</string>
-    <string name="symptom_depression">Депрессия</string>
     <string name="symptom_heartburn">Изжога</string>
     <string name="symptom_loss_of_appetite">Потеря аппетита</string>
-    <string name="symptom_sneezing">Чихание</string>
+    <string name="symptom_excessive_thirst">Чрезмерная жажда</string>
+    <string name="symptom_numbness">Онемение</string>
+    <string name="symptom_tremor">Тремор</string>
+    <string name="symptom_memory_problems">Проблемы с памятью</string>
+    <string name="symptom_confusion">Спутанность сознания</string>
+    <string name="symptom_swelling">Отёк</string>
+    <string name="symptom_cold_hands_feet">Холодные руки/ноги</string>
+    <string name="symptom_weight_loss">Потеря веса</string>
+    <string name="symptom_weight_gain">Набор веса</string>
     <string name="symptom_dry_mouth">Сухость во рту</string>
+    <string name="symptom_toothache">Зубная боль</string>
+    <string name="symptom_frequent_urination">Частое мочеиспускание</string>
+    <string name="symptom_painful_urination">Болезненное мочеиспускание</string>
     <string name="common_symptoms">Частые симптомы</string>
 
     <!-- Predefined Medications -->
@@ -219,28 +306,49 @@
     <string name="med_paracetamol">Парацетамол</string>
     <string name="med_aspirin">Аспирин</string>
     <string name="med_amoxicillin">Амоксициллин</string>
+    <string name="med_azithromycin">Азитромицин</string>
+    <string name="med_ciprofloxacin">Ципрофлоксацин</string>
+    <string name="med_doxycycline">Доксициклин</string>
     <string name="med_omeprazole">Омепразол</string>
+    <string name="med_pantoprazole">Пантопразол</string>
+    <string name="med_metoclopramide">Метоклопрамид</string>
     <string name="med_metformin">Метформин</string>
+    <string name="med_insulin">Инсулин</string>
     <string name="med_lisinopril">Лизиноприл</string>
     <string name="med_amlodipine">Амлодипин</string>
     <string name="med_metoprolol">Метопролол</string>
+    <string name="med_losartan">Лозартан</string>
+    <string name="med_atorvastatin">Аторвастатин</string>
+    <string name="med_simvastatin">Симвастатин</string>
+    <string name="med_warfarin">Варфарин</string>
+    <string name="med_clopidogrel">Клопидогрел</string>
     <string name="med_loratadine">Лоратадин</string>
+    <string name="med_cetirizine">Цетиризин</string>
+    <string name="med_diphenhydramine">Дифенгидрамин</string>
+    <string name="med_levothyroxine">Левотироксин</string>
+    <string name="med_gabapentin">Габапентин</string>
+    <string name="med_sertraline">Сертралин</string>
+    <string name="med_amitriptyline">Амитриптилин</string>
+    <string name="med_diazepam">Диазепам</string>
+    <string name="med_prednisone">Преднизон</string>
+    <string name="med_dexamethasone">Дексаметазон</string>
+    <string name="med_diclofenac">Диклофенак</string>
+    <string name="med_naproxen">Напроксен</string>
+    <string name="med_tramadol">Трамадол</string>
+    <string name="med_salbutamol">Сальбутамол</string>
+    <string name="med_montelukast">Монтелукаст</string>
     <string name="med_vitamin_d">Витамин D</string>
     <string name="med_vitamin_c">Витамин C</string>
+    <string name="med_vitamin_b12">Витамин B12</string>
     <string name="med_omega3">Омега-3</string>
-    <string name="med_atorvastatin">Аторвастатин</string>
-    <string name="med_levothyroxine">Левотироксин</string>
-    <string name="med_losartan">Лозартан</string>
-    <string name="med_gabapentin">Габапентин</string>
-    <string name="med_pantoprazole">Пантопразол</string>
-    <string name="med_cetirizine">Цетиризин</string>
-    <string name="med_prednisone">Преднизон</string>
-    <string name="med_diclofenac">Диклофенак</string>
     <string name="med_magnesium">Магний</string>
-    <string name="med_probiotics">Пробиотики</string>
     <string name="med_iron">Препараты железа</string>
     <string name="med_folic_acid">Фолиевая кислота</string>
+    <string name="med_calcium">Кальций</string>
+    <string name="med_zinc">Цинк</string>
+    <string name="med_probiotics">Пробиотики</string>
     <string name="med_melatonin">Мелатонин</string>
+    <string name="med_multivitamin">Мультивитамины</string>
     <string name="common_medications">Частые лекарства</string>
 
     <!-- Attachments -->
@@ -260,4 +368,21 @@
         <item quantity="many">%1$d дней</item>
         <item quantity="other">%1$d дней</item>
     </plurals>
+
+    <!-- Profile Selection -->
+    <string name="profile_selection_title">Кто использует журнал?</string>
+    <string name="profile_selection_subtitle">Выберите профиль для продолжения</string>
+    <string name="profile_continue">Продолжить</string>
+    <string name="profile_add_new">Добавить участника</string>
+
+    <!-- Diseases -->
+    <string name="disease_name">Название болезни</string>
+    <string name="add_disease">Добавить болезнь</string>
+    <string name="edit_disease">Редактировать болезнь</string>
+    <string name="disease_active">Активна</string>
+    <string name="disease_resolved">Вылечена</string>
+    <string name="no_diseases_hint">Нет болезней. Нажмите + чтобы добавить.</string>
+    <string name="family_diseases_title">Болезни семьи</string>
+    <string name="no_family_diseases_hint">Нет общих болезней среди членов семьи.</string>
+    <string name="family_members_count">%1$d чел.</string>
 </resources>

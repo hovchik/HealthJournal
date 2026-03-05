@@ -24,6 +24,18 @@ class AddSymptomUseCase constructor(
     suspend operator fun invoke(symptom: Symptom): Long = repository.insertSymptom(symptom)
 }
 
+class UpdateSymptomUseCase constructor(
+    private val repository: SymptomRepository
+) {
+    suspend operator fun invoke(symptom: Symptom) = repository.updateSymptom(symptom)
+}
+
+class GetSymptomByIdUseCase constructor(
+    private val repository: SymptomRepository
+) {
+    suspend operator fun invoke(id: Long): Symptom? = repository.getSymptomById(id)
+}
+
 class DeleteSymptomUseCase constructor(
     private val repository: SymptomRepository
 ) {

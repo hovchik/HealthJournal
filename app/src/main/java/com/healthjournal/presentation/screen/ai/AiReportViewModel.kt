@@ -18,22 +18,29 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
     private val container = (application as HealthJournalApp).container
 
     val familyMembers = container.familyMemberRepository.getAllMembers()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val userSettings = container.userSettingsRepository.getUserSettings()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    private val activeProfileFlow = container.userSettingsRepository.getUserSettings()
+        .map { it.activeProfileId }
 
-    val activeProfileId = userSettings
-        .map { it?.activeProfileId ?: 0L }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+    val activeProfileId = activeProfileFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0L)
 
-    val reports = combine(container.getAllReports(), activeProfileId) { all, profileId ->
+    val reports = combine(container.getAllReports(), activeProfileFlow) { all, profileId ->
         all.filter { it.profileId == profileId }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val vitals = combine(container.getAllVitalSigns(), activeProfileId) { all, profileId ->
+    val vitals = combine(container.getAllVitalSigns(), activeProfileFlow) { all, profileId ->
         all.filter { it.profileId == profileId }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val symptoms = combine(container.getAllSymptoms(), activeProfileFlow) { all, profileId ->
+        all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val medications = combine(container.getAllMedications(), activeProfileFlow) { all, profileId ->
+        all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _uiState = MutableStateFlow(AiReportUiState())
     val uiState = _uiState.asStateFlow()
@@ -50,22 +57,22 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun generateReport(periodDays: Int = 7) {
+    fun generateReport(periodDays: Int = 2) {
         viewModelScope.launch {
             _uiState.value = AiReportUiState(isLoading = true)
             val settings = getAiSettings()
-            val profileId = activeProfileId.value
+            val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
             container.generateAiSummary(periodDays, getOutputLanguage(), settings, profileId)
                 .onSuccess { _uiState.value = AiReportUiState() }
                 .onFailure { _uiState.value = AiReportUiState(error = it.message) }
         }
     }
 
-    fun analyzePatterns(periodDays: Int = 30) {
+    fun analyzePatterns(periodDays: Int = 4) {
         viewModelScope.launch {
             _uiState.value = AiReportUiState(isLoading = true)
             val settings = getAiSettings()
-            val profileId = activeProfileId.value
+            val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
             container.generatePatternAnalysis(periodDays, getOutputLanguage(), settings, profileId)
                 .onSuccess { _uiState.value = AiReportUiState() }
                 .onFailure { _uiState.value = AiReportUiState(error = it.message) }

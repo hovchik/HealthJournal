@@ -11,13 +11,18 @@ import kotlinx.coroutines.launch
 class VitalsViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
 
-    private val activeProfileId = container.userSettingsRepository.getUserSettings()
+    private val activeProfileFlow = container.userSettingsRepository.getUserSettings()
         .map { it.activeProfileId }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
 
-    val vitals = combine(container.getAllVitalSigns(), activeProfileId) { all, profileId ->
+    val activeProfileId = activeProfileFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0L)
+
+    val familyMembers = container.familyMemberRepository.getAllMembers()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val vitals = combine(container.getAllVitalSigns(), activeProfileFlow) { all, profileId ->
         all.filter { it.profileId == profileId }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun removeVital(vital: VitalSign) {
         viewModelScope.launch { container.deleteVitalSign(vital) }

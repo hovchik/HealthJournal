@@ -12,23 +12,27 @@ data class SymptomDto(
     val id: Long = 0,
     val name: String,
     val intensity: Int,
+    val value: String? = null,
     val durationMinutes: Int? = null,
     val triggers: List<String> = emptyList(),
     val notes: String = "",
     val recordedAt: Long = 0,
     val profileId: Long = 0,
-    val attachmentPaths: List<String> = emptyList()
+    val attachmentPaths: List<String> = emptyList(),
+    val diseaseId: Long = 0
 ) {
     fun toDomain() = Symptom(
         id = id,
         name = name,
         intensity = intensity,
+        value = value,
         durationMinutes = durationMinutes,
         triggers = triggers,
         notes = notes,
         recordedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(recordedAt), ZoneId.systemDefault()),
         profileId = profileId,
-        attachmentPaths = attachmentPaths
+        attachmentPaths = attachmentPaths,
+        diseaseId = diseaseId
     )
 
     companion object {
@@ -36,12 +40,14 @@ data class SymptomDto(
             id = s.id,
             name = s.name,
             intensity = s.intensity,
+            value = s.value,
             durationMinutes = s.durationMinutes,
             triggers = s.triggers,
             notes = s.notes,
             recordedAt = s.recordedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             profileId = s.profileId,
-            attachmentPaths = s.attachmentPaths
+            attachmentPaths = s.attachmentPaths,
+            diseaseId = s.diseaseId
         )
     }
 }
@@ -55,7 +61,8 @@ data class VitalSignDto(
     val notes: String = "",
     val recordedAt: Long = 0,
     val profileId: Long = 0,
-    val attachmentPaths: List<String> = emptyList()
+    val attachmentPaths: List<String> = emptyList(),
+    val diseaseId: Long = 0
 ) {
     fun toDomain() = VitalSign(
         id = id,
@@ -65,7 +72,8 @@ data class VitalSignDto(
         notes = notes,
         recordedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(recordedAt), ZoneId.systemDefault()),
         profileId = profileId,
-        attachmentPaths = attachmentPaths
+        attachmentPaths = attachmentPaths,
+        diseaseId = diseaseId
     )
 
     companion object {
@@ -77,7 +85,8 @@ data class VitalSignDto(
             notes = v.notes,
             recordedAt = v.recordedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             profileId = v.profileId,
-            attachmentPaths = v.attachmentPaths
+            attachmentPaths = v.attachmentPaths,
+            diseaseId = v.diseaseId
         )
     }
 }
@@ -92,7 +101,8 @@ data class MedicationDto(
     val endDate: Long? = null,
     val active: Boolean = true,
     val notes: String = "",
-    val profileId: Long = 0
+    val profileId: Long = 0,
+    val diseaseId: Long = 0
 ) {
     fun toDomain() = Medication(
         id = id,
@@ -103,7 +113,8 @@ data class MedicationDto(
         endDate = endDate?.let { LocalDate.ofEpochDay(it) },
         active = active,
         notes = notes,
-        profileId = profileId
+        profileId = profileId,
+        diseaseId = diseaseId
     )
 
     companion object {
@@ -116,7 +127,8 @@ data class MedicationDto(
             endDate = m.endDate?.toEpochDay(),
             active = m.active,
             notes = m.notes,
-            profileId = m.profileId
+            profileId = m.profileId,
+            diseaseId = m.diseaseId
         )
     }
 }
@@ -183,13 +195,19 @@ data class FamilyMemberDto(
     val id: Long = 0,
     val name: String,
     val relationship: String = "",
-    val avatarColor: Int = 0xFF1B6B4D.toInt()
+    val avatarColor: Int = 0xFF1B6B4D.toInt(),
+    val weight: String = "",
+    val height: String = "",
+    val knownDiseases: List<String> = emptyList()
 ) {
     fun toDomain() = FamilyMember(
         id = id,
         name = name,
         relationship = relationship,
-        avatarColor = avatarColor
+        avatarColor = avatarColor,
+        weight = weight,
+        height = height,
+        knownDiseases = knownDiseases
     )
 
     companion object {
@@ -197,7 +215,40 @@ data class FamilyMemberDto(
             id = f.id,
             name = f.name,
             relationship = f.relationship,
-            avatarColor = f.avatarColor
+            avatarColor = f.avatarColor,
+            weight = f.weight,
+            height = f.height,
+            knownDiseases = f.knownDiseases
+        )
+    }
+}
+
+@Serializable
+data class DiseaseDto(
+    val id: Long = 0,
+    val name: String,
+    val profileId: Long = 0,
+    val notes: String = "",
+    val active: Boolean = true,
+    val createdAt: Long = 0
+) {
+    fun toDomain() = Disease(
+        id = id,
+        name = name,
+        profileId = profileId,
+        notes = notes,
+        active = active,
+        createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(createdAt), ZoneId.systemDefault())
+    )
+
+    companion object {
+        fun from(d: Disease) = DiseaseDto(
+            id = d.id,
+            name = d.name,
+            profileId = d.profileId,
+            notes = d.notes,
+            active = d.active,
+            createdAt = d.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         )
     }
 }

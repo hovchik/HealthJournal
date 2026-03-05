@@ -22,7 +22,10 @@ data class AiInput(
     val vitals: List<VitalSign>,
     val medications: List<Medication>,
     val periodDays: Int,
-    val outputLanguage: String
+    val outputLanguage: String,
+    val knownDiseases: List<String> = emptyList(),
+    val weight: String = "",
+    val height: String = ""
 )
 
 data class AiTextResult(
