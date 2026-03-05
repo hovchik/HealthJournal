@@ -166,7 +166,10 @@ fun AddSymptomScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        tonalElevation = 1.dp,
+        shadowElevation = 8.dp
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             // Drag handle
