@@ -381,4 +381,20 @@
     <string name="family_diseases_title">Ընտանիքի հիվանդություններ</string>
     <string name="no_family_diseases_hint">Ընտանիքի անդամների մեջ ընդհանուր հիվանդություններ չկան։</string>
     <string name="family_members_count">%1$d անդամ</string>
+    <string name="disease_deleted">Հիվանադdelays acked</string>
+    <string name="undo">Hundo</string>
+    <string name="deleted_diseases">Deleted diseases</string>
+    <string name="no_deleted_diseases_hint">hint</string>
+    <string name="restore">Restore</string>
+    <string name="permanently_delete">Perm del</string>
+    <string name="created_date">Created: %1$s</string>
+    <string name="deleted_date">Deleted: %1$s</string>
+    <string name="disease_group">Group</string>
+    <string name="disease_group_hint">hint</string>
+    <string name="ungrouped">Ungrouped</string>
+    <string name="show_deleted">Show deleted</string>
+    <string name="hide_deleted">Hide deleted</string>
+    <string name="confirm_permanent_delete">confirm?</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
 </resources>

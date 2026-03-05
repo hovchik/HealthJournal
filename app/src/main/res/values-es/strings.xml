@@ -381,4 +381,20 @@
     <string name="family_diseases_title">Enfermedades familiares</string>
     <string name="no_family_diseases_hint">No hay enfermedades compartidas entre los miembros de la familia.</string>
     <string name="family_members_count">%1$d miembros</string>
+    <string name="disease_deleted">Enfermedad eliminada</string>
+    <string name="undo">Deshacer</string>
+    <string name="deleted_diseases">Enfermedades eliminadas</string>
+    <string name="no_deleted_diseases_hint">No hay enfermedades eliminadas.</string>
+    <string name="restore">Restaurar</string>
+    <string name="permanently_delete">Eliminar permanentemente</string>
+    <string name="created_date">Creada: %1$s</string>
+    <string name="deleted_date">Eliminada: %1$s</string>
+    <string name="disease_group">Grupo</string>
+    <string name="disease_group_hint">Ej. crónicas, estacionales</string>
+    <string name="ungrouped">Sin grupo</string>
+    <string name="show_deleted">Mostrar eliminadas</string>
+    <string name="hide_deleted">Ocultar eliminadas</string>
+    <string name="confirm_permanent_delete">¿Está seguro de que desea eliminar esta enfermedad permanentemente? Esta acción no se puede deshacer.</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
 </resources>

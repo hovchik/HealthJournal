@@ -28,3 +28,24 @@ class UpdateDiseaseUseCase(private val repository: DiseaseRepository) {
 class DeleteDiseaseUseCase(private val repository: DiseaseRepository) {
     suspend operator fun invoke(disease: Disease) = repository.deleteDisease(disease)
 }
+
+class SoftDeleteDiseaseUseCase(private val repository: DiseaseRepository) {
+    suspend operator fun invoke(disease: Disease) = repository.softDeleteDisease(disease)
+}
+
+class RestoreDiseaseUseCase(private val repository: DiseaseRepository) {
+    suspend operator fun invoke(disease: Disease) = repository.restoreDisease(disease)
+}
+
+class GetDeletedDiseasesUseCase(private val repository: DiseaseRepository) {
+    operator fun invoke(): Flow<List<Disease>> = repository.getDeletedDiseases()
+}
+
+class GetDeletedDiseasesByProfileIdUseCase(private val repository: DiseaseRepository) {
+    operator fun invoke(profileId: Long): Flow<List<Disease>> =
+        repository.getDeletedDiseasesByProfileId(profileId)
+}
+
+class PermanentlyDeleteDiseaseUseCase(private val repository: DiseaseRepository) {
+    suspend operator fun invoke(disease: Disease) = repository.permanentlyDeleteDisease(disease)
+}

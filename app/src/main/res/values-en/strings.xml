@@ -381,4 +381,20 @@
     <string name="family_diseases_title">Family diseases</string>
     <string name="no_family_diseases_hint">No shared diseases among family members.</string>
     <string name="family_members_count">%1$d members</string>
+    <string name="disease_deleted">Disease deleted</string>
+    <string name="undo">Undo</string>
+    <string name="deleted_diseases">Deleted diseases</string>
+    <string name="no_deleted_diseases_hint">No deleted diseases.</string>
+    <string name="restore">Restore</string>
+    <string name="permanently_delete">Delete permanently</string>
+    <string name="created_date">Created: %1$s</string>
+    <string name="deleted_date">Deleted: %1$s</string>
+    <string name="disease_group">Group</string>
+    <string name="disease_group_hint">E.g. chronic, seasonal</string>
+    <string name="ungrouped">Ungrouped</string>
+    <string name="show_deleted">Show deleted</string>
+    <string name="hide_deleted">Hide deleted</string>
+    <string name="confirm_permanent_delete">Are you sure you want to permanently delete this disease? This action cannot be undone.</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
 </resources>

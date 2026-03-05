@@ -8,5 +8,8 @@ data class Disease(
     val profileId: Long = 0,
     val notes: String = "",
     val active: Boolean = true,
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val isDeleted: Boolean = false,
+    val deletedAt: LocalDateTime? = null,
+    val group: String = ""
 )

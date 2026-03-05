@@ -184,6 +184,11 @@ class AppContainer(context: Context) {
     val addDisease = AddDiseaseUseCase(diseaseRepository)
     val updateDisease = UpdateDiseaseUseCase(diseaseRepository)
     val deleteDisease = DeleteDiseaseUseCase(diseaseRepository)
+    val softDeleteDisease = SoftDeleteDiseaseUseCase(diseaseRepository)
+    val restoreDisease = RestoreDiseaseUseCase(diseaseRepository)
+    val getDeletedDiseases = GetDeletedDiseasesUseCase(diseaseRepository)
+    val getDeletedDiseasesByProfileId = GetDeletedDiseasesByProfileIdUseCase(diseaseRepository)
+    val permanentlyDeleteDisease = PermanentlyDeleteDiseaseUseCase(diseaseRepository)
 
     val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository)
     val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, userSettingsRepository, familyMemberRepository)

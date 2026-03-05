@@ -379,4 +379,20 @@
     <string name="family_diseases_title">家庭疾病</string>
     <string name="no_family_diseases_hint">家庭成员之间没有共同疾病。</string>
     <string name="family_members_count">%1$d 人</string>
+    <string name="disease_deleted">疾病已删除</string>
+    <string name="undo">撤销</string>
+    <string name="deleted_diseases">已删除的疾病</string>
+    <string name="no_deleted_diseases_hint">没有已删除的疾病。</string>
+    <string name="restore">恢复</string>
+    <string name="permanently_delete">永久删除</string>
+    <string name="created_date">创建于：%1$s</string>
+    <string name="deleted_date">删除于：%1$s</string>
+    <string name="disease_group">分组</string>
+    <string name="disease_group_hint">例如：慢性、季节性</string>
+    <string name="ungrouped">未分组</string>
+    <string name="show_deleted">显示已删除</string>
+    <string name="hide_deleted">隐藏已删除</string>
+    <string name="confirm_permanent_delete">确定要永久删除此疾病吗？此操作无法撤销。</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
 </resources>
