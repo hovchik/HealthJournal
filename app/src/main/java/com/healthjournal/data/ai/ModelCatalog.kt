@@ -5,13 +5,19 @@ import com.healthjournal.domain.model.ai.ModelInstallState
 
 object ModelCatalog {
 
+    /** All supported model file extensions for display in UI */
+    val supportedFormats: List<String> = listOf(
+        "GGUF", "GGML", "TFLite", "BIN", "ONNX",
+        "PT", "PTH", "SafeTensors", "MLModel", "AWQ"
+    )
+
     val availableModels: List<LocalAiModel> = listOf(
         // ===== Small models (< 1 GB) =====
         LocalAiModel(
             modelId = "tinyllama-1.1b-q4",
             displayName = "TinyLlama 1.1B Q4",
             runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            fileFormat = "gguf",
             quantization = "Q4_0",
             requiredRamMb = 1500,
             recommendedRamMb = 2500,
@@ -47,7 +53,7 @@ object ModelCatalog {
             modelId = "stablelm-zephyr-1.6b-q4",
             displayName = "StableLM Zephyr 1.6B Q4",
             runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            fileFormat = "gguf",
             quantization = "Q4_0",
             requiredRamMb = 2000,
             recommendedRamMb = 3500,
@@ -67,7 +73,7 @@ object ModelCatalog {
             modelId = "qwen2.5-3b-instruct-q4",
             displayName = "Qwen 2.5 3B Instruct Q4 (Recommended)",
             runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3500,
             recommendedRamMb = 5000,
@@ -85,7 +91,7 @@ object ModelCatalog {
             modelId = "phi-2-2.7b-q4",
             displayName = "Phi-2 2.7B Q4",
             runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3000,
             recommendedRamMb = 4500,
@@ -103,7 +109,7 @@ object ModelCatalog {
             modelId = "rocket-3b-q4",
             displayName = "Rocket 3B Q4",
             runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3200,
             recommendedRamMb = 4800,
@@ -123,7 +129,7 @@ object ModelCatalog {
             modelId = "mistral-7b-instruct-q4",
             displayName = "Mistral 7B Instruct Q4",
             runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
             recommendedRamMb = 8000,
@@ -141,7 +147,7 @@ object ModelCatalog {
             modelId = "zephyr-7b-beta-q4",
             displayName = "Zephyr 7B Beta Q4",
             runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
             recommendedRamMb = 8000,
@@ -159,7 +165,7 @@ object ModelCatalog {
             modelId = "openchat-3.5-7b-q4",
             displayName = "OpenChat 3.5 7B Q4",
             runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
             recommendedRamMb = 8000,

@@ -474,6 +474,7 @@
     <!-- Scan progress -->
     <string name="ai_engine_scanning">Сканирование…</string>
     <string name="ai_engine_scan_folders">Сканирование папок устройства</string>
+    <string name="ai_engine_supported_formats">Поддерживаемые форматы моделей</string>
 
     <!-- Download model -->
     <string name="ai_engine_no_download_url">URL для скачивания недоступен</string>

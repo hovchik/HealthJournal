@@ -468,6 +468,7 @@
     <!-- Scan progress -->
     <string name="ai_engine_scanning">\u626b\u63cf\u4e2d\u2026</string>
     <string name="ai_engine_scan_folders">\u626b\u63cf\u8bbe\u5907\u6587\u4ef6\u5939</string>
+    <string name="ai_engine_supported_formats">\u652f\u6301\u7684\u6a21\u578b\u683c\u5f0f</string>
 
     <!-- Download model -->
     <string name="ai_engine_no_download_url">\u4e0b\u8f7d\u94fe\u63a5\u4e0d\u53ef\u7528</string>

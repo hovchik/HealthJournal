@@ -33,6 +33,7 @@ import androidx.core.content.PermissionChecker
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
+import com.healthjournal.data.ai.ModelCatalog
 import com.healthjournal.domain.model.ai.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -812,6 +813,42 @@ private fun LocalModelSection(
                     )
                 }
             }
+
+            // Supported formats info
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Extension,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            stringResource(R.string.ai_engine_supported_formats),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Text(
+                        ModelCatalog.supportedFormats.joinToString(" · "),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
+            }
         }
     }
 }
@@ -849,7 +886,14 @@ private fun InstalledModelCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        "${formatSize(model.sizeMb)} | ${model.quantization ?: model.fileFormat} | ${model.runtimeType}",
+                        buildString {
+                            append(formatSize(model.sizeMb))
+                            append(" | ")
+                            append(model.fileFormat.uppercase())
+                            model.quantization?.let { append(" ($it)") }
+                            append(" | ")
+                            append(model.runtimeType)
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -470,6 +470,7 @@
     <!-- Scan progress -->
     <string name="ai_engine_scanning">Scanning…</string>
     <string name="ai_engine_scan_folders">Scanning device folders</string>
+    <string name="ai_engine_supported_formats">Supported model formats</string>
 
     <!-- Download model -->
     <string name="ai_engine_no_download_url">Download URL is not available</string>
