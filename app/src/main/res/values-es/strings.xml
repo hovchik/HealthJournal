@@ -429,4 +429,32 @@
     <string name="local_model_delete">Eliminar modelo</string>
     <string name="local_model_fallback_info">Sin un modelo descargado, el análisis local basado en reglas siempre está disponible.</string>
     <string name="perm_ai_no_model">Ningún modelo de IA descargado. Descargue uno en Configuración de IA.</string>
+
+    <!-- AI Engine Settings -->
+    <string name="ai_provider_system_ai">IA del sistema (Android AICore)</string>
+    <string name="ai_engine_title">Motor de IA</string>
+    <string name="ai_engine_mode">Modo de IA</string>
+    <string name="ai_engine_mode_desc">Elige c\u00f3mo la app usa la IA</string>
+    <string name="ai_engine_device_info">Informaci\u00f3n del dispositivo</string>
+    <string name="ai_engine_ram">RAM: %1$d MB</string>
+    <string name="ai_engine_storage">Libre: %1$d MB</string>
+    <string name="ai_engine_performance">Clase: %1$s</string>
+    <string name="ai_engine_installed_models">Modelos instalados</string>
+    <string name="ai_engine_no_models">Sin modelos instalados</string>
+    <string name="ai_engine_model_catalog">Cat\u00e1logo de modelos</string>
+    <string name="ai_engine_scan">Buscar modelos</string>
+    <string name="ai_engine_scan_result">Modelos encontrados: %1$d</string>
+    <string name="ai_engine_active">Activo</string>
+    <string name="ai_engine_activate">Activar</string>
+    <string name="ai_engine_incompatible">Incompatible</string>
+    <string name="ai_engine_downloading">Descargando: %1$d%%</string>
+    <string name="ai_engine_installing">Instalando\u2026</string>
+    <string name="ai_engine_size">%1$d MB</string>
+    <string name="ai_engine_ram_required">RAM necesaria: %1$d MB</string>
+    <string name="ai_engine_setup_wizard">Asistente de configuraci\u00f3n de IA</string>
+    <string name="ai_engine_setup_welcome">Configura el an\u00e1lisis de IA para tu dispositivo</string>
+    <string name="ai_engine_setup_detect">Detectando capacidades\u2026</string>
+    <string name="ai_engine_setup_recommend">Modo recomendado: %1$s</string>
+    <string name="ai_engine_setup_complete">Configuraci\u00f3n completa</string>
+    <string name="ai_engine_setup_skip">Omitir</string>
 </resources>

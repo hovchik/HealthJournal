@@ -427,4 +427,32 @@
     <string name="local_model_delete">删除模型</string>
     <string name="local_model_fallback_info">没有下载模型时，基于规则的本地分析始终可用。</string>
     <string name="perm_ai_no_model">未下载 AI 模型。请在 AI 设置中下载。</string>
+
+    <!-- AI Engine Settings -->
+    <string name="ai_provider_system_ai">\u7cfb\u7edfAI (Android AICore)</string>
+    <string name="ai_engine_title">AI\u5f15\u64ce</string>
+    <string name="ai_engine_mode">AI\u6a21\u5f0f</string>
+    <string name="ai_engine_mode_desc">\u9009\u62e9\u5e94\u7528\u5982\u4f55\u4f7f\u7528AI</string>
+    <string name="ai_engine_device_info">\u8bbe\u5907\u4fe1\u606f</string>
+    <string name="ai_engine_ram">\u5185\u5b58: %1$d MB</string>
+    <string name="ai_engine_storage">\u53ef\u7528: %1$d MB</string>
+    <string name="ai_engine_performance">\u7ea7\u522b: %1$s</string>
+    <string name="ai_engine_installed_models">\u5df2\u5b89\u88c5\u6a21\u578b</string>
+    <string name="ai_engine_no_models">\u6ca1\u6709\u5df2\u5b89\u88c5\u7684\u6a21\u578b</string>
+    <string name="ai_engine_model_catalog">\u6a21\u578b\u76ee\u5f55</string>
+    <string name="ai_engine_scan">\u626b\u63cf\u6a21\u578b</string>
+    <string name="ai_engine_scan_result">\u627e\u5230\u6a21\u578b: %1$d</string>
+    <string name="ai_engine_active">\u5df2\u6fc0\u6d3b</string>
+    <string name="ai_engine_activate">\u6fc0\u6d3b</string>
+    <string name="ai_engine_incompatible">\u4e0d\u517c\u5bb9</string>
+    <string name="ai_engine_downloading">\u4e0b\u8f7d\u4e2d: %1$d%%</string>
+    <string name="ai_engine_installing">\u5b89\u88c5\u4e2d\u2026</string>
+    <string name="ai_engine_size">%1$d MB</string>
+    <string name="ai_engine_ram_required">\u9700\u8981\u5185\u5b58: %1$d MB</string>
+    <string name="ai_engine_setup_wizard">AI\u8bbe\u7f6e\u5411\u5bfc</string>
+    <string name="ai_engine_setup_welcome">\u4e3a\u60a8\u7684\u8bbe\u5907\u914d\u7f6eAI\u5206\u6790</string>
+    <string name="ai_engine_setup_detect">\u68c0\u6d4b\u80fd\u529b\u4e2d\u2026</string>
+    <string name="ai_engine_setup_recommend">\u63a8\u8350\u6a21\u5f0f: %1$s</string>
+    <string name="ai_engine_setup_complete">\u8bbe\u7f6e\u5b8c\u6210</string>
+    <string name="ai_engine_setup_skip">\u8df3\u8fc7</string>
 </resources>

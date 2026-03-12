@@ -433,4 +433,32 @@
     <string name="local_model_delete">Удалить модель</string>
     <string name="local_model_fallback_info">Без скачанной модели всегда доступен локальный анализ на основе правил.</string>
     <string name="perm_ai_no_model">Модель AI не скачана. Скачайте в настройках AI.</string>
+
+    <!-- AI Engine Settings -->
+    <string name="ai_provider_system_ai">Системный AI (Android AICore)</string>
+    <string name="ai_engine_title">AI движок</string>
+    <string name="ai_engine_mode">Режим AI</string>
+    <string name="ai_engine_mode_desc">Выберите, как приложение использует AI</string>
+    <string name="ai_engine_device_info">Информация об устройстве</string>
+    <string name="ai_engine_ram">RAM: %1$d МБ</string>
+    <string name="ai_engine_storage">Свободно: %1$d МБ</string>
+    <string name="ai_engine_performance">Класс: %1$s</string>
+    <string name="ai_engine_installed_models">Установленные модели</string>
+    <string name="ai_engine_no_models">Нет установленных моделей</string>
+    <string name="ai_engine_model_catalog">Каталог моделей</string>
+    <string name="ai_engine_scan">Сканировать модели</string>
+    <string name="ai_engine_scan_result">Найдено моделей: %1$d</string>
+    <string name="ai_engine_active">Активна</string>
+    <string name="ai_engine_activate">Активировать</string>
+    <string name="ai_engine_incompatible">Несовместимо</string>
+    <string name="ai_engine_downloading">Загрузка: %1$d%%</string>
+    <string name="ai_engine_installing">Установка…</string>
+    <string name="ai_engine_size">%1$d МБ</string>
+    <string name="ai_engine_ram_required">Треб. RAM: %1$d МБ</string>
+    <string name="ai_engine_setup_wizard">Мастер настройки AI</string>
+    <string name="ai_engine_setup_welcome">Настройте AI-анализ для вашего устройства</string>
+    <string name="ai_engine_setup_detect">Определение возможностей…</string>
+    <string name="ai_engine_setup_recommend">Рекомендуемый режим: %1$s</string>
+    <string name="ai_engine_setup_complete">Настройка завершена</string>
+    <string name="ai_engine_setup_skip">Пропустить</string>
 </resources>

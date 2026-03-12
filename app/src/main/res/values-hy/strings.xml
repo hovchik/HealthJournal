@@ -427,4 +427,32 @@
     <string name="local_model_delete">Ջնջել մոդելը</string>
     <string name="local_model_fallback_info">Առանց ներբեռնելի մոդելի՝ կանոնների վրա կատարող վերլուծություն միշտ հասանելի է։</string>
     <string name="perm_ai_no_model">AI մոդել չի ներբեռնվել։ Ներբեռնեք AI կարգավորումներում։</string>
+
+    <!-- AI Engine Settings -->
+    <string name="ai_provider_system_ai">\u0540\u0561\u0574\u0561\u056f\u0561\u0580\u0563\u056b AI (Android AICore)</string>
+    <string name="ai_engine_title">AI \u0577\u0561\u0580\u056a\u056b\u0579</string>
+    <string name="ai_engine_mode">AI \u0580\u0565\u056a\u056b\u0574</string>
+    <string name="ai_engine_mode_desc">\u0538\u0576\u057f\u0580\u0565\u0584, \u0569\u0565 \u056b\u0576\u0579\u057a\u0565\u057d \u0585\u0563\u057f\u0561\u0563\u0578\u0580\u056e\u056b AI-\u0568</string>
+    <string name="ai_engine_device_info">\u054d\u0561\u0580\u0584\u056b \u057f\u0565\u0572\u0565\u056f\u0561\u057f\u057e\u0578\u0582\u0569\u0575\u0578\u0582\u0576</string>
+    <string name="ai_engine_ram">RAM: %1$d MB</string>
+    <string name="ai_engine_storage">\u0540\u0561\u057d\u0561\u0576\u0565\u056c\u056b: %1$d MB</string>
+    <string name="ai_engine_performance">\u0534\u0561\u057d: %1$s</string>
+    <string name="ai_engine_installed_models">\u054f\u0565\u0572\u0561\u0564\u0580\u057e\u0561\u056e \u0574\u0578\u0564\u0565\u056c\u0576\u0565\u0580</string>
+    <string name="ai_engine_no_models">\u054f\u0565\u0572\u0561\u0564\u0580\u057e\u0561\u056e \u0574\u0578\u0564\u0565\u056c\u0576\u0565\u0580 \u0579\u056f\u0561\u0576</string>
+    <string name="ai_engine_model_catalog">\u0544\u0578\u0564\u0565\u056c\u0576\u0565\u0580\u056b \u056f\u0561\u057f\u0561\u056c\u0578\u0563</string>
+    <string name="ai_engine_scan">\u0553\u0576\u057f\u0580\u0565\u056c \u0574\u0578\u0564\u0565\u056c\u0576\u0565\u0580</string>
+    <string name="ai_engine_scan_result">\u0533\u057f\u0576\u057e\u0565\u056c \u0567: %1$d</string>
+    <string name="ai_engine_active">\u0531\u056f\u057f\u056b\u057e</string>
+    <string name="ai_engine_activate">\u0531\u056f\u057f\u056b\u057e\u0561\u0581\u0576\u0565\u056c</string>
+    <string name="ai_engine_incompatible">\u0531\u0576\u0570\u0561\u0574\u0561\u057f\u0565\u0572</string>
+    <string name="ai_engine_downloading">\u0532\u0565\u057c\u0576\u0574\u0561\u0576: %1$d%%</string>
+    <string name="ai_engine_installing">\u054f\u0565\u0572\u0561\u0564\u0580\u0574\u0561\u0576\u2026</string>
+    <string name="ai_engine_size">%1$d MB</string>
+    <string name="ai_engine_ram_required">\u054a\u0561\u0570\u0561\u0576\u057b\u057e\u0578\u0572 RAM: %1$d MB</string>
+    <string name="ai_engine_setup_wizard">AI \u056f\u0561\u0580\u0563\u0561\u057e\u0578\u0580\u0574\u0561\u0576 \u0585\u0563\u0576\u0561\u056f\u0561\u0576</string>
+    <string name="ai_engine_setup_welcome">\u053f\u0561\u0580\u0563\u0561\u057e\u0578\u0580\u0565\u0584 AI \u057e\u0565\u0580\u056c\u0578\u0582\u056e\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0568 \u0571\u0565\u0580 \u057d\u0561\u0580\u0584\u056b \u0570\u0561\u0574\u0561\u0580</string>
+    <string name="ai_engine_setup_detect">\u0540\u0576\u0561\u0580\u0561\u057e\u0578\u0580\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580\u056b \u0570\u0561\u0575\u057f\u0576\u0561\u0562\u0565\u0580\u0578\u0582\u0574\u2026</string>
+    <string name="ai_engine_setup_recommend">\u0540\u0561\u0576\u0571\u0576\u0561\u0580\u0561\u0580\u057e\u0578\u0572 \u0580\u0565\u056a\u056b\u0574: %1$s</string>
+    <string name="ai_engine_setup_complete">\u053f\u0561\u0580\u0563\u0561\u057e\u0578\u0580\u0574\u0561\u0576\u0568 \u0561\u057e\u0561\u0580\u057f\u057e\u0561\u056e \u0567</string>
+    <string name="ai_engine_setup_skip">\u0532\u0561\u0581 \u0569\u0578\u0572\u0576\u0565\u056c</string>
 </resources>

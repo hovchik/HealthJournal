@@ -362,14 +362,14 @@ private fun PermissionsSection() {
 
     // On-device AI: check if a model is downloaded
     val app = context.applicationContext as com.healthjournal.HealthJournalApp
-    val modelRepo = app.container.modelRepository
+    val localModelManager = app.container.localModelManager
     var aiAvailable by remember { mutableStateOf<Boolean?>(null) }
     var aiStatusLabel by remember { mutableStateOf("") }
 
     fun checkAiAvailability() {
-        val downloaded = modelRepo.getDownloadedModel()
-        aiAvailable = downloaded != null
-        aiStatusLabel = downloaded?.name ?: ""
+        val activeModel = localModelManager.getActiveModelSync()
+        aiAvailable = activeModel != null
+        aiStatusLabel = activeModel?.displayName ?: ""
     }
 
     SettingsSection(
