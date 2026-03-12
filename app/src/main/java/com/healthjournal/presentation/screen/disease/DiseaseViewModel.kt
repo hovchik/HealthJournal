@@ -24,6 +24,10 @@ class DiseaseViewModel(application: Application) : AndroidViewModel(application)
         all.filter { it.profileId == profileId }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    val deletedDiseases = combine(container.getDeletedDiseases(), activeProfileFlow) { all, profileId ->
+        all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     val allDiseases = container.getAllDiseases()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -39,11 +43,14 @@ class DiseaseViewModel(application: Application) : AndroidViewModel(application)
     private val _saveSuccess = MutableSharedFlow<Boolean>()
     val saveSuccess = _saveSuccess.asSharedFlow()
 
-    fun addDisease(name: String, notes: String) {
+    private val _recentlyDeleted = MutableStateFlow<Disease?>(null)
+    val recentlyDeleted = _recentlyDeleted.asStateFlow()
+
+    fun addDisease(name: String, notes: String, group: String = "") {
         viewModelScope.launch {
             val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
             container.addDisease(
-                Disease(name = name, notes = notes, profileId = profileId)
+                Disease(name = name, notes = notes, profileId = profileId, group = group)
             )
             _saveSuccess.emit(true)
         }
@@ -59,7 +66,31 @@ class DiseaseViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun deleteDisease(disease: Disease) {
-        viewModelScope.launch { container.deleteDisease(disease) }
+        viewModelScope.launch {
+            container.softDeleteDisease(disease)
+            _recentlyDeleted.value = disease
+        }
+    }
+
+    fun undoDelete() {
+        viewModelScope.launch {
+            _recentlyDeleted.value?.let { disease ->
+                container.restoreDisease(disease)
+                _recentlyDeleted.value = null
+            }
+        }
+    }
+
+    fun clearRecentlyDeleted() {
+        _recentlyDeleted.value = null
+    }
+
+    fun restoreDisease(disease: Disease) {
+        viewModelScope.launch { container.restoreDisease(disease) }
+    }
+
+    fun permanentlyDeleteDisease(disease: Disease) {
+        viewModelScope.launch { container.permanentlyDeleteDisease(disease) }
     }
 
     fun getSymptomsForDisease(diseaseId: Long): List<Symptom> =

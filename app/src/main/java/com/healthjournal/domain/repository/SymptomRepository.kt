@@ -11,4 +11,6 @@ interface SymptomRepository {
     suspend fun insertSymptom(symptom: Symptom): Long
     suspend fun updateSymptom(symptom: Symptom)
     suspend fun deleteSymptom(symptom: Symptom)
+    suspend fun softDeleteByDiseaseId(diseaseId: Long)
+    suspend fun restoreByDiseaseId(diseaseId: Long)
 }

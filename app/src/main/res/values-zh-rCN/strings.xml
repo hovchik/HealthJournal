@@ -77,6 +77,9 @@
     <string name="no_records_hint">该时间段暂无记录。</string>
     <string name="report_type_summary">医疗摘要</string>
     <string name="report_type_patterns">模式分析</string>
+    <string name="report_ai_model">AI: %s</string>
+    <string name="report_show_prompt">显示提示词</string>
+    <string name="report_hide_prompt">隐藏提示词</string>
     <string name="days_format">%1$d 天</string>
     <string name="records_export_pdf">导出记录为 PDF</string>
 
@@ -144,10 +147,7 @@
     <string name="ai_select_provider">选择提供商</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI 兼容</string>
-    <string name="ai_provider_local">本地模型</string>
-    <string name="ai_provider_system">系统 AI（Google / Samsung）</string>
-    <string name="system_ai_desc">使用设备内置 AI：Google AI Core 或 Samsung Galaxy AI。无需联网或 API 密钥。需要 Android 14+ 及兼容设备。</string>
-    <string name="system_ai_recommended">（推荐）</string>
+    <string name="ai_provider_local">本地分析（设备端）</string>
     <string name="ai_privacy_redact">数据脱敏</string>
     <string name="ai_privacy_redact_desc">发送前删除电话号码和电子邮件</string>
     <string name="ai_api_key">API 密钥</string>
@@ -159,11 +159,10 @@
     <string name="ai_max_tokens">最大令牌数</string>
     <string name="ai_temperature">温度</string>
     <string name="ai_validate_config">验证配置</string>
-    <string name="ai_provider_gemini_nano">系统 AI（设备端）</string>
-    <string name="gemini_nano_desc">设备端 AI：Google AI Core（Pixel 8+）或三星 Galaxy AI（Galaxy S24+）。无需联网和 API 密钥。需要 Android 14+。</string>
-    <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">需要 API 密钥</string>
     <string name="ai_local_model_desc">从设备存储加载自定义 AI 模型</string>
+    <string name="ai_local_analysis_desc">在设备上分析健康数据。始终可用，无需网络、API密钥或模型下载。数据保持私密。</string>
+    <string name="ai_local_analysis_always_available">始终可用</string>
 
     <!-- Reports -->
     <string name="report_select_profile">选择报告的档案</string>
@@ -223,6 +222,20 @@
     <string name="settings_section_profile">个人资料</string>
     <string name="settings_section_data">数据</string>
     <string name="settings_section_preferences">偏好设置</string>
+    <string name="settings_section_permissions">权限</string>
+
+    <!-- Permissions -->
+    <string name="perm_title">应用权限</string>
+    <string name="perm_desc">管理AI和其他功能的权限</string>
+    <string name="perm_notifications">通知</string>
+    <string name="perm_notifications_desc">用于AI模型下载和提醒</string>
+    <string name="perm_granted">已授权</string>
+    <string name="perm_denied">未授权</string>
+    <string name="perm_grant">授权</string>
+    <string name="perm_ai_status">设备端AI状态</string>
+    <string name="perm_ai_available">设备端AI可用</string>
+    <string name="perm_ai_check">检查</string>
+    <string name="perm_open_settings">打开设置</string>
 
     <!-- Date Grouping -->
     <string name="date_today">今天</string>
@@ -233,6 +246,7 @@
 
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">分析需要至少2天的记录数据</string>
+    <string name="ai_disabled_hint">AI分析已禁用。请在设置 > AI设置中启用。</string>
 
     <!-- Export/Import & Backup -->
     <string name="export_import_title">导出和导入</string>
@@ -379,4 +393,66 @@
     <string name="family_diseases_title">家庭疾病</string>
     <string name="no_family_diseases_hint">家庭成员之间没有共同疾病。</string>
     <string name="family_members_count">%1$d 人</string>
+    <string name="disease_deleted">疾病已删除</string>
+    <string name="undo">撤销</string>
+    <string name="deleted_diseases">已删除的疾病</string>
+    <string name="no_deleted_diseases_hint">没有已删除的疾病。</string>
+    <string name="deleted_diseases_desc">查看和恢复已删除的疾病</string>
+    <string name="restore">恢复</string>
+    <string name="permanently_delete">永久删除</string>
+    <string name="created_date">创建于：%1$s</string>
+    <string name="deleted_date">删除于：%1$s</string>
+    <string name="disease_group">分组</string>
+    <string name="disease_group_hint">例如：慢性、季节性</string>
+    <string name="ungrouped">未分组</string>
+    <string name="show_deleted">显示已删除</string>
+    <string name="hide_deleted">隐藏已删除</string>
+    <string name="confirm_permanent_delete">确定要永久删除此疾病吗？此操作无法撤销。</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="all_diseases">所有疾病</string>
+    <string name="disease_filter">疾病</string>
+
+    <!-- Theme Settings -->
+    <string name="theme_settings_title">主题</string>
+    <string name="theme_system">系统</string>
+    <string name="theme_light">浅色</string>
+    <string name="theme_dark">深色</string>
+
+    <!-- On-device model -->
+    <string name="local_model_title">设备端 LLM 模型</string>
+    <string name="local_model_desc">下载小型 AI 模型，直接在设备上运行预测。您的数据完全私密。</string>
+    <string name="local_model_download">下载模型</string>
+    <string name="local_model_downloading">下载中… %1$d%%</string>
+    <string name="local_model_delete">删除模型</string>
+    <string name="local_model_fallback_info">没有下载模型时，基于规则的本地分析始终可用。</string>
+    <string name="perm_ai_no_model">未下载 AI 模型。请在 AI 设置中下载。</string>
+
+    <!-- AI Engine Settings -->
+    <string name="ai_provider_system_ai">\u7cfb\u7edfAI (Android AICore)</string>
+    <string name="ai_engine_title">AI\u5f15\u64ce</string>
+    <string name="ai_engine_mode">AI\u6a21\u5f0f</string>
+    <string name="ai_engine_mode_desc">\u9009\u62e9\u5e94\u7528\u5982\u4f55\u4f7f\u7528AI</string>
+    <string name="ai_engine_device_info">\u8bbe\u5907\u4fe1\u606f</string>
+    <string name="ai_engine_ram">\u5185\u5b58: %1$d MB</string>
+    <string name="ai_engine_storage">\u53ef\u7528: %1$d MB</string>
+    <string name="ai_engine_performance">\u7ea7\u522b: %1$s</string>
+    <string name="ai_engine_installed_models">\u5df2\u5b89\u88c5\u6a21\u578b</string>
+    <string name="ai_engine_no_models">\u6ca1\u6709\u5df2\u5b89\u88c5\u7684\u6a21\u578b</string>
+    <string name="ai_engine_model_catalog">\u6a21\u578b\u76ee\u5f55</string>
+    <string name="ai_engine_scan">\u626b\u63cf\u6a21\u578b</string>
+    <string name="ai_engine_scan_result">\u627e\u5230\u6a21\u578b: %1$d</string>
+    <string name="ai_engine_active">\u5df2\u6fc0\u6d3b</string>
+    <string name="ai_engine_activate">\u6fc0\u6d3b</string>
+    <string name="ai_engine_incompatible">\u4e0d\u517c\u5bb9</string>
+    <string name="ai_engine_downloading">\u4e0b\u8f7d\u4e2d: %1$d%%</string>
+    <string name="ai_engine_installing">\u5b89\u88c5\u4e2d\u2026</string>
+    <string name="ai_engine_size">%1$d MB</string>
+    <string name="ai_engine_ram_required">\u9700\u8981\u5185\u5b58: %1$d MB</string>
+    <string name="ai_engine_setup_wizard">AI\u8bbe\u7f6e\u5411\u5bfc</string>
+    <string name="ai_engine_setup_welcome">\u4e3a\u60a8\u7684\u8bbe\u5907\u914d\u7f6eAI\u5206\u6790</string>
+    <string name="ai_engine_setup_detect">\u68c0\u6d4b\u80fd\u529b\u4e2d\u2026</string>
+    <string name="ai_engine_setup_recommend">\u63a8\u8350\u6a21\u5f0f: %1$s</string>
+    <string name="ai_engine_setup_complete">\u8bbe\u7f6e\u5b8c\u6210</string>
+    <string name="ai_engine_setup_skip">\u8df3\u8fc7</string>
 </resources>

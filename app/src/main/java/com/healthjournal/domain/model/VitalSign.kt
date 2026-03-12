@@ -22,5 +22,6 @@ data class VitalSign(
     val recordedAt: LocalDateTime = LocalDateTime.now(),
     val profileId: Long = 0,
     val attachmentPaths: List<String> = emptyList(),
-    val diseaseId: Long = 0
+    val diseaseId: Long = 0,
+    val isDeleted: Boolean = false
 )

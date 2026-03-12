@@ -11,6 +11,8 @@ interface MedicationRepository {
     suspend fun insertMedication(medication: Medication): Long
     suspend fun updateMedication(medication: Medication)
     suspend fun deleteMedication(medication: Medication)
+    suspend fun softDeleteByDiseaseId(diseaseId: Long)
+    suspend fun restoreByDiseaseId(diseaseId: Long)
 
     fun getLogsForMedication(medicationId: Long): Flow<List<MedicationLog>>
     suspend fun insertMedicationLog(log: MedicationLog): Long

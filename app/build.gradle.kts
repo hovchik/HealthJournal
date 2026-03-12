@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -85,11 +86,16 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // Google AI Edge SDK (Gemini Nano on-device, requires API 31+)
-    implementation("com.google.ai.edge.aicore:aicore:0.0.1-exp01")
+    // MediaPipe LLM Inference (on-device AI via Google AI Edge)
+    implementation("com.google.mediapipe:tasks-genai:0.10.22")
 
-    // ML Kit GenAI Prompt API (Gemini Nano on-device)
-    implementation("com.google.mlkit:genai-prompt:1.0.0-beta1")
+    // Room (local AI model management)
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+
+    // TensorFlow Lite (LiteRT runtime for .tflite models)
+    implementation("org.tensorflow:tensorflow-lite:2.16.1")
 
     // Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.7.0")

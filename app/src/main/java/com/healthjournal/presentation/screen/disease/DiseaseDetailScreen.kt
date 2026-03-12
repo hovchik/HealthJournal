@@ -54,6 +54,8 @@ fun DiseaseDetailScreen(
     var vitalsExpanded by remember { mutableStateOf(false) }
     var medsExpanded by remember { mutableStateOf(false) }
 
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+
     LaunchedEffect(diseaseId) {
         disease = viewModel.getDiseaseById(diseaseId)
     }
@@ -74,6 +76,11 @@ fun DiseaseDetailScreen(
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            stringResource(R.string.created_date, currentDisease.createdAt.format(dateFormatter)),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.outline
                         )
                         if (!currentDisease.active) {
                             Surface(
@@ -266,8 +273,8 @@ fun DiseaseDetailScreen(
         EditDiseaseDialog(
             disease = currentDisease,
             onDismiss = { showEditDialog = false },
-            onConfirm = { name, notes, active ->
-                val updated = currentDisease.copy(name = name, notes = notes, active = active)
+            onConfirm = { name, notes, active, group ->
+                val updated = currentDisease.copy(name = name, notes = notes, active = active, group = group)
                 viewModel.updateDisease(updated)
                 disease = updated
                 showEditDialog = false
@@ -593,11 +600,12 @@ private fun MedicationMiniCard(medication: Medication, onClick: () -> Unit) {
 private fun EditDiseaseDialog(
     disease: Disease,
     onDismiss: () -> Unit,
-    onConfirm: (name: String, notes: String, active: Boolean) -> Unit
+    onConfirm: (name: String, notes: String, active: Boolean, group: String) -> Unit
 ) {
     var name by remember { mutableStateOf(disease.name) }
     var notes by remember { mutableStateOf(disease.notes) }
     var active by remember { mutableStateOf(disease.active) }
+    var group by remember { mutableStateOf(disease.group) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -618,6 +626,14 @@ private fun EditDiseaseDialog(
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2
                 )
+                OutlinedTextField(
+                    value = group,
+                    onValueChange = { group = it },
+                    label = { Text(stringResource(R.string.disease_group)) },
+                    placeholder = { Text(stringResource(R.string.disease_group_hint)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -629,7 +645,7 @@ private fun EditDiseaseDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(name, notes, active) }, enabled = name.isNotBlank()) {
+            TextButton(onClick = { onConfirm(name, notes, active, group) }, enabled = name.isNotBlank()) {
                 Text(stringResource(R.string.save))
             }
         },

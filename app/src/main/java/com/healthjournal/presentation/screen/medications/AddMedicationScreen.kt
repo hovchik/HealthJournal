@@ -3,16 +3,20 @@ package com.healthjournal.presentation.screen.medications
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
@@ -111,144 +115,170 @@ fun AddMedicationScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(stringResource(if (isEditing) R.string.edit_medication_title else R.string.add_medication_title))
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Start date picker
-            OutlinedTextField(
-                value = selectedDate.format(dateFormatter),
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.start_date_label)) },
-                leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp)) },
-                modifier = Modifier.fillMaxWidth().clickable { showDatePicker = true },
-                singleLine = true,
-                enabled = false,
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-
-            // Medication name dropdown with search
-            ExposedDropdownMenuBox(
-                expanded = dropdownExpanded,
-                onExpandedChange = { dropdownExpanded = it }
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        tonalElevation = 1.dp,
+        shadowElevation = 8.dp
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Drag handle
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                contentAlignment = Alignment.Center
             ) {
+                Surface(
+                    modifier = Modifier.width(40.dp).height(4.dp),
+                    shape = RoundedCornerShape(2.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                ) {}
+            }
+
+            // Header row with title and close button
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    stringResource(if (isEditing) R.string.edit_medication_title else R.string.add_medication_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                IconButton(onClick = onBack) {
+                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
+                }
+            }
+
+            HorizontalDivider()
+
+            // Scrollable content
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(16.dp).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Start date picker
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it; dropdownExpanded = true },
-                    label = { Text(stringResource(R.string.medication_name)) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryEditable),
+                    value = selectedDate.format(dateFormatter),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.start_date_label)) },
+                    leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp)) },
+                    modifier = Modifier.fillMaxWidth().clickable { showDatePicker = true },
                     singleLine = true,
-                    leadingIcon = {
-                        Icon(Icons.Default.Medication, contentDescription = null,
-                            modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
-                    },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) }
+                    enabled = false,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
-                val filteredPredefined = allMedicationLabels.first.filter { (_, resId) ->
-                    name.isBlank() || context.getString(resId).contains(name, ignoreCase = true)
-                }
-                val filteredCustom = allMedicationLabels.second.filter {
-                    name.isBlank() || it.contains(name, ignoreCase = true)
-                }
-                if (filteredPredefined.isNotEmpty() || filteredCustom.isNotEmpty()) {
-                    ExposedDropdownMenu(
-                        expanded = dropdownExpanded,
-                        onDismissRequest = { dropdownExpanded = false }
-                    ) {
-                        filteredPredefined.forEach { (_, resId) ->
-                            val label = stringResource(resId)
-                            DropdownMenuItem(
-                                text = { Text(label) },
-                                onClick = { name = label; dropdownExpanded = false }
-                            )
-                        }
-                        filteredCustom.forEach { custom ->
-                            DropdownMenuItem(
-                                text = { Text(custom) },
-                                onClick = { name = custom; dropdownExpanded = false }
-                            )
-                        }
+
+                // Medication name dropdown with search
+                ExposedDropdownMenuBox(
+                    expanded = dropdownExpanded,
+                    onExpandedChange = { dropdownExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it; dropdownExpanded = true },
+                        label = { Text(stringResource(R.string.medication_name)) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryEditable),
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(Icons.Default.Medication, contentDescription = null,
+                                modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+                        },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) }
+                    )
+                    val filteredPredefined = allMedicationLabels.first.filter { (_, resId) ->
+                        name.isBlank() || context.getString(resId).contains(name, ignoreCase = true)
                     }
-                }
-            }
-
-            // Dosage & Frequency in a card
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedTextField(
-                        value = dosage,
-                        onValueChange = { dosage = it },
-                        label = { Text(stringResource(R.string.dosage_hint)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    OutlinedTextField(
-                        value = frequency,
-                        onValueChange = { frequency = it },
-                        label = { Text(stringResource(R.string.schedule_hint)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-                }
-            }
-
-            OutlinedTextField(
-                value = notes,
-                onValueChange = { notes = it },
-                label = { Text(stringResource(R.string.notes)) },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 2
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                onClick = {
-                    if (name.isNotBlank() && dosage.isNotBlank()) {
-                        if (isEditing && editingMedication != null) {
-                            viewModel.updateMedication(
-                                editingMedication!!.copy(
-                                    name = name,
-                                    dosage = dosage,
-                                    frequency = frequency,
-                                    notes = notes,
-                                    startDate = selectedDate
+                    val filteredCustom = allMedicationLabels.second.filter {
+                        name.isBlank() || it.contains(name, ignoreCase = true)
+                    }
+                    if (filteredPredefined.isNotEmpty() || filteredCustom.isNotEmpty()) {
+                        ExposedDropdownMenu(
+                            expanded = dropdownExpanded,
+                            onDismissRequest = { dropdownExpanded = false }
+                        ) {
+                            filteredPredefined.forEach { (_, resId) ->
+                                val label = stringResource(resId)
+                                DropdownMenuItem(
+                                    text = { Text(label) },
+                                    onClick = { name = label; dropdownExpanded = false }
                                 )
-                            )
-                        } else {
-                            viewModel.addNewMedication(name, dosage, frequency, notes, diseaseId = diseaseId, startDate = selectedDate)
+                            }
+                            filteredCustom.forEach { custom ->
+                                DropdownMenuItem(
+                                    text = { Text(custom) },
+                                    onClick = { name = custom; dropdownExpanded = false }
+                                )
+                            }
                         }
                     }
-                },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                enabled = name.isNotBlank() && dosage.isNotBlank()
+                }
+
+                // Dosage & Frequency in a card
+                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        OutlinedTextField(
+                            value = dosage,
+                            onValueChange = { dosage = it },
+                            label = { Text(stringResource(R.string.dosage_hint)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
+
+                        OutlinedTextField(
+                            value = frequency,
+                            onValueChange = { frequency = it },
+                            label = { Text(stringResource(R.string.schedule_hint)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
+                    }
+                }
+
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text(stringResource(R.string.notes)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 2
+                )
+            }
+
+            // Save button pinned at bottom
+            Surface(
+                tonalElevation = 3.dp,
+                shadowElevation = 8.dp
             ) {
-                Text(stringResource(R.string.save), style = MaterialTheme.typography.titleSmall)
+                Button(
+                    onClick = {
+                        if (name.isNotBlank() && dosage.isNotBlank()) {
+                            if (isEditing && editingMedication != null) {
+                                viewModel.updateMedication(
+                                    editingMedication!!.copy(
+                                        name = name,
+                                        dosage = dosage,
+                                        frequency = frequency,
+                                        notes = notes,
+                                        startDate = selectedDate
+                                    )
+                                )
+                            } else {
+                                viewModel.addNewMedication(name, dosage, frequency, notes, diseaseId = diseaseId, startDate = selectedDate)
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp),
+                    enabled = name.isNotBlank() && dosage.isNotBlank()
+                ) {
+                    Text(stringResource(R.string.save), style = MaterialTheme.typography.titleSmall)
+                }
             }
         }
     }

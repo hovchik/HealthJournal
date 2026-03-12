@@ -1,6 +1,7 @@
 package com.healthjournal.domain.usecase
 
 import com.healthjournal.domain.ai.AiService
+import com.healthjournal.domain.ai.PromptTemplate
 import com.healthjournal.domain.model.AiReport
 import com.healthjournal.domain.model.ReportType
 import com.healthjournal.domain.model.ai.AiInput
@@ -28,18 +29,25 @@ class GenerateAiSummaryUseCase(
         periodDays: Int = 2,
         outputLanguage: String = "ru",
         aiSettings: AiSettings = AiSettings(),
-        profileId: Long = 0
+        profileId: Long = 0,
+        diseaseId: Long = 0
     ): Result<AiReport> = runCatching {
         val now = LocalDateTime.now()
         val from = now.minusDays(periodDays.toLong())
 
         val userSettings = userSettingsRepository.getUserSettings().first()
-        val symptoms = symptomRepository.getSymptomsByDateRange(from, now).first()
+        var symptoms = symptomRepository.getSymptomsByDateRange(from, now).first()
             .filter { it.profileId == profileId }
-        val vitals = vitalSignRepository.getVitalSignsByDateRange(from, now).first()
+        var vitals = vitalSignRepository.getVitalSignsByDateRange(from, now).first()
             .filter { it.profileId == profileId }
-        val medications = medicationRepository.getActiveMedications().first()
+        var medications = medicationRepository.getActiveMedications().first()
             .filter { it.profileId == profileId }
+
+        if (diseaseId != 0L) {
+            symptoms = symptoms.filter { it.diseaseId == diseaseId }
+            vitals = vitals.filter { it.diseaseId == diseaseId }
+            medications = medications.filter { it.diseaseId == diseaseId }
+        }
 
         val (patientWeight, patientHeight, patientDiseases) = if (profileId != 0L) {
             val member = familyMemberRepository.getMemberById(profileId)
@@ -59,13 +67,19 @@ class GenerateAiSummaryUseCase(
             height = patientHeight
         )
 
+        val prompt = PromptTemplate.buildSummaryPrompt(input)
         val result = aiService.generateDoctorSummary(input, aiSettings)
+        val providerName = result.modelUsed.ifBlank { result.providerId.key }
         val report = AiReport(
             content = result.text,
             type = ReportType.SUMMARY,
             periodDays = periodDays,
             generatedAt = LocalDateTime.now(),
-            profileId = profileId
+            profileId = profileId,
+            diseaseId = diseaseId,
+            providerName = providerName,
+            modelUsed = result.modelUsed,
+            prompt = prompt.user
         )
         val id = reportRepository.insertReport(report)
         report.copy(id = id)
@@ -84,16 +98,22 @@ class GeneratePatternAnalysisUseCase(
         periodDays: Int = 4,
         outputLanguage: String = "ru",
         aiSettings: AiSettings = AiSettings(),
-        profileId: Long = 0
+        profileId: Long = 0,
+        diseaseId: Long = 0
     ): Result<AiReport> = runCatching {
         val now = LocalDateTime.now()
         val from = now.minusDays(periodDays.toLong())
 
         val userSettings = userSettingsRepository.getUserSettings().first()
-        val symptoms = symptomRepository.getSymptomsByDateRange(from, now).first()
+        var symptoms = symptomRepository.getSymptomsByDateRange(from, now).first()
             .filter { it.profileId == profileId }
-        val vitals = vitalSignRepository.getVitalSignsByDateRange(from, now).first()
+        var vitals = vitalSignRepository.getVitalSignsByDateRange(from, now).first()
             .filter { it.profileId == profileId }
+
+        if (diseaseId != 0L) {
+            symptoms = symptoms.filter { it.diseaseId == diseaseId }
+            vitals = vitals.filter { it.diseaseId == diseaseId }
+        }
 
         val (patientWeight, patientHeight, patientDiseases) = if (profileId != 0L) {
             val member = familyMemberRepository.getMemberById(profileId)
@@ -113,13 +133,19 @@ class GeneratePatternAnalysisUseCase(
             height = patientHeight
         )
 
+        val prompt = PromptTemplate.buildPatternPrompt(input)
         val result = aiService.analyzePatterns(input, aiSettings)
+        val providerName = result.modelUsed.ifBlank { result.providerId.key }
         val report = AiReport(
             content = result.text,
             type = ReportType.PATTERN_ANALYSIS,
             periodDays = periodDays,
             generatedAt = LocalDateTime.now(),
-            profileId = profileId
+            profileId = profileId,
+            diseaseId = diseaseId,
+            providerName = providerName,
+            modelUsed = result.modelUsed,
+            prompt = prompt.user
         )
         val id = reportRepository.insertReport(report)
         report.copy(id = id)

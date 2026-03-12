@@ -22,6 +22,7 @@ import com.healthjournal.presentation.screen.settings.AiSettingsScreen
 import com.healthjournal.presentation.screen.settings.FamilyMembersScreen
 import com.healthjournal.presentation.screen.settings.LanguageSettingsScreen
 import com.healthjournal.presentation.screen.settings.PredefinedDataSettingsScreen
+import com.healthjournal.presentation.screen.settings.DeletedDiseasesScreen
 import com.healthjournal.presentation.screen.settings.SettingsScreen
 import com.healthjournal.presentation.screen.settings.UserInfoScreen
 import com.healthjournal.presentation.screen.vitals.VitalsScreen
@@ -149,7 +150,8 @@ fun HealthNavHost(
                 onAiSettings = { navController.navigate(Screen.AiSettings.route) },
                 onUserInfo = { navController.navigate(Screen.UserInfo.route) },
                 onFamilyMembers = { navController.navigate(Screen.FamilyMembers.route) },
-                onPredefinedData = { navController.navigate(Screen.PredefinedDataSettings.route) }
+                onPredefinedData = { navController.navigate(Screen.PredefinedDataSettings.route) },
+                onDeletedDiseases = { navController.navigate(Screen.DeletedDiseases.route) }
             )
         }
         composable(Screen.LanguageSettings.route) {
@@ -166,6 +168,9 @@ fun HealthNavHost(
         }
         composable(Screen.PredefinedDataSettings.route) {
             PredefinedDataSettingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.DeletedDiseases.route) {
+            DeletedDiseasesScreen(onBack = { navController.popBackStack() })
         }
     }
 }

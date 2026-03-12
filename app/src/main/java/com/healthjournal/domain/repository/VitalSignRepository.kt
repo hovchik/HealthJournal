@@ -13,4 +13,6 @@ interface VitalSignRepository {
     suspend fun insertVitalSign(vitalSign: VitalSign): Long
     suspend fun updateVitalSign(vitalSign: VitalSign)
     suspend fun deleteVitalSign(vitalSign: VitalSign)
+    suspend fun softDeleteByDiseaseId(diseaseId: Long)
+    suspend fun restoreByDiseaseId(diseaseId: Long)
 }

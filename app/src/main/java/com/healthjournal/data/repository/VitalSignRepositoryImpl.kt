@@ -16,17 +16,17 @@ class VitalSignRepositoryImpl constructor(
 
     override fun getAllVitalSigns(): Flow<List<VitalSign>> =
         store.observeAll().map { list ->
-            list.sortedByDescending { it.recordedAt }.map { it.toDomain() }
+            list.filter { !it.isDeleted }.sortedByDescending { it.recordedAt }.map { it.toDomain() }
         }
 
     override fun getVitalSignsByType(type: VitalType): Flow<List<VitalSign>> =
-        store.observe { it.type == type.name }
+        store.observe { it.type == type.name && !it.isDeleted }
             .map { list -> list.sortedByDescending { it.recordedAt }.map { it.toDomain() } }
 
     override fun getVitalSignsByDateRange(from: LocalDateTime, to: LocalDateTime): Flow<List<VitalSign>> {
         val fromMillis = from.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         val toMillis = to.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        return store.observe { it.recordedAt in fromMillis..toMillis }
+        return store.observe { it.recordedAt in fromMillis..toMillis && !it.isDeleted }
             .map { list -> list.sortedByDescending { it.recordedAt }.map { it.toDomain() } }
     }
 
@@ -41,4 +41,10 @@ class VitalSignRepositoryImpl constructor(
 
     override suspend fun deleteVitalSign(vitalSign: VitalSign) =
         store.delete(VitalSignDto.from(vitalSign))
+
+    override suspend fun softDeleteByDiseaseId(diseaseId: Long) =
+        store.updateWhere({ it.diseaseId == diseaseId && !it.isDeleted }) { it.copy(isDeleted = true) }
+
+    override suspend fun restoreByDiseaseId(diseaseId: Long) =
+        store.updateWhere({ it.diseaseId == diseaseId && it.isDeleted }) { it.copy(isDeleted = false) }
 }

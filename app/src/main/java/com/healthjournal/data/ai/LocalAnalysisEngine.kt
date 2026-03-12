@@ -1,236 +1,18 @@
 package com.healthjournal.data.ai
 
-import android.content.Context
-import android.os.Build
-import com.google.ai.edge.aicore.GenerationConfig as AiCoreGenerationConfig
-import com.google.ai.edge.aicore.generationConfig as aiCoreGenerationConfig
-import com.google.mlkit.genai.common.DownloadStatus
-import com.google.mlkit.genai.common.FeatureStatus
-import com.google.mlkit.genai.prompt.Generation
-import com.google.mlkit.genai.prompt.GenerativeModel
-import com.google.mlkit.genai.prompt.TextPart
-import com.google.mlkit.genai.prompt.generateContentRequest
-import com.healthjournal.R
-import com.healthjournal.domain.ai.AiProvider
-import com.healthjournal.domain.ai.PromptTemplate
 import com.healthjournal.domain.model.VitalType
 import com.healthjournal.domain.model.ai.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import java.time.format.DateTimeFormatter
 
 /**
- * On-device AI provider combining Google AI Edge SDK and ML Kit GenAI Prompt API.
- * Falls back to Samsung Galaxy AI or local rule-based analysis when unavailable.
- * Priority: AI Edge SDK → ML Kit GenAI → Samsung Galaxy AI → local analysis.
+ * Reusable local rule-based analysis engine for health data.
+ * Provides structured summaries and pattern analysis without requiring AI inference.
  */
-class GeminiNanoProviderImpl(
-    private val context: Context
-) : AiProvider {
+object LocalAnalysisEngine {
 
-    override val id = AiProviderId.GEMINI_NANO
-    override val displayNameResId = R.string.ai_provider_gemini_nano
+    enum class TrendDirection { UP, DOWN, STABLE }
 
-    private var aiEdgeModel: com.google.ai.edge.aicore.GenerativeModel? = null
-    private var mlKitModel: GenerativeModel? = null
-
-    private fun getOrCreateMlKitModel(): GenerativeModel {
-        return mlKitModel ?: Generation.getClient().also { mlKitModel = it }
-    }
-
-    override suspend fun generateDoctorSummary(input: AiInput, config: AiSettings): AiTextResult {
-        val prompt = PromptTemplate.buildSummaryPrompt(input)
-        val fullPrompt = "${prompt.system}\n\n${prompt.user}"
-        val result = tryRunInference(fullPrompt, config.geminiNanoConfig)
-        return if (result != null) {
-            AiTextResult(text = result.first, providerId = id, modelUsed = result.second)
-        } else {
-            AiTextResult(text = buildLocalSummary(input), providerId = id, modelUsed = "local-analysis")
-        }
-    }
-
-    override suspend fun analyzePatterns(input: AiInput, config: AiSettings): AiFlagsResult {
-        val prompt = PromptTemplate.buildPatternPrompt(input)
-        val fullPrompt = "${prompt.system}\n\n${prompt.user}"
-        val result = tryRunInference(fullPrompt, config.geminiNanoConfig)
-        return if (result != null) {
-            AiFlagsResult(text = result.first, providerId = id, modelUsed = result.second)
-        } else {
-            AiFlagsResult(text = buildLocalPatternAnalysis(input), providerId = id, modelUsed = "local-analysis")
-        }
-    }
-
-    override fun validateConfig(config: AiSettings): ValidationResult {
-        val availability = checkAvailability()
-        return ValidationResult(true, "Available: ${availability.label}")
-    }
-
-    override fun isOnlineRequired(): Boolean = false
-
-    // ==================== AI SDK inference ====================
-
-    private suspend fun tryRunInference(
-        prompt: String,
-        config: GeminiNanoConfig
-    ): Pair<String, String>? = withContext(Dispatchers.IO) {
-        // 1. Google AI Edge SDK (Gemini Nano via AICore, API 31+)
-        if (Build.VERSION.SDK_INT >= 31) {
-            try {
-                return@withContext runViaAiEdge(prompt, config) to "gemini-nano-aicore"
-            } catch (_: Exception) { }
-        }
-        // 2. ML Kit GenAI Prompt API (Gemini Nano, broader device support)
-        try {
-            return@withContext runViaMlKit(prompt, config) to "gemini-nano"
-        } catch (_: Exception) { }
-        // 3. Samsung Galaxy AI - Samsung-specific fallback
-        try {
-            return@withContext runViaSamsungAi(prompt, config) to "galaxy-ai"
-        } catch (_: Exception) { }
-        null
-    }
-
-    /**
-     * Run inference via Google AI Edge SDK (AICore).
-     * Requires API 31+ and Google AI Core service on the device.
-     */
-    private suspend fun runViaAiEdge(prompt: String, config: GeminiNanoConfig): String {
-        val model = aiEdgeModel ?: run {
-            val genConfig = aiCoreGenerationConfig {
-                context = this@GeminiNanoProviderImpl.context
-                temperature = config.temperature
-                topK = config.topK
-                maxOutputTokens = config.maxOutputTokens
-            }
-            com.google.ai.edge.aicore.GenerativeModel(genConfig).also { aiEdgeModel = it }
-        }
-        val response = model.generateContent(prompt)
-        return response.text ?: throw RuntimeException("Empty response from AI Edge")
-    }
-
-    /**
-     * Run inference via ML Kit GenAI Prompt API (Gemini Nano on-device).
-     * Handles model download if the model is available but not yet downloaded.
-     */
-    private suspend fun runViaMlKit(prompt: String, config: GeminiNanoConfig): String {
-        val model = getOrCreateMlKitModel()
-        val status = model.checkStatus()
-
-        if (status == FeatureStatus.UNAVAILABLE) {
-            throw RuntimeException("Gemini Nano is not available on this device")
-        }
-
-        if (status != FeatureStatus.AVAILABLE) {
-            // Model needs downloading - wait up to 2 minutes
-            withTimeout(120_000) {
-                model.download().collect { ds ->
-                    if (ds is DownloadStatus.DownloadFailed) throw ds.e
-                }
-            }
-            if (model.checkStatus() != FeatureStatus.AVAILABLE) {
-                throw RuntimeException("Gemini Nano model not available after download")
-            }
-        }
-
-        val request = generateContentRequest(TextPart(prompt)) {
-            temperature = config.temperature
-            topK = config.topK
-            maxOutputTokens = config.maxOutputTokens
-        }
-        val response = model.generateContent(request)
-        return response.candidates.firstOrNull()?.text
-            ?: throw RuntimeException("Empty response from Gemini Nano")
-    }
-
-    private fun runViaSamsungAi(prompt: String, config: GeminiNanoConfig): String {
-        try {
-            val engineClass = Class.forName("com.samsung.android.sdk.aiinference.InferenceEngine")
-            val engine = engineClass.getMethod("getInstance", Context::class.java)
-                .invoke(null, context)
-            val response = engineClass.getMethod("generateText", String::class.java)
-                .invoke(engine, prompt)
-            val result = response as? String
-            if (!result.isNullOrBlank()) return result
-        } catch (_: Exception) { }
-
-        try {
-            val modelClass = Class.forName("com.samsung.android.sdk.ai.model.GenAIModel")
-            val getInstance = modelClass.getMethod("getInstance", Context::class.java)
-            val model = getInstance.invoke(null, context)
-            val response = modelClass.getMethod("generate", String::class.java)
-                .invoke(model, prompt)
-            val result = response as? String
-            if (!result.isNullOrBlank()) return result
-        } catch (_: Exception) { }
-
-        val providers = listOf(
-            "content://com.samsung.android.aicoreondevice/generate",
-            "content://com.samsung.android.galaxyai.provider/generate",
-            "content://com.samsung.android.intelligence/generate"
-        )
-        for (uri in providers) {
-            try {
-                val cursor = context.contentResolver.query(
-                    android.net.Uri.parse(uri), null, prompt, null, null
-                )
-                cursor?.use {
-                    if (it.moveToFirst()) {
-                        val result = it.getString(0)
-                        if (!result.isNullOrBlank()) return result
-                    }
-                }
-            } catch (_: Exception) { }
-        }
-
-        throw RuntimeException("No Samsung AI SDK path available")
-    }
-
-    // ==================== Availability detection ====================
-
-    private enum class AvailabilityStatus(val label: String) {
-        AI_EDGE("Gemini Nano (AI Edge)"),
-        MLKIT_GENAI("Gemini Nano (ML Kit)"),
-        SAMSUNG_GALAXY_AI("Samsung Galaxy AI"),
-        LOCAL_ANALYSIS("Local analysis")
-    }
-
-    private fun checkAvailability(): AvailabilityStatus {
-        val pm = context.packageManager
-
-        // Check for Google AI Core service (required for AI Edge SDK and ML Kit GenAI)
-        try {
-            pm.getPackageInfo("com.google.android.aicore", 0)
-            return if (Build.VERSION.SDK_INT >= 31) AvailabilityStatus.AI_EDGE
-            else AvailabilityStatus.MLKIT_GENAI
-        } catch (_: Exception) { }
-
-        // Check for Samsung AI packages
-        for (pkg in listOf(
-            "com.samsung.android.aicoreondevice",
-            "com.samsung.android.galaxyai",
-            "com.samsung.android.intelligence"
-        )) {
-            try { pm.getPackageInfo(pkg, 0); return AvailabilityStatus.SAMSUNG_GALAXY_AI }
-            catch (_: Exception) { }
-        }
-
-        // Infer from manufacturer
-        val manufacturer = Build.MANUFACTURER.lowercase()
-        if (manufacturer == "google") {
-            return if (Build.VERSION.SDK_INT >= 31) AvailabilityStatus.AI_EDGE
-            else AvailabilityStatus.MLKIT_GENAI
-        }
-        if (manufacturer == "samsung") return AvailabilityStatus.SAMSUNG_GALAXY_AI
-
-        return AvailabilityStatus.LOCAL_ANALYSIS
-    }
-
-    // ==================== Local analysis engine ====================
-
-    private enum class TrendDirection { UP, DOWN, STABLE }
-
-    private fun detectTrend(values: List<Double>): TrendDirection {
+    fun detectTrend(values: List<Double>): TrendDirection {
         if (values.size < 2) return TrendDirection.STABLE
         val n = values.size
         val firstHalf = values.take(n / 2 + n % 2).average()
@@ -244,7 +26,7 @@ class GeminiNanoProviderImpl(
         }
     }
 
-    private fun formatVitalValue(value: Double, secondary: Double?, type: VitalType): String =
+    fun formatVitalValue(value: Double, secondary: Double?, type: VitalType): String =
         if (type == VitalType.BLOOD_PRESSURE && secondary != null) {
             "${value.toInt()}/${secondary.toInt()}"
         } else if (type == VitalType.TEMPERATURE || type == VitalType.GLUCOSE) {
@@ -253,14 +35,14 @@ class GeminiNanoProviderImpl(
             value.toInt().toString()
         }
 
-    private fun formatValue(value: Double, type: VitalType): String =
+    fun formatValue(value: Double, type: VitalType): String =
         if (type == VitalType.TEMPERATURE || type == VitalType.GLUCOSE) {
             "%.1f".format(value)
         } else {
             value.toInt().toString()
         }
 
-    private fun checkVitalRange(value: Double, secondary: Double?, type: VitalType, t: AnalysisTexts): String {
+    internal fun checkVitalRange(value: Double, secondary: Double?, type: VitalType, t: AnalysisTexts): String {
         return when (type) {
             VitalType.BLOOD_PRESSURE -> {
                 val flags = mutableListOf<String>()
@@ -298,7 +80,7 @@ class GeminiNanoProviderImpl(
         }
     }
 
-    private fun generateObservations(input: AiInput, t: AnalysisTexts): List<String> {
+    internal fun generateObservations(input: AiInput, t: AnalysisTexts): List<String> {
         val obs = mutableListOf<String>()
 
         val severe = input.symptoms.filter { it.intensity >= 7 }
@@ -351,7 +133,7 @@ class GeminiNanoProviderImpl(
         return obs
     }
 
-    private fun findCorrelations(input: AiInput, t: AnalysisTexts): List<String> {
+    internal fun findCorrelations(input: AiInput, t: AnalysisTexts): List<String> {
         val correlations = mutableListOf<String>()
         if (input.symptoms.isEmpty() || input.vitals.isEmpty()) return correlations
 
@@ -375,7 +157,7 @@ class GeminiNanoProviderImpl(
 
     // ---- Local summary ----
 
-    private fun buildLocalSummary(input: AiInput): String {
+    fun buildLocalSummary(input: AiInput): String {
         val t = AnalysisTexts.forLanguage(input.outputLanguage)
         val dateFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
@@ -462,7 +244,7 @@ class GeminiNanoProviderImpl(
 
     // ---- Local pattern analysis ----
 
-    private fun buildLocalPatternAnalysis(input: AiInput): String {
+    fun buildLocalPatternAnalysis(input: AiInput): String {
         val t = AnalysisTexts.forLanguage(input.outputLanguage)
         val dateFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
@@ -569,7 +351,7 @@ class GeminiNanoProviderImpl(
 
 // ==================== Localized analysis texts ====================
 
-private data class AnalysisTexts(
+internal data class AnalysisTexts(
     // Headers
     val summaryTitle: String,
     val patternTitle: String,
@@ -634,7 +416,7 @@ private data class AnalysisTexts(
         val EN = AnalysisTexts(
             summaryTitle = "[Health Data Summary]",
             patternTitle = "[Pattern Analysis]",
-            localAnalysisNote = "Generated by local analysis engine (no AI SDK available on this device).",
+            localAnalysisNote = "Analyzed locally on your device. Your data stays private.",
             patientInfo = "PATIENT INFO",
             symptomsSection = "SYMPTOMS",
             vitalsSection = "VITAL SIGNS",
@@ -685,13 +467,13 @@ private data class AnalysisTexts(
             sameDayCorrelation = "Same-day correlation",
             diabetesGlucoseWarning = "Note: Elevated glucose readings with known diabetes \u2014 recommend discussing with your doctor.",
             hypertensionBPWarning = "Note: Elevated blood pressure with known hypertension \u2014 recommend discussing with your doctor.",
-            disclaimer = "This analysis was generated locally without AI. For a more detailed analysis, configure a cloud AI provider in Settings > AI Settings."
+            disclaimer = "This analysis is based on your recorded health data using rule-based pattern detection."
         )
 
         val RU = AnalysisTexts(
             summaryTitle = "[\u0421\u0432\u043E\u0434\u043A\u0430 \u0434\u0430\u043D\u043D\u044B\u0445 \u043E \u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435]",
             patternTitle = "[\u0410\u043D\u0430\u043B\u0438\u0437 \u043F\u0430\u0442\u0442\u0435\u0440\u043D\u043E\u0432]",
-            localAnalysisNote = "\u0421\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043E \u043B\u043E\u043A\u0430\u043B\u044C\u043D\u044B\u043C \u0430\u043D\u0430\u043B\u0438\u0437\u0430\u0442\u043E\u0440\u043E\u043C (AI SDK \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D \u043D\u0430 \u044D\u0442\u043E\u043C \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0435).",
+            localAnalysisNote = "\u0410\u043D\u0430\u043B\u0438\u0437 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D \u043B\u043E\u043A\u0430\u043B\u044C\u043D\u043E \u043D\u0430 \u0432\u0430\u0448\u0435\u043C \u0443\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0435. \u0412\u0430\u0448\u0438 \u0434\u0430\u043D\u043D\u044B\u0435 \u043E\u0441\u0442\u0430\u044E\u0442\u0441\u044F \u043A\u043E\u043D\u0444\u0438\u0434\u0435\u043D\u0446\u0438\u0430\u043B\u044C\u043D\u044B\u043C\u0438.",
             patientInfo = "\u0418\u041D\u0424\u041E \u041E \u041F\u0410\u0426\u0418\u0415\u041D\u0422\u0415",
             symptomsSection = "\u0421\u0418\u041C\u041F\u0422\u041E\u041C\u042B",
             vitalsSection = "\u041F\u041E\u041A\u0410\u0417\u0410\u0422\u0415\u041B\u0418",
@@ -742,13 +524,13 @@ private data class AnalysisTexts(
             sameDayCorrelation = "\u0421\u043E\u0432\u043F\u0430\u0434\u0435\u043D\u0438\u0435 \u0432 \u043E\u0434\u0438\u043D \u0434\u0435\u043D\u044C",
             diabetesGlucoseWarning = "\u041F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435: \u041F\u043E\u0432\u044B\u0448\u0435\u043D\u043D\u0430\u044F \u0433\u043B\u044E\u043A\u043E\u0437\u0430 \u043F\u0440\u0438 \u0438\u0437\u0432\u0435\u0441\u0442\u043D\u043E\u043C \u0434\u0438\u0430\u0431\u0435\u0442\u0435 \u2014 \u0440\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0443\u0435\u0442\u0441\u044F \u043E\u0431\u0441\u0443\u0434\u0438\u0442\u044C \u0441 \u0432\u0440\u0430\u0447\u043E\u043C.",
             hypertensionBPWarning = "\u041F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435: \u041F\u043E\u0432\u044B\u0448\u0435\u043D\u043D\u043E\u0435 \u0434\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u0440\u0438 \u0438\u0437\u0432\u0435\u0441\u0442\u043D\u043E\u0439 \u0433\u0438\u043F\u0435\u0440\u0442\u043E\u043D\u0438\u0438 \u2014 \u0440\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0443\u0435\u0442\u0441\u044F \u043E\u0431\u0441\u0443\u0434\u0438\u0442\u044C \u0441 \u0432\u0440\u0430\u0447\u043E\u043C.",
-            disclaimer = "\u042D\u0442\u043E\u0442 \u0430\u043D\u0430\u043B\u0438\u0437 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D \u043B\u043E\u043A\u0430\u043B\u044C\u043D\u043E \u0431\u0435\u0437 \u0418\u0418. \u0414\u043B\u044F \u0431\u043E\u043B\u0435\u0435 \u043F\u043E\u0434\u0440\u043E\u0431\u043D\u043E\u0433\u043E \u0430\u043D\u0430\u043B\u0438\u0437\u0430 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u0442\u0435 \u043E\u0431\u043B\u0430\u0447\u043D\u043E\u0433\u043E AI-\u043F\u0440\u043E\u0432\u0430\u0439\u0434\u0435\u0440\u0430 \u0432 \u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 > AI."
+            disclaimer = "\u0410\u043D\u0430\u043B\u0438\u0437 \u043E\u0441\u043D\u043E\u0432\u0430\u043D \u043D\u0430 \u0432\u0430\u0448\u0438\u0445 \u0437\u0430\u043F\u0438\u0441\u0430\u043D\u043D\u044B\u0445 \u0434\u0430\u043D\u043D\u044B\u0445 \u043E \u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435 \u0441 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u0435\u043C \u0430\u043D\u0430\u043B\u0438\u0437\u0430 \u043F\u0430\u0442\u0442\u0435\u0440\u043D\u043E\u0432."
         )
 
         val ES = AnalysisTexts(
             summaryTitle = "[Resumen de datos de salud]",
             patternTitle = "[An\u00E1lisis de patrones]",
-            localAnalysisNote = "Generado por el motor de an\u00E1lisis local (SDK de IA no disponible en este dispositivo).",
+            localAnalysisNote = "Analizado localmente en su dispositivo. Sus datos permanecen privados.",
             patientInfo = "INFO DEL PACIENTE",
             symptomsSection = "S\u00CDNTOMAS",
             vitalsSection = "SIGNOS VITALES",
@@ -799,13 +581,13 @@ private data class AnalysisTexts(
             sameDayCorrelation = "Correlaci\u00F3n del mismo d\u00EDa",
             diabetesGlucoseWarning = "Nota: Lecturas de glucosa elevadas con diabetes conocida \u2014 se recomienda consultar con su m\u00E9dico.",
             hypertensionBPWarning = "Nota: Presi\u00F3n arterial elevada con hipertensi\u00F3n conocida \u2014 se recomienda consultar con su m\u00E9dico.",
-            disclaimer = "Este an\u00E1lisis fue generado localmente sin IA. Para un an\u00E1lisis m\u00E1s detallado, configure un proveedor de IA en la nube en Ajustes > IA."
+            disclaimer = "Este an\u00E1lisis se basa en sus datos de salud registrados mediante detecci\u00F3n de patrones."
         )
 
         val ZH_CN = AnalysisTexts(
             summaryTitle = "[\u5065\u5EB7\u6570\u636E\u6458\u8981]",
             patternTitle = "[\u6A21\u5F0F\u5206\u6790]",
-            localAnalysisNote = "\u7531\u672C\u5730\u5206\u6790\u5F15\u64CE\u751F\u6210\uFF08\u8BE5\u8BBE\u5907\u4E0A\u65E0\u53EFAI SDK\uFF09\u3002",
+            localAnalysisNote = "\u5728\u60A8\u7684\u8BBE\u5907\u4E0A\u672C\u5730\u5206\u6790\u3002\u60A8\u7684\u6570\u636E\u4FDD\u6301\u79C1\u5BC6\u3002",
             patientInfo = "\u60A3\u8005\u4FE1\u606F",
             symptomsSection = "\u75C7\u72B6",
             vitalsSection = "\u751F\u547D\u4F53\u5F81",
@@ -856,13 +638,71 @@ private data class AnalysisTexts(
             sameDayCorrelation = "\u540C\u65E5\u76F8\u5173\u6027",
             diabetesGlucoseWarning = "\u6CE8\u610F\uFF1A\u5DF2\u77E5\u7CD6\u5C3F\u75C5\u60A3\u8005\u8840\u7CD6\u5347\u9AD8 \u2014 \u5EFA\u8BAE\u4E0E\u533B\u751F\u8BA8\u8BBA\u3002",
             hypertensionBPWarning = "\u6CE8\u610F\uFF1A\u5DF2\u77E5\u9AD8\u8840\u538B\u60A3\u8005\u8840\u538B\u5347\u9AD8 \u2014 \u5EFA\u8BAE\u4E0E\u533B\u751F\u8BA8\u8BBA\u3002",
-            disclaimer = "\u6B64\u5206\u6790\u7531\u672C\u5730\u5F15\u64CE\u751F\u6210\uFF0C\u672A\u4F7F\u7528AI\u3002\u5982\u9700\u66F4\u8BE6\u7EC6\u7684\u5206\u6790\uFF0C\u8BF7\u5728\u8BBE\u7F6E > AI\u8BBE\u7F6E\u4E2D\u914D\u7F6E\u4E91AI\u63D0\u4F9B\u5546\u3002"
+            disclaimer = "\u6B64\u5206\u6790\u57FA\u4E8E\u60A8\u8BB0\u5F55\u7684\u5065\u5EB7\u6570\u636E\uFF0C\u4F7F\u7528\u89C4\u5219\u6A21\u5F0F\u68C0\u6D4B\u3002"
+        )
+
+        val HY = AnalysisTexts(
+            summaryTitle = "[\u0531\u057C\u0578\u0572\u056A\u0561\u056F\u0561\u0576 \u057F\u057E\u0575\u0561\u056C\u0576\u0565\u0580\u056B \u0561\u0574\u0583\u0578\u0583\u0578\u0582\u0574]",
+            patternTitle = "[\u0555\u0580\u056B\u0576\u0561\u0579\u0561\u0583\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580\u056B \u057E\u0565\u0580\u056C\u0578\u0582\u056E\u0578\u0582\u0569\u0575\u0578\u0582\u0576]",
+            localAnalysisNote = "\u054E\u0565\u0580\u056C\u0578\u0582\u056E\u057E\u0561\u056E \u0567 \u057F\u0565\u0572\u0561\u0575\u0576\u043E\u0580\u0565\u0576\u055D \u0571\u0565\u0580 \u057D\u0561\u0580\u0584\u0578\u0582\u043C\u0589 \u0541\u0565\u0580 \u057F\u057E\u0575\u0561\u056C\u0576\u0565\u0580\u0568 \u043C\u0576\u0578\u0582\u043C \u0565\u0576 \u0563\u0561\u0572\u057F\u0576\u056B\u0589",
+            patientInfo = "\u054F\u0535\u0542\u0535\u053F\u0531\u054F\u054E\u0548\u0552\u0539\u0546 \u0540\u053B\u054E\u0531\u0546\u0534\u053B \u0544\u0531\u054D\u053B\u0546",
+            symptomsSection = "\u0531\u053D\u054F\u0531\u0546\u053B\u0547\u0546\u0535\u054C",
+            vitalsSection = "\u053F\u0535\u0546\u054D\u0531\u053F\u0531\u0546 \u0551\u0548\u0552\u053B\u0549\u0546\u0535\u054C",
+            medicationsSection = "\u0534\u0535\u0542\u0535\u054C",
+            observationsSection = "\u0534\u053B\u054F\u0531\u054C\u053F\u0548\u0552\u0544\u0546\u0535\u054C",
+            correlationsSection = "\u0540\u0531\u054C\u0531\u0532\u0535\u054C\u0531\u053F\u0551\u0548\u0552\u054F\u0545\u0548\u0552\u0546\u0546\u0535\u054C",
+            vitalTrends = "\u053F\u0535\u0546\u054D\u0531\u053F\u0531\u0546 \u0551\u0548\u0552\u053B\u0549\u0546\u0535\u054C\u053B \u0544\u053B\u054F\u0548\u0552\u0544\u0546\u0535\u054C",
+            symptomFrequency = "\u0531\u053D\u054F\u0531\u0546\u053B\u0547\u0546\u0535\u054C\u053B \u0540\u0531\u0552\u053D\u0531\u053F\u0531\u0546\u0548\u0552\u054F\u0545\u0548\u0552\u0546",
+            weightLabel = "\u0554\u0561\u0577",
+            heightLabel = "\u0540\u0561\u057D\u0561\u056F",
+            knownConditions = "\u0540\u0561\u0575\u057F\u0576\u056B \u0570\u056B\u057E\u0561\u0576\u0564\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580",
+            intensity = "\u056B\u0576\u057F\u0565\u0576\u057D\u056B\u057E\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
+            triggers = "\u054A\u0561\u057F\u0573\u0561\u057C\u0576\u0565\u0580",
+            notes = "\u0546\u0578\u057F\u0561\u0576\u0565\u0580",
+            trend = "\u0544\u056B\u057F\u0578\u0582\u043C",
+            trendUp = "\u0561\u0573",
+            trendDown = "\u0576\u057E\u0561\u0566\u0578\u0582\u043C",
+            trendStable = "\u056F\u0561\u0575\u0578\u0582\u0576",
+            minValue = "\u0546\u057E\u0561\u0566",
+            maxValue = "\u0531\u057C\u0561\u057E",
+            avgValue = "\u0544\u056B\u056A\u056B\u0576",
+            avgIntensity = "\u0544\u056B\u056A. \u056B\u0576\u057F\u0565\u0576\u057D\u056B\u057E\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
+            maxIntensity = "\u0531\u057C\u0561\u057E. \u056B\u0576\u057F\u0565\u0576\u057D\u056B\u057E\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
+            commonTriggers = "\u0540\u0561\u0573\u0561\u056D \u043F\u0561\u057F\u0573\u0561\u057C\u0576\u0565\u0580",
+            abnormalReadings = "\u0547\u0565\u0572\u0578\u0582\u043C\u0576\u0565\u0580 \u043D\u043E\u0580\u043C\u056B\u0581",
+            period = "\u054A\u0561\u0580\u0562\u0565\u0580\u0561\u0577\u0580\u056A\u0561\u0576",
+            diastolicLabel = "\u054D\u057F\u043E\u0580\u056B\u0576 \u0573\u0576\u0577\u0578\u0582\u043C",
+            noSymptoms = "\u0531\u0575\u057D \u056A\u0561\u043C\u0561\u0576\u0561\u056F\u0561\u0570\u0561\u057F\u057E\u0561\u056E\u0578\u0582\u043C \u0561\u056D\u057F\u0561\u0576\u056B\u0577\u0576\u0565\u0580\u056B \u0563\u0580\u0561\u0576\u0581\u0578\u0582\u043C\u0576\u0565\u0580 \u0579\u056F\u0561\u0576\u0589",
+            noVitals = "\u0531\u0575\u057D \u056A\u0561\u043C\u0561\u0576\u0561\u056F\u0561\u0570\u0561\u057F\u057E\u0561\u056E\u0578\u0582\u043C \u056F\u0565\u0576\u057D\u0561\u056F\u0561\u0576 \u0581\u0578\u0582\u0581\u056B\u0579\u0576\u0565\u0580\u056B \u0563\u0580\u0561\u0576\u0581\u0578\u0582\u043C\u0576\u0565\u0580 \u0579\u056F\u0561\u0576\u0589",
+            noMedications = "\u0531\u056F\u057F\u056B\u057E \u0564\u0565\u0572\u0565\u0580 \u0579\u056F\u0561\u0576\u0589",
+            noPatterns = "\u054F\u057E\u0575\u0561\u056C\u0576\u0565\u0580\u0568 \u0562\u0561\u057E\u0561\u0580\u0561\u0580 \u0579\u0565\u0576 \u0585\u0580\u056B\u0576\u0561\u0579\u0561\u0583\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580\u056B \u057E\u0565\u0580\u056C\u0578\u0582\u056E\u0578\u0582\u0569\u0575\u0561\u0576 \u0570\u0561\u043C\u0561\u0580\u0589",
+            highBP = "\u0562\u0561\u0580\u0571\u0580\u0561\u0581\u0561\u056E (\u0570\u056B\u043F\u0565\u0580\u057F\u043E\u0576\u056B\u0561)",
+            lowBP = "\u0581\u0561\u056E\u0580 (\u0570\u056B\u043F\u043E\u057F\u043E\u0576\u056B\u0561)",
+            highDiastolic = "\u057D\u057F\u043E\u0580\u056B\u0576 \u0573\u0576\u0577\u0578\u0582\u043C\u0568 \u0562\u0561\u0580\u0571\u0580\u0561\u0581\u0561\u056E",
+            lowDiastolic = "\u057D\u057F\u043E\u0580\u056B\u0576 \u0573\u0576\u0577\u0578\u0582\u043C\u0568 \u0581\u0561\u056E\u0580",
+            highPulse = "\u0562\u0561\u0580\u0571\u0580\u0561\u0581\u0561\u056E (\u057F\u0561\u056D\u056B\u056F\u0561\u0580\u0564\u056B\u0561)",
+            lowPulse = "\u0581\u0561\u056E\u0580 (\u0562\u0580\u0561\u0564\u056B\u056F\u0561\u0580\u0564\u056B\u0561)",
+            fever = "\u056B\u0565\u0580\u043C\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
+            subfebrile = "\u0569\u0565\u0569\u0587\u0561\u056F\u056B \u0562\u0561\u0580\u0571\u0580\u0561\u0581\u0561\u056E",
+            hypothermia = "\u0581\u0561\u056E\u0580 \u056A\u0565\u0580\u043C\u0561\u057D\u057F\u056B\u0573\u0561\u0576",
+            criticalO2 = "\u056F\u0580\u056B\u057F\u056B\u056F\u0561\u056F\u0561\u0576 \u0581\u0561\u056E\u0580 \u0569\u0569\u057E\u0561\u056E\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
+            lowO2 = "\u0581\u0561\u056E\u0580 \u0569\u0569\u057E\u0561\u056E\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
+            highGlucose = "\u0566\u0563\u0561\u056C\u056B\u043E\u0580\u0565\u0576 \u0562\u0561\u0580\u0571\u0580\u0561\u0581\u0561\u056E \u0563\u056C\u0575\u0578\u0582\u056F\u043E\u0566",
+            elevatedGlucose = "\u0562\u0561\u0580\u0571\u0580\u0561\u0581\u0561\u056E \u0563\u056C\u0575\u0578\u0582\u056F\u043E\u0566",
+            lowGlucose = "\u0581\u0561\u056E\u0580 \u0563\u056C\u0575\u0578\u0582\u056F\u043E\u0566 (\u0570\u056B\u043F\u043E\u0563\u056C\u056B\u056F\u0565\u043C\u056B\u0561)",
+            severeSymptoms = "\u053E\u0561\u0576\u0580 \u0561\u056D\u057F\u0561\u0576\u056B\u0577\u0576\u0565\u0580 (7+/10)",
+            recurringSymptom = "\u053F\u0580\u056F\u0576\u057E\u0578\u0572 \u0561\u056D\u057F\u0561\u0576\u056B\u0577",
+            sameDayCorrelation = "\u0546\u043E\u0575\u0576 \u0585\u0580\u057E\u0561 \u0570\u0561\u0580\u0561\u0562\u0565\u0580\u0561\u056F\u0581\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
+            diabetesGlucoseWarning = "\u0548\u0582\u0577\u0561\u0564\u0580\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u055D \u0570\u0561\u0575\u057F\u0576\u056B \u0577\u0561\u0584\u0561\u0580\u0561\u056D\u057F\u0578\u057E \u0570\u056B\u057E\u0561\u0576\u0564\u056B \u0564\u0565\u043F\u0584\u0578\u0582\u043C \u0563\u056C\u0575\u0578\u0582\u056F\u043E\u0566\u056B \u0562\u0561\u0580\u0571\u0580\u0561\u0581\u0578\u0582\u043C \u2014 \u056D\u043E\u0580\u0570\u0578\u0582\u0580\u0564\u0561\u056F\u0581\u057E\u0578\u0582\u043C \u0567 \u0562\u056A\u0577\u056F\u056B \u0570\u0565\u057F \u0584\u0576\u0576\u0561\u0580\u056F\u0565\u056C\u0589",
+            hypertensionBPWarning = "\u0548\u0582\u0577\u0561\u0564\u0580\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u055D \u0570\u0561\u0575\u057F\u0576\u056B \u0570\u056B\u043F\u0565\u0580\u057F\u043E\u0576\u056B\u0561\u0575\u056B \u0564\u0565\u043F\u0584\u0578\u0582\u043C \u0561\u0580\u0575\u0561\u0576 \u0573\u0576\u0577\u043C\u0561\u0576 \u0562\u0561\u0580\u0571\u0580\u0561\u0581\u0578\u0582\u043C \u2014 \u056D\u043E\u0580\u0570\u0578\u0582\u0580\u0564\u0561\u056F\u0581\u057E\u0578\u0582\u043C \u0567 \u0562\u056A\u0577\u056F\u056B \u0570\u0565\u057F \u0584\u0576\u0576\u0561\u0580\u056F\u0565\u056C\u0589",
+            disclaimer = "\u054E\u0565\u0580\u056C\u0578\u0582\u056E\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0568 \u0570\u056B\u043C\u0576\u057E\u0561\u056E \u0567 \u0571\u0565\u0580 \u0563\u0580\u0561\u0576\u0581\u057E\u0561\u056E \u0561\u057C\u043E\u0572\u056A\u0561\u043F\u0561\u0570\u0561\u056F\u0561\u0576 \u057F\u057E\u0575\u0561\u056C\u0576\u0565\u0580\u056B \u0570\u056B\u043C\u0561\u0576 \u057E\u0580\u0561\u055D \u043E\u0580\u056B\u0576\u0561\u0579\u0561\u0583\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580\u056B \u0570\u0561\u0575\u057F\u0576\u0561\u0562\u0565\u0580\u043C\u0561\u043C\u0562\u0589"
         )
 
         fun forLanguage(lang: String): AnalysisTexts = when (lang) {
             "en" -> EN
             "es" -> ES
             "zh-CN" -> ZH_CN
+            "hy" -> HY
             else -> RU
         }
     }

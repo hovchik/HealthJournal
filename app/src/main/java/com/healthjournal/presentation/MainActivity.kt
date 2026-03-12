@@ -30,9 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            HealthJournalTheme {
-                MainApp()
-            }
+            MainApp()
         }
     }
 }
@@ -43,61 +41,71 @@ fun MainApp() {
     val onboardingViewModel: OnboardingViewModel = viewModel()
     val settings by onboardingViewModel.settings.collectAsStateWithLifecycle()
 
-    val startDestination = if (settings.onboardingCompleted) Screen.ProfileSelection.route else Screen.Onboarding.route
+    val startDestination = if (settings.onboardingCompleted) Screen.Home.route else Screen.Onboarding.route
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    HealthJournalTheme(themeMode = settings.themeMode) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
 
-    val showBottomBar = currentRoute in bottomNavItems.map { it.route }
+        val editRoutes = setOf(
+            Screen.AddSymptom.route, Screen.EditSymptom.route,
+            Screen.AddVital.route, Screen.EditVital.route,
+            Screen.AddMedication.route, Screen.EditMedication.route,
+            Screen.AddSymptomToDisease.route,
+            Screen.AddVitalToDisease.route,
+            Screen.AddMedicationToDisease.route,
+        )
+        val showBottomBar = currentRoute in bottomNavItems.map { it.route } || currentRoute in editRoutes
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            AnimatedVisibility(
-                visible = showBottomBar,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it })
-            ) {
-                NavigationBar(
-                    tonalElevation = 0.dp
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            bottomBar = {
+                AnimatedVisibility(
+                    visible = showBottomBar,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it })
                 ) {
-                    bottomNavItems.forEach { screen ->
-                        val title = stringResource(screen.titleResId)
-                        val selected = currentRoute == screen.route
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    screen.icon,
-                                    contentDescription = title
-                                )
-                            },
-                            label = {
-                                Text(
-                                    title,
-                                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                )
-                            },
-                            selected = selected,
-                            onClick = {
-                                navController.navigate(screen.route) {
-                                    popUpTo(Screen.Home.route) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
+                    NavigationBar(
+                        tonalElevation = 0.dp
+                    ) {
+                        bottomNavItems.forEach { screen ->
+                            val title = stringResource(screen.titleResId)
+                            val selected = currentRoute == screen.route
+                            NavigationBarItem(
+                                icon = {
+                                    Icon(
+                                        screen.icon,
+                                        contentDescription = title
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        title,
+                                        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                },
+                                selected = selected,
+                                onClick = {
+                                    navController.navigate(screen.route) {
+                                        popUpTo(Screen.Home.route) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
+        ) { innerPadding ->
+            HealthNavHost(
+                navController = navController,
+                startDestination = startDestination,
+                modifier = Modifier.padding(innerPadding)
+            )
         }
-    ) { innerPadding ->
-        HealthNavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = Modifier.padding(innerPadding)
-        )
     }
 }

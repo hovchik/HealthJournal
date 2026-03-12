@@ -53,6 +53,7 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object UserInfo : Screen("user_info", R.string.user_info_title, Icons.Default.Settings)
     data object FamilyMembers : Screen("family_members", R.string.family_members_title, Icons.Default.Settings)
     data object PredefinedDataSettings : Screen("predefined_data_settings", R.string.predefined_data_title, Icons.Default.Settings)
+    data object DeletedDiseases : Screen("deleted_diseases", R.string.deleted_diseases, Icons.Default.Settings)
 }
 
 val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.Reports, Screen.Settings)

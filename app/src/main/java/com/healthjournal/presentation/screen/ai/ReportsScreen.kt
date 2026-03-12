@@ -1,13 +1,18 @@
 package com.healthjournal.presentation.screen.ai
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,8 +48,11 @@ fun ReportsScreen(
     val symptoms by viewModel.symptoms.collectAsStateWithLifecycle()
     val medications by viewModel.medications.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val aiEnabled by viewModel.aiEnabled.collectAsStateWithLifecycle()
     val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
+    val diseases by viewModel.diseases.collectAsStateWithLifecycle()
+    val selectedDiseaseId by viewModel.selectedDiseaseId.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -111,6 +119,30 @@ fun ReportsScreen(
                 }
             }
 
+            // Disease filter
+            if (diseases.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilterChip(
+                        selected = selectedDiseaseId == 0L,
+                        onClick = { viewModel.selectDisease(0L) },
+                        label = { Text(stringResource(R.string.all_diseases)) }
+                    )
+                    diseases.forEach { disease ->
+                        FilterChip(
+                            selected = selectedDiseaseId == disease.id,
+                            onClick = { viewModel.selectDisease(disease.id) },
+                            label = { Text(disease.name) }
+                        )
+                    }
+                }
+            }
+
             // Tabs
             TabRow(selectedTabIndex = selectedTab) {
                 tabs.forEachIndexed { index, title ->
@@ -124,9 +156,20 @@ fun ReportsScreen(
                 }
             }
 
+            // Filter data by selected disease
+            val filteredVitals = remember(vitals, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) vitals else vitals.filter { it.diseaseId == selectedDiseaseId }
+            }
+            val filteredSymptoms = remember(symptoms, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) symptoms else symptoms.filter { it.diseaseId == selectedDiseaseId }
+            }
+            val filteredMedications = remember(medications, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) medications else medications.filter { it.diseaseId == selectedDiseaseId }
+            }
+
             when (selectedTab) {
-                0 -> RecordsTab(symptoms, vitals, medications, context, viewModel)
-                1 -> AiAnalyzeTab(reports, vitals, symptoms, uiState, context, viewModel)
+                0 -> RecordsTab(filteredSymptoms, filteredVitals, filteredMedications, context, viewModel)
+                1 -> AiAnalyzeTab(reports, filteredVitals, filteredSymptoms, uiState, aiEnabled, context, viewModel)
             }
         }
     }
@@ -273,6 +316,7 @@ private fun AiAnalyzeTab(
     vitals: List<VitalSign>,
     symptoms: List<Symptom>,
     uiState: AiReportUiState,
+    aiEnabled: Boolean,
     context: android.content.Context,
     viewModel: AiReportViewModel
 ) {
@@ -296,20 +340,26 @@ private fun AiAnalyzeTab(
                 ) {
                     Button(
                         onClick = { viewModel.generateReport() },
-                        enabled = !uiState.isLoading && hasEnoughData,
+                        enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(stringResource(R.string.report_2_days))
                     }
                     OutlinedButton(
                         onClick = { viewModel.analyzePatterns() },
-                        enabled = !uiState.isLoading && hasEnoughData,
+                        enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(stringResource(R.string.patterns_4_days))
                     }
                 }
-                if (!hasEnoughData) {
+                if (!aiEnabled) {
+                    Text(
+                        stringResource(R.string.ai_disabled_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else if (!hasEnoughData) {
                     Text(
                         stringResource(R.string.ai_need_more_data),
                         style = MaterialTheme.typography.bodySmall,
@@ -376,35 +426,116 @@ private fun AiAnalyzeTab(
 
         // Report list
         items(reports, key = { "report_${it.id}" }) { report ->
-            ReportCard(report = report, onExportPdf = {
-                val memberName = viewModel.getProfileName(report.profileId)
-                PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
-            })
+            ReportCard(
+                report = report,
+                diseaseName = if (report.diseaseId != 0L) viewModel.getDiseaseName(report.diseaseId) else null,
+                onExportPdf = {
+                    val memberName = viewModel.getProfileName(report.profileId)
+                    PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
+                }
+            )
         }
     }
 }
 
 @Composable
-private fun ReportCard(report: AiReport, onExportPdf: () -> Unit) {
+private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPdf: () -> Unit) {
     val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
     val typeLabel = when (report.type) {
         ReportType.SUMMARY -> stringResource(R.string.report_type_summary)
         ReportType.PATTERN_ANALYSIS -> stringResource(R.string.report_type_patterns)
     }
+    var showPrompt by remember { mutableStateOf(false) }
+
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Header row
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(typeLabel, style = MaterialTheme.typography.titleSmall)
-                    Text(stringResource(R.string.days_format, report.periodDays), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(typeLabel, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                    if (diseaseName != null) {
+                        Text(diseaseName, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.tertiary, fontWeight = FontWeight.SemiBold)
+                    }
                 }
                 IconButton(onClick = onExportPdf) {
                     Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.export_pdf), tint = MaterialTheme.colorScheme.primary)
                 }
             }
-            Text(report.generatedAt.format(formatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
-            Spacer(modifier = Modifier.height(8.dp))
+
+            // Metadata row: date, period, AI model
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(report.generatedAt.format(formatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                Text("\u2022", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                Text(stringResource(R.string.days_format, report.periodDays), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+            }
+
+            // AI provider badge
+            if (report.providerName.isNotBlank()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    tonalElevation = 0.dp
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.SmartToy,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        Text(
+                            stringResource(R.string.report_ai_model, report.providerName),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Report content
             Text(report.content, style = MaterialTheme.typography.bodyMedium)
+
+            // Expandable prompt section
+            if (report.prompt.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                TextButton(
+                    onClick = { showPrompt = !showPrompt },
+                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        stringResource(if (showPrompt) R.string.report_hide_prompt else R.string.report_show_prompt),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+                AnimatedVisibility(visible = showPrompt) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        tonalElevation = 0.dp
+                    ) {
+                        Text(
+                            report.prompt,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }

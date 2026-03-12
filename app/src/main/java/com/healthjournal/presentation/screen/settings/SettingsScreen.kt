@@ -1,5 +1,10 @@
 package com.healthjournal.presentation.screen.settings
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings as AndroidSettings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -20,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthjournal.R
@@ -32,9 +38,11 @@ fun SettingsScreen(
     onUserInfo: () -> Unit,
     onFamilyMembers: () -> Unit,
     onPredefinedData: () -> Unit,
+    onDeletedDiseases: () -> Unit,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+    val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val exportSuccessMsg = stringResource(R.string.export_success)
@@ -110,6 +118,14 @@ fun SettingsScreen(
                         title = stringResource(R.string.predefined_data_title),
                         subtitle = stringResource(R.string.predefined_data_desc),
                         onClick = onPredefinedData
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.RestoreFromTrash,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.deleted_diseases),
+                        subtitle = stringResource(R.string.deleted_diseases_desc),
+                        onClick = onDeletedDiseases
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
@@ -240,6 +256,72 @@ fun SettingsScreen(
                         onClick = onLanguageSettings
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+                    // Theme selector
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Palette,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                stringResource(R.string.theme_settings_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                                val themeOptions = listOf(
+                                    "SYSTEM" to stringResource(R.string.theme_system),
+                                    "LIGHT" to stringResource(R.string.theme_light),
+                                    "DARK" to stringResource(R.string.theme_dark)
+                                )
+                                themeOptions.forEachIndexed { index, (mode, label) ->
+                                    SegmentedButton(
+                                        selected = settings.themeMode == mode,
+                                        onClick = { settingsViewModel.setThemeMode(mode) },
+                                        shape = SegmentedButtonDefaults.itemShape(
+                                            index = index,
+                                            count = themeOptions.size
+                                        ),
+                                        icon = {
+                                            SegmentedButtonDefaults.Icon(active = settings.themeMode == mode) {
+                                                Icon(
+                                                    when (mode) {
+                                                        "LIGHT" -> Icons.Default.LightMode
+                                                        "DARK" -> Icons.Default.DarkMode
+                                                        else -> Icons.Default.SettingsBrightness
+                                                    },
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                    ) {
+                                        Text(label, style = MaterialTheme.typography.labelSmall)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                     SettingsListItem(
                         icon = Icons.Default.Psychology,
                         iconTint = MaterialTheme.colorScheme.tertiary,
@@ -250,7 +332,235 @@ fun SettingsScreen(
                 }
             }
 
+            // Permissions section
+            PermissionsSection()
+
             Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+private fun PermissionsSection() {
+    val context = LocalContext.current
+
+    // Notification permission state (API 33+)
+    var notificationGranted by remember {
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= 33) {
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED
+            } else true
+        )
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        notificationGranted = granted
+    }
+
+    // On-device AI: check if a model is downloaded
+    val app = context.applicationContext as com.healthjournal.HealthJournalApp
+    val localModelManager = app.container.localModelManager
+    var aiAvailable by remember { mutableStateOf<Boolean?>(null) }
+    var aiStatusLabel by remember { mutableStateOf("") }
+
+    fun checkAiAvailability() {
+        val activeModel = localModelManager.getActiveModelSync()
+        aiAvailable = activeModel != null
+        aiStatusLabel = activeModel?.displayName ?: ""
+    }
+
+    SettingsSection(
+        title = stringResource(R.string.settings_section_permissions),
+        color = MaterialTheme.colorScheme.error
+    ) {
+        SettingsGroupCard {
+            // Notifications permission (API 33+)
+            if (Build.VERSION.SDK_INT >= 33) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.12f),
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Notifications,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.perm_notifications),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            stringResource(R.string.perm_notifications_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    if (notificationGranted) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    } else {
+                        FilledTonalButton(
+                            onClick = {
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        ) {
+                            Text(stringResource(R.string.perm_grant))
+                        }
+                    }
+                }
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            }
+
+            // On-device AI status
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.12f),
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Default.Psychology,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.perm_ai_status),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    when (aiAvailable) {
+                        true -> Text(
+                            "${stringResource(R.string.perm_ai_available)} ($aiStatusLabel)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        false -> Text(
+                            stringResource(R.string.perm_ai_no_model),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        null -> Text(
+                            stringResource(R.string.perm_ai_status),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                if (aiAvailable == true) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+                } else {
+                    FilledTonalButton(onClick = { checkAiAvailability() }) {
+                        Text(stringResource(R.string.perm_ai_check))
+                    }
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+            // Open system app settings
+            Surface(
+                onClick = {
+                    val intent = Intent(AndroidSettings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = android.net.Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
+                },
+                color = Color.Transparent
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.12f),
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.perm_open_settings),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            stringResource(R.string.perm_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outlineVariant,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
     }
 }

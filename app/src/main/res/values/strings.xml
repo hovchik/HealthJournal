@@ -77,6 +77,9 @@
     <string name="no_records_hint">Нет записей за этот период.</string>
     <string name="report_type_summary">Медицинское резюме</string>
     <string name="report_type_patterns">Анализ паттернов</string>
+    <string name="report_ai_model">AI: %s</string>
+    <string name="report_show_prompt">Показать запрос</string>
+    <string name="report_hide_prompt">Скрыть запрос</string>
     <string name="days_format">%1$d дн.</string>
     <string name="records_export_pdf">Экспорт записей в PDF</string>
 
@@ -144,10 +147,7 @@
     <string name="ai_select_provider">Выберите провайдера</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-совместимый</string>
-    <string name="ai_provider_local">Локальная модель</string>
-    <string name="ai_provider_system">Системный AI (Google / Samsung)</string>
-    <string name="system_ai_desc">Использует встроенный AI на устройстве: Google AI Core или Samsung Galaxy AI. Не требует интернета или API-ключа. Доступно на Android 14+ с совместимым устройством.</string>
-    <string name="system_ai_recommended">(Рекомендуется)</string>
+    <string name="ai_provider_local">Локальный анализ (на устройстве)</string>
     <string name="ai_privacy_redact">Редактирование данных</string>
     <string name="ai_privacy_redact_desc">Удалять телефоны и email перед отправкой</string>
     <string name="ai_api_key">API-ключ</string>
@@ -159,11 +159,10 @@
     <string name="ai_max_tokens">Макс. токенов</string>
     <string name="ai_temperature">Температура</string>
     <string name="ai_validate_config">Проверить конфигурацию</string>
-    <string name="ai_provider_gemini_nano">Системный AI (на устройстве)</string>
-    <string name="gemini_nano_desc">AI на устройстве: Google AI Core (Pixel 8+) или Samsung Galaxy AI (Galaxy S24+). Не требует интернета и API-ключа. Требуется Android 14+.</string>
-    <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Требуется API-ключ</string>
     <string name="ai_local_model_desc">Загрузить свою модель AI из памяти устройства</string>
+    <string name="ai_local_analysis_desc">Анализирует данные о здоровье на устройстве. Всегда доступен, не требует интернета, API-ключа или загрузки модели. Данные остаются приватными.</string>
+    <string name="ai_local_analysis_always_available">Всегда доступен</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Выберите профиль для отчёта</string>
@@ -223,6 +222,20 @@
     <string name="settings_section_profile">Профиль</string>
     <string name="settings_section_data">Данные</string>
     <string name="settings_section_preferences">Настройки</string>
+    <string name="settings_section_permissions">Разрешения</string>
+
+    <!-- Permissions -->
+    <string name="perm_title">Разрешения приложения</string>
+    <string name="perm_desc">Управление разрешениями для AI и других функций</string>
+    <string name="perm_notifications">Уведомления</string>
+    <string name="perm_notifications_desc">Для загрузки AI-модели и напоминаний</string>
+    <string name="perm_granted">Разрешено</string>
+    <string name="perm_denied">Не разрешено</string>
+    <string name="perm_grant">Разрешить</string>
+    <string name="perm_ai_status">Статус AI на устройстве</string>
+    <string name="perm_ai_available">AI на устройстве доступен</string>
+    <string name="perm_ai_check">Проверить</string>
+    <string name="perm_open_settings">Открыть настройки</string>
 
     <!-- Date Grouping -->
     <string name="date_today">Сегодня</string>
@@ -233,6 +246,7 @@
 
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">Необходимы данные минимум за 2 дня для анализа</string>
+    <string name="ai_disabled_hint">ИИ-анализ отключён. Включите его в Настройки > ИИ-настройки.</string>
 
     <!-- Export/Import & Backup -->
     <string name="export_import_title">Экспорт и импорт</string>
@@ -385,4 +399,66 @@
     <string name="family_diseases_title">Болезни семьи</string>
     <string name="no_family_diseases_hint">Нет общих болезней среди членов семьи.</string>
     <string name="family_members_count">%1$d чел.</string>
+    <string name="disease_deleted">Болезнь удалена</string>
+    <string name="undo">Отменить</string>
+    <string name="deleted_diseases">Удалённые болезни</string>
+    <string name="no_deleted_diseases_hint">Нет удалённых болезней.</string>
+    <string name="deleted_diseases_desc">Просмотр и восстановление удалённых болезней</string>
+    <string name="restore">Восстановить</string>
+    <string name="permanently_delete">Удалить навсегда</string>
+    <string name="created_date">Создана: %1$s</string>
+    <string name="deleted_date">Удалена: %1$s</string>
+    <string name="disease_group">Группа</string>
+    <string name="disease_group_hint">Напр. хронические, сезонные</string>
+    <string name="ungrouped">Без группы</string>
+    <string name="show_deleted">Показать удалённые</string>
+    <string name="hide_deleted">Скрыть удалённые</string>
+    <string name="confirm_permanent_delete">Вы уверены, что хотите удалить эту болезнь навсегда? Это действие нельзя отменить.</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="cancel">Отмена</string>
+    <string name="all_diseases">Все болезни</string>
+    <string name="disease_filter">Болезнь</string>
+
+    <!-- Theme -->
+    <string name="theme_settings_title">Тема</string>
+    <string name="theme_system">Система</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+
+    <!-- On-device model -->
+    <string name="local_model_title">Модель LLM на устройстве</string>
+    <string name="local_model_desc">Скачайте небольшую AI-модель для анализа прямо на вашем устройстве. Ваши данные остаются приватными.</string>
+    <string name="local_model_download">Скачать модель</string>
+    <string name="local_model_downloading">Загрузка… %1$d%%</string>
+    <string name="local_model_delete">Удалить модель</string>
+    <string name="local_model_fallback_info">Без скачанной модели всегда доступен локальный анализ на основе правил.</string>
+    <string name="perm_ai_no_model">Модель AI не скачана. Скачайте в настройках AI.</string>
+
+    <!-- AI Engine Settings -->
+    <string name="ai_provider_system_ai">Системный AI (Android AICore)</string>
+    <string name="ai_engine_title">AI движок</string>
+    <string name="ai_engine_mode">Режим AI</string>
+    <string name="ai_engine_mode_desc">Выберите, как приложение использует AI</string>
+    <string name="ai_engine_device_info">Информация об устройстве</string>
+    <string name="ai_engine_ram">RAM: %1$d МБ</string>
+    <string name="ai_engine_storage">Свободно: %1$d МБ</string>
+    <string name="ai_engine_performance">Класс: %1$s</string>
+    <string name="ai_engine_installed_models">Установленные модели</string>
+    <string name="ai_engine_no_models">Нет установленных моделей</string>
+    <string name="ai_engine_model_catalog">Каталог моделей</string>
+    <string name="ai_engine_scan">Сканировать модели</string>
+    <string name="ai_engine_scan_result">Найдено моделей: %1$d</string>
+    <string name="ai_engine_active">Активна</string>
+    <string name="ai_engine_activate">Активировать</string>
+    <string name="ai_engine_incompatible">Несовместимо</string>
+    <string name="ai_engine_downloading">Загрузка: %1$d%%</string>
+    <string name="ai_engine_installing">Установка…</string>
+    <string name="ai_engine_size">%1$d МБ</string>
+    <string name="ai_engine_ram_required">Треб. RAM: %1$d МБ</string>
+    <string name="ai_engine_setup_wizard">Мастер настройки AI</string>
+    <string name="ai_engine_setup_welcome">Настройте AI-анализ для вашего устройства</string>
+    <string name="ai_engine_setup_detect">Определение возможностей…</string>
+    <string name="ai_engine_setup_recommend">Рекомендуемый режим: %1$s</string>
+    <string name="ai_engine_setup_complete">Настройка завершена</string>
+    <string name="ai_engine_setup_skip">Пропустить</string>
 </resources>

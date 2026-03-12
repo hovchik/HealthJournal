@@ -1,12 +1,10 @@
 package com.healthjournal.presentation.screen.settings
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -16,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,16 +33,12 @@ fun AiSettingsScreen(
     val settings by viewModel.aiSettings.collectAsStateWithLifecycle()
     val validationMessage by viewModel.validationMessage.collectAsStateWithLifecycle()
     val validationSuccess by viewModel.validationSuccess.collectAsStateWithLifecycle()
-
-    val providerOptions = listOf(
-        AiProviderId.GEMINI_NANO.key to stringResource(R.string.ai_provider_system),
-        AiProviderId.CLAUDE.key to stringResource(R.string.ai_provider_claude),
-        AiProviderId.OPENAI_COMPATIBLE.key to stringResource(R.string.ai_provider_openai),
-        AiProviderId.LOCAL.key to stringResource(R.string.ai_provider_local)
-    )
-    var providerMenuExpanded by remember { mutableStateOf(false) }
-    val selectedProviderLabel = providerOptions.firstOrNull { it.first == settings.selectedProviderId }?.second
-        ?: stringResource(R.string.ai_provider_system)
+    val executionMode by viewModel.executionMode.collectAsStateWithLifecycle()
+    val installedModels by viewModel.installedModels.collectAsStateWithLifecycle()
+    val activeModel by viewModel.activeModel.collectAsStateWithLifecycle()
+    val installProgress by viewModel.installProgress.collectAsStateWithLifecycle()
+    val deviceCapability by viewModel.deviceCapability.collectAsStateWithLifecycle()
+    val scanResult by viewModel.scanResult.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -53,7 +46,10 @@ fun AiSettingsScreen(
                 title = { Text(stringResource(R.string.ai_settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
                     }
                 }
             )
@@ -114,84 +110,31 @@ fun AiSettingsScreen(
 
             AnimatedVisibility(visible = settings.enabled) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    // Provider selector dropdown
-                    ExposedDropdownMenuBox(
-                        expanded = providerMenuExpanded,
-                        onExpandedChange = { providerMenuExpanded = it }
-                    ) {
-                        OutlinedTextField(
-                            value = selectedProviderLabel,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(stringResource(R.string.ai_select_provider)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = providerMenuExpanded) },
-                            modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    // === AI Execution Mode ===
+                    ExecutionModeSection(
+                        executionMode = executionMode,
+                        onModeChange = { viewModel.setExecutionMode(it) }
+                    )
+
+                    // === Device Info ===
+                    deviceCapability?.let { DeviceInfoCard(it) }
+
+                    // === Cloud provider config (when CLOUD mode) ===
+                    if (executionMode == AiExecutionMode.CLOUD) {
+                        CloudProviderSection(
+                            settings = settings,
+                            viewModel = viewModel
                         )
-                        ExposedDropdownMenu(
-                            expanded = providerMenuExpanded,
-                            onDismissRequest = { providerMenuExpanded = false }
-                        ) {
-                            providerOptions.forEach { (key, label) ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(label)
-                                            if (key == AiProviderId.GEMINI_NANO.key) {
-                                                Surface(
-                                                    shape = MaterialTheme.shapes.extraSmall,
-                                                    color = MaterialTheme.colorScheme.tertiaryContainer
-                                                ) {
-                                                    Text(
-                                                        stringResource(R.string.system_ai_recommended),
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    },
-                                    onClick = {
-                                        viewModel.selectProvider(key)
-                                        providerMenuExpanded = false
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            when (key) {
-                                                AiProviderId.GEMINI_NANO.key -> Icons.Default.PhoneAndroid
-                                                AiProviderId.CLAUDE.key -> Icons.Default.Star
-                                                AiProviderId.OPENAI_COMPATIBLE.key -> Icons.Default.Cloud
-                                                else -> Icons.Default.Folder
-                                            },
-                                            contentDescription = null,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    }
-                                )
-                            }
-                        }
                     }
 
-                    // Provider-specific config
-                    when (settings.selectedProviderId) {
-                        AiProviderId.GEMINI_NANO.key -> GeminiNanoConfigSection(
-                            config = settings.geminiNanoConfig,
-                            onUpdate = { viewModel.updateGeminiNanoConfig(it) }
-                        )
-                        AiProviderId.CLAUDE.key -> ClaudeConfigSection(
-                            config = settings.claudeConfig,
-                            onUpdate = { viewModel.updateClaudeConfig(it) }
-                        )
-                        AiProviderId.OPENAI_COMPATIBLE.key -> OpenAiConfigSection(
-                            config = settings.openAiConfig,
-                            onUpdate = { viewModel.updateOpenAiConfig(it) }
-                        )
-                        AiProviderId.LOCAL.key -> LocalConfigSection(
-                            config = settings.localAiConfig,
-                            onUpdate = { viewModel.updateLocalConfig(it) }
+                    // === Local Model Section (when CUSTOM_LOCAL or AUTO) ===
+                    if (executionMode == AiExecutionMode.CUSTOM_LOCAL || executionMode == AiExecutionMode.AUTO) {
+                        LocalModelSection(
+                            viewModel = viewModel,
+                            installedModels = installedModels,
+                            activeModel = activeModel,
+                            installProgress = installProgress,
+                            scanResult = scanResult
                         )
                     }
 
@@ -247,11 +190,16 @@ fun AiSettingsScreen(
                         onClick = { viewModel.validateCurrentProvider() },
                         modifier = Modifier.fillMaxWidth().height(48.dp)
                     ) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(stringResource(R.string.ai_validate_config))
                     }
 
+                    // Validation result
                     validationSuccess?.let { isValid ->
                         if (isValid) {
                             Card(
@@ -311,10 +259,14 @@ fun AiSettingsScreen(
     }
 }
 
+// ---------------------------------------------------------------------------
+// Execution Mode Section
+// ---------------------------------------------------------------------------
+
 @Composable
-private fun GeminiNanoConfigSection(
-    config: GeminiNanoConfig,
-    onUpdate: (GeminiNanoConfig) -> Unit
+private fun ExecutionModeSection(
+    executionMode: AiExecutionMode,
+    onModeChange: (AiExecutionMode) -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -326,40 +278,625 @@ private fun GeminiNanoConfigSection(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.Tune,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    stringResource(R.string.ai_engine_mode),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
             Text(
-                stringResource(R.string.gemini_nano_desc),
+                stringResource(R.string.ai_engine_mode_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Text(
-                stringResource(R.string.ai_temperature) + ": %.1f".format(config.temperature),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Slider(
-                value = config.temperature,
-                onValueChange = { onUpdate(config.copy(temperature = it)) },
-                valueRange = 0f..1f,
-                steps = 9
-            )
-            OutlinedTextField(
-                value = config.topK.toString(),
-                onValueChange = { onUpdate(config.copy(topK = it.toIntOrNull() ?: 40)) },
-                label = { Text(stringResource(R.string.gemini_top_k)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-            OutlinedTextField(
-                value = config.maxOutputTokens.toString(),
-                onValueChange = { onUpdate(config.copy(maxOutputTokens = it.toIntOrNull() ?: 1024)) },
-                label = { Text(stringResource(R.string.ai_max_tokens)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
+
+            AiExecutionMode.entries.forEach { mode ->
+                val selected = executionMode == mode
+                Surface(
+                    onClick = { onModeChange(mode) },
+                    shape = RoundedCornerShape(12.dp),
+                    color = if (selected)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.surfaceContainerHighest
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        RadioButton(selected = selected, onClick = { onModeChange(mode) })
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                mode.label,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                mode.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Device Info Card
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun DeviceInfoCard(capability: DeviceCapabilityResult) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.DeviceHub,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    stringResource(R.string.ai_engine_device_info),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        stringResource(R.string.ai_engine_ram, capability.totalRamMb),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        stringResource(R.string.ai_engine_storage),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        formatSize(capability.availableStorageMb),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        stringResource(R.string.ai_engine_performance),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        capability.performanceClass.name,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.tertiaryContainer
+            ) {
+                Text(
+                    capability.recommendedMode.label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Cloud Provider Section
+// ---------------------------------------------------------------------------
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CloudProviderSection(
+    settings: AiSettings,
+    viewModel: AiSettingsViewModel
+) {
+    val providerOptions = listOf(
+        AiProviderId.CLAUDE.key to stringResource(R.string.ai_provider_claude),
+        AiProviderId.OPENAI_COMPATIBLE.key to stringResource(R.string.ai_provider_openai)
+    )
+    var providerMenuExpanded by remember { mutableStateOf(false) }
+    val cloudProviderId = if (settings.selectedProviderId == AiProviderId.LOCAL.key)
+        AiProviderId.CLAUDE.key else settings.selectedProviderId
+    val selectedLabel = providerOptions.firstOrNull { it.first == cloudProviderId }?.second
+        ?: stringResource(R.string.ai_provider_claude)
+
+    ExposedDropdownMenuBox(
+        expanded = providerMenuExpanded,
+        onExpandedChange = { providerMenuExpanded = it }
+    ) {
+        OutlinedTextField(
+            value = selectedLabel,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(stringResource(R.string.ai_select_provider)) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = providerMenuExpanded)
+            },
+            modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
+        )
+        ExposedDropdownMenu(
+            expanded = providerMenuExpanded,
+            onDismissRequest = { providerMenuExpanded = false }
+        ) {
+            providerOptions.forEach { (key, label) ->
+                DropdownMenuItem(
+                    text = { Text(label) },
+                    onClick = {
+                        viewModel.selectProvider(key)
+                        providerMenuExpanded = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            if (key == AiProviderId.CLAUDE.key) Icons.Default.Star
+                            else Icons.Default.Cloud,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    when (cloudProviderId) {
+        AiProviderId.CLAUDE.key -> ClaudeConfigSection(
+            config = settings.claudeConfig,
+            onUpdate = { viewModel.updateClaudeConfig(it) }
+        )
+        AiProviderId.OPENAI_COMPATIBLE.key -> OpenAiConfigSection(
+            config = settings.openAiConfig,
+            onUpdate = { viewModel.updateOpenAiConfig(it) }
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Local Model Section
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun LocalModelSection(
+    viewModel: AiSettingsViewModel,
+    installedModels: List<LocalAiModel>,
+    activeModel: LocalAiModel?,
+    installProgress: InstallProgress?,
+    scanResult: Int?
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Header
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.SmartToy,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    stringResource(R.string.local_model_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            Text(
+                stringResource(R.string.local_model_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            HorizontalDivider()
+
+            // Installed models
+            Text(
+                stringResource(R.string.ai_engine_installed_models),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            if (installedModels.isEmpty()) {
+                Text(
+                    stringResource(R.string.ai_engine_no_models),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                installedModels.forEach { model ->
+                    InstalledModelCard(
+                        model = model,
+                        isActive = model.modelId == activeModel?.modelId,
+                        onActivate = { viewModel.setActiveModel(model.modelId) },
+                        onDelete = { viewModel.deleteModel(model.modelId) }
+                    )
+                }
+            }
+
+            // Scan button
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedButton(onClick = { viewModel.scanForModels() }) {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(stringResource(R.string.ai_engine_scan))
+                }
+                scanResult?.let {
+                    Text(
+                        stringResource(R.string.ai_engine_scan_result, it),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            HorizontalDivider()
+
+            // Model catalog
+            Text(
+                stringResource(R.string.ai_engine_model_catalog),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            val installedIds = remember(installedModels) {
+                installedModels.map { it.modelId }.toSet()
+            }
+
+            viewModel.catalogModels.forEach { model ->
+                val isInstalled = model.modelId in installedIds
+                val currentProgress = installProgress?.takeIf { it.modelId == model.modelId }
+                val compatibility = remember(model.modelId) {
+                    viewModel.getCompatibilityReport(model)
+                }
+
+                CatalogModelCard(
+                    model = model,
+                    isInstalled = isInstalled,
+                    progress = currentProgress,
+                    onDownload = { viewModel.downloadModel(model) },
+                    compatibilityMessage = compatibility
+                )
+            }
+
+            // Fallback info
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        stringResource(R.string.local_model_fallback_info),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Installed Model Card
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun InstalledModelCard(
+    model: LocalAiModel,
+    isActive: Boolean,
+    onActivate: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = if (isActive)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            else
+                MaterialTheme.colorScheme.surfaceContainerHighest
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        model.displayName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        "${formatSize(model.sizeMb)} | ${model.quantization ?: model.fileFormat} | ${model.runtimeType}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (isActive) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            stringResource(R.string.ai_engine_active),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (!isActive) {
+                    FilledTonalButton(
+                        onClick = onActivate,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.ai_engine_activate))
+                    }
+                }
+                OutlinedButton(
+                    onClick = onDelete,
+                    modifier = if (isActive) Modifier.fillMaxWidth() else Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(stringResource(R.string.local_model_delete))
+                }
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Catalog Model Card
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun CatalogModelCard(
+    model: LocalAiModel,
+    isInstalled: Boolean,
+    progress: InstallProgress?,
+    onDownload: () -> Unit,
+    compatibilityMessage: String?
+) {
+    val isCompatible = compatibilityMessage == null
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = if (isInstalled)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
+            else
+                MaterialTheme.colorScheme.surfaceContainerHighest
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        model.displayName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        stringResource(R.string.ai_engine_size, model.sizeMb) + " | " +
+                            stringResource(R.string.ai_engine_ram_required, model.requiredRamMb),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    model.quantization?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
+                if (isInstalled) {
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else if (!isCompatible) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.errorContainer
+                    ) {
+                        Text(
+                            stringResource(R.string.ai_engine_incompatible),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            }
+
+            // Compatibility warning message
+            if (!isCompatible && compatibilityMessage != null) {
+                Text(
+                    compatibilityMessage,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            when {
+                isInstalled -> {
+                    // Already shown in installed section - no action needed
+                }
+                progress != null && progress.state == ModelInstallState.DOWNLOADING -> {
+                    Column {
+                        LinearProgressIndicator(
+                            progress = { progress.progressPercent / 100f },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            stringResource(R.string.ai_engine_downloading, progress.progressPercent),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                progress != null && progress.state == ModelInstallState.INSTALLING -> {
+                    Column {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            stringResource(R.string.ai_engine_installing),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                progress?.state == ModelInstallState.FAILED -> {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                progress.errorMessage ?: "Failed",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Button(
+                        onClick = onDownload,
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = isCompatible
+                    ) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(stringResource(R.string.local_model_download))
+                    }
+                }
+                else -> {
+                    Button(
+                        onClick = onDownload,
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = isCompatible
+                    ) {
+                        Icon(
+                            Icons.Default.Download,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(stringResource(R.string.local_model_download))
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Cloud Config Sections
+// ---------------------------------------------------------------------------
 
 @Composable
 private fun ClaudeConfigSection(
@@ -451,71 +988,10 @@ private fun OpenAiConfigSection(
     }
 }
 
-@Composable
-private fun LocalConfigSection(
-    config: LocalAiConfig,
-    onUpdate: (LocalAiConfig) -> Unit
-) {
-    val context = LocalContext.current
-    val filePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-            context.contentResolver.takePersistableUriPermission(
-                it, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-            onUpdate(config.copy(modelPath = it.toString()))
-        }
-    }
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        shape = MaterialTheme.shapes.large
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            OutlinedTextField(
-                value = config.modelPath,
-                onValueChange = { onUpdate(config.copy(modelPath = it)) },
-                label = { Text(stringResource(R.string.ai_model_path)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                trailingIcon = {
-                    IconButton(onClick = { filePicker.launch(arrayOf("*/*")) }) {
-                        Icon(Icons.Default.FolderOpen, contentDescription = stringResource(R.string.ai_browse_model))
-                    }
-                }
-            )
-            OutlinedTextField(
-                value = config.contextSize.toString(),
-                onValueChange = { onUpdate(config.copy(contextSize = it.toIntOrNull() ?: 2048)) },
-                label = { Text(stringResource(R.string.ai_context_size)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-            OutlinedTextField(
-                value = config.maxTokens.toString(),
-                onValueChange = { onUpdate(config.copy(maxTokens = it.toIntOrNull() ?: 1024)) },
-                label = { Text(stringResource(R.string.ai_max_tokens)) },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-            Text(
-                stringResource(R.string.ai_temperature) + ": %.1f".format(config.temperature),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Slider(
-                value = config.temperature,
-                onValueChange = { onUpdate(config.copy(temperature = it)) },
-                valueRange = 0f..1f,
-                steps = 9
-            )
-        }
-    }
+private fun formatSize(mb: Long): String {
+    return if (mb >= 1024) "%.1f GB".format(mb / 1024.0) else "$mb MB"
 }

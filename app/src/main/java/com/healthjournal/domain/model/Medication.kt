@@ -12,5 +12,6 @@ data class Medication(
     val active: Boolean = true,
     val notes: String = "",
     val profileId: Long = 0,
-    val diseaseId: Long = 0
+    val diseaseId: Long = 0,
+    val isDeleted: Boolean = false
 )

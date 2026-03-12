@@ -26,6 +26,10 @@ class MedicationsViewModel(application: Application) : AndroidViewModel(applicat
         all.filter { it.profileId == profileId }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    val diseases = combine(container.getAllDiseases(), activeProfileFlow) { all, profileId ->
+        all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     private val _saveSuccess = MutableSharedFlow<Boolean>()
     val saveSuccess = _saveSuccess.asSharedFlow()
 

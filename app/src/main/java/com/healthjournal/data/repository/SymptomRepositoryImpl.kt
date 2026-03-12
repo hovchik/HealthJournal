@@ -15,13 +15,13 @@ class SymptomRepositoryImpl constructor(
 
     override fun getAllSymptoms(): Flow<List<Symptom>> =
         store.observeAll().map { list ->
-            list.sortedByDescending { it.recordedAt }.map { it.toDomain() }
+            list.filter { !it.isDeleted }.sortedByDescending { it.recordedAt }.map { it.toDomain() }
         }
 
     override fun getSymptomsByDateRange(from: LocalDateTime, to: LocalDateTime): Flow<List<Symptom>> {
         val fromMillis = from.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         val toMillis = to.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        return store.observe { it.recordedAt in fromMillis..toMillis }
+        return store.observe { it.recordedAt in fromMillis..toMillis && !it.isDeleted }
             .map { list -> list.sortedByDescending { it.recordedAt }.map { it.toDomain() } }
     }
 
@@ -36,4 +36,10 @@ class SymptomRepositoryImpl constructor(
 
     override suspend fun deleteSymptom(symptom: Symptom) =
         store.delete(SymptomDto.from(symptom))
+
+    override suspend fun softDeleteByDiseaseId(diseaseId: Long) =
+        store.updateWhere({ it.diseaseId == diseaseId && !it.isDeleted }) { it.copy(isDeleted = true) }
+
+    override suspend fun restoreByDiseaseId(diseaseId: Long) =
+        store.updateWhere({ it.diseaseId == diseaseId && it.isDeleted }) { it.copy(isDeleted = false) }
 }

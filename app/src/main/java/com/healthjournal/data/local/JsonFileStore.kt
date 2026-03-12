@@ -62,6 +62,12 @@ class JsonFileStore<T>(
         saveToFile(updated)
     }
 
+    suspend fun updateWhere(predicate: (T) -> Boolean, transform: (T) -> T) = mutex.withLock {
+        val updated = _data.value.map { if (predicate(it)) transform(it) else it }
+        _data.value = updated
+        saveToFile(updated)
+    }
+
     suspend fun deleteWhere(predicate: (T) -> Boolean) = mutex.withLock {
         val updated = _data.value.filterNot(predicate)
         _data.value = updated

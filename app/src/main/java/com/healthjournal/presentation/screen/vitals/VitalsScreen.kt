@@ -43,6 +43,7 @@ fun VitalsScreen(
     val vitals by viewModel.vitals.collectAsStateWithLifecycle()
     val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
     val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
+    val diseases by viewModel.diseases.collectAsStateWithLifecycle()
 
     val activeProfileName = if (activeProfileId == 0L) {
         stringResource(R.string.rel_self)
@@ -53,6 +54,7 @@ fun VitalsScreen(
     val todayLabel = stringResource(R.string.date_today)
     val yesterdayLabel = stringResource(R.string.date_yesterday)
     val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+    val ungroupedLabel = stringResource(R.string.ungrouped)
 
     Scaffold(
         topBar = {
@@ -113,8 +115,17 @@ fun VitalsScreen(
                 }
             }
         } else {
-            val vitalsByDate = vitals.groupBy { it.recordedAt.toLocalDate() }
-                .toSortedMap(compareByDescending { it })
+            val vitalsByDisease = remember(vitals, diseases) {
+                val diseaseMap = diseases.associateBy { it.id }
+                val grouped = vitals.groupBy { it.diseaseId }
+                // Sort: diseases first (by name), ungrouped (0) last
+                grouped.entries.sortedWith(compareBy {
+                    if (it.key == 0L) "\uFFFF" else diseaseMap[it.key]?.name ?: "\uFFFE"
+                }).map { (diseaseId, vitalsList) ->
+                    val name = if (diseaseId == 0L) ungroupedLabel else diseaseMap[diseaseId]?.name ?: ungroupedLabel
+                    DiseaseVitalsGroup(diseaseId, name, vitalsList)
+                }
+            }
 
             LazyColumn(
                 modifier = Modifier
@@ -123,54 +134,81 @@ fun VitalsScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                // Charts section
-                val vitalsByType = vitals.groupBy { it.type }
-                val chartTypes = vitalsByType.filter { it.value.size >= 2 }
-                if (chartTypes.isNotEmpty()) {
-                    item(key = "charts_header") {
+                vitalsByDisease.forEach { group ->
+                    // Disease header
+                    item(key = "disease_header_${group.diseaseId}") {
                         Text(
-                            stringResource(R.string.vitals_charts_title),
+                            group.diseaseName,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            fontWeight = FontWeight.Bold,
+                            color = if (group.diseaseId != 0L) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         )
                     }
-                    chartTypes.forEach { (type, typeVitals) ->
-                        item(key = "chart_${type.name}") {
-                            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                                VitalsChart(
-                                    title = type.localizedDisplayName(),
-                                    vitals = typeVitals.sortedBy { it.recordedAt },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
+
+                    // Charts for this disease group
+                    val vitalsByType = group.vitals.groupBy { it.type }
+                    val chartTypes = vitalsByType.filter { it.value.size >= 2 }
+                    if (chartTypes.isNotEmpty()) {
+                        item(key = "charts_header_${group.diseaseId}") {
+                            Text(
+                                stringResource(R.string.vitals_charts_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        }
+                        chartTypes.forEach { (type, typeVitals) ->
+                            item(key = "chart_${group.diseaseId}_${type.name}") {
+                                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                                    VitalsChart(
+                                        title = type.localizedDisplayName(),
+                                        vitals = typeVitals.sortedBy { it.recordedAt },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Vitals by date within disease group
+                    val vitalsByDate = group.vitals
+                        .groupBy { it.recordedAt.toLocalDate() }
+                        .toSortedMap(compareByDescending { it })
+
+                    vitalsByDate.forEach { (date, vitalsForDate) ->
+                        item(key = "date_${group.diseaseId}_$date") {
+                            DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
+                        }
+                        items(vitalsForDate, key = { it.id }) { vital ->
+                            AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
+                                VitalDetailCard(
+                                    vital,
+                                    onEdit = { onEditVital(vital.id) },
+                                    onDelete = { viewModel.removeVital(vital) }
                                 )
                             }
                         }
                     }
-                    item(key = "charts_divider") {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                    }
-                }
 
-                vitalsByDate.forEach { (date, vitalsForDate) ->
-                    item(key = "date_$date") {
-                        DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
-                    }
-                    items(vitalsForDate, key = { it.id }) { vital ->
-                        AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
-                            VitalDetailCard(
-                                vital,
-                                onEdit = { onEditVital(vital.id) },
-                                onDelete = { viewModel.removeVital(vital) }
-                            )
-                        }
+                    // Divider between groups
+                    item(key = "divider_${group.diseaseId}") {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                     }
                 }
             }
         }
     }
 }
+
+private data class DiseaseVitalsGroup(
+    val diseaseId: Long,
+    val diseaseName: String,
+    val vitals: List<VitalSign>
+)
 
 @Composable
 private fun DateHeader(

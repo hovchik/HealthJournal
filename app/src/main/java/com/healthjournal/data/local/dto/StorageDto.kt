@@ -19,7 +19,8 @@ data class SymptomDto(
     val recordedAt: Long = 0,
     val profileId: Long = 0,
     val attachmentPaths: List<String> = emptyList(),
-    val diseaseId: Long = 0
+    val diseaseId: Long = 0,
+    val isDeleted: Boolean = false
 ) {
     fun toDomain() = Symptom(
         id = id,
@@ -32,7 +33,8 @@ data class SymptomDto(
         recordedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(recordedAt), ZoneId.systemDefault()),
         profileId = profileId,
         attachmentPaths = attachmentPaths,
-        diseaseId = diseaseId
+        diseaseId = diseaseId,
+        isDeleted = isDeleted
     )
 
     companion object {
@@ -47,7 +49,8 @@ data class SymptomDto(
             recordedAt = s.recordedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             profileId = s.profileId,
             attachmentPaths = s.attachmentPaths,
-            diseaseId = s.diseaseId
+            diseaseId = s.diseaseId,
+            isDeleted = s.isDeleted
         )
     }
 }
@@ -62,7 +65,8 @@ data class VitalSignDto(
     val recordedAt: Long = 0,
     val profileId: Long = 0,
     val attachmentPaths: List<String> = emptyList(),
-    val diseaseId: Long = 0
+    val diseaseId: Long = 0,
+    val isDeleted: Boolean = false
 ) {
     fun toDomain() = VitalSign(
         id = id,
@@ -73,7 +77,8 @@ data class VitalSignDto(
         recordedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(recordedAt), ZoneId.systemDefault()),
         profileId = profileId,
         attachmentPaths = attachmentPaths,
-        diseaseId = diseaseId
+        diseaseId = diseaseId,
+        isDeleted = isDeleted
     )
 
     companion object {
@@ -86,7 +91,8 @@ data class VitalSignDto(
             recordedAt = v.recordedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             profileId = v.profileId,
             attachmentPaths = v.attachmentPaths,
-            diseaseId = v.diseaseId
+            diseaseId = v.diseaseId,
+            isDeleted = v.isDeleted
         )
     }
 }
@@ -102,7 +108,8 @@ data class MedicationDto(
     val active: Boolean = true,
     val notes: String = "",
     val profileId: Long = 0,
-    val diseaseId: Long = 0
+    val diseaseId: Long = 0,
+    val isDeleted: Boolean = false
 ) {
     fun toDomain() = Medication(
         id = id,
@@ -114,7 +121,8 @@ data class MedicationDto(
         active = active,
         notes = notes,
         profileId = profileId,
-        diseaseId = diseaseId
+        diseaseId = diseaseId,
+        isDeleted = isDeleted
     )
 
     companion object {
@@ -128,7 +136,8 @@ data class MedicationDto(
             active = m.active,
             notes = m.notes,
             profileId = m.profileId,
-            diseaseId = m.diseaseId
+            diseaseId = m.diseaseId,
+            isDeleted = m.isDeleted
         )
     }
 }
@@ -167,7 +176,11 @@ data class AiReportDto(
     val type: String,
     val periodDays: Int = 7,
     val generatedAt: Long = 0,
-    val profileId: Long = 0
+    val profileId: Long = 0,
+    val diseaseId: Long = 0,
+    val providerName: String = "",
+    val modelUsed: String = "",
+    val prompt: String = ""
 ) {
     fun toDomain() = AiReport(
         id = id,
@@ -175,7 +188,11 @@ data class AiReportDto(
         type = ReportType.valueOf(type),
         periodDays = periodDays,
         generatedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(generatedAt), ZoneId.systemDefault()),
-        profileId = profileId
+        profileId = profileId,
+        diseaseId = diseaseId,
+        providerName = providerName,
+        modelUsed = modelUsed,
+        prompt = prompt
     )
 
     companion object {
@@ -185,7 +202,11 @@ data class AiReportDto(
             type = r.type.name,
             periodDays = r.periodDays,
             generatedAt = r.generatedAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-            profileId = r.profileId
+            profileId = r.profileId,
+            diseaseId = r.diseaseId,
+            providerName = r.providerName,
+            modelUsed = r.modelUsed,
+            prompt = r.prompt
         )
     }
 }
@@ -230,7 +251,10 @@ data class DiseaseDto(
     val profileId: Long = 0,
     val notes: String = "",
     val active: Boolean = true,
-    val createdAt: Long = 0
+    val createdAt: Long = 0,
+    val isDeleted: Boolean = false,
+    val deletedAt: Long? = null,
+    val group: String = ""
 ) {
     fun toDomain() = Disease(
         id = id,
@@ -238,7 +262,10 @@ data class DiseaseDto(
         profileId = profileId,
         notes = notes,
         active = active,
-        createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(createdAt), ZoneId.systemDefault())
+        createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(createdAt), ZoneId.systemDefault()),
+        isDeleted = isDeleted,
+        deletedAt = deletedAt?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault()) },
+        group = group
     )
 
     companion object {
@@ -248,7 +275,10 @@ data class DiseaseDto(
             profileId = d.profileId,
             notes = d.notes,
             active = d.active,
-            createdAt = d.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            createdAt = d.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            isDeleted = d.isDeleted,
+            deletedAt = d.deletedAt?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli(),
+            group = d.group
         )
     }
 }

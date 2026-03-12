@@ -4,9 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-
-    <!-- AI Edge SDK requires API 31+ but we guard usage with runtime checks -->
-    <uses-sdk tools:overrideLibrary="com.google.ai.edge.aicore" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".HealthJournalApp"

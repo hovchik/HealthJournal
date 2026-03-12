@@ -9,7 +9,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthjournal.HealthJournalApp
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -25,9 +27,19 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     private val container = (application as HealthJournalApp).container
     private val exportImportManager = container.dataExportImportManager
+    private val userSettingsRepository = container.userSettingsRepository
 
     private val _uiState = MutableStateFlow(ExportImportUiState())
     val uiState = _uiState.asStateFlow()
+
+    val settings = userSettingsRepository.getUserSettings()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), com.healthjournal.domain.model.UserSettings())
+
+    fun setThemeMode(mode: String) {
+        viewModelScope.launch {
+            userSettingsRepository.setThemeMode(mode)
+        }
+    }
 
     fun exportData(uri: Uri) {
         viewModelScope.launch {

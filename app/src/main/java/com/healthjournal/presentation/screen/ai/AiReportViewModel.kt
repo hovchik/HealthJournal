@@ -26,8 +26,15 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
     val activeProfileId = activeProfileFlow
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0L)
 
-    val reports = combine(container.getAllReports(), activeProfileFlow) { all, profileId ->
+    val diseases = combine(container.getAllDiseases(), activeProfileFlow) { all, profileId ->
         all.filter { it.profileId == profileId }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val _selectedDiseaseId = MutableStateFlow(0L)
+    val selectedDiseaseId = _selectedDiseaseId.asStateFlow()
+
+    val reports = combine(container.getAllReports(), activeProfileFlow, _selectedDiseaseId) { all, profileId, diseaseId ->
+        all.filter { it.profileId == profileId && it.diseaseId == diseaseId }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val vitals = combine(container.getAllVitalSigns(), activeProfileFlow) { all, profileId ->
@@ -57,12 +64,25 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun selectDisease(diseaseId: Long) {
+        _selectedDiseaseId.value = diseaseId
+    }
+
+    val aiEnabled = container.userSettingsRepository.getUserSettings()
+        .map { it.aiSettings.enabled }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     fun generateReport(periodDays: Int = 2) {
         viewModelScope.launch {
-            _uiState.value = AiReportUiState(isLoading = true)
             val settings = getAiSettings()
+            if (!settings.enabled) {
+                _uiState.value = AiReportUiState(error = "AI is disabled. Enable it in Settings > AI Settings.")
+                return@launch
+            }
+            _uiState.value = AiReportUiState(isLoading = true)
             val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
-            container.generateAiSummary(periodDays, getOutputLanguage(), settings, profileId)
+            val diseaseId = _selectedDiseaseId.value
+            container.generateAiSummary(periodDays, getOutputLanguage(), settings, profileId, diseaseId)
                 .onSuccess { _uiState.value = AiReportUiState() }
                 .onFailure { _uiState.value = AiReportUiState(error = it.message) }
         }
@@ -70,10 +90,15 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
 
     fun analyzePatterns(periodDays: Int = 4) {
         viewModelScope.launch {
-            _uiState.value = AiReportUiState(isLoading = true)
             val settings = getAiSettings()
+            if (!settings.enabled) {
+                _uiState.value = AiReportUiState(error = "AI is disabled. Enable it in Settings > AI Settings.")
+                return@launch
+            }
+            _uiState.value = AiReportUiState(isLoading = true)
             val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
-            container.generatePatternAnalysis(periodDays, getOutputLanguage(), settings, profileId)
+            val diseaseId = _selectedDiseaseId.value
+            container.generatePatternAnalysis(periodDays, getOutputLanguage(), settings, profileId, diseaseId)
                 .onSuccess { _uiState.value = AiReportUiState() }
                 .onFailure { _uiState.value = AiReportUiState(error = it.message) }
         }
@@ -87,4 +112,7 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
         if (profileId == 0L) return "Self"
         return familyMembers.value.firstOrNull { it.id == profileId }?.name ?: "Self"
     }
+
+    fun getDiseaseName(diseaseId: Long): String? =
+        diseases.value.firstOrNull { it.id == diseaseId }?.name
 }

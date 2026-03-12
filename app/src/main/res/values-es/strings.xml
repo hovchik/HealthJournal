@@ -77,6 +77,9 @@
     <string name="no_records_hint">Sin registros para este período.</string>
     <string name="report_type_summary">Resumen médico</string>
     <string name="report_type_patterns">Análisis de patrones</string>
+    <string name="report_ai_model">AI: %s</string>
+    <string name="report_show_prompt">Mostrar consulta</string>
+    <string name="report_hide_prompt">Ocultar consulta</string>
     <string name="days_format">%1$d días</string>
     <string name="records_export_pdf">Exportar registros a PDF</string>
 
@@ -144,10 +147,7 @@
     <string name="ai_select_provider">Seleccionar proveedor</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">Compatible con OpenAI</string>
-    <string name="ai_provider_local">Modelo local</string>
-    <string name="ai_provider_system">IA del sistema (Google / Samsung)</string>
-    <string name="system_ai_desc">Utiliza la IA integrada en el dispositivo: Google AI Core o Samsung Galaxy AI. No requiere internet ni clave API. Disponible en Android 14+ con un dispositivo compatible.</string>
-    <string name="system_ai_recommended">(Recomendado)</string>
+    <string name="ai_provider_local">An\u00E1lisis local (en el dispositivo)</string>
     <string name="ai_privacy_redact">Redacción de datos</string>
     <string name="ai_privacy_redact_desc">Eliminar teléfonos y correos electrónicos antes de enviar</string>
     <string name="ai_api_key">Clave API</string>
@@ -159,11 +159,10 @@
     <string name="ai_max_tokens">Tokens máximos</string>
     <string name="ai_temperature">Temperatura</string>
     <string name="ai_validate_config">Validar configuración</string>
-    <string name="ai_provider_gemini_nano">IA del sistema (en dispositivo)</string>
-    <string name="gemini_nano_desc">IA en dispositivo: Google AI Core (Pixel 8+) o Samsung Galaxy AI (Galaxy S24+). No requiere internet ni clave API. Requiere Android 14+.</string>
-    <string name="gemini_top_k">Top-K</string>
     <string name="ai_api_key_required">Requiere clave API</string>
     <string name="ai_local_model_desc">Cargar un modelo de IA personalizado desde el almacenamiento</string>
+    <string name="ai_local_analysis_desc">Analiza los datos de salud en su dispositivo. Siempre disponible, sin internet, clave API ni descarga de modelo. Sus datos permanecen privados.</string>
+    <string name="ai_local_analysis_always_available">Siempre disponible</string>
 
     <!-- Reports -->
     <string name="report_select_profile">Seleccionar perfil para el informe</string>
@@ -223,6 +222,20 @@
     <string name="settings_section_profile">Perfil</string>
     <string name="settings_section_data">Datos</string>
     <string name="settings_section_preferences">Preferencias</string>
+    <string name="settings_section_permissions">Permisos</string>
+
+    <!-- Permissions -->
+    <string name="perm_title">Permisos de la aplicación</string>
+    <string name="perm_desc">Gestionar permisos para IA y otras funciones</string>
+    <string name="perm_notifications">Notificaciones</string>
+    <string name="perm_notifications_desc">Para descarga del modelo de IA y recordatorios</string>
+    <string name="perm_granted">Concedido</string>
+    <string name="perm_denied">No concedido</string>
+    <string name="perm_grant">Conceder</string>
+    <string name="perm_ai_status">Estado de IA en el dispositivo</string>
+    <string name="perm_ai_available">IA en el dispositivo disponible</string>
+    <string name="perm_ai_check">Verificar</string>
+    <string name="perm_open_settings">Abrir ajustes</string>
 
     <!-- Date Grouping -->
     <string name="date_today">Hoy</string>
@@ -233,6 +246,7 @@
 
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">Se necesitan al menos 2 días de registros para el análisis</string>
+    <string name="ai_disabled_hint">El análisis de IA está desactivado. Actívelo en Ajustes > Ajustes de IA.</string>
 
     <!-- Export/Import & Backup -->
     <string name="export_import_title">Exportar e importar</string>
@@ -381,4 +395,66 @@
     <string name="family_diseases_title">Enfermedades familiares</string>
     <string name="no_family_diseases_hint">No hay enfermedades compartidas entre los miembros de la familia.</string>
     <string name="family_members_count">%1$d miembros</string>
+    <string name="disease_deleted">Enfermedad eliminada</string>
+    <string name="undo">Deshacer</string>
+    <string name="deleted_diseases">Enfermedades eliminadas</string>
+    <string name="no_deleted_diseases_hint">No hay enfermedades eliminadas.</string>
+    <string name="deleted_diseases_desc">Ver y recuperar enfermedades eliminadas</string>
+    <string name="restore">Restaurar</string>
+    <string name="permanently_delete">Eliminar permanentemente</string>
+    <string name="created_date">Creada: %1$s</string>
+    <string name="deleted_date">Eliminada: %1$s</string>
+    <string name="disease_group">Grupo</string>
+    <string name="disease_group_hint">Ej. crónicas, estacionales</string>
+    <string name="ungrouped">Sin grupo</string>
+    <string name="show_deleted">Mostrar eliminadas</string>
+    <string name="hide_deleted">Ocultar eliminadas</string>
+    <string name="confirm_permanent_delete">¿Está seguro de que desea eliminar esta enfermedad permanentemente? Esta acción no se puede deshacer.</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="all_diseases">Todas las enfermedades</string>
+    <string name="disease_filter">Enfermedad</string>
+
+    <!-- Theme Settings -->
+    <string name="theme_settings_title">Tema</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+
+    <!-- On-device model -->
+    <string name="local_model_title">Modelo LLM en el dispositivo</string>
+    <string name="local_model_desc">Descargue un modelo de IA pequeño para ejecutar predicciones directamente en su dispositivo. Sus datos permanecen privados.</string>
+    <string name="local_model_download">Descargar modelo</string>
+    <string name="local_model_downloading">Descargando… %1$d%%</string>
+    <string name="local_model_delete">Eliminar modelo</string>
+    <string name="local_model_fallback_info">Sin un modelo descargado, el análisis local basado en reglas siempre está disponible.</string>
+    <string name="perm_ai_no_model">Ningún modelo de IA descargado. Descargue uno en Configuración de IA.</string>
+
+    <!-- AI Engine Settings -->
+    <string name="ai_provider_system_ai">IA del sistema (Android AICore)</string>
+    <string name="ai_engine_title">Motor de IA</string>
+    <string name="ai_engine_mode">Modo de IA</string>
+    <string name="ai_engine_mode_desc">Elige c\u00f3mo la app usa la IA</string>
+    <string name="ai_engine_device_info">Informaci\u00f3n del dispositivo</string>
+    <string name="ai_engine_ram">RAM: %1$d MB</string>
+    <string name="ai_engine_storage">Libre: %1$d MB</string>
+    <string name="ai_engine_performance">Clase: %1$s</string>
+    <string name="ai_engine_installed_models">Modelos instalados</string>
+    <string name="ai_engine_no_models">Sin modelos instalados</string>
+    <string name="ai_engine_model_catalog">Cat\u00e1logo de modelos</string>
+    <string name="ai_engine_scan">Buscar modelos</string>
+    <string name="ai_engine_scan_result">Modelos encontrados: %1$d</string>
+    <string name="ai_engine_active">Activo</string>
+    <string name="ai_engine_activate">Activar</string>
+    <string name="ai_engine_incompatible">Incompatible</string>
+    <string name="ai_engine_downloading">Descargando: %1$d%%</string>
+    <string name="ai_engine_installing">Instalando\u2026</string>
+    <string name="ai_engine_size">%1$d MB</string>
+    <string name="ai_engine_ram_required">RAM necesaria: %1$d MB</string>
+    <string name="ai_engine_setup_wizard">Asistente de configuraci\u00f3n de IA</string>
+    <string name="ai_engine_setup_welcome">Configura el an\u00e1lisis de IA para tu dispositivo</string>
+    <string name="ai_engine_setup_detect">Detectando capacidades\u2026</string>
+    <string name="ai_engine_setup_recommend">Modo recomendado: %1$s</string>
+    <string name="ai_engine_setup_complete">Configuraci\u00f3n completa</string>
+    <string name="ai_engine_setup_skip">Omitir</string>
 </resources>

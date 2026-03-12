@@ -2,11 +2,21 @@ package com.healthjournal.di
 
 import android.content.Context
 import com.healthjournal.BuildConfig
+import com.healthjournal.data.ai.AiPreferences
 import com.healthjournal.data.ai.ClaudeAiProviderImpl
-import com.healthjournal.data.ai.GeminiNanoProviderImpl
-import com.healthjournal.data.ai.LocalAiProviderImpl
+import com.healthjournal.data.ai.DeviceAiCapabilityDetector
+import com.healthjournal.data.ai.LocalAiBenchmarkRunner
+import com.healthjournal.data.ai.LocalModelManager
+import com.healthjournal.data.ai.ModelCompatibilityValidator
+import com.healthjournal.data.ai.ModelInstaller
 import com.healthjournal.data.ai.OpenAiCompatibleProviderImpl
-import com.healthjournal.data.ai.StubLocalInferenceEngine
+import com.healthjournal.data.ai.provider.AiProviderSelector
+import com.healthjournal.data.ai.provider.CustomLocalModelProvider
+import com.healthjournal.data.ai.provider.SystemAiProvider
+import com.healthjournal.data.ai.runtime.LiteRtRuntimeAdapter
+import com.healthjournal.data.ai.runtime.MediaPipeLlmRuntimeAdapter
+import com.healthjournal.data.ai.runtime.SystemAiRuntimeAdapter
+import com.healthjournal.data.local.db.AppDatabase
 import com.healthjournal.data.local.JsonFileStore
 import com.healthjournal.data.local.dto.*
 import com.healthjournal.data.remote.api.ClaudeApi
@@ -129,19 +139,47 @@ class AppContainer(context: Context) {
             .create(OpenAiApi::class.java)
     }
 
+    // === On-device AI infrastructure ===
+
+    // Database
+    private val appDatabase = AppDatabase.getInstance(context)
+    private val localAiModelDao = appDatabase.localAiModelDao()
+
+    // Preferences & detection
+    val aiPreferences = AiPreferences(context)
+    val deviceCapabilityDetector = DeviceAiCapabilityDetector(context)
+
+    // Model management
+    val modelCompatibilityValidator = ModelCompatibilityValidator(deviceCapabilityDetector)
+    val localModelManager = LocalModelManager(localAiModelDao, aiPreferences)
+    val modelInstaller = ModelInstaller(context, localModelManager, modelCompatibilityValidator)
+
+    // Runtime adapters
+    val mediaPipeRuntime = MediaPipeLlmRuntimeAdapter(context)
+    val liteRtRuntime = LiteRtRuntimeAdapter(context)
+    val systemAiRuntime = SystemAiRuntimeAdapter(context)
+
+    // Benchmark
+    val benchmarkRunner = LocalAiBenchmarkRunner(context)
+
     // AI providers
     private val claudeProvider = ClaudeAiProviderImpl(::buildClaudeApi)
     private val openAiProvider = OpenAiCompatibleProviderImpl(::buildOpenAiApi)
-    private val geminiNanoProvider = GeminiNanoProviderImpl(context)
-    private val localEngine = StubLocalInferenceEngine()
-    private val localProvider = LocalAiProviderImpl(localEngine)
+    private val customLocalProvider = CustomLocalModelProvider(
+        localModelManager, mediaPipeRuntime, liteRtRuntime
+    )
+    private val systemAiProvider = SystemAiProvider(systemAiRuntime)
 
     val aiProviderRegistry = AiProviderRegistry(
-        listOf(claudeProvider, openAiProvider, geminiNanoProvider, localProvider)
+        listOf(claudeProvider, openAiProvider, customLocalProvider)
+    )
+
+    val aiProviderSelector = AiProviderSelector(
+        aiPreferences, systemAiProvider, customLocalProvider,
+        listOf(claudeProvider, openAiProvider), systemAiRuntime
     )
 
     private val privacyRedactor = PrivacyRedactor()
-
     val aiService = AiService(aiProviderRegistry, privacyRedactor)
 
     // Repositories
@@ -184,6 +222,11 @@ class AppContainer(context: Context) {
     val addDisease = AddDiseaseUseCase(diseaseRepository)
     val updateDisease = UpdateDiseaseUseCase(diseaseRepository)
     val deleteDisease = DeleteDiseaseUseCase(diseaseRepository)
+    val softDeleteDisease = SoftDeleteDiseaseUseCase(diseaseRepository, symptomRepository, vitalSignRepository, medicationRepository)
+    val restoreDisease = RestoreDiseaseUseCase(diseaseRepository, symptomRepository, vitalSignRepository, medicationRepository)
+    val getDeletedDiseases = GetDeletedDiseasesUseCase(diseaseRepository)
+    val getDeletedDiseasesByProfileId = GetDeletedDiseasesByProfileIdUseCase(diseaseRepository)
+    val permanentlyDeleteDisease = PermanentlyDeleteDiseaseUseCase(diseaseRepository)
 
     val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository)
     val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, userSettingsRepository, familyMemberRepository)
