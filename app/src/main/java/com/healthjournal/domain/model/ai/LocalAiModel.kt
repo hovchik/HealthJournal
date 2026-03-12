@@ -86,3 +86,11 @@ data class InstallProgress(
     val progressPercent: Int = 0,
     val errorMessage: String? = null
 )
+
+data class ScanProgress(
+    val isScanning: Boolean,
+    val currentFolder: String = "",
+    val foldersScanned: Int = 0,
+    val totalFolders: Int = 0,
+    val modelsFound: Int = 0
+)

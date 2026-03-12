@@ -38,6 +38,9 @@ class ModelInstaller(
     private val _installProgress = MutableStateFlow<InstallProgress?>(null)
     val installProgress: StateFlow<InstallProgress?> = _installProgress.asStateFlow()
 
+    private val _scanProgress = MutableStateFlow<ScanProgress?>(null)
+    val scanProgress: StateFlow<ScanProgress?> = _scanProgress.asStateFlow()
+
     fun getModelDir(modelId: String): File = File(modelsDir, modelId).apply { mkdirs() }
 
     fun getModelFile(modelId: String, format: String): File =
@@ -181,75 +184,133 @@ class ModelInstaller(
     suspend fun scanForModels(): Int {
         var found = 0
         withContext(Dispatchers.IO) {
-            // 1. Scan internal local_models/ directory
-            modelsDir.listFiles()?.forEach { dir ->
-                if (!dir.isDirectory) return@forEach
-                val modelId = dir.name
-                val existing = localModelManager.getModel(modelId)
-                if (existing?.installState == ModelInstallState.INSTALLED) return@forEach
+            val scanDirs = buildList {
+                // 1. Internal local_models/ directory
+                add("local_models" to modelsDir)
+                // 2. Downloads folder
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    ?.let { add("Downloads" to it) }
+                // 3. Documents folder
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                    ?.let { add("Documents" to it) }
+                // 4. External storage root
+                Environment.getExternalStorageDirectory()
+                    ?.let { add("Storage" to it) }
+                // 5. App-specific external files
+                context.getExternalFilesDir(null)
+                    ?.let { add("App Files" to it) }
+            }.filter { it.second.exists() }
 
-                val modelFile = dir.listFiles()?.firstOrNull {
-                    it.name.endsWith(".bin") || it.name.endsWith(".tflite") || it.name.endsWith(".gguf")
-                } ?: return@forEach
+            val totalFolders = scanDirs.size
+            _scanProgress.value = ScanProgress(
+                isScanning = true,
+                totalFolders = totalFolders,
+                modelsFound = 0
+            )
 
-                val catalogModel = ModelCatalog.getById(modelId)
-                if (catalogModel != null) {
-                    val registered = catalogModel.copy(
-                        localPath = modelFile.absolutePath,
-                        installState = ModelInstallState.INSTALLED,
-                        checksum = computeChecksum(modelFile),
-                        installedAt = modelFile.lastModified()
-                    )
-                    localModelManager.saveModel(registered)
-                    found++
+            scanDirs.forEachIndexed { index, (label, dir) ->
+                _scanProgress.value = ScanProgress(
+                    isScanning = true,
+                    currentFolder = label,
+                    foldersScanned = index,
+                    totalFolders = totalFolders,
+                    modelsFound = found
+                )
+
+                if (dir == modelsDir) {
+                    // Scan internal local_models/ directory
+                    dir.listFiles()?.forEach { subDir ->
+                        if (!subDir.isDirectory) return@forEach
+                        val modelId = subDir.name
+                        val existing = localModelManager.getModel(modelId)
+                        if (existing?.installState == ModelInstallState.INSTALLED) return@forEach
+
+                        val modelFile = subDir.listFiles()?.firstOrNull {
+                            isModelFile(it.name)
+                        } ?: return@forEach
+
+                        val catalogModel = ModelCatalog.getById(modelId)
+                        if (catalogModel != null) {
+                            val registered = catalogModel.copy(
+                                localPath = modelFile.absolutePath,
+                                installState = ModelInstallState.INSTALLED,
+                                checksum = computeChecksum(modelFile),
+                                installedAt = modelFile.lastModified()
+                            )
+                            localModelManager.saveModel(registered)
+                            found++
+                        }
+                    }
+                } else {
+                    // Scan external directories (non-recursive for root, recursive 1 level for others)
+                    val filesToCheck = buildList {
+                        dir.listFiles()?.forEach { file ->
+                            if (file.isFile && isModelFile(file.name) && file.length() > 10 * 1024 * 1024) {
+                                add(file)
+                            } else if (file.isDirectory && dir != Environment.getExternalStorageDirectory()) {
+                                // One level of subdirectory scanning for non-root dirs
+                                file.listFiles()?.filter { sub ->
+                                    sub.isFile && isModelFile(sub.name) && sub.length() > 10 * 1024 * 1024
+                                }?.let { addAll(it) }
+                            }
+                        }
+                    }
+
+                    filesToCheck.forEach { file ->
+                        found += registerScannedFile(file)
+                    }
                 }
             }
 
-            // 2. Scan Downloads folder
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            if (downloadsDir?.exists() == true) {
-                downloadsDir.listFiles()?.filter { file ->
-                    file.isFile && file.length() > 10 * 1024 * 1024 &&
-                    (file.name.endsWith(".gguf") || file.name.endsWith(".bin") || file.name.endsWith(".tflite"))
-                }?.forEach { file ->
-                    val stableId = "imported-${file.nameWithoutExtension.lowercase().replace(Regex("[^a-z0-9]"), "-")}"
-                    val existing = localModelManager.getModel(stableId)
-                    if (existing != null) return@forEach
-
-                    val catalogMatch = matchCatalogModel(file.name)
-                    val format = file.extension
-                    val quantization = extractQuantization(file.name)
-
-                    val model = catalogMatch?.copy(
-                        modelId = stableId,
-                        localPath = file.absolutePath,
-                        installState = ModelInstallState.INSTALLED,
-                        checksum = computeChecksum(file),
-                        installedAt = file.lastModified()
-                    ) ?: LocalAiModel(
-                        modelId = stableId,
-                        displayName = file.nameWithoutExtension,
-                        runtimeType = if (format == "tflite") "litert" else "mediapipe_llm",
-                        fileFormat = format,
-                        quantization = quantization,
-                        requiredRamMb = 2000,
-                        recommendedRamMb = 4000,
-                        sizeMb = file.length() / (1024 * 1024),
-                        localPath = file.absolutePath,
-                        installState = ModelInstallState.INSTALLED,
-                        checksum = computeChecksum(file),
-                        version = "1.0",
-                        supportsStructuredJson = false,
-                        supportsStreaming = false,
-                        supportsTextGeneration = true,
-                        installedAt = file.lastModified()
-                    )
-                    localModelManager.saveModel(model)
-                    found++
-                }
-            }
+            _scanProgress.value = ScanProgress(
+                isScanning = false,
+                foldersScanned = totalFolders,
+                totalFolders = totalFolders,
+                modelsFound = found
+            )
         }
         return found
+    }
+
+    private fun isModelFile(name: String): Boolean {
+        return name.endsWith(".gguf") || name.endsWith(".bin") || name.endsWith(".tflite")
+    }
+
+    private suspend fun registerScannedFile(file: File): Int {
+        val stableId = "imported-${file.nameWithoutExtension.lowercase().replace(Regex("[^a-z0-9]"), "-")}"
+        val existing = localModelManager.getModel(stableId)
+        if (existing != null) return 0
+
+        val catalogMatch = matchCatalogModel(file.name)
+        val format = file.extension
+        val quantization = extractQuantization(file.name)
+
+        val model = catalogMatch?.copy(
+            modelId = stableId,
+            localPath = file.absolutePath,
+            installState = ModelInstallState.INSTALLED,
+            checksum = computeChecksum(file),
+            installedAt = file.lastModified()
+        ) ?: LocalAiModel(
+            modelId = stableId,
+            displayName = file.nameWithoutExtension,
+            runtimeType = if (format == "tflite") "litert" else "mediapipe_llm",
+            fileFormat = format,
+            quantization = quantization,
+            requiredRamMb = 2000,
+            recommendedRamMb = 4000,
+            sizeMb = file.length() / (1024 * 1024),
+            localPath = file.absolutePath,
+            installState = ModelInstallState.INSTALLED,
+            checksum = computeChecksum(file),
+            version = "1.0",
+            supportsStructuredJson = false,
+            supportsStreaming = false,
+            supportsTextGeneration = true,
+            installedAt = file.lastModified()
+        )
+        localModelManager.saveModel(model)
+        return 1
     }
 
     private fun matchCatalogModel(filename: String): LocalAiModel? {

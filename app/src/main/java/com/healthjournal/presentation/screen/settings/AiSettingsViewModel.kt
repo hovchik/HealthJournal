@@ -37,6 +37,8 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
 
     val installProgress = modelInstaller.installProgress
 
+    val scanProgress = modelInstaller.scanProgress
+
     val catalogModels: List<LocalAiModel> = ModelCatalog.availableModels
 
     private val _deviceCapability = MutableStateFlow<DeviceCapabilityResult?>(null)
@@ -48,8 +50,14 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
     private val _validationSuccess = MutableStateFlow<Boolean?>(null)
     val validationSuccess = _validationSuccess.asStateFlow()
 
+    private val _validatingInProgress = MutableStateFlow(false)
+    val validatingInProgress = _validatingInProgress.asStateFlow()
+
     private val _scanResult = MutableStateFlow<Int?>(null)
     val scanResult = _scanResult.asStateFlow()
+
+    private val _downloadError = MutableStateFlow<String?>(null)
+    val downloadError = _downloadError.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -96,14 +104,43 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
     fun setExecutionMode(mode: AiExecutionMode) {
         viewModelScope.launch {
             aiPreferences.setSelectedMode(mode)
+            // Sync provider selection to match the execution mode
+            val currentSettings = aiSettings.value
+            val newProviderId = when (mode) {
+                AiExecutionMode.CLOUD -> {
+                    // Keep current cloud provider, or default to Claude
+                    if (currentSettings.selectedProviderId == AiProviderId.LOCAL.key) {
+                        AiProviderId.CLAUDE.key
+                    } else {
+                        currentSettings.selectedProviderId
+                    }
+                }
+                AiExecutionMode.CUSTOM_LOCAL, AiExecutionMode.SYSTEM_LOCAL -> AiProviderId.LOCAL.key
+                AiExecutionMode.AUTO -> currentSettings.selectedProviderId
+            }
+            if (newProviderId != currentSettings.selectedProviderId) {
+                settingsRepo.setAiSettings(currentSettings.copy(selectedProviderId = newProviderId))
+            }
+            // Reset validation when mode changes
+            _validationSuccess.value = null
+            _validationMessage.value = null
         }
     }
 
     fun downloadModel(model: LocalAiModel) {
-        val url = model.downloadUrl ?: return
+        _downloadError.value = null
+        val url = model.downloadUrl
+        if (url.isNullOrBlank()) {
+            _downloadError.value = model.modelId
+            return
+        }
         viewModelScope.launch {
             modelInstaller.downloadModel(model, url)
         }
+    }
+
+    fun clearDownloadError() {
+        _downloadError.value = null
     }
 
     fun deleteModel(modelId: String) {
@@ -120,6 +157,7 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
 
     fun scanForModels() {
         viewModelScope.launch {
+            _scanResult.value = null
             val found = modelInstaller.scanForModels()
             _scanResult.value = found
         }
@@ -132,10 +170,52 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
 
     fun validateCurrentProvider() {
         viewModelScope.launch {
-            val currentSettings = settingsRepo.getUserSettings().first().aiSettings
-            val result = aiService.validateActiveProvider(currentSettings)
-            _validationSuccess.value = result.valid
-            _validationMessage.value = result.errorMessage
+            _validatingInProgress.value = true
+            _validationSuccess.value = null
+            _validationMessage.value = null
+            try {
+                val currentSettings = settingsRepo.getUserSettings().first().aiSettings
+                val mode = executionMode.value
+
+                // Mode-aware validation
+                when (mode) {
+                    AiExecutionMode.CLOUD -> {
+                        val result = aiService.validateActiveProvider(currentSettings)
+                        _validationSuccess.value = result.valid
+                        _validationMessage.value = result.errorMessage
+                    }
+                    AiExecutionMode.CUSTOM_LOCAL -> {
+                        val active = localModelManager.getActiveModel()
+                        if (active == null) {
+                            _validationSuccess.value = false
+                            _validationMessage.value = null // will use R.string.ai_validate_local_no_model
+                        } else {
+                            val report = compatValidator.validate(active, _deviceCapability.value)
+                            _validationSuccess.value = report.isCompatible
+                            _validationMessage.value = if (report.isCompatible) null
+                                else report.issues.joinToString("; ")
+                        }
+                    }
+                    AiExecutionMode.SYSTEM_LOCAL -> {
+                        val cap = _deviceCapability.value
+                        val available = cap?.supportsSystemAi == true
+                        _validationSuccess.value = available
+                        _validationMessage.value = if (!available)
+                            "Android AICore is not available on this device" else null
+                    }
+                    AiExecutionMode.AUTO -> {
+                        // Validate all available paths
+                        val result = aiService.validateActiveProvider(currentSettings)
+                        _validationSuccess.value = result.valid
+                        _validationMessage.value = result.errorMessage
+                    }
+                }
+            } catch (e: Exception) {
+                _validationSuccess.value = false
+                _validationMessage.value = e.message
+            } finally {
+                _validatingInProgress.value = false
+            }
         }
     }
 }
