@@ -125,8 +125,9 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun getCompatibilityReport(model: LocalAiModel): CompatibilityReport {
-        return compatValidator.validate(model, _deviceCapability.value)
+    fun getCompatibilityReport(model: LocalAiModel): String? {
+        val report = compatValidator.validate(model, _deviceCapability.value)
+        return if (report.isCompatible) null else report.issues.joinToString("; ")
     }
 
     fun validateCurrentProvider() {
