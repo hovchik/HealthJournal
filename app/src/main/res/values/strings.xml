@@ -484,4 +484,8 @@
     <string name="ai_validate_mode_info">Режим: %1$s</string>
     <string name="ai_validate_no_api_key">Не указан API-ключ для %1$s</string>
     <string name="ai_validate_local_no_model">Не установлена локальная модель</string>
+
+    <!-- Storage permission -->
+    <string name="storage_permission_required">Для сканирования моделей необходим доступ к хранилищу</string>
+    <string name="storage_permission_grant">Предоставить доступ к хранилищу</string>
 </resources>

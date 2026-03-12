@@ -435,8 +435,8 @@
     <string name="ai_engine_mode_desc">\u9009\u62e9\u5e94\u7528\u5982\u4f55\u4f7f\u7528AI</string>
     <string name="ai_engine_device_info">\u8bbe\u5907\u4fe1\u606f</string>
     <string name="ai_engine_ram">\u5185\u5b58: %1$d MB</string>
-    <string name="ai_engine_storage">\u53ef\u7528: %1$d MB</string>
-    <string name="ai_engine_performance">\u7ea7\u522b: %1$s</string>
+    <string name="ai_engine_storage">\u53ef\u7528</string>
+    <string name="ai_engine_performance">\u7ea7\u522b</string>
     <string name="ai_engine_installed_models">\u5df2\u5b89\u88c5\u6a21\u578b</string>
     <string name="ai_engine_no_models">\u6ca1\u6709\u5df2\u5b89\u88c5\u7684\u6a21\u578b</string>
     <string name="ai_engine_model_catalog">\u6a21\u578b\u76ee\u5f55</string>
@@ -455,4 +455,31 @@
     <string name="ai_engine_setup_recommend">\u63a8\u8350\u6a21\u5f0f: %1$s</string>
     <string name="ai_engine_setup_complete">\u8bbe\u7f6e\u5b8c\u6210</string>
     <string name="ai_engine_setup_skip">\u8df3\u8fc7</string>
+
+    <!-- Device Info extended -->
+    <string name="ai_engine_ram_value">%1$s</string>
+    <string name="ai_engine_storage_value">%1$s</string>
+    <string name="ai_engine_android_version">Android %1$d (API %2$d)</string>
+    <string name="ai_engine_aicore_available">AICore \u53ef\u7528</string>
+    <string name="ai_engine_aicore_not_available">AICore \u4e0d\u53ef\u7528</string>
+    <string name="ai_engine_recommended_mode">\u63a8\u8350\u6a21\u5f0f: %1$s</string>
+    <string name="ai_engine_cpu_arch">\u67b6\u6784: %1$s</string>
+
+    <!-- Scan progress -->
+    <string name="ai_engine_scanning">\u626b\u63cf\u4e2d\u2026</string>
+    <string name="ai_engine_scan_folders">\u626b\u63cf\u8bbe\u5907\u6587\u4ef6\u5939</string>
+
+    <!-- Download model -->
+    <string name="ai_engine_no_download_url">\u4e0b\u8f7d\u94fe\u63a5\u4e0d\u53ef\u7528</string>
+    <string name="ai_engine_download_retry">\u91cd\u8bd5</string>
+
+    <!-- Validation -->
+    <string name="ai_validate_checking">\u68c0\u67e5\u4e2d\u2026</string>
+    <string name="ai_validate_mode_info">\u6a21\u5f0f: %1$s</string>
+    <string name="ai_validate_no_api_key">\u672a\u8bbe\u7f6e %1$s \u7684 API \u5bc6\u94a5</string>
+    <string name="ai_validate_local_no_model">\u672a\u5b89\u88c5\u672c\u5730\u6a21\u578b</string>
+
+    <!-- Storage permission -->
+    <string name="storage_permission_required">\u626b\u63cf\u6a21\u578b\u9700\u8981\u5b58\u50a8\u8bbf\u95ee\u6743\u9650</string>
+    <string name="storage_permission_grant">\u6388\u4e88\u5b58\u50a8\u8bbf\u95ee\u6743\u9650</string>
 </resources>

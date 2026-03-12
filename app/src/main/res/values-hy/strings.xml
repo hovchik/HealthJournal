@@ -435,8 +435,8 @@
     <string name="ai_engine_mode_desc">\u0538\u0576\u057f\u0580\u0565\u0584, \u0569\u0565 \u056b\u0576\u0579\u057a\u0565\u057d \u0585\u0563\u057f\u0561\u0563\u0578\u0580\u056e\u056b AI-\u0568</string>
     <string name="ai_engine_device_info">\u054d\u0561\u0580\u0584\u056b \u057f\u0565\u0572\u0565\u056f\u0561\u057f\u057e\u0578\u0582\u0569\u0575\u0578\u0582\u0576</string>
     <string name="ai_engine_ram">RAM: %1$d MB</string>
-    <string name="ai_engine_storage">\u0540\u0561\u057d\u0561\u0576\u0565\u056c\u056b: %1$d MB</string>
-    <string name="ai_engine_performance">\u0534\u0561\u057d: %1$s</string>
+    <string name="ai_engine_storage">\u0540\u0561\u057d\u0561\u0576\u0565\u056c\u056b</string>
+    <string name="ai_engine_performance">\u0534\u0561\u057d</string>
     <string name="ai_engine_installed_models">\u054f\u0565\u0572\u0561\u0564\u0580\u057e\u0561\u056e \u0574\u0578\u0564\u0565\u056c\u0576\u0565\u0580</string>
     <string name="ai_engine_no_models">\u054f\u0565\u0572\u0561\u0564\u0580\u057e\u0561\u056e \u0574\u0578\u0564\u0565\u056c\u0576\u0565\u0580 \u0579\u056f\u0561\u0576</string>
     <string name="ai_engine_model_catalog">\u0544\u0578\u0564\u0565\u056c\u0576\u0565\u0580\u056b \u056f\u0561\u057f\u0561\u056c\u0578\u0563</string>
@@ -455,4 +455,31 @@
     <string name="ai_engine_setup_recommend">\u0540\u0561\u0576\u0571\u0576\u0561\u0580\u0561\u0580\u057e\u0578\u0572 \u0580\u0565\u056a\u056b\u0574: %1$s</string>
     <string name="ai_engine_setup_complete">\u053f\u0561\u0580\u0563\u0561\u057e\u0578\u0580\u0574\u0561\u0576\u0568 \u0561\u057e\u0561\u0580\u057f\u057e\u0561\u056e \u0567</string>
     <string name="ai_engine_setup_skip">\u0532\u0561\u0581 \u0569\u0578\u0572\u0576\u0565\u056c</string>
+
+    <!-- Device Info extended -->
+    <string name="ai_engine_ram_value">%1$s</string>
+    <string name="ai_engine_storage_value">%1$s</string>
+    <string name="ai_engine_android_version">Android %1$d (API %2$d)</string>
+    <string name="ai_engine_aicore_available">AICore \u0570\u0561\u057d\u0561\u0576\u0565\u056c\u056b \u0567</string>
+    <string name="ai_engine_aicore_not_available">AICore \u0570\u0561\u057d\u0561\u0576\u0565\u056c\u056b \u0579\u0567</string>
+    <string name="ai_engine_recommended_mode">\u0540\u0561\u0576\u0571\u0576\u0561\u0580\u0561\u0580\u057e\u0578\u0572 \u0580\u0565\u056a\u056b\u0574: %1$s</string>
+    <string name="ai_engine_cpu_arch">\u0543\u0561\u0580\u057f\u0561\u0580\u0561\u057a\u0565\u057f\u0578\u0582\u0569\u0575\u0578\u0582\u0576: %1$s</string>
+
+    <!-- Scan progress -->
+    <string name="ai_engine_scanning">\u054d\u056f\u0561\u0576\u0561\u057e\u0578\u0580\u0578\u0582\u0574\u2026</string>
+    <string name="ai_engine_scan_folders">\u054d\u0561\u0580\u0584\u056b \u0569\u0572\u0569\u0561\u057a\u0561\u0576\u0561\u056f\u0576\u0565\u0580\u056b \u057d\u056f\u0561\u0576\u0561\u057e\u0578\u0580\u0578\u0582\u0574</string>
+
+    <!-- Download model -->
+    <string name="ai_engine_no_download_url">\u0546\u0565\u0580\u0562\u0565\u057c\u0576\u0574\u0561\u0576 \u0570\u0572\u0578\u0582\u0574\u0568 \u0570\u0561\u057d\u0561\u0576\u0565\u056c\u056b \u0579\u0567</string>
+    <string name="ai_engine_download_retry">\u053f\u0580\u056f\u0576\u0565\u056c</string>
+
+    <!-- Validation -->
+    <string name="ai_validate_checking">\u054d\u057f\u0578\u0582\u0563\u0578\u0582\u0574\u2026</string>
+    <string name="ai_validate_mode_info">\u054c\u0565\u056a\u056b\u0574: %1$s</string>
+    <string name="ai_validate_no_api_key">API \u0562\u0561\u0576\u0561\u056c\u056b\u0568 \u057d\u0561\u0570\u0574\u0561\u0576\u057e\u0561\u056e \u0579\u0567 %1$s-\u056b \u0570\u0561\u0574\u0561\u0580</string>
+    <string name="ai_validate_local_no_model">\u054f\u0565\u0572\u0561\u056f\u0561\u0576 \u0574\u0578\u0564\u0565\u056c \u057f\u0565\u0572\u0561\u0564\u0580\u057e\u0561\u056e \u0579\u0567</string>
+
+    <!-- Storage permission -->
+    <string name="storage_permission_required">\u0544\u0578\u0564\u0565\u056c\u0576\u0565\u0580\u056b \u057d\u056f\u0561\u0576\u0561\u057e\u0578\u0580\u0574\u0561\u0576 \u0570\u0561\u0574\u0561\u0580 \u057a\u0561\u0570\u0561\u0576\u057b\u057e\u0578\u0582\u0574 \u0567 \u057a\u0561\u0570\u0578\u0581\u056b \u0569\u0578\u0582\u0575\u056c\u057f\u057e\u0578\u0582\u0569\u0575\u0578\u0582\u0576</string>
+    <string name="storage_permission_grant">\u054f\u0561\u056c \u057a\u0561\u0570\u0578\u0581\u056b \u0570\u0561\u057d\u0561\u0576\u0565\u056c\u056b\u0578\u0582\u0569\u0575\u0578\u0582\u0576</string>
 </resources>

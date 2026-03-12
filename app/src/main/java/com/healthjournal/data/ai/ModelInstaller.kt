@@ -243,21 +243,29 @@ class ModelInstaller(
                     }
                 } else {
                     // Scan external directories (non-recursive for root, recursive 1 level for others)
-                    val filesToCheck = buildList {
-                        dir.listFiles()?.forEach { file ->
-                            if (file.isFile && isModelFile(file.name) && file.length() > 10 * 1024 * 1024) {
-                                add(file)
-                            } else if (file.isDirectory && dir != Environment.getExternalStorageDirectory()) {
-                                // One level of subdirectory scanning for non-root dirs
-                                file.listFiles()?.filter { sub ->
-                                    sub.isFile && isModelFile(sub.name) && sub.length() > 10 * 1024 * 1024
-                                }?.let { addAll(it) }
+                    try {
+                        val filesToCheck = buildList {
+                            dir.listFiles()?.forEach { file ->
+                                if (file.isFile && isModelFile(file.name) && file.length() > 10 * 1024 * 1024) {
+                                    add(file)
+                                } else if (file.isDirectory && dir != Environment.getExternalStorageDirectory()) {
+                                    // One level of subdirectory scanning for non-root dirs
+                                    try {
+                                        file.listFiles()?.filter { sub ->
+                                            sub.isFile && isModelFile(sub.name) && sub.length() > 10 * 1024 * 1024
+                                        }?.let { addAll(it) }
+                                    } catch (_: SecurityException) {
+                                        // Skip directories we can't access
+                                    }
+                                }
                             }
                         }
-                    }
 
-                    filesToCheck.forEach { file ->
-                        found += registerScannedFile(file)
+                        filesToCheck.forEach { file ->
+                            found += registerScannedFile(file)
+                        }
+                    } catch (_: SecurityException) {
+                        // Skip directories we don't have permission to access
                     }
                 }
             }

@@ -437,8 +437,8 @@
     <string name="ai_engine_mode_desc">Elige c\u00f3mo la app usa la IA</string>
     <string name="ai_engine_device_info">Informaci\u00f3n del dispositivo</string>
     <string name="ai_engine_ram">RAM: %1$d MB</string>
-    <string name="ai_engine_storage">Libre: %1$d MB</string>
-    <string name="ai_engine_performance">Clase: %1$s</string>
+    <string name="ai_engine_storage">Libre</string>
+    <string name="ai_engine_performance">Clase</string>
     <string name="ai_engine_installed_models">Modelos instalados</string>
     <string name="ai_engine_no_models">Sin modelos instalados</string>
     <string name="ai_engine_model_catalog">Cat\u00e1logo de modelos</string>
@@ -457,4 +457,31 @@
     <string name="ai_engine_setup_recommend">Modo recomendado: %1$s</string>
     <string name="ai_engine_setup_complete">Configuraci\u00f3n completa</string>
     <string name="ai_engine_setup_skip">Omitir</string>
+
+    <!-- Device Info extended -->
+    <string name="ai_engine_ram_value">%1$s</string>
+    <string name="ai_engine_storage_value">%1$s</string>
+    <string name="ai_engine_android_version">Android %1$d (API %2$d)</string>
+    <string name="ai_engine_aicore_available">AICore disponible</string>
+    <string name="ai_engine_aicore_not_available">AICore no disponible</string>
+    <string name="ai_engine_recommended_mode">Modo recomendado: %1$s</string>
+    <string name="ai_engine_cpu_arch">Arquitectura: %1$s</string>
+
+    <!-- Scan progress -->
+    <string name="ai_engine_scanning">Escaneando…</string>
+    <string name="ai_engine_scan_folders">Escaneando carpetas del dispositivo</string>
+
+    <!-- Download model -->
+    <string name="ai_engine_no_download_url">URL de descarga no disponible</string>
+    <string name="ai_engine_download_retry">Reintentar</string>
+
+    <!-- Validation -->
+    <string name="ai_validate_checking">Verificando…</string>
+    <string name="ai_validate_mode_info">Modo: %1$s</string>
+    <string name="ai_validate_no_api_key">Clave API no configurada para %1$s</string>
+    <string name="ai_validate_local_no_model">Ning\u00fan modelo local instalado</string>
+
+    <!-- Storage permission -->
+    <string name="storage_permission_required">Se necesita permiso de almacenamiento para buscar modelos</string>
+    <string name="storage_permission_grant">Conceder acceso al almacenamiento</string>
 </resources>
