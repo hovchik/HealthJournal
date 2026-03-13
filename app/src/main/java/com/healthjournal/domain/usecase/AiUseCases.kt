@@ -185,6 +185,90 @@ class GeneratePatternAnalysisUseCase(
     }
 }
 
+class GenerateDiseaseAnalysisUseCase(
+    private val aiService: AiService,
+    private val reportRepository: AiReportRepository,
+    private val symptomRepository: SymptomRepository,
+    private val vitalSignRepository: VitalSignRepository,
+    private val medicationRepository: MedicationRepository,
+    private val userSettingsRepository: UserSettingsRepository,
+    private val familyMemberRepository: FamilyMemberRepository,
+    private val diseaseRepository: DiseaseRepository
+) {
+    suspend operator fun invoke(
+        diseaseId: Long,
+        outputLanguage: String = "ru",
+        aiSettings: AiSettings = AiSettings(),
+        profileId: Long = 0
+    ): Result<AiReport> = runCatching {
+        val userSettings = userSettingsRepository.getUserSettings().first()
+
+        val disease = diseaseRepository.getDiseaseById(diseaseId)
+            ?: throw IllegalArgumentException("Disease not found")
+
+        val symptoms = symptomRepository.getAllSymptoms().first()
+            .filter { it.profileId == profileId && it.diseaseId == diseaseId }
+        val vitals = vitalSignRepository.getAllVitalSigns().first()
+            .filter { it.profileId == profileId && it.diseaseId == diseaseId }
+        val medications = medicationRepository.getAllMedications().first()
+            .filter { it.profileId == profileId && it.diseaseId == diseaseId }
+
+        val periodDays = if (symptoms.isNotEmpty() || vitals.isNotEmpty()) {
+            val earliest = listOfNotNull(
+                symptoms.minByOrNull { it.recordedAt }?.recordedAt,
+                vitals.minByOrNull { it.recordedAt }?.recordedAt
+            ).minOrNull() ?: LocalDateTime.now()
+            java.time.Duration.between(earliest, LocalDateTime.now()).toDays().toInt().coerceAtLeast(1)
+        } else 1
+
+        val (patientWeight, patientHeight, patientAge, patientGender, patientDiseases) = if (profileId != 0L) {
+            val member = familyMemberRepository.getMemberById(profileId)
+            PatientInfo(
+                member?.weight ?: "", member?.height ?: "",
+                member?.age ?: "", member?.gender ?: "",
+                member?.knownDiseases ?: emptyList()
+            )
+        } else {
+            PatientInfo(
+                userSettings.weight, userSettings.height,
+                userSettings.age, userSettings.gender,
+                userSettings.knownDiseases
+            )
+        }
+
+        val input = AiInput(
+            symptoms = symptoms,
+            vitals = vitals,
+            medications = medications,
+            periodDays = periodDays,
+            outputLanguage = outputLanguage,
+            knownDiseases = patientDiseases,
+            weight = patientWeight,
+            height = patientHeight,
+            age = patientAge,
+            gender = patientGender,
+            diseaseName = disease.name
+        )
+
+        val prompt = PromptTemplate.buildDiseaseAnalysisPrompt(input)
+        val result = aiService.generateDoctorSummary(input, aiSettings)
+        val providerName = result.modelUsed.ifBlank { result.providerId.key }
+        val report = AiReport(
+            content = result.text,
+            type = ReportType.SUMMARY,
+            periodDays = periodDays,
+            generatedAt = LocalDateTime.now(),
+            profileId = profileId,
+            diseaseId = diseaseId,
+            providerName = providerName,
+            modelUsed = result.modelUsed,
+            prompt = prompt.user
+        )
+        val id = reportRepository.insertReport(report)
+        report.copy(id = id)
+    }
+}
+
 class GetAllReportsUseCase(
     private val repository: AiReportRepository
 ) {

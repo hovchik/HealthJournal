@@ -42,6 +42,7 @@ fun DiseaseDetailScreen(
     onEditSymptom: (Long) -> Unit = {},
     onEditVital: (Long) -> Unit = {},
     onEditMedication: (Long) -> Unit = {},
+    onAiAnalysis: (Long) -> Unit = {},
     viewModel: DiseaseViewModel = viewModel()
 ) {
     val allSymptoms by viewModel.allSymptoms.collectAsStateWithLifecycle()
@@ -104,6 +105,9 @@ fun DiseaseDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { onAiAnalysis(diseaseId) }) {
+                        Icon(Icons.Default.AutoAwesome, contentDescription = stringResource(R.string.disease_ai_analysis_title))
+                    }
                     IconButton(onClick = { showEditDialog = true }) {
                         Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit))
                     }

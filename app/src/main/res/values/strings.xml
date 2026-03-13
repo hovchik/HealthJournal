@@ -491,4 +491,11 @@
     <!-- Storage permission -->
     <string name="storage_permission_required">Для сканирования моделей необходим доступ к хранилищу</string>
     <string name="storage_permission_grant">Предоставить доступ к хранилищу</string>
+
+    <!-- Disease AI Analysis -->
+    <string name="disease_ai_analysis_title">AI-анализ заболевания</string>
+    <string name="disease_ai_generate">Анализировать заболевание (AI)</string>
+    <string name="disease_ai_analyzing">AI анализирует данные заболевания…</string>
+    <string name="disease_ai_no_reports">Нет AI-анализов для этого заболевания. Нажмите кнопку выше для генерации.</string>
+    <string name="disease_ai_report_title">Анализ заболевания</string>
 </resources>
