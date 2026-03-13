@@ -180,7 +180,7 @@ class AppContainer(context: Context) {
     )
 
     private val privacyRedactor = PrivacyRedactor()
-    val aiService = AiService(aiProviderRegistry, privacyRedactor)
+    val aiService = AiService(aiProviderRegistry, privacyRedactor, aiPreferences)
 
     // Repositories
     val symptomRepository: SymptomRepository = SymptomRepositoryImpl(symptomStore)

@@ -1,5 +1,6 @@
 package com.healthjournal.domain.ai
 
+import com.healthjournal.data.ai.AiPreferences
 import com.healthjournal.domain.model.ai.*
 import com.healthjournal.util.PrivacyRedactor
 
@@ -8,15 +9,37 @@ import com.healthjournal.util.PrivacyRedactor
  */
 class AiService(
     private val registry: AiProviderRegistry,
-    private val redactor: PrivacyRedactor
+    private val redactor: PrivacyRedactor,
+    private val aiPreferences: AiPreferences
 ) {
-    fun getActiveProvider(settings: AiSettings): AiProvider {
-        val id = AiProviderId.fromKey(settings.selectedProviderId)
-        return registry.getByIdOrDefault(id)
+    suspend fun getActiveProvider(settings: AiSettings): AiProvider {
+        val mode = aiPreferences.getSelectedMode()
+        return when (mode) {
+            AiExecutionMode.CLOUD -> {
+                // Use the specific cloud provider selected in settings
+                val id = AiProviderId.fromKey(settings.selectedProviderId)
+                if (id != AiProviderId.LOCAL) {
+                    registry.getByIdOrDefault(id)
+                } else {
+                    // User is in cloud mode but selectedProviderId is still "local" — pick first cloud provider
+                    registry.getAll().firstOrNull { it.isOnlineRequired() }
+                        ?: registry.getByIdOrDefault(AiProviderId.CLAUDE)
+                }
+            }
+            AiExecutionMode.CUSTOM_LOCAL, AiExecutionMode.SYSTEM_LOCAL -> {
+                registry.getByIdOrDefault(AiProviderId.LOCAL)
+            }
+            AiExecutionMode.AUTO -> {
+                // Respect selectedProviderId if set to a cloud provider, otherwise use local
+                val id = AiProviderId.fromKey(settings.selectedProviderId)
+                registry.getByIdOrDefault(id)
+            }
+        }
     }
 
     fun validateActiveProvider(settings: AiSettings): ValidationResult {
-        val provider = getActiveProvider(settings)
+        val id = AiProviderId.fromKey(settings.selectedProviderId)
+        val provider = registry.getByIdOrDefault(id)
         return provider.validateConfig(settings)
     }
 
