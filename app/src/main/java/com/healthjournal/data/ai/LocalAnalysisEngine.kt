@@ -167,12 +167,20 @@ object LocalAnalysisEngine {
             appendLine()
 
             // Patient info
-            if (input.weight.isNotBlank() || input.height.isNotBlank() || input.knownDiseases.isNotEmpty()) {
+            val hasPatientInfo = input.weight.isNotBlank() || input.height.isNotBlank() ||
+                input.age.isNotBlank() || input.gender.isNotBlank() ||
+                input.knownDiseases.isNotEmpty() || input.diseaseName.isNotBlank()
+            if (hasPatientInfo) {
                 appendLine("=== ${t.patientInfo} ===")
+                if (input.age.isNotBlank()) appendLine("${t.ageLabel}: ${input.age}")
+                if (input.gender.isNotBlank()) appendLine("${t.genderLabel}: ${input.gender}")
                 if (input.weight.isNotBlank()) appendLine("${t.weightLabel}: ${input.weight}")
                 if (input.height.isNotBlank()) appendLine("${t.heightLabel}: ${input.height}")
                 if (input.knownDiseases.isNotEmpty()) {
                     appendLine("${t.knownConditions}: ${input.knownDiseases.joinToString(", ")}")
+                }
+                if (input.diseaseName.isNotBlank()) {
+                    appendLine("${t.analyzingDisease}: ${input.diseaseName}")
                 }
                 appendLine()
             }
@@ -365,9 +373,12 @@ internal data class AnalysisTexts(
     val vitalTrends: String,
     val symptomFrequency: String,
     // Labels
+    val ageLabel: String,
+    val genderLabel: String,
     val weightLabel: String,
     val heightLabel: String,
     val knownConditions: String,
+    val analyzingDisease: String,
     val intensity: String,
     val triggers: String,
     val notes: String,
@@ -425,9 +436,12 @@ internal data class AnalysisTexts(
             correlationsSection = "CORRELATIONS",
             vitalTrends = "VITAL SIGN TRENDS",
             symptomFrequency = "SYMPTOM FREQUENCY",
+            ageLabel = "Age",
+            genderLabel = "Gender",
             weightLabel = "Weight",
             heightLabel = "Height",
             knownConditions = "Known conditions",
+            analyzingDisease = "Analyzing disease",
             intensity = "intensity",
             triggers = "Triggers",
             notes = "Notes",
@@ -539,9 +553,12 @@ internal data class AnalysisTexts(
             correlationsSection = "CORRELACIONES",
             vitalTrends = "TENDENCIAS DE SIGNOS VITALES",
             symptomFrequency = "FRECUENCIA DE S\u00CDNTOMAS",
+            ageLabel = "Edad",
+            genderLabel = "Género",
             weightLabel = "Peso",
             heightLabel = "Altura",
             knownConditions = "Condiciones conocidas",
+            analyzingDisease = "Enfermedad analizada",
             intensity = "intensidad",
             triggers = "Desencadenantes",
             notes = "Notas",
@@ -653,9 +670,12 @@ internal data class AnalysisTexts(
             correlationsSection = "\u0540\u0531\u054C\u0531\u0532\u0535\u054C\u0531\u053F\u0551\u0548\u0552\u054F\u0545\u0548\u0552\u0546\u0546\u0535\u054C",
             vitalTrends = "\u053F\u0535\u0546\u054D\u0531\u053F\u0531\u0546 \u0551\u0548\u0552\u053B\u0549\u0546\u0535\u054C\u053B \u0544\u053B\u054F\u0548\u0552\u0544\u0546\u0535\u054C",
             symptomFrequency = "\u0531\u053D\u054F\u0531\u0546\u053B\u0547\u0546\u0535\u054C\u053B \u0540\u0531\u0552\u053D\u0531\u053F\u0531\u0546\u0548\u0552\u054F\u0545\u0548\u0552\u0546",
+            ageLabel = "\u054F\u0561\u0580\u056B\u0584",
+            genderLabel = "\u054D\u0565\u057C",
             weightLabel = "\u0554\u0561\u0577",
             heightLabel = "\u0540\u0561\u057D\u0561\u056F",
             knownConditions = "\u0540\u0561\u0575\u057F\u0576\u056B \u0570\u056B\u057E\u0561\u0576\u0564\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580",
+            analyzingDisease = "\u054E\u0565\u0580\u056C\u0578\u0582\u056E\u057E\u0578\u0572 \u0570\u056B\u057E\u0561\u0576\u0564\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
             intensity = "\u056B\u0576\u057F\u0565\u0576\u057D\u056B\u057E\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
             triggers = "\u054A\u0561\u057F\u0573\u0561\u057C\u0576\u0565\u0580",
             notes = "\u0546\u0578\u057F\u0561\u0576\u0565\u0580",

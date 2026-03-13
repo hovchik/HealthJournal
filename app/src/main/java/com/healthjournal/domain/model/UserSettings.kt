@@ -8,6 +8,8 @@ data class UserSettings(
     val doctorPhone: String = "",
     val weight: String = "",
     val height: String = "",
+    val age: String = "",
+    val gender: String = "",
     val knownDiseases: List<String> = emptyList(),
     val aiConsentGiven: Boolean = false,
     val onboardingCompleted: Boolean = false,

@@ -7,6 +7,7 @@ import com.healthjournal.domain.model.ReportType
 import com.healthjournal.domain.model.ai.AiInput
 import com.healthjournal.domain.model.ai.AiSettings
 import com.healthjournal.domain.repository.AiReportRepository
+import com.healthjournal.domain.repository.DiseaseRepository
 import com.healthjournal.domain.repository.FamilyMemberRepository
 import com.healthjournal.domain.repository.MedicationRepository
 import com.healthjournal.domain.repository.SymptomRepository
@@ -23,7 +24,8 @@ class GenerateAiSummaryUseCase(
     private val vitalSignRepository: VitalSignRepository,
     private val medicationRepository: MedicationRepository,
     private val userSettingsRepository: UserSettingsRepository,
-    private val familyMemberRepository: FamilyMemberRepository
+    private val familyMemberRepository: FamilyMemberRepository,
+    private val diseaseRepository: DiseaseRepository
 ) {
     suspend operator fun invoke(
         periodDays: Int = 2,
@@ -49,11 +51,23 @@ class GenerateAiSummaryUseCase(
             medications = medications.filter { it.diseaseId == diseaseId }
         }
 
-        val (patientWeight, patientHeight, patientDiseases) = if (profileId != 0L) {
+        val diseaseName = if (diseaseId != 0L) {
+            diseaseRepository.getDiseaseById(diseaseId)?.name ?: ""
+        } else ""
+
+        val (patientWeight, patientHeight, patientAge, patientGender, patientDiseases) = if (profileId != 0L) {
             val member = familyMemberRepository.getMemberById(profileId)
-            Triple(member?.weight ?: "", member?.height ?: "", member?.knownDiseases ?: emptyList())
+            PatientInfo(
+                member?.weight ?: "", member?.height ?: "",
+                member?.age ?: "", member?.gender ?: "",
+                member?.knownDiseases ?: emptyList()
+            )
         } else {
-            Triple(userSettings.weight, userSettings.height, userSettings.knownDiseases)
+            PatientInfo(
+                userSettings.weight, userSettings.height,
+                userSettings.age, userSettings.gender,
+                userSettings.knownDiseases
+            )
         }
 
         val input = AiInput(
@@ -64,7 +78,10 @@ class GenerateAiSummaryUseCase(
             outputLanguage = outputLanguage,
             knownDiseases = patientDiseases,
             weight = patientWeight,
-            height = patientHeight
+            height = patientHeight,
+            age = patientAge,
+            gender = patientGender,
+            diseaseName = diseaseName
         )
 
         val prompt = PromptTemplate.buildSummaryPrompt(input)
@@ -92,7 +109,8 @@ class GeneratePatternAnalysisUseCase(
     private val symptomRepository: SymptomRepository,
     private val vitalSignRepository: VitalSignRepository,
     private val userSettingsRepository: UserSettingsRepository,
-    private val familyMemberRepository: FamilyMemberRepository
+    private val familyMemberRepository: FamilyMemberRepository,
+    private val diseaseRepository: DiseaseRepository
 ) {
     suspend operator fun invoke(
         periodDays: Int = 4,
@@ -115,11 +133,23 @@ class GeneratePatternAnalysisUseCase(
             vitals = vitals.filter { it.diseaseId == diseaseId }
         }
 
-        val (patientWeight, patientHeight, patientDiseases) = if (profileId != 0L) {
+        val diseaseName = if (diseaseId != 0L) {
+            diseaseRepository.getDiseaseById(diseaseId)?.name ?: ""
+        } else ""
+
+        val (patientWeight, patientHeight, patientAge, patientGender, patientDiseases) = if (profileId != 0L) {
             val member = familyMemberRepository.getMemberById(profileId)
-            Triple(member?.weight ?: "", member?.height ?: "", member?.knownDiseases ?: emptyList())
+            PatientInfo(
+                member?.weight ?: "", member?.height ?: "",
+                member?.age ?: "", member?.gender ?: "",
+                member?.knownDiseases ?: emptyList()
+            )
         } else {
-            Triple(userSettings.weight, userSettings.height, userSettings.knownDiseases)
+            PatientInfo(
+                userSettings.weight, userSettings.height,
+                userSettings.age, userSettings.gender,
+                userSettings.knownDiseases
+            )
         }
 
         val input = AiInput(
@@ -130,7 +160,10 @@ class GeneratePatternAnalysisUseCase(
             outputLanguage = outputLanguage,
             knownDiseases = patientDiseases,
             weight = patientWeight,
-            height = patientHeight
+            height = patientHeight,
+            age = patientAge,
+            gender = patientGender,
+            diseaseName = diseaseName
         )
 
         val prompt = PromptTemplate.buildPatternPrompt(input)
@@ -157,3 +190,11 @@ class GetAllReportsUseCase(
 ) {
     operator fun invoke(): Flow<List<AiReport>> = repository.getAllReports()
 }
+
+private data class PatientInfo(
+    val weight: String,
+    val height: String,
+    val age: String,
+    val gender: String,
+    val knownDiseases: List<String>
+)

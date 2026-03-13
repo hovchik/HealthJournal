@@ -16,10 +16,19 @@ object PromptTemplate {
     private fun buildPatientContext(input: AiInput, t: PatientContextTexts): String = buildString {
         val hasWeight = input.weight.isNotBlank()
         val hasHeight = input.height.isNotBlank()
+        val hasAge = input.age.isNotBlank()
+        val hasGender = input.gender.isNotBlank()
         val hasDiseases = input.knownDiseases.isNotEmpty()
-        if (!hasWeight && !hasHeight && !hasDiseases) return@buildString
+        val hasDiseaseName = input.diseaseName.isNotBlank()
+        if (!hasWeight && !hasHeight && !hasAge && !hasGender && !hasDiseases && !hasDiseaseName) return@buildString
 
         appendLine("=== ${t.patientHeader} ===")
+        if (hasAge || hasGender) {
+            val parts = mutableListOf<String>()
+            if (hasAge) parts.add("${t.age}: ${input.age}")
+            if (hasGender) parts.add("${t.gender}: ${input.gender}")
+            appendLine(parts.joinToString(", "))
+        }
         if (hasWeight || hasHeight) {
             val parts = mutableListOf<String>()
             if (hasWeight) parts.add("${t.weight}: ${input.weight}")
@@ -28,6 +37,9 @@ object PromptTemplate {
         }
         if (hasDiseases) {
             appendLine("${t.knownDiseasesHeader}: ${input.knownDiseases.joinToString(", ")}")
+        }
+        if (hasDiseaseName) {
+            appendLine("${t.analyzingDiseaseHeader}: ${input.diseaseName}")
         }
         appendLine()
     }
@@ -114,42 +126,60 @@ object PromptTemplate {
 
 private data class PatientContextTexts(
     val patientHeader: String,
+    val age: String,
+    val gender: String,
     val weight: String,
     val height: String,
-    val knownDiseasesHeader: String
+    val knownDiseasesHeader: String,
+    val analyzingDiseaseHeader: String
 )
 
 private object PatientContextL10n {
     fun forLanguage(lang: String): PatientContextTexts = when (lang) {
         "en" -> PatientContextTexts(
             patientHeader = "PATIENT INFO",
+            age = "Age",
+            gender = "Gender",
             weight = "Weight",
             height = "Height",
-            knownDiseasesHeader = "Known conditions"
+            knownDiseasesHeader = "Known conditions",
+            analyzingDiseaseHeader = "Analyzing disease"
         )
         "es" -> PatientContextTexts(
             patientHeader = "INFO DEL PACIENTE",
+            age = "Edad",
+            gender = "G\u00E9nero",
             weight = "Peso",
             height = "Altura",
-            knownDiseasesHeader = "Condiciones conocidas"
+            knownDiseasesHeader = "Condiciones conocidas",
+            analyzingDiseaseHeader = "Enfermedad analizada"
         )
         "zh-CN" -> PatientContextTexts(
             patientHeader = "\u60A3\u8005\u4FE1\u606F",
+            age = "\u5E74\u9F84",
+            gender = "\u6027\u522B",
             weight = "\u4F53\u91CD",
             height = "\u8EAB\u9AD8",
-            knownDiseasesHeader = "\u5DF2\u77E5\u75BE\u75C5"
+            knownDiseasesHeader = "\u5DF2\u77E5\u75BE\u75C5",
+            analyzingDiseaseHeader = "\u5206\u6790\u75BE\u75C5"
         )
         "hy" -> PatientContextTexts(
-            patientHeader = "ՏԵՂԵԿԱՏՎՈՒԸՆ ՀԻՎԱՆԴԻ ՄԱՍԻՆ",
-            weight = "Քաշ",
-            height = "Հասակ",
-            knownDiseasesHeader = "Հայտնի հիվանդություններ"
+            patientHeader = "ՏԵՂԵdelaysu054Fu054Eu0548u0552u0539u0546 u0540u053Bu054Eu0531u0546u0534u053B u0544u0531u054Du053Bu0546",
+            age = "u054Fu0561u0580u056Bu0584",
+            gender = "u054Du0565u057C",
+            weight = "u0554u0561u0577",
+            height = "u0540u0561u057Du0561u056F",
+            knownDiseasesHeader = "u0540u0561u0575u057Fu0576u056B u0570u056Bu057Eu0561u0576u0564u0578u0582u0569u0575u0578u0582u0576u0576u0565u0580",
+            analyzingDiseaseHeader = "u054Eu0565u0580u056Cu0578u0582u056Eu057Eu0578u0572 u0570u056Bu057Eu0561u0576u0564u0578u0582u0569u0575u0578u0582u0576"
         )
         else -> PatientContextTexts(
             patientHeader = "\u0418\u041D\u0424\u041E \u041E \u041F\u0410\u0426\u0418\u0415\u041D\u0422\u0415",
+            age = "\u0412\u043E\u0437\u0440\u0430\u0441\u0442",
+            gender = "\u041F\u043E\u043B",
             weight = "\u0412\u0435\u0441",
             height = "\u0420\u043E\u0441\u0442",
-            knownDiseasesHeader = "\u0418\u0437\u0432\u0435\u0441\u0442\u043D\u044B\u0435 \u0437\u0430\u0431\u043E\u043B\u0435\u0432\u0430\u043D\u0438\u044F"
+            knownDiseasesHeader = "\u0418\u0437\u0432\u0435\u0441\u0442\u043D\u044B\u0435 \u0437\u0430\u0431\u043E\u043B\u0435\u0432\u0430\u043D\u0438\u044F",
+            analyzingDiseaseHeader = "\u0410\u043D\u0430\u043B\u0438\u0437\u0438\u0440\u0443\u0435\u043C\u043E\u0435 \u0437\u0430\u0431\u043E\u043B\u0435\u0432\u0430\u043D\u0438\u0435"
         )
     }
 }

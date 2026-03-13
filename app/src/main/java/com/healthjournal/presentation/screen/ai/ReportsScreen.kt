@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.SmartToy
@@ -424,22 +425,63 @@ private fun AiAnalyzeTab(
             }
         }
 
-        // Report list
-        items(reports, key = { "report_${it.id}" }) { report ->
-            ReportCard(
-                report = report,
-                diseaseName = if (report.diseaseId != 0L) viewModel.getDiseaseName(report.diseaseId) else null,
-                onExportPdf = {
-                    val memberName = viewModel.getProfileName(report.profileId)
-                    PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
+        // Latest report (shown prominently)
+        if (reports.isNotEmpty()) {
+            val latestReport = reports.first()
+            item(key = "latest_report_${latestReport.id}") {
+                ReportCard(
+                    report = latestReport,
+                    diseaseName = if (latestReport.diseaseId != 0L) viewModel.getDiseaseName(latestReport.diseaseId) else null,
+                    onExportPdf = {
+                        val memberName = viewModel.getProfileName(latestReport.profileId)
+                        PdfReportGenerator.generateAndShare(context, latestReport, vitals, memberName)
+                    },
+                    onDelete = { viewModel.deleteReport(latestReport.id) }
+                )
+            }
+        }
+
+        // History (collapsible older reports)
+        val olderReports = if (reports.size > 1) reports.drop(1) else emptyList()
+        if (olderReports.isNotEmpty()) {
+            item(key = "history_header") {
+                var showHistory by remember { mutableStateOf(false) }
+                Column {
+                    TextButton(
+                        onClick = { showHistory = !showHistory }
+                    ) {
+                        Text(
+                            stringResource(
+                                if (showHistory) R.string.ai_hide_history
+                                else R.string.ai_show_history,
+                                olderReports.size
+                            ),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                    AnimatedVisibility(visible = showHistory) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            olderReports.forEach { report ->
+                                ReportCard(
+                                    report = report,
+                                    diseaseName = if (report.diseaseId != 0L) viewModel.getDiseaseName(report.diseaseId) else null,
+                                    onExportPdf = {
+                                        val memberName = viewModel.getProfileName(report.profileId)
+                                        PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
+                                    },
+                                    onDelete = { viewModel.deleteReport(report.id) }
+                                )
+                            }
+                        }
+                    }
                 }
-            )
+            }
         }
     }
 }
 
 @Composable
-private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPdf: () -> Unit) {
+private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPdf: () -> Unit, onDelete: (() -> Unit)? = null) {
     val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
     val typeLabel = when (report.type) {
         ReportType.SUMMARY -> stringResource(R.string.report_type_summary)
@@ -459,6 +501,11 @@ private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPd
                 }
                 IconButton(onClick = onExportPdf) {
                     Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.export_pdf), tint = MaterialTheme.colorScheme.primary)
+                }
+                if (onDelete != null) {
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.local_model_delete), tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                    }
                 }
             }
 

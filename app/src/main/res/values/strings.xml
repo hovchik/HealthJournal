@@ -247,6 +247,8 @@
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">Необходимы данные минимум за 2 дня для анализа</string>
     <string name="ai_disabled_hint">ИИ-анализ отключён. Включите его в Настройки > ИИ-настройки.</string>
+    <string name="ai_show_history">Показать историю (%1$d)</string>
+    <string name="ai_hide_history">Скрыть историю (%1$d)</string>
 
     <!-- Export/Import & Backup -->
     <string name="export_import_title">Экспорт и импорт</string>

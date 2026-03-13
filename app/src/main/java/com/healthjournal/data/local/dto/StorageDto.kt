@@ -219,6 +219,8 @@ data class FamilyMemberDto(
     val avatarColor: Int = 0xFF1B6B4D.toInt(),
     val weight: String = "",
     val height: String = "",
+    val age: String = "",
+    val gender: String = "",
     val knownDiseases: List<String> = emptyList()
 ) {
     fun toDomain() = FamilyMember(
@@ -228,6 +230,8 @@ data class FamilyMemberDto(
         avatarColor = avatarColor,
         weight = weight,
         height = height,
+        age = age,
+        gender = gender,
         knownDiseases = knownDiseases
     )
 
@@ -239,6 +243,8 @@ data class FamilyMemberDto(
             avatarColor = f.avatarColor,
             weight = f.weight,
             height = f.height,
+            age = f.age,
+            gender = f.gender,
             knownDiseases = f.knownDiseases
         )
     }

@@ -247,6 +247,8 @@
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">At least 2 days of records needed for analysis</string>
     <string name="ai_disabled_hint">AI analysis is disabled. Enable it in Settings > AI Settings.</string>
+    <string name="ai_show_history">Show history (%1$d)</string>
+    <string name="ai_hide_history">Hide history (%1$d)</string>
 
     <!-- Export/Import & Backup -->
     <string name="export_import_title">Export &amp; Import</string>

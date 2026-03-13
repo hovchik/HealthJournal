@@ -247,6 +247,8 @@
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">分析需要至少2天的记录数据</string>
     <string name="ai_disabled_hint">AI分析已禁用。请在设置 > AI设置中启用。</string>
+    <string name="ai_show_history">显示历史 (%1$d)</string>
+    <string name="ai_hide_history">隐藏历史 (%1$d)</string>
 
     <!-- Export/Import & Backup -->
     <string name="export_import_title">导出和导入</string>

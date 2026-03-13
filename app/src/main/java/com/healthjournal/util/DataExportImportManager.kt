@@ -32,6 +32,8 @@ data class UserSettingsBackup(
     val languageMode: String = "SYSTEM",
     val weight: String = "",
     val height: String = "",
+    val age: String = "",
+    val gender: String = "",
     val knownDiseases: List<String> = emptyList()
 )
 
@@ -111,6 +113,8 @@ class DataExportImportManager(
                 languageMode = settings.languageMode,
                 weight = settings.weight,
                 height = settings.height,
+                age = settings.age,
+                gender = settings.gender,
                 knownDiseases = settings.knownDiseases
             ),
             predefinedData = predefinedData
@@ -163,6 +167,8 @@ class DataExportImportManager(
                     aiConsentGiven = settingsBackup.aiConsentGiven,
                     weight = settingsBackup.weight,
                     height = settingsBackup.height,
+                    age = settingsBackup.age,
+                    gender = settingsBackup.gender,
                     knownDiseases = settingsBackup.knownDiseases
                 )
             )

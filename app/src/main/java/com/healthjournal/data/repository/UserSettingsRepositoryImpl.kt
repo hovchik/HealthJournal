@@ -31,6 +31,8 @@ class UserSettingsRepositoryImpl constructor(
         val DOCTOR_PHONE = stringPreferencesKey("doctor_phone")
         val WEIGHT = stringPreferencesKey("weight")
         val HEIGHT = stringPreferencesKey("height")
+        val AGE = stringPreferencesKey("age")
+        val GENDER = stringPreferencesKey("gender")
         val KNOWN_DISEASES = stringPreferencesKey("known_diseases")
         val AI_CONSENT = booleanPreferencesKey("ai_consent")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
@@ -57,6 +59,8 @@ class UserSettingsRepositoryImpl constructor(
             doctorPhone = prefs[Keys.DOCTOR_PHONE] ?: "",
             weight = prefs[Keys.WEIGHT] ?: "",
             height = prefs[Keys.HEIGHT] ?: "",
+            age = prefs[Keys.AGE] ?: "",
+            gender = prefs[Keys.GENDER] ?: "",
             knownDiseases = knownDiseases,
             aiConsentGiven = prefs[Keys.AI_CONSENT] ?: false,
             onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
@@ -74,6 +78,8 @@ class UserSettingsRepositoryImpl constructor(
             prefs[Keys.DOCTOR_PHONE] = settings.doctorPhone
             prefs[Keys.WEIGHT] = settings.weight
             prefs[Keys.HEIGHT] = settings.height
+            prefs[Keys.AGE] = settings.age
+            prefs[Keys.GENDER] = settings.gender
             prefs[Keys.KNOWN_DISEASES] = json.encodeToString(
                 ListSerializer(String.serializer()), settings.knownDiseases
             )
