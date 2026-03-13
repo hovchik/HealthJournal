@@ -81,6 +81,14 @@
     <string name="report_show_prompt">显示提示词</string>
     <string name="report_hide_prompt">隐藏提示词</string>
     <string name="days_format">%1$d 天</string>
+    <string name="report_generate_summary">摘要</string>
+    <string name="report_generate_patterns">模式</string>
+    <string name="report_period_label">时间段</string>
+    <string name="report_period_days">%1$d 天</string>
+    <string name="report_copied">已复制到剪贴板</string>
+    <string name="report_copy">复制</string>
+    <string name="report_section_results">分析结果</string>
+    <string name="report_no_content">无分析结果。</string>
     <string name="records_export_pdf">导出记录为 PDF</string>
 
     <!-- Vitals Screen -->

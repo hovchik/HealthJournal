@@ -81,6 +81,14 @@
     <string name="report_show_prompt">Ցույց տալ հարցումը</string>
     <string name="report_hide_prompt">Թաքցնել հարցումը</string>
     <string name="days_format">%1$d օր</string>
+    <string name="report_generate_summary">\u0531\u0574\u0583\u0578\u0583\u0578\u0582\u0574</string>
+    <string name="report_generate_patterns">\u0555\u0580\u056B\u0576\u0561\u0579\u0561\u0583</string>
+    <string name="report_period_label">\u054A\u0561\u0580\u0562\u0565\u0580\u0561\u0577\u0580\u056A\u0561\u0576</string>
+    <string name="report_period_days">%1$d \u0585\u0580</string>
+    <string name="report_copied">\u054A\u0561\u057F\u0573\u0565\u0576\u057E\u0561\u056E \u0567</string>
+    <string name="report_copy">\u054A\u0561\u057F\u0573\u0565\u0576\u0565\u056C</string>
+    <string name="report_section_results">\u054E\u0565\u0580\u056C\u0578\u0582\u056E\u0578\u0582\u0569\u0575\u0561\u0576 \u0561\u0580\u0564\u0575\u0578\u0582\u0576\u0584\u0576\u0565\u0580</string>
+    <string name="report_no_content">\u054E\u0565\u0580\u056C\u0578\u0582\u056E\u0578\u0582\u0569\u0575\u0561\u0576 \u0561\u0580\u0564\u0575\u0578\u0582\u0576\u0584 \u0579\u056F\u0561\u0589</string>
     <string name="records_export_pdf">Արտահանել գրառումները PDF</string>
 
     <!-- Vitals Screen -->

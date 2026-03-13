@@ -81,6 +81,14 @@
     <string name="report_show_prompt">Показать запрос</string>
     <string name="report_hide_prompt">Скрыть запрос</string>
     <string name="days_format">%1$d дн.</string>
+    <string name="report_generate_summary">Сводка</string>
+    <string name="report_generate_patterns">Паттерны</string>
+    <string name="report_period_label">Период</string>
+    <string name="report_period_days">%1$d дн.</string>
+    <string name="report_copied">Скопировано в буфер обмена</string>
+    <string name="report_copy">Копировать</string>
+    <string name="report_section_results">Результаты анализа</string>
+    <string name="report_no_content">Результат анализа отсутствует.</string>
     <string name="records_export_pdf">Экспорт записей в PDF</string>
 
     <!-- Vitals Screen -->

@@ -81,6 +81,14 @@
     <string name="report_show_prompt">Mostrar consulta</string>
     <string name="report_hide_prompt">Ocultar consulta</string>
     <string name="days_format">%1$d días</string>
+    <string name="report_generate_summary">Resumen</string>
+    <string name="report_generate_patterns">Patrones</string>
+    <string name="report_period_label">Período</string>
+    <string name="report_period_days">%1$d días</string>
+    <string name="report_copied">Copiado al portapapeles</string>
+    <string name="report_copy">Copiar</string>
+    <string name="report_section_results">Resultados del análisis</string>
+    <string name="report_no_content">Resultado del análisis no disponible.</string>
     <string name="records_export_pdf">Exportar registros a PDF</string>
 
     <!-- Vitals Screen -->
