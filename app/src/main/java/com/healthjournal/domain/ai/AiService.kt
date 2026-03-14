@@ -1,16 +1,19 @@
 package com.healthjournal.domain.ai
 
 import com.healthjournal.data.ai.AiPreferences
+import com.healthjournal.data.ai.provider.AiProviderSelector
 import com.healthjournal.domain.model.ai.*
 import com.healthjournal.util.PrivacyRedactor
 
 /**
  * Orchestrates AI provider selection, privacy redaction, and report generation.
+ * Uses AiProviderSelector for mode-aware provider resolution.
  */
 class AiService(
     private val registry: AiProviderRegistry,
     private val redactor: PrivacyRedactor,
-    private val aiPreferences: AiPreferences
+    private val aiPreferences: AiPreferences,
+    private val providerSelector: AiProviderSelector
 ) {
     suspend fun getActiveProvider(settings: AiSettings): AiProvider {
         val mode = aiPreferences.getSelectedMode()
@@ -26,13 +29,23 @@ class AiService(
                         ?: registry.getByIdOrDefault(AiProviderId.CLAUDE)
                 }
             }
-            AiExecutionMode.CUSTOM_LOCAL, AiExecutionMode.SYSTEM_LOCAL -> {
+            AiExecutionMode.CUSTOM_LOCAL -> {
+                // Use custom local model provider (downloaded models)
                 registry.getByIdOrDefault(AiProviderId.LOCAL)
             }
+            AiExecutionMode.SYSTEM_LOCAL -> {
+                // Use system AI provider via AiProviderSelector (not in registry)
+                providerSelector.selectProvider().provider
+            }
             AiExecutionMode.AUTO -> {
-                // Respect selectedProviderId if set to a cloud provider, otherwise use local
+                // In auto mode: if user explicitly set a cloud provider, use it;
+                // otherwise let the selector pick the best available
                 val id = AiProviderId.fromKey(settings.selectedProviderId)
-                registry.getByIdOrDefault(id)
+                if (id != AiProviderId.LOCAL) {
+                    registry.getByIdOrDefault(id)
+                } else {
+                    providerSelector.selectProvider().provider
+                }
             }
         }
     }

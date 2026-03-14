@@ -1,5 +1,6 @@
 package com.healthjournal.data.ai.provider
 
+import android.util.Log
 import com.healthjournal.R
 import com.healthjournal.data.ai.LocalModelManager
 import com.healthjournal.data.ai.runtime.LiteRtRuntimeAdapter
@@ -22,6 +23,7 @@ class CustomLocalModelProvider(
     override suspend fun generateDoctorSummary(input: AiInput, config: AiSettings): AiTextResult {
         val model = modelManager.getActiveModel()
         if (model == null) {
+            // No model downloaded — use rule-based analysis
             return AiTextResult(
                 text = LocalAnalysisEngine.buildLocalSummary(input),
                 providerId = id,
@@ -30,16 +32,18 @@ class CustomLocalModelProvider(
         }
 
         return try {
-            val runtime = resolveRuntime(model)
+            val runtime = resolveRuntime(model, config.localAiConfig)
             val prompt = PromptTemplate.buildSummaryPrompt(input)
             val fullPrompt = "${prompt.system}\n\n${prompt.user}"
             val result = runtime.runPrompt(fullPrompt)
             AiTextResult(text = result, providerId = id, modelUsed = model.displayName)
-        } catch (_: Exception) {
-            AiTextResult(
-                text = LocalAnalysisEngine.buildLocalSummary(input),
-                providerId = id,
-                modelUsed = "local-analysis"
+        } catch (e: Exception) {
+            Log.e("CustomLocalModelProvider", "Model inference failed for ${model.displayName}", e)
+            // Propagate the error so the user knows the model failed
+            throw RuntimeException(
+                "Local model '${model.displayName}' failed: ${e.message ?: "unknown error"}. " +
+                    "Check that the model file is valid and compatible with your device.",
+                e
             )
         }
     }
@@ -55,16 +59,17 @@ class CustomLocalModelProvider(
         }
 
         return try {
-            val runtime = resolveRuntime(model)
+            val runtime = resolveRuntime(model, config.localAiConfig)
             val prompt = PromptTemplate.buildPatternPrompt(input)
             val fullPrompt = "${prompt.system}\n\n${prompt.user}"
             val result = runtime.runPrompt(fullPrompt)
             AiFlagsResult(text = result, providerId = id, modelUsed = model.displayName)
-        } catch (_: Exception) {
-            AiFlagsResult(
-                text = LocalAnalysisEngine.buildLocalPatternAnalysis(input),
-                providerId = id,
-                modelUsed = "local-analysis"
+        } catch (e: Exception) {
+            Log.e("CustomLocalModelProvider", "Model inference failed for ${model.displayName}", e)
+            throw RuntimeException(
+                "Local model '${model.displayName}' failed: ${e.message ?: "unknown error"}. " +
+                    "Check that the model file is valid and compatible with your device.",
+                e
             )
         }
     }
@@ -80,12 +85,12 @@ class CustomLocalModelProvider(
 
     override fun isOnlineRequired(): Boolean = false
 
-    private suspend fun resolveRuntime(model: LocalAiModel): LocalModelRuntime {
+    private suspend fun resolveRuntime(model: LocalAiModel, localConfig: LocalAiConfig): LocalModelRuntime {
         val path = model.localPath ?: throw IllegalStateException("Model has no local path")
         return when (model.runtimeType) {
             "mediapipe_llm" -> {
                 if (!mediaPipeRuntime.isAvailable()) {
-                    mediaPipeRuntime.loadModel(path)
+                    mediaPipeRuntime.loadModel(path, localConfig.maxTokens)
                 }
                 mediaPipeRuntime
             }
@@ -95,7 +100,7 @@ class CustomLocalModelProvider(
                 }
                 liteRtRuntime
             }
-            else -> throw IllegalArgumentException("Unknown runtime: ${model.runtimeType}")
+            else -> throw IllegalArgumentException("Unsupported runtime type: '${model.runtimeType}'. Supported: mediapipe_llm, litert")
         }
     }
 }

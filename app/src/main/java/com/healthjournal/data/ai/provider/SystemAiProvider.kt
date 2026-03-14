@@ -16,23 +16,16 @@ class SystemAiProvider(
 
     override suspend fun generateDoctorSummary(input: AiInput, config: AiSettings): AiTextResult {
         if (!systemRuntime.isAvailable()) {
+            // System AI not available — fall back to rule-based analysis
             return AiTextResult(
                 text = LocalAnalysisEngine.buildLocalSummary(input),
                 providerId = id,
                 modelUsed = "local-analysis"
             )
         }
-        return try {
-            val prompt = PromptTemplate.buildSummaryPrompt(input)
-            val result = systemRuntime.runPrompt("${prompt.system}\n\n${prompt.user}")
-            AiTextResult(text = result, providerId = id, modelUsed = "Android AICore")
-        } catch (_: Exception) {
-            AiTextResult(
-                text = LocalAnalysisEngine.buildLocalSummary(input),
-                providerId = id,
-                modelUsed = "local-analysis"
-            )
-        }
+        val prompt = PromptTemplate.buildSummaryPrompt(input)
+        val result = systemRuntime.runPrompt("${prompt.system}\n\n${prompt.user}")
+        return AiTextResult(text = result, providerId = id, modelUsed = "Android AICore")
     }
 
     override suspend fun analyzePatterns(input: AiInput, config: AiSettings): AiFlagsResult {
@@ -43,17 +36,9 @@ class SystemAiProvider(
                 modelUsed = "local-analysis"
             )
         }
-        return try {
-            val prompt = PromptTemplate.buildPatternPrompt(input)
-            val result = systemRuntime.runPrompt("${prompt.system}\n\n${prompt.user}")
-            AiFlagsResult(text = result, providerId = id, modelUsed = "Android AICore")
-        } catch (_: Exception) {
-            AiFlagsResult(
-                text = LocalAnalysisEngine.buildLocalPatternAnalysis(input),
-                providerId = id,
-                modelUsed = "local-analysis"
-            )
-        }
+        val prompt = PromptTemplate.buildPatternPrompt(input)
+        val result = systemRuntime.runPrompt("${prompt.system}\n\n${prompt.user}")
+        return AiFlagsResult(text = result, providerId = id, modelUsed = "Android AICore")
     }
 
     override fun validateConfig(config: AiSettings): ValidationResult {
