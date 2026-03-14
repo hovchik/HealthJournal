@@ -597,14 +597,18 @@ private fun LocalModelSection(
                 fontWeight = FontWeight.SemiBold
             )
 
-            if (installedModels.isEmpty()) {
+            val actuallyInstalled = installedModels.filter {
+                it.installState == ModelInstallState.INSTALLED
+            }
+
+            if (actuallyInstalled.isEmpty()) {
                 Text(
                     stringResource(R.string.ai_engine_no_models),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
-                installedModels.forEach { model ->
+                actuallyInstalled.forEach { model ->
                     InstalledModelCard(
                         model = model,
                         isActive = model.modelId == activeModel?.modelId,
@@ -766,7 +770,10 @@ private fun LocalModelSection(
             )
 
             val installedIds = remember(installedModels) {
-                installedModels.map { it.modelId }.toSet()
+                installedModels
+                    .filter { it.installState == ModelInstallState.INSTALLED }
+                    .map { it.modelId }
+                    .toSet()
             }
 
             viewModel.catalogModels.forEach { model ->
