@@ -71,14 +71,16 @@ class ModelInstaller(
 
         /** Map file extension to runtime type */
         fun inferRuntimeType(extension: String): String = when (extension.lowercase()) {
+            "gguf" -> "llama_cpp"
+            "ggml" -> "llama_cpp"
             "tflite" -> "litert"
+            "bin" -> "mediapipe_llm"
             "onnx" -> "onnx_runtime"
             "pt", "pth" -> "pytorch"
             "safetensors" -> "safetensors"
             "mlmodel" -> "coreml"
             "awq" -> "awq"
-            "ggml" -> "ggml"
-            else -> "mediapipe_llm" // gguf, bin, etc.
+            else -> "llama_cpp"
         }
     }
 

@@ -14,6 +14,7 @@ import com.healthjournal.data.ai.provider.AiProviderSelector
 import com.healthjournal.data.ai.provider.CustomLocalModelProvider
 import com.healthjournal.data.ai.provider.SystemAiProvider
 import com.healthjournal.data.ai.runtime.LiteRtRuntimeAdapter
+import com.healthjournal.data.ai.runtime.LlamaCppRuntimeAdapter
 import com.healthjournal.data.ai.runtime.MediaPipeLlmRuntimeAdapter
 import com.healthjournal.data.ai.runtime.SystemAiRuntimeAdapter
 import com.healthjournal.data.local.db.AppDatabase
@@ -157,6 +158,7 @@ class AppContainer(context: Context) {
     // Runtime adapters
     val mediaPipeRuntime = MediaPipeLlmRuntimeAdapter(context)
     val liteRtRuntime = LiteRtRuntimeAdapter(context)
+    val llamaCppRuntime = LlamaCppRuntimeAdapter(context)
     val systemAiRuntime = SystemAiRuntimeAdapter(context)
 
     // Benchmark
@@ -166,7 +168,7 @@ class AppContainer(context: Context) {
     private val claudeProvider = ClaudeAiProviderImpl(::buildClaudeApi)
     private val openAiProvider = OpenAiCompatibleProviderImpl(::buildOpenAiApi)
     private val customLocalProvider = CustomLocalModelProvider(
-        localModelManager, mediaPipeRuntime, liteRtRuntime
+        localModelManager, mediaPipeRuntime, liteRtRuntime, llamaCppRuntime
     )
     private val systemAiProvider = SystemAiProvider(systemAiRuntime)
 

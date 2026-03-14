@@ -4,6 +4,7 @@ import android.util.Log
 import com.healthjournal.R
 import com.healthjournal.data.ai.LocalModelManager
 import com.healthjournal.data.ai.runtime.LiteRtRuntimeAdapter
+import com.healthjournal.data.ai.runtime.LlamaCppRuntimeAdapter
 import com.healthjournal.data.ai.runtime.LocalModelRuntime
 import com.healthjournal.data.ai.runtime.MediaPipeLlmRuntimeAdapter
 import com.healthjournal.data.ai.LocalAnalysisEngine
@@ -14,7 +15,8 @@ import com.healthjournal.domain.model.ai.*
 class CustomLocalModelProvider(
     private val modelManager: LocalModelManager,
     private val mediaPipeRuntime: MediaPipeLlmRuntimeAdapter,
-    private val liteRtRuntime: LiteRtRuntimeAdapter
+    private val liteRtRuntime: LiteRtRuntimeAdapter,
+    private val llamaCppRuntime: LlamaCppRuntimeAdapter
 ) : AiProvider {
 
     companion object {
@@ -109,6 +111,12 @@ class CustomLocalModelProvider(
     private suspend fun resolveRuntime(model: LocalAiModel, localConfig: LocalAiConfig): LocalModelRuntime {
         val path = model.localPath ?: throw IllegalStateException("Model has no local path")
         return when (model.runtimeType) {
+            "llama_cpp" -> {
+                if (!llamaCppRuntime.isAvailable()) {
+                    llamaCppRuntime.loadModel(path, contextSize = localConfig.contextSize)
+                }
+                llamaCppRuntime
+            }
             "mediapipe_llm" -> {
                 if (!mediaPipeRuntime.isAvailable()) {
                     mediaPipeRuntime.loadModel(path, localConfig.maxTokens)
@@ -121,7 +129,7 @@ class CustomLocalModelProvider(
                 }
                 liteRtRuntime
             }
-            else -> throw IllegalArgumentException("Unsupported runtime type: '${model.runtimeType}'. Supported: mediapipe_llm, litert")
+            else -> throw IllegalArgumentException("Unsupported runtime type: '${model.runtimeType}'. Supported: llama_cpp, mediapipe_llm, litert")
         }
     }
 }

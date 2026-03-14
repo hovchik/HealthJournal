@@ -92,6 +92,22 @@ class LocalModelManager(
 
     suspend fun getTotalStorageUsedMb(): Long =
         dao.getByState(ModelInstallState.INSTALLED.name).sumOf { it.sizeMb }
+
+    /**
+     * Migrates existing GGUF/GGML models from the incorrect "mediapipe_llm" runtime
+     * to "llama_cpp". MediaPipe LLM does not support GGUF files; llama.cpp does.
+     * Should be called once at app startup.
+     */
+    suspend fun migrateGgufRuntimeType() {
+        withContext(Dispatchers.IO) {
+            val ggufFormats = setOf("gguf", "ggml")
+            dao.getAll()
+                .filter { it.runtimeType == "mediapipe_llm" && it.fileFormat in ggufFormats }
+                .forEach { entity ->
+                    dao.update(entity.copy(runtimeType = "llama_cpp"))
+                }
+        }
+    }
 }
 
 // ===== Mappers =====

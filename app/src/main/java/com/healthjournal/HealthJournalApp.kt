@@ -19,5 +19,8 @@ class HealthJournalApp : Application() {
             container.userSettingsRepository.getUserSettings().first().languageMode
         }
         LocaleManager.applyLocale(languageMode)
+
+        // Migrate GGUF models from wrong "mediapipe_llm" runtime to "llama_cpp"
+        runBlocking { container.localModelManager.migrateGgufRuntimeType() }
     }
 }

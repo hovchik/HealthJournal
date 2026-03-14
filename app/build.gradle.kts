@@ -97,6 +97,9 @@ dependencies {
     // TensorFlow Lite (LiteRT runtime for .tflite models)
     implementation("org.tensorflow:tensorflow-lite:2.16.1")
 
+    // llama.cpp Android bindings (GGUF model inference)
+    implementation("com.github.anthropics:llama.cpp-android:b4547")
+
     // Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.7.0")
 

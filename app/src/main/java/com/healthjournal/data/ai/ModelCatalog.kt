@@ -16,7 +16,7 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "tinyllama-1.1b-q4",
             displayName = "TinyLlama 1.1B Q4",
-            runtimeType = "mediapipe_llm",
+            runtimeType = "llama_cpp",
             fileFormat = "gguf",
             quantization = "Q4_0",
             requiredRamMb = 1500,
@@ -52,7 +52,7 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "stablelm-zephyr-1.6b-q4",
             displayName = "StableLM Zephyr 1.6B Q4",
-            runtimeType = "mediapipe_llm",
+            runtimeType = "llama_cpp",
             fileFormat = "gguf",
             quantization = "Q4_0",
             requiredRamMb = 2000,
@@ -72,7 +72,7 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "qwen2.5-3b-instruct-q4",
             displayName = "Qwen 2.5 3B Instruct Q4 (Recommended)",
-            runtimeType = "mediapipe_llm",
+            runtimeType = "llama_cpp",
             fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3500,
@@ -90,7 +90,7 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "phi-2-2.7b-q4",
             displayName = "Phi-2 2.7B Q4",
-            runtimeType = "mediapipe_llm",
+            runtimeType = "llama_cpp",
             fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3000,
@@ -108,7 +108,7 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "rocket-3b-q4",
             displayName = "Rocket 3B Q4",
-            runtimeType = "mediapipe_llm",
+            runtimeType = "llama_cpp",
             fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3200,
@@ -128,7 +128,7 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "mistral-7b-instruct-q4",
             displayName = "Mistral 7B Instruct Q4",
-            runtimeType = "mediapipe_llm",
+            runtimeType = "llama_cpp",
             fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
@@ -146,7 +146,7 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "zephyr-7b-beta-q4",
             displayName = "Zephyr 7B Beta Q4",
-            runtimeType = "mediapipe_llm",
+            runtimeType = "llama_cpp",
             fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
@@ -164,7 +164,7 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "openchat-3.5-7b-q4",
             displayName = "OpenChat 3.5 7B Q4",
-            runtimeType = "mediapipe_llm",
+            runtimeType = "llama_cpp",
             fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
