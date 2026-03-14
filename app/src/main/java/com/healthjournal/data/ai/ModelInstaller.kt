@@ -42,18 +42,11 @@ class ModelInstaller(
     val scanProgress: StateFlow<ScanProgress?> = _scanProgress.asStateFlow()
 
     companion object {
-        /** Top 10 LLM model file extensions supported for scanning */
+        /** LLM model file extensions supported for scanning (llama.cpp compatible) */
         private val MODEL_EXTENSIONS = setOf(
-            "gguf",         // 1. GGUF — llama.cpp modern format (dominant)
-            "ggml",         // 2. GGML — llama.cpp legacy format
-            "tflite",       // 3. TFLite — TensorFlow Lite / LiteRT
-            "bin",          // 4. BIN — generic weights (MediaPipe, PyTorch export)
-            "onnx",         // 5. ONNX — ONNX Runtime models
-            "pt",           // 6. PT — PyTorch native checkpoint
-            "pth",          // 7. PTH — PyTorch state dict
-            "safetensors",  // 8. SafeTensors — Hugging Face safe serialization
-            "mlmodel",      // 9. MLModel — CoreML (cross-platform inference)
-            "awq"           // 10. AWQ — AutoAWQ quantized models
+            "gguf",         // GGUF — llama.cpp modern format (dominant)
+            "ggml",         // GGML — llama.cpp legacy format
+            "bin"           // BIN — generic weights (llama.cpp compatible)
         )
 
         /** Minimum file size to consider as a model (10 MB) */
@@ -70,18 +63,7 @@ class ModelInstaller(
         )
 
         /** Map file extension to runtime type */
-        fun inferRuntimeType(extension: String): String = when (extension.lowercase()) {
-            "gguf" -> "llama_cpp"
-            "ggml" -> "llama_cpp"
-            "tflite" -> "litert"
-            "bin" -> "llama_cpp"
-            "onnx" -> "onnx_runtime"
-            "pt", "pth" -> "pytorch"
-            "safetensors" -> "safetensors"
-            "mlmodel" -> "coreml"
-            "awq" -> "awq"
-            else -> "llama_cpp"
-        }
+        fun inferRuntimeType(extension: String): String = "llama_cpp"
     }
 
     fun getModelDir(modelId: String): File = File(modelsDir, modelId).apply { mkdirs() }

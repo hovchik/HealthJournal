@@ -7,8 +7,7 @@ object ModelCatalog {
 
     /** All supported model file extensions for display in UI */
     val supportedFormats: List<String> = listOf(
-        "GGUF", "GGML", "TFLite", "BIN", "ONNX",
-        "PT", "PTH", "SafeTensors", "MLModel", "AWQ"
+        "GGUF", "GGML", "BIN"
     )
 
     val availableModels: List<LocalAiModel> = listOf(
@@ -29,24 +28,6 @@ object ModelCatalog {
             version = "1.0",
             supportsStructuredJson = false,
             supportsStreaming = true,
-            supportsTextGeneration = true
-        ),
-        LocalAiModel(
-            modelId = "tinyllama-1.1b-q8",
-            displayName = "TinyLlama 1.1B Q8",
-            runtimeType = "litert",
-            fileFormat = "tflite",
-            quantization = "Q8_0",
-            requiredRamMb = 2000,
-            recommendedRamMb = 3000,
-            sizeMb = 700,
-            downloadUrl = "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q8_0.gguf",
-            localPath = null,
-            installState = ModelInstallState.NOT_INSTALLED,
-            checksum = null,
-            version = "1.0",
-            supportsStructuredJson = false,
-            supportsStreaming = false,
             supportsTextGeneration = true
         ),
         LocalAiModel(
