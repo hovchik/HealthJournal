@@ -6,7 +6,6 @@ import com.healthjournal.data.ai.LocalModelManager
 import com.healthjournal.data.ai.runtime.LiteRtRuntimeAdapter
 import com.healthjournal.data.ai.runtime.LlamaCppRuntimeAdapter
 import com.healthjournal.data.ai.runtime.LocalModelRuntime
-import com.healthjournal.data.ai.runtime.MediaPipeLlmRuntimeAdapter
 import com.healthjournal.data.ai.LocalAnalysisEngine
 import com.healthjournal.domain.ai.AiProvider
 import com.healthjournal.domain.ai.PromptTemplate
@@ -14,7 +13,6 @@ import com.healthjournal.domain.model.ai.*
 
 class CustomLocalModelProvider(
     private val modelManager: LocalModelManager,
-    private val mediaPipeRuntime: MediaPipeLlmRuntimeAdapter,
     private val liteRtRuntime: LiteRtRuntimeAdapter,
     private val llamaCppRuntime: LlamaCppRuntimeAdapter
 ) : AiProvider {
@@ -117,19 +115,13 @@ class CustomLocalModelProvider(
                 }
                 llamaCppRuntime
             }
-            "mediapipe_llm" -> {
-                if (!mediaPipeRuntime.isAvailable()) {
-                    mediaPipeRuntime.loadModel(path, localConfig.maxTokens)
-                }
-                mediaPipeRuntime
-            }
             "litert" -> {
                 if (!liteRtRuntime.isAvailable()) {
                     liteRtRuntime.loadModel(path)
                 }
                 liteRtRuntime
             }
-            else -> throw IllegalArgumentException("Unsupported runtime type: '${model.runtimeType}'. Supported: llama_cpp, mediapipe_llm, litert")
+            else -> throw IllegalArgumentException("Unsupported runtime type: '${model.runtimeType}'. Supported: llama_cpp, litert")
         }
     }
 }

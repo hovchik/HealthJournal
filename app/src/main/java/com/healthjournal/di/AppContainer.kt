@@ -15,7 +15,7 @@ import com.healthjournal.data.ai.provider.CustomLocalModelProvider
 import com.healthjournal.data.ai.provider.SystemAiProvider
 import com.healthjournal.data.ai.runtime.LiteRtRuntimeAdapter
 import com.healthjournal.data.ai.runtime.LlamaCppRuntimeAdapter
-import com.healthjournal.data.ai.runtime.MediaPipeLlmRuntimeAdapter
+
 import com.healthjournal.data.ai.runtime.SystemAiRuntimeAdapter
 import com.healthjournal.data.local.db.AppDatabase
 import com.healthjournal.data.local.JsonFileStore
@@ -156,7 +156,6 @@ class AppContainer(context: Context) {
     val modelInstaller = ModelInstaller(context, localModelManager, modelCompatibilityValidator)
 
     // Runtime adapters
-    val mediaPipeRuntime = MediaPipeLlmRuntimeAdapter(context)
     val liteRtRuntime = LiteRtRuntimeAdapter(context)
     val llamaCppRuntime = LlamaCppRuntimeAdapter(context)
     val systemAiRuntime = SystemAiRuntimeAdapter(context)
@@ -168,7 +167,7 @@ class AppContainer(context: Context) {
     private val claudeProvider = ClaudeAiProviderImpl(::buildClaudeApi)
     private val openAiProvider = OpenAiCompatibleProviderImpl(::buildOpenAiApi)
     private val customLocalProvider = CustomLocalModelProvider(
-        localModelManager, mediaPipeRuntime, liteRtRuntime, llamaCppRuntime
+        localModelManager, liteRtRuntime, llamaCppRuntime
     )
     private val systemAiProvider = SystemAiProvider(systemAiRuntime)
 

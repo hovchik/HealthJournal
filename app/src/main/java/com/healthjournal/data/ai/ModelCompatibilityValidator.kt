@@ -27,7 +27,7 @@ class ModelCompatibilityValidator(
         }
 
         // ABI check
-        if (model.runtimeType == "llama_cpp" || model.runtimeType == "mediapipe_llm") {
+        if (model.runtimeType == "llama_cpp") {
             if ("arm64-v8a" !in cap.supportedAbis) {
                 issues.add("${model.runtimeType} requires arm64-v8a architecture")
             }
@@ -38,8 +38,8 @@ class ModelCompatibilityValidator(
         }
 
         // SDK check
-        if ((model.runtimeType == "mediapipe_llm" || model.runtimeType == "llama_cpp") && Build.VERSION.SDK_INT < 24) {
-            issues.add("${model.runtimeType} requires Android API 24+")
+        if (model.runtimeType == "llama_cpp" && Build.VERSION.SDK_INT < 24) {
+            issues.add("llama.cpp requires Android API 24+")
         }
 
         // Capability check

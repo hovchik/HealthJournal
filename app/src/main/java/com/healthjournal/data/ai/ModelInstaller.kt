@@ -74,7 +74,7 @@ class ModelInstaller(
             "gguf" -> "llama_cpp"
             "ggml" -> "llama_cpp"
             "tflite" -> "litert"
-            "bin" -> "mediapipe_llm"
+            "bin" -> "llama_cpp"
             "onnx" -> "onnx_runtime"
             "pt", "pth" -> "pytorch"
             "safetensors" -> "safetensors"
