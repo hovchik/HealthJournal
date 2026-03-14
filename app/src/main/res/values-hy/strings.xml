@@ -456,6 +456,11 @@
     <string name="ai_engine_activate">\u0531\u056f\u057f\u056b\u057e\u0561\u0581\u0576\u0565\u056c</string>
     <string name="ai_engine_incompatible">\u0531\u0576\u0570\u0561\u0574\u0561\u057f\u0565\u0572</string>
     <string name="ai_engine_downloading">\u0532\u0565\u057c\u0576\u0574\u0561\u0576: %1$d%%</string>
+    <string name="ai_engine_download_speed">%1$s/\u057e</string>
+    <string name="ai_engine_download_progress">%1$s / %2$s</string>
+    <string name="ai_engine_download_pause">\u0534\u0561\u0564\u0561\u0580</string>
+    <string name="ai_engine_download_resume">\u0547\u0561\u0580\u0578\u0582\u0576\u0561\u056f\u0565\u056c</string>
+    <string name="ai_engine_download_paused">\u0534\u0561\u0564\u0561\u0580\u0565\u0581\u057e\u0561\u056e</string>
     <string name="ai_engine_installing">\u054f\u0565\u0572\u0561\u0564\u0580\u0574\u0561\u0576\u2026</string>
     <string name="ai_engine_size">%1$d MB</string>
     <string name="ai_engine_ram_required">\u054a\u0561\u0570\u0561\u0576\u057b\u057e\u0578\u0572 RAM: %1$d MB</string>

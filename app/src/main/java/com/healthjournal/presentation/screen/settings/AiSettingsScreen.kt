@@ -789,6 +789,7 @@ private fun LocalModelSection(
                     isInstalled = isInstalled,
                     progress = currentProgress,
                     onDownload = { viewModel.downloadModel(model) },
+                    onPause = { viewModel.pauseDownload() },
                     compatibilityMessage = compatibility,
                     hasNoDownloadUrl = hasDownloadError,
                     onDismissError = { viewModel.clearDownloadError() }
@@ -961,6 +962,7 @@ private fun CatalogModelCard(
     isInstalled: Boolean,
     progress: InstallProgress?,
     onDownload: () -> Unit,
+    onPause: () -> Unit = {},
     compatibilityMessage: String?,
     hasNoDownloadUrl: Boolean = false,
     onDismissError: () -> Unit = {}
@@ -1082,16 +1084,71 @@ private fun CatalogModelCard(
                 }
                 progress != null && progress.state == ModelInstallState.DOWNLOADING -> {
                     Column {
-                        LinearProgressIndicator(
-                            progress = { progress.progressPercent / 100f },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        if (progress.isPaused) {
+                            LinearProgressIndicator(
+                                progress = { progress.progressPercent / 100f },
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        } else {
+                            LinearProgressIndicator(
+                                progress = { progress.progressPercent / 100f },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            stringResource(R.string.ai_engine_downloading, progress.progressPercent),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                if (progress.isPaused) {
+                                    Text(
+                                        stringResource(R.string.ai_engine_download_paused),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.outline
+                                    )
+                                } else {
+                                    Text(
+                                        stringResource(R.string.ai_engine_downloading, progress.progressPercent),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                if (progress.totalBytes > 0) {
+                                    val downloaded = formatFileSize(progress.bytesDownloaded)
+                                    val total = formatFileSize(progress.totalBytes)
+                                    val speedText = if (progress.bytesPerSecond > 0 && !progress.isPaused) {
+                                        " \u2022 " + stringResource(R.string.ai_engine_download_speed, formatFileSize(progress.bytesPerSecond))
+                                    } else ""
+                                    Text(
+                                        stringResource(R.string.ai_engine_download_progress, downloaded, total) + speedText,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.outline
+                                    )
+                                }
+                            }
+                            if (progress.isPaused) {
+                                FilledTonalButton(
+                                    onClick = onDownload,
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(stringResource(R.string.ai_engine_download_resume), style = MaterialTheme.typography.labelSmall)
+                                }
+                            } else {
+                                FilledTonalButton(
+                                    onClick = onPause,
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(Icons.Default.Pause, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(stringResource(R.string.ai_engine_download_pause), style = MaterialTheme.typography.labelSmall)
+                                }
+                            }
+                        }
                     }
                 }
                 progress != null && progress.state == ModelInstallState.INSTALLING -> {
@@ -1409,4 +1466,14 @@ private fun requestStoragePermission(
     } else {
         legacyLauncher(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
+}
+
+private fun formatFileSize(bytes: Long): String {
+    if (bytes < 1024) return "$bytes B"
+    val kb = bytes / 1024.0
+    if (kb < 1024) return "%.0f KB".format(kb)
+    val mb = kb / 1024.0
+    if (mb < 1024) return "%.1f MB".format(mb)
+    val gb = mb / 1024.0
+    return "%.2f GB".format(gb)
 }

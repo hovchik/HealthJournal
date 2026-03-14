@@ -458,6 +458,11 @@
     <string name="ai_engine_activate">Activate</string>
     <string name="ai_engine_incompatible">Incompatible</string>
     <string name="ai_engine_downloading">Downloading: %1$d%%</string>
+    <string name="ai_engine_download_speed">%1$s/s</string>
+    <string name="ai_engine_download_progress">%1$s / %2$s</string>
+    <string name="ai_engine_download_pause">Pause</string>
+    <string name="ai_engine_download_resume">Resume</string>
+    <string name="ai_engine_download_paused">Paused</string>
     <string name="ai_engine_installing">Installing…</string>
     <string name="ai_engine_size">%1$d MB</string>
     <string name="ai_engine_ram_required">RAM required: %1$d MB</string>

@@ -139,6 +139,10 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun pauseDownload() {
+        modelInstaller.pauseDownload()
+    }
+
     fun clearDownloadError() {
         _downloadError.value = null
     }

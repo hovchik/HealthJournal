@@ -8,6 +8,7 @@ import com.healthjournal.data.ai.DeviceAiCapabilityDetector
 import com.healthjournal.data.ai.LocalAiBenchmarkRunner
 import com.healthjournal.data.ai.LocalModelManager
 import com.healthjournal.data.ai.ModelCompatibilityValidator
+import com.healthjournal.data.ai.ModelDownloadManager
 import com.healthjournal.data.ai.ModelInstaller
 import com.healthjournal.data.ai.OpenAiCompatibleProviderImpl
 import com.healthjournal.data.ai.provider.AiProviderSelector
@@ -153,7 +154,8 @@ class AppContainer(context: Context) {
     // Model management
     val modelCompatibilityValidator = ModelCompatibilityValidator(deviceCapabilityDetector)
     val localModelManager = LocalModelManager(localAiModelDao, aiPreferences)
-    val modelInstaller = ModelInstaller(context, localModelManager, modelCompatibilityValidator)
+    val modelDownloadManager = ModelDownloadManager()
+    val modelInstaller = ModelInstaller(context, localModelManager, modelCompatibilityValidator, modelDownloadManager)
 
     // Runtime adapters
     val liteRtRuntime = LiteRtRuntimeAdapter(context)

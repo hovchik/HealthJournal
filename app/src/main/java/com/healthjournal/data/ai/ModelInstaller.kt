@@ -4,42 +4,28 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import com.healthjournal.domain.model.ai.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.io.File
 import java.security.MessageDigest
-import java.util.concurrent.TimeUnit
 
 class ModelInstaller(
     private val context: Context,
     private val localModelManager: LocalModelManager,
-    private val compatibilityValidator: ModelCompatibilityValidator
+    private val compatibilityValidator: ModelCompatibilityValidator,
+    private val downloadManager: ModelDownloadManager
 ) {
     private val modelsDir = File(context.filesDir, "local_models").apply { mkdirs() }
-
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.MINUTES)
-        .writeTimeout(5, TimeUnit.MINUTES)
-        .followRedirects(true)
-        .followSslRedirects(true)
-        .addInterceptor { chain ->
-            chain.proceed(chain.request().newBuilder()
-                .header("User-Agent", "HealthJournal-Android/1.0")
-                .build())
-        }
-        .build()
 
     private val _installProgress = MutableStateFlow<InstallProgress?>(null)
     val installProgress: StateFlow<InstallProgress?> = _installProgress.asStateFlow()
 
     private val _scanProgress = MutableStateFlow<ScanProgress?>(null)
     val scanProgress: StateFlow<ScanProgress?> = _scanProgress.asStateFlow()
+
+    private var progressForwardJob: kotlinx.coroutines.Job? = null
 
     companion object {
         /** LLM model file extensions supported for scanning (llama.cpp compatible) */
@@ -84,61 +70,55 @@ class ModelInstaller(
         _installProgress.value = InstallProgress(model.modelId, ModelInstallState.DOWNLOADING, 0)
         localModelManager.updateInstallState(model.modelId, ModelInstallState.DOWNLOADING)
 
-        withContext(Dispatchers.IO) {
-            try {
-                val modelDir = getModelDir(model.modelId)
-                val targetFile = getModelFile(model.modelId, model.fileFormat)
-                val tmpFile = File(modelDir, "model.${model.fileFormat}.tmp")
+        // Forward progress from download manager to our installProgress
+        val scope = kotlinx.coroutines.CoroutineScope(Dispatchers.IO + kotlinx.coroutines.SupervisorJob())
+        progressForwardJob?.cancel()
+        progressForwardJob = scope.launch {
+            downloadManager.progress.collect { progress ->
+                if (progress != null) _installProgress.value = progress
+            }
+        }
 
-                val request = Request.Builder().url(url).build()
-                val response = client.newCall(request).execute()
+        try {
+            val targetFile = getModelFile(model.modelId, model.fileFormat)
+            val result = downloadManager.download(model.modelId, url, targetFile, scope)
 
-                if (!response.isSuccessful) {
-                    fail(model.modelId, "Download failed: HTTP ${response.code}")
-                    return@withContext
-                }
-
-                val body = response.body ?: run {
-                    fail(model.modelId, "Empty response body")
-                    return@withContext
-                }
-
-                val totalBytes = body.contentLength()
-                tmpFile.outputStream().use { output ->
-                    body.byteStream().use { input ->
-                        val buffer = ByteArray(8192)
-                        var bytesRead: Long = 0
-                        var read: Int
-                        while (input.read(buffer).also { read = it } != -1) {
-                            output.write(buffer, 0, read)
-                            bytesRead += read
-                            val percent = if (totalBytes > 0) ((bytesRead * 100) / totalBytes).toInt() else 0
-                            _installProgress.value = InstallProgress(model.modelId, ModelInstallState.DOWNLOADING, percent)
-                        }
-                    }
-                }
-
-                _installProgress.value = InstallProgress(model.modelId, ModelInstallState.INSTALLING, 100)
+            result.onSuccess { file ->
+                _installProgress.value = InstallProgress(model.modelId, ModelInstallState.INSTALLING, 100,
+                    bytesDownloaded = file.length(), totalBytes = file.length())
                 localModelManager.updateInstallState(model.modelId, ModelInstallState.INSTALLING)
 
-                tmpFile.renameTo(targetFile)
-                val checksum = computeChecksum(targetFile)
-
+                val checksum = withContext(Dispatchers.IO) { computeChecksum(file) }
                 val installed = model.copy(
-                    localPath = targetFile.absolutePath,
+                    localPath = file.absolutePath,
                     installState = ModelInstallState.INSTALLED,
                     checksum = checksum,
                     installedAt = System.currentTimeMillis()
                 )
                 localModelManager.saveModel(installed)
                 localModelManager.setActiveModel(model.modelId)
-
-                _installProgress.value = InstallProgress(model.modelId, ModelInstallState.INSTALLED, 100)
-            } catch (e: Exception) {
-                fail(model.modelId, e.message ?: "Unknown download error")
+                _installProgress.value = InstallProgress(model.modelId, ModelInstallState.INSTALLED, 100,
+                    bytesDownloaded = file.length(), totalBytes = file.length())
+            }.onFailure { e ->
+                if (e is ModelDownloadManager.PauseException) {
+                    // Keep current paused progress — don't overwrite
+                } else {
+                    fail(model.modelId, e.message ?: "Unknown download error")
+                }
             }
+        } catch (e: Exception) {
+            fail(model.modelId, e.message ?: "Unknown download error")
+        } finally {
+            progressForwardJob?.cancel()
+            scope.cancel()
         }
     }
+
+    fun pauseDownload() {
+        downloadManager.pause()
+    }
+
+    fun isDownloadPaused(): Boolean = downloadManager.isPaused()
 
     suspend fun importFromUri(model: LocalAiModel, uri: Uri) {
         _installProgress.value = InstallProgress(model.modelId, ModelInstallState.DOWNLOADING, 0)
@@ -146,21 +126,22 @@ class ModelInstaller(
 
         withContext(Dispatchers.IO) {
             try {
-                val modelDir = getModelDir(model.modelId)
                 val targetFile = getModelFile(model.modelId, model.fileFormat)
+                val totalEstimate = model.sizeMb * 1024 * 1024
 
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     targetFile.outputStream().use { output ->
-                        val buffer = ByteArray(8192)
+                        val buffer = ByteArray(65536)
                         var bytesRead: Long = 0
                         var read: Int
                         while (input.read(buffer).also { read = it } != -1) {
                             output.write(buffer, 0, read)
                             bytesRead += read
-                            val percent = if (model.sizeMb > 0) {
-                                ((bytesRead * 100) / (model.sizeMb * 1024 * 1024)).toInt().coerceAtMost(99)
+                            val percent = if (totalEstimate > 0) {
+                                ((bytesRead * 100) / totalEstimate).toInt().coerceAtMost(99)
                             } else 50
-                            _installProgress.value = InstallProgress(model.modelId, ModelInstallState.DOWNLOADING, percent)
+                            _installProgress.value = InstallProgress(model.modelId, ModelInstallState.DOWNLOADING, percent,
+                                bytesDownloaded = bytesRead, totalBytes = totalEstimate)
                         }
                     }
                 } ?: run {

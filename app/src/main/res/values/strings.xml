@@ -462,6 +462,11 @@
     <string name="ai_engine_activate">Активировать</string>
     <string name="ai_engine_incompatible">Несовместимо</string>
     <string name="ai_engine_downloading">Загрузка: %1$d%%</string>
+    <string name="ai_engine_download_speed">%1$s/с</string>
+    <string name="ai_engine_download_progress">%1$s / %2$s</string>
+    <string name="ai_engine_download_pause">Пауза</string>
+    <string name="ai_engine_download_resume">Продолжить</string>
+    <string name="ai_engine_download_paused">Приостановлено</string>
     <string name="ai_engine_installing">Установка…</string>
     <string name="ai_engine_size">%1$d МБ</string>
     <string name="ai_engine_ram_required">Треб. RAM: %1$d МБ</string>
