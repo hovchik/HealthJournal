@@ -81,6 +81,14 @@
     <string name="report_show_prompt">Show prompt</string>
     <string name="report_hide_prompt">Hide prompt</string>
     <string name="days_format">%1$d days</string>
+    <string name="report_generate_summary">Summary</string>
+    <string name="report_generate_patterns">Patterns</string>
+    <string name="report_period_label">Period</string>
+    <string name="report_period_days">%1$d days</string>
+    <string name="report_copied">Copied to clipboard</string>
+    <string name="report_copy">Copy</string>
+    <string name="report_section_results">Analysis Results</string>
+    <string name="report_no_content">No analysis result available.</string>
     <string name="records_export_pdf">Export records to PDF</string>
 
     <!-- Vitals Screen -->
@@ -247,6 +255,8 @@
     <!-- AI Data Requirements -->
     <string name="ai_need_more_data">At least 2 days of records needed for analysis</string>
     <string name="ai_disabled_hint">AI analysis is disabled. Enable it in Settings > AI Settings.</string>
+    <string name="ai_show_history">Show history (%1$d)</string>
+    <string name="ai_hide_history">Hide history (%1$d)</string>
 
     <!-- Export/Import & Backup -->
     <string name="export_import_title">Export &amp; Import</string>
@@ -437,8 +447,8 @@
     <string name="ai_engine_mode_desc">Choose how the app uses AI</string>
     <string name="ai_engine_device_info">Device Information</string>
     <string name="ai_engine_ram">RAM: %1$d MB</string>
-    <string name="ai_engine_storage">Free: %1$d MB</string>
-    <string name="ai_engine_performance">Class: %1$s</string>
+    <string name="ai_engine_storage">Free</string>
+    <string name="ai_engine_performance">Class</string>
     <string name="ai_engine_installed_models">Installed Models</string>
     <string name="ai_engine_no_models">No installed models</string>
     <string name="ai_engine_model_catalog">Model Catalog</string>
@@ -448,6 +458,11 @@
     <string name="ai_engine_activate">Activate</string>
     <string name="ai_engine_incompatible">Incompatible</string>
     <string name="ai_engine_downloading">Downloading: %1$d%%</string>
+    <string name="ai_engine_download_speed">%1$s/s</string>
+    <string name="ai_engine_download_progress">%1$s / %2$s</string>
+    <string name="ai_engine_download_pause">Pause</string>
+    <string name="ai_engine_download_resume">Resume</string>
+    <string name="ai_engine_download_paused">Paused</string>
     <string name="ai_engine_installing">Installing…</string>
     <string name="ai_engine_size">%1$d MB</string>
     <string name="ai_engine_ram_required">RAM required: %1$d MB</string>
@@ -457,4 +472,32 @@
     <string name="ai_engine_setup_recommend">Recommended mode: %1$s</string>
     <string name="ai_engine_setup_complete">Setup complete</string>
     <string name="ai_engine_setup_skip">Skip</string>
+
+    <!-- Device Info extended -->
+    <string name="ai_engine_ram_value">%1$s</string>
+    <string name="ai_engine_storage_value">%1$s</string>
+    <string name="ai_engine_android_version">Android %1$d (API %2$d)</string>
+    <string name="ai_engine_aicore_available">AICore available</string>
+    <string name="ai_engine_aicore_not_available">AICore not available</string>
+    <string name="ai_engine_recommended_mode">Recommended mode: %1$s</string>
+    <string name="ai_engine_cpu_arch">Architecture: %1$s</string>
+
+    <!-- Scan progress -->
+    <string name="ai_engine_scanning">Scanning…</string>
+    <string name="ai_engine_scan_folders">Scanning device folders</string>
+    <string name="ai_engine_supported_formats">Supported model formats</string>
+
+    <!-- Download model -->
+    <string name="ai_engine_no_download_url">Download URL is not available</string>
+    <string name="ai_engine_download_retry">Retry</string>
+
+    <!-- Validation -->
+    <string name="ai_validate_checking">Checking…</string>
+    <string name="ai_validate_mode_info">Mode: %1$s</string>
+    <string name="ai_validate_no_api_key">API key not set for %1$s</string>
+    <string name="ai_validate_local_no_model">No local model installed</string>
+
+    <!-- Storage permission -->
+    <string name="storage_permission_required">Storage permission is required to scan for models</string>
+    <string name="storage_permission_grant">Grant storage access</string>
 </resources>

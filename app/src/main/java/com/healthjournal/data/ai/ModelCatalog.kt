@@ -5,13 +5,18 @@ import com.healthjournal.domain.model.ai.ModelInstallState
 
 object ModelCatalog {
 
+    /** All supported model file extensions for display in UI */
+    val supportedFormats: List<String> = listOf(
+        "GGUF", "GGML", "BIN"
+    )
+
     val availableModels: List<LocalAiModel> = listOf(
         // ===== Small models (< 1 GB) =====
         LocalAiModel(
             modelId = "tinyllama-1.1b-q4",
             displayName = "TinyLlama 1.1B Q4",
-            runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            runtimeType = "llama_cpp",
+            fileFormat = "gguf",
             quantization = "Q4_0",
             requiredRamMb = 1500,
             recommendedRamMb = 2500,
@@ -26,28 +31,10 @@ object ModelCatalog {
             supportsTextGeneration = true
         ),
         LocalAiModel(
-            modelId = "tinyllama-1.1b-q8",
-            displayName = "TinyLlama 1.1B Q8",
-            runtimeType = "litert",
-            fileFormat = "tflite",
-            quantization = "Q8_0",
-            requiredRamMb = 2000,
-            recommendedRamMb = 3000,
-            sizeMb = 700,
-            downloadUrl = "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q8_0.gguf",
-            localPath = null,
-            installState = ModelInstallState.NOT_INSTALLED,
-            checksum = null,
-            version = "1.0",
-            supportsStructuredJson = false,
-            supportsStreaming = false,
-            supportsTextGeneration = true
-        ),
-        LocalAiModel(
             modelId = "stablelm-zephyr-1.6b-q4",
             displayName = "StableLM Zephyr 1.6B Q4",
-            runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            runtimeType = "llama_cpp",
+            fileFormat = "gguf",
             quantization = "Q4_0",
             requiredRamMb = 2000,
             recommendedRamMb = 3500,
@@ -66,8 +53,8 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "qwen2.5-3b-instruct-q4",
             displayName = "Qwen 2.5 3B Instruct Q4 (Recommended)",
-            runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            runtimeType = "llama_cpp",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3500,
             recommendedRamMb = 5000,
@@ -84,8 +71,8 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "phi-2-2.7b-q4",
             displayName = "Phi-2 2.7B Q4",
-            runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            runtimeType = "llama_cpp",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3000,
             recommendedRamMb = 4500,
@@ -102,8 +89,8 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "rocket-3b-q4",
             displayName = "Rocket 3B Q4",
-            runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            runtimeType = "llama_cpp",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 3200,
             recommendedRamMb = 4800,
@@ -122,8 +109,8 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "mistral-7b-instruct-q4",
             displayName = "Mistral 7B Instruct Q4",
-            runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            runtimeType = "llama_cpp",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
             recommendedRamMb = 8000,
@@ -140,8 +127,8 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "zephyr-7b-beta-q4",
             displayName = "Zephyr 7B Beta Q4",
-            runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            runtimeType = "llama_cpp",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
             recommendedRamMb = 8000,
@@ -158,8 +145,8 @@ object ModelCatalog {
         LocalAiModel(
             modelId = "openchat-3.5-7b-q4",
             displayName = "OpenChat 3.5 7B Q4",
-            runtimeType = "mediapipe_llm",
-            fileFormat = "bin",
+            runtimeType = "llama_cpp",
+            fileFormat = "gguf",
             quantization = "Q4_K_M",
             requiredRamMb = 6000,
             recommendedRamMb = 8000,

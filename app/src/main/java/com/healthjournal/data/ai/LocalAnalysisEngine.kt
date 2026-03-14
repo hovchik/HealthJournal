@@ -167,12 +167,20 @@ object LocalAnalysisEngine {
             appendLine()
 
             // Patient info
-            if (input.weight.isNotBlank() || input.height.isNotBlank() || input.knownDiseases.isNotEmpty()) {
+            val hasPatientInfo = input.weight.isNotBlank() || input.height.isNotBlank() ||
+                input.age.isNotBlank() || input.gender.isNotBlank() ||
+                input.knownDiseases.isNotEmpty() || input.diseaseName.isNotBlank()
+            if (hasPatientInfo) {
                 appendLine("=== ${t.patientInfo} ===")
+                if (input.age.isNotBlank()) appendLine("${t.ageLabel}: ${input.age}")
+                if (input.gender.isNotBlank()) appendLine("${t.genderLabel}: ${input.gender}")
                 if (input.weight.isNotBlank()) appendLine("${t.weightLabel}: ${input.weight}")
                 if (input.height.isNotBlank()) appendLine("${t.heightLabel}: ${input.height}")
                 if (input.knownDiseases.isNotEmpty()) {
                     appendLine("${t.knownConditions}: ${input.knownDiseases.joinToString(", ")}")
+                }
+                if (input.diseaseName.isNotBlank()) {
+                    appendLine("${t.analyzingDisease}: ${input.diseaseName}")
                 }
                 appendLine()
             }
@@ -365,9 +373,12 @@ internal data class AnalysisTexts(
     val vitalTrends: String,
     val symptomFrequency: String,
     // Labels
+    val ageLabel: String,
+    val genderLabel: String,
     val weightLabel: String,
     val heightLabel: String,
     val knownConditions: String,
+    val analyzingDisease: String,
     val intensity: String,
     val triggers: String,
     val notes: String,
@@ -425,9 +436,12 @@ internal data class AnalysisTexts(
             correlationsSection = "CORRELATIONS",
             vitalTrends = "VITAL SIGN TRENDS",
             symptomFrequency = "SYMPTOM FREQUENCY",
+            ageLabel = "Age",
+            genderLabel = "Gender",
             weightLabel = "Weight",
             heightLabel = "Height",
             knownConditions = "Known conditions",
+            analyzingDisease = "Analyzing disease",
             intensity = "intensity",
             triggers = "Triggers",
             notes = "Notes",
@@ -482,9 +496,12 @@ internal data class AnalysisTexts(
             correlationsSection = "\u041A\u041E\u0420\u0420\u0415\u041B\u042F\u0426\u0418\u0418",
             vitalTrends = "\u0422\u0420\u0415\u041D\u0414\u042B \u041F\u041E\u041A\u0410\u0417\u0410\u0422\u0415\u041B\u0415\u0419",
             symptomFrequency = "\u0427\u0410\u0421\u0422\u041E\u0422\u0410 \u0421\u0418\u041C\u041F\u0422\u041E\u041C\u041E\u0412",
+            ageLabel = "Возраст",
+            genderLabel = "Пол",
             weightLabel = "\u0412\u0435\u0441",
             heightLabel = "\u0420\u043E\u0441\u0442",
             knownConditions = "\u0418\u0437\u0432\u0435\u0441\u0442\u043D\u044B\u0435 \u0437\u0430\u0431\u043E\u043B\u0435\u0432\u0430\u043D\u0438\u044F",
+            analyzingDisease = "Анализируемое заболевание",
             intensity = "\u0438\u043D\u0442\u0435\u043D\u0441\u0438\u0432\u043D\u043E\u0441\u0442\u044C",
             triggers = "\u0422\u0440\u0438\u0433\u0433\u0435\u0440\u044B",
             notes = "\u0417\u0430\u043C\u0435\u0442\u043A\u0438",
@@ -539,9 +556,12 @@ internal data class AnalysisTexts(
             correlationsSection = "CORRELACIONES",
             vitalTrends = "TENDENCIAS DE SIGNOS VITALES",
             symptomFrequency = "FRECUENCIA DE S\u00CDNTOMAS",
+            ageLabel = "Edad",
+            genderLabel = "Género",
             weightLabel = "Peso",
             heightLabel = "Altura",
             knownConditions = "Condiciones conocidas",
+            analyzingDisease = "Enfermedad analizada",
             intensity = "intensidad",
             triggers = "Desencadenantes",
             notes = "Notas",
@@ -596,9 +616,12 @@ internal data class AnalysisTexts(
             correlationsSection = "\u76F8\u5173\u6027",
             vitalTrends = "\u751F\u547D\u4F53\u5F81\u8D8B\u52BF",
             symptomFrequency = "\u75C7\u72B6\u9891\u7387",
+            ageLabel = "年龄",
+            genderLabel = "性别",
             weightLabel = "\u4F53\u91CD",
             heightLabel = "\u8EAB\u9AD8",
             knownConditions = "\u5DF2\u77E5\u75BE\u75C5",
+            analyzingDisease = "分析中的疾病",
             intensity = "\u5F3A\u5EA6",
             triggers = "\u8BF1\u56E0",
             notes = "\u5907\u6CE8",
@@ -653,9 +676,12 @@ internal data class AnalysisTexts(
             correlationsSection = "\u0540\u0531\u054C\u0531\u0532\u0535\u054C\u0531\u053F\u0551\u0548\u0552\u054F\u0545\u0548\u0552\u0546\u0546\u0535\u054C",
             vitalTrends = "\u053F\u0535\u0546\u054D\u0531\u053F\u0531\u0546 \u0551\u0548\u0552\u053B\u0549\u0546\u0535\u054C\u053B \u0544\u053B\u054F\u0548\u0552\u0544\u0546\u0535\u054C",
             symptomFrequency = "\u0531\u053D\u054F\u0531\u0546\u053B\u0547\u0546\u0535\u054C\u053B \u0540\u0531\u0552\u053D\u0531\u053F\u0531\u0546\u0548\u0552\u054F\u0545\u0548\u0552\u0546",
+            ageLabel = "\u054F\u0561\u0580\u056B\u0584",
+            genderLabel = "\u054D\u0565\u057C",
             weightLabel = "\u0554\u0561\u0577",
             heightLabel = "\u0540\u0561\u057D\u0561\u056F",
             knownConditions = "\u0540\u0561\u0575\u057F\u0576\u056B \u0570\u056B\u057E\u0561\u0576\u0564\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580",
+            analyzingDisease = "\u054E\u0565\u0580\u056C\u0578\u0582\u056E\u057E\u0578\u0572 \u0570\u056B\u057E\u0561\u0576\u0564\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
             intensity = "\u056B\u0576\u057F\u0565\u0576\u057D\u056B\u057E\u0578\u0582\u0569\u0575\u0578\u0582\u0576",
             triggers = "\u054A\u0561\u057F\u0573\u0561\u057C\u0576\u0565\u0580",
             notes = "\u0546\u0578\u057F\u0561\u0576\u0565\u0580",

@@ -22,6 +22,7 @@ import com.healthjournal.presentation.screen.settings.AiSettingsScreen
 import com.healthjournal.presentation.screen.settings.FamilyMembersScreen
 import com.healthjournal.presentation.screen.settings.LanguageSettingsScreen
 import com.healthjournal.presentation.screen.settings.PredefinedDataSettingsScreen
+import com.healthjournal.presentation.screen.disease.DiseaseAiAnalysisScreen
 import com.healthjournal.presentation.screen.settings.DeletedDiseasesScreen
 import com.healthjournal.presentation.screen.settings.SettingsScreen
 import com.healthjournal.presentation.screen.settings.UserInfoScreen
@@ -114,7 +115,18 @@ fun HealthNavHost(
                 onAddMedication = { id -> navController.navigate(Screen.AddMedicationToDisease.createRoute(id)) },
                 onEditSymptom = { id -> navController.navigate(Screen.EditSymptom.createRoute(id)) },
                 onEditVital = { id -> navController.navigate(Screen.EditVital.createRoute(id)) },
-                onEditMedication = { id -> navController.navigate(Screen.EditMedication.createRoute(id)) }
+                onEditMedication = { id -> navController.navigate(Screen.EditMedication.createRoute(id)) },
+                onAiAnalysis = { id -> navController.navigate(Screen.DiseaseAiAnalysis.createRoute(id)) }
+            )
+        }
+        composable(
+            Screen.DiseaseAiAnalysis.route,
+            arguments = listOf(navArgument("diseaseId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val diseaseId = backStackEntry.arguments?.getLong("diseaseId") ?: return@composable
+            DiseaseAiAnalysisScreen(
+                diseaseId = diseaseId,
+                onBack = { navController.popBackStack() }
             )
         }
         composable(Screen.FamilyDiseases.route) {

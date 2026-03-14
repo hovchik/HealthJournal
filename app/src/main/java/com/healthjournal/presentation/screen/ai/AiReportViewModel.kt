@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthjournal.HealthJournalApp
+import com.healthjournal.domain.model.AiReport
 import com.healthjournal.domain.model.ai.AiSettings
 import com.healthjournal.util.LocaleManager
 import kotlinx.coroutines.flow.*
@@ -34,7 +35,7 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
     val selectedDiseaseId = _selectedDiseaseId.asStateFlow()
 
     val reports = combine(container.getAllReports(), activeProfileFlow, _selectedDiseaseId) { all, profileId, diseaseId ->
-        all.filter { it.profileId == profileId && it.diseaseId == diseaseId }
+        all.filter { it.profileId == profileId && (diseaseId == 0L || it.diseaseId == diseaseId) }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val vitals = combine(container.getAllVitalSigns(), activeProfileFlow) { all, profileId ->
@@ -106,6 +107,13 @@ class AiReportViewModel(application: Application) : AndroidViewModel(application
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
+    }
+
+    fun deleteReport(reportId: Long) {
+        viewModelScope.launch {
+            val report = reports.value.firstOrNull { it.id == reportId } ?: return@launch
+            container.aiReportRepository.deleteReport(report)
+        }
     }
 
     fun getProfileName(profileId: Long): String {

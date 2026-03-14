@@ -7,5 +7,7 @@ data class FamilyMember(
     val avatarColor: Int = 0xFF1B6B4D.toInt(),
     val weight: String = "",
     val height: String = "",
+    val age: String = "",
+    val gender: String = "",
     val knownDiseases: List<String> = emptyList()
 )

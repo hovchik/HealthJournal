@@ -20,6 +20,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
+
         val claudeApiKey: String = project.findProperty("CLAUDE_API_KEY") as? String ?: ""
         buildConfigField("String", "CLAUDE_API_KEY", "\"$claudeApiKey\"")
     }
@@ -86,9 +90,6 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    // MediaPipe LLM Inference (on-device AI via Google AI Edge)
-    implementation("com.google.mediapipe:tasks-genai:0.10.22")
-
     // Room (local AI model management)
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
@@ -97,7 +98,7 @@ dependencies {
     // TensorFlow Lite (LiteRT runtime for .tflite models)
     implementation("org.tensorflow:tensorflow-lite:2.16.1")
 
-    // Coil (image loading)
+// Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Test

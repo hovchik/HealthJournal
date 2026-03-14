@@ -54,6 +54,9 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object FamilyMembers : Screen("family_members", R.string.family_members_title, Icons.Default.Settings)
     data object PredefinedDataSettings : Screen("predefined_data_settings", R.string.predefined_data_title, Icons.Default.Settings)
     data object DeletedDiseases : Screen("deleted_diseases", R.string.deleted_diseases, Icons.Default.Settings)
+    data object DiseaseAiAnalysis : Screen("disease_ai_analysis/{diseaseId}", R.string.disease_ai_analysis_title, Icons.Default.Psychology) {
+        fun createRoute(diseaseId: Long) = "disease_ai_analysis/$diseaseId"
+    }
 }
 
 val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.Reports, Screen.Settings)

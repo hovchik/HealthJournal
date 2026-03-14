@@ -1,5 +1,13 @@
 package com.healthjournal.presentation.screen.settings
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,14 +22,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
+import com.healthjournal.data.ai.ModelCatalog
 import com.healthjournal.domain.model.ai.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,12 +45,15 @@ fun AiSettingsScreen(
     val settings by viewModel.aiSettings.collectAsStateWithLifecycle()
     val validationMessage by viewModel.validationMessage.collectAsStateWithLifecycle()
     val validationSuccess by viewModel.validationSuccess.collectAsStateWithLifecycle()
+    val validatingInProgress by viewModel.validatingInProgress.collectAsStateWithLifecycle()
     val executionMode by viewModel.executionMode.collectAsStateWithLifecycle()
     val installedModels by viewModel.installedModels.collectAsStateWithLifecycle()
     val activeModel by viewModel.activeModel.collectAsStateWithLifecycle()
     val installProgress by viewModel.installProgress.collectAsStateWithLifecycle()
     val deviceCapability by viewModel.deviceCapability.collectAsStateWithLifecycle()
     val scanResult by viewModel.scanResult.collectAsStateWithLifecycle()
+    val scanProgress by viewModel.scanProgress.collectAsStateWithLifecycle()
+    val downloadError by viewModel.downloadError.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -134,7 +149,9 @@ fun AiSettingsScreen(
                             installedModels = installedModels,
                             activeModel = activeModel,
                             installProgress = installProgress,
-                            scanResult = scanResult
+                            scanResult = scanResult,
+                            scanProgress = scanProgress,
+                            downloadError = downloadError
                         )
                     }
 
@@ -186,73 +203,13 @@ fun AiSettingsScreen(
                     }
 
                     // Validate button
-                    FilledTonalButton(
-                        onClick = { viewModel.validateCurrentProvider() },
-                        modifier = Modifier.fillMaxWidth().height(48.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.CheckCircle,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(R.string.ai_validate_config))
-                    }
-
-                    // Validation result
-                    validationSuccess?.let { isValid ->
-                        if (isValid) {
-                            Card(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                                )
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        Icons.Default.CheckCircle,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Text(
-                                        stringResource(R.string.ai_config_valid),
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-                        } else {
-                            validationMessage?.let { msg ->
-                                Card(
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer
-                                    )
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(16.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            Icons.Default.Warning,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.onErrorContainer,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Text(
-                                            msg,
-                                            color = MaterialTheme.colorScheme.onErrorContainer,
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    ValidateConfigSection(
+                        executionMode = executionMode,
+                        validatingInProgress = validatingInProgress,
+                        validationSuccess = validationSuccess,
+                        validationMessage = validationMessage,
+                        onValidate = { viewModel.validateCurrentProvider() }
+                    )
                 }
             }
         }
@@ -336,7 +293,7 @@ private fun ExecutionModeSection(
 }
 
 // ---------------------------------------------------------------------------
-// Device Info Card
+// Device Info Card (Fixed)
 // ---------------------------------------------------------------------------
 
 @Composable
@@ -349,7 +306,7 @@ private fun DeviceInfoCard(capability: DeviceCapabilityResult) {
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -368,52 +325,149 @@ private fun DeviceInfoCard(capability: DeviceCapabilityResult) {
                 )
             }
 
+            // Android version
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.PhoneAndroid,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    stringResource(R.string.ai_engine_android_version,
+                        capability.androidVersion, capability.sdkInt),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            // RAM, Storage, Performance in a clear grid
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        stringResource(R.string.ai_engine_ram, capability.totalRamMb),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        stringResource(R.string.ai_engine_storage),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        formatSize(capability.availableStorageMb),
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        stringResource(R.string.ai_engine_performance),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        capability.performanceClass.name,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                DeviceInfoItem(
+                    icon = Icons.Default.Memory,
+                    label = "RAM",
+                    value = formatSize(capability.totalRamMb)
+                )
+                DeviceInfoItem(
+                    icon = Icons.Default.Storage,
+                    label = stringResource(R.string.ai_engine_storage),
+                    value = formatSize(capability.availableStorageMb)
+                )
+                DeviceInfoItem(
+                    icon = Icons.Default.Speed,
+                    label = stringResource(R.string.ai_engine_performance),
+                    value = capability.performanceClass.name
+                )
             }
 
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            // CPU architecture
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.DeveloperBoard,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    stringResource(R.string.ai_engine_cpu_arch,
+                        capability.supportedAbis.joinToString(", ")),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // AICore status
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    if (capability.aiCoreAvailable) Icons.Default.CheckCircle
+                    else Icons.Default.Cancel,
+                    contentDescription = null,
+                    tint = if (capability.aiCoreAvailable)
+                        MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    if (capability.aiCoreAvailable)
+                        stringResource(R.string.ai_engine_aicore_available) +
+                            (capability.aiCoreVersion?.let { " (v$it)" } ?: "")
+                    else stringResource(R.string.ai_engine_aicore_not_available),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Recommended mode badge
             Surface(
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.tertiaryContainer
             ) {
-                Text(
-                    capability.recommendedMode.label,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                )
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Recommend,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Text(
+                        stringResource(R.string.ai_engine_recommended_mode,
+                            capability.recommendedMode.label),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun DeviceInfoItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    value: String
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -497,7 +551,9 @@ private fun LocalModelSection(
     installedModels: List<LocalAiModel>,
     activeModel: LocalAiModel?,
     installProgress: InstallProgress?,
-    scanResult: Int?
+    scanResult: Int?,
+    scanProgress: ScanProgress?,
+    downloadError: String?
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -541,14 +597,18 @@ private fun LocalModelSection(
                 fontWeight = FontWeight.SemiBold
             )
 
-            if (installedModels.isEmpty()) {
+            val actuallyInstalled = installedModels.filter {
+                it.installState == ModelInstallState.INSTALLED
+            }
+
+            if (actuallyInstalled.isEmpty()) {
                 Text(
                     stringResource(R.string.ai_engine_no_models),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
-                installedModels.forEach { model ->
+                actuallyInstalled.forEach { model ->
                     InstalledModelCard(
                         model = model,
                         isActive = model.modelId == activeModel?.modelId,
@@ -558,26 +618,145 @@ private fun LocalModelSection(
                 }
             }
 
-            // Scan button
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Scan button with progress and permission handling
+            val context = LocalContext.current
+            val isScanning = scanProgress?.isScanning == true
+
+            var hasStoragePermission by remember {
+                mutableStateOf(checkStoragePermission(context))
+            }
+
+            val storagePermissionLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { granted ->
+                hasStoragePermission = granted
+                if (granted) viewModel.scanForModels()
+            }
+
+            val manageStorageLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
             ) {
-                OutlinedButton(onClick = { viewModel.scanForModels() }) {
-                    Icon(
-                        Icons.Default.Search,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(stringResource(R.string.ai_engine_scan))
+                hasStoragePermission = checkStoragePermission(context)
+                if (hasStoragePermission) viewModel.scanForModels()
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                // Permission warning when not granted
+                if (!hasStoragePermission) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.FolderOpen,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                stringResource(R.string.storage_permission_required),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            FilledTonalButton(
+                                onClick = {
+                                    requestStoragePermission(
+                                        context = context,
+                                        legacyLauncher = { storagePermissionLauncher.launch(it) },
+                                        manageLauncher = { manageStorageLauncher.launch(it) }
+                                    )
+                                },
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    stringResource(R.string.storage_permission_grant),
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
+                    }
                 }
-                scanResult?.let {
-                    Text(
-                        stringResource(R.string.ai_engine_scan_result, it),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            if (hasStoragePermission) {
+                                viewModel.scanForModels()
+                            } else {
+                                requestStoragePermission(
+                                    context = context,
+                                    legacyLauncher = { storagePermissionLauncher.launch(it) },
+                                    manageLauncher = { manageStorageLauncher.launch(it) }
+                                )
+                            }
+                        },
+                        enabled = !isScanning
+                    ) {
+                        if (isScanning) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            if (isScanning) stringResource(R.string.ai_engine_scanning)
+                            else stringResource(R.string.ai_engine_scan)
+                        )
+                    }
+                    if (!isScanning) {
+                        scanResult?.let {
+                            Text(
+                                stringResource(R.string.ai_engine_scan_result, it),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+
+                // Scan progress details
+                if (isScanning && scanProgress != null) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        if (scanProgress.totalFolders > 0) {
+                            LinearProgressIndicator(
+                                progress = {
+                                    scanProgress.foldersScanned.toFloat() / scanProgress.totalFolders
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        Text(
+                            stringResource(R.string.ai_engine_scan_folders) +
+                                ": ${scanProgress.currentFolder}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        if (scanProgress.modelsFound > 0) {
+                            Text(
+                                stringResource(R.string.ai_engine_scan_result, scanProgress.modelsFound),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 }
             }
 
@@ -591,7 +770,10 @@ private fun LocalModelSection(
             )
 
             val installedIds = remember(installedModels) {
-                installedModels.map { it.modelId }.toSet()
+                installedModels
+                    .filter { it.installState == ModelInstallState.INSTALLED }
+                    .map { it.modelId }
+                    .toSet()
             }
 
             viewModel.catalogModels.forEach { model ->
@@ -600,13 +782,17 @@ private fun LocalModelSection(
                 val compatibility = remember(model.modelId) {
                     viewModel.getCompatibilityReport(model)
                 }
+                val hasDownloadError = downloadError == model.modelId
 
                 CatalogModelCard(
                     model = model,
                     isInstalled = isInstalled,
                     progress = currentProgress,
                     onDownload = { viewModel.downloadModel(model) },
-                    compatibilityMessage = compatibility
+                    onPause = { viewModel.pauseDownload() },
+                    compatibilityMessage = compatibility,
+                    hasNoDownloadUrl = hasDownloadError,
+                    onDismissError = { viewModel.clearDownloadError() }
                 )
             }
 
@@ -632,6 +818,42 @@ private fun LocalModelSection(
                         stringResource(R.string.local_model_fallback_info),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // Supported formats info
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Extension,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            stringResource(R.string.ai_engine_supported_formats),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Text(
+                        ModelCatalog.supportedFormats.joinToString(" · "),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -672,7 +894,14 @@ private fun InstalledModelCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        "${formatSize(model.sizeMb)} | ${model.quantization ?: model.fileFormat} | ${model.runtimeType}",
+                        buildString {
+                            append(formatSize(model.sizeMb))
+                            append(" | ")
+                            append(model.fileFormat.uppercase())
+                            model.quantization?.let { append(" ($it)") }
+                            append(" | ")
+                            append(model.runtimeType)
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -733,7 +962,10 @@ private fun CatalogModelCard(
     isInstalled: Boolean,
     progress: InstallProgress?,
     onDownload: () -> Unit,
-    compatibilityMessage: String?
+    onPause: () -> Unit = {},
+    compatibilityMessage: String?,
+    hasNoDownloadUrl: Boolean = false,
+    onDismissError: () -> Unit = {}
 ) {
     val isCompatible = compatibilityMessage == null
 
@@ -804,6 +1036,46 @@ private fun CatalogModelCard(
                 )
             }
 
+            // No download URL error
+            if (hasNoDownloadUrl) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    ),
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            stringResource(R.string.ai_engine_no_download_url),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.weight(1f)
+                        )
+                        IconButton(
+                            onClick = onDismissError,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
             when {
@@ -812,16 +1084,71 @@ private fun CatalogModelCard(
                 }
                 progress != null && progress.state == ModelInstallState.DOWNLOADING -> {
                     Column {
-                        LinearProgressIndicator(
-                            progress = { progress.progressPercent / 100f },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        if (progress.isPaused) {
+                            LinearProgressIndicator(
+                                progress = { progress.progressPercent / 100f },
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        } else {
+                            LinearProgressIndicator(
+                                progress = { progress.progressPercent / 100f },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            stringResource(R.string.ai_engine_downloading, progress.progressPercent),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                if (progress.isPaused) {
+                                    Text(
+                                        stringResource(R.string.ai_engine_download_paused),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.outline
+                                    )
+                                } else {
+                                    Text(
+                                        stringResource(R.string.ai_engine_downloading, progress.progressPercent),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                if (progress.totalBytes > 0) {
+                                    val downloaded = formatFileSize(progress.bytesDownloaded)
+                                    val total = formatFileSize(progress.totalBytes)
+                                    val speedText = if (progress.bytesPerSecond > 0 && !progress.isPaused) {
+                                        " \u2022 " + stringResource(R.string.ai_engine_download_speed, formatFileSize(progress.bytesPerSecond))
+                                    } else ""
+                                    Text(
+                                        stringResource(R.string.ai_engine_download_progress, downloaded, total) + speedText,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.outline
+                                    )
+                                }
+                            }
+                            if (progress.isPaused) {
+                                FilledTonalButton(
+                                    onClick = onDownload,
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(stringResource(R.string.ai_engine_download_resume), style = MaterialTheme.typography.labelSmall)
+                                }
+                            } else {
+                                FilledTonalButton(
+                                    onClick = onPause,
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(Icons.Default.Pause, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(stringResource(R.string.ai_engine_download_pause), style = MaterialTheme.typography.labelSmall)
+                                }
+                            }
+                        }
                     }
                 }
                 progress != null && progress.state == ModelInstallState.INSTALLING -> {
@@ -871,7 +1198,7 @@ private fun CatalogModelCard(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(stringResource(R.string.local_model_download))
+                        Text(stringResource(R.string.ai_engine_download_retry))
                     }
                 }
                 else -> {
@@ -888,6 +1215,126 @@ private fun CatalogModelCard(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(stringResource(R.string.local_model_download))
                     }
+                }
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Validate Configuration Section (Improved)
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun ValidateConfigSection(
+    executionMode: AiExecutionMode,
+    validatingInProgress: Boolean,
+    validationSuccess: Boolean?,
+    validationMessage: String?,
+    onValidate: () -> Unit
+) {
+    // Current mode indicator
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Settings,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                stringResource(R.string.ai_validate_mode_info, executionMode.label),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+
+    // Validate button with loading state
+    FilledTonalButton(
+        onClick = onValidate,
+        modifier = Modifier.fillMaxWidth().height(48.dp),
+        enabled = !validatingInProgress
+    ) {
+        if (validatingInProgress) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(18.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(R.string.ai_validate_checking))
+        } else {
+            Icon(
+                Icons.Default.CheckCircle,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(R.string.ai_validate_config))
+        }
+    }
+
+    // Validation result
+    validationSuccess?.let { isValid ->
+        if (isValid) {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        stringResource(R.string.ai_config_valid),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        } else {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        validationMessage
+                            ?: when (executionMode) {
+                                AiExecutionMode.CUSTOM_LOCAL ->
+                                    stringResource(R.string.ai_validate_local_no_model)
+                                else -> stringResource(R.string.ai_api_key_required)
+                            },
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
@@ -994,4 +1441,39 @@ private fun OpenAiConfigSection(
 
 private fun formatSize(mb: Long): String {
     return if (mb >= 1024) "%.1f GB".format(mb / 1024.0) else "$mb MB"
+}
+
+private fun checkStoragePermission(context: android.content.Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        Environment.isExternalStorageManager()
+    } else {
+        ContextCompat.checkSelfPermission(
+            context, Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PermissionChecker.PERMISSION_GRANTED
+    }
+}
+
+private fun requestStoragePermission(
+    context: android.content.Context,
+    legacyLauncher: (String) -> Unit,
+    manageLauncher: (Intent) -> Unit
+) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+            data = Uri.parse("package:${context.packageName}")
+        }
+        manageLauncher(intent)
+    } else {
+        legacyLauncher(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+}
+
+private fun formatFileSize(bytes: Long): String {
+    if (bytes < 1024) return "$bytes B"
+    val kb = bytes / 1024.0
+    if (kb < 1024) return "%.0f KB".format(kb)
+    val mb = kb / 1024.0
+    if (mb < 1024) return "%.1f MB".format(mb)
+    val gb = mb / 1024.0
+    return "%.2f GB".format(gb)
 }

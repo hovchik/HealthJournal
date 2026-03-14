@@ -24,7 +24,10 @@ data class AiInput(
     val outputLanguage: String,
     val knownDiseases: List<String> = emptyList(),
     val weight: String = "",
-    val height: String = ""
+    val height: String = "",
+    val age: String = "",
+    val gender: String = "",
+    val diseaseName: String = ""
 )
 
 data class AiTextResult(

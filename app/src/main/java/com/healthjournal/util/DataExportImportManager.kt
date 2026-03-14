@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.healthjournal.data.local.JsonFileStore
 import com.healthjournal.data.local.dto.*
+import com.healthjournal.domain.model.ai.AiSettings
 import com.healthjournal.domain.repository.UserSettingsRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
@@ -30,9 +31,14 @@ data class UserSettingsBackup(
     val doctorPhone: String = "",
     val aiConsentGiven: Boolean = false,
     val languageMode: String = "SYSTEM",
+    val themeMode: String = "SYSTEM",
     val weight: String = "",
     val height: String = "",
-    val knownDiseases: List<String> = emptyList()
+    val age: String = "",
+    val gender: String = "",
+    val knownDiseases: List<String> = emptyList(),
+    val activeProfileId: Long = 0,
+    val aiSettingsJson: String? = null
 )
 
 @Serializable
@@ -109,9 +115,16 @@ class DataExportImportManager(
                 doctorPhone = settings.doctorPhone,
                 aiConsentGiven = settings.aiConsentGiven,
                 languageMode = settings.languageMode,
+                themeMode = settings.themeMode,
                 weight = settings.weight,
                 height = settings.height,
-                knownDiseases = settings.knownDiseases
+                age = settings.age,
+                gender = settings.gender,
+                knownDiseases = settings.knownDiseases,
+                activeProfileId = settings.activeProfileId,
+                aiSettingsJson = try {
+                    json.encodeToString(AiSettings.serializer(), settings.aiSettings)
+                } catch (_: Exception) { null }
             ),
             predefinedData = predefinedData
         )
@@ -152,18 +165,27 @@ class DataExportImportManager(
         familyMemberStore.replaceAll(backup.familyMembers)
         diseaseStore.replaceAll(backup.diseases)
 
-        // Restore user settings (keep onboarding completed, don't change active profile)
+        // Restore user settings (keep onboarding completed)
         backup.userSettings?.let { settingsBackup ->
             val current = userSettingsRepository.getUserSettings().first()
+            val restoredAiSettings = settingsBackup.aiSettingsJson?.let { aiJson ->
+                try { json.decodeFromString<AiSettings>(aiJson) } catch (_: Exception) { null }
+            } ?: current.aiSettings
             userSettingsRepository.updateUserSettings(
                 current.copy(
                     userName = settingsBackup.userName,
                     doctorName = settingsBackup.doctorName,
                     doctorPhone = settingsBackup.doctorPhone,
                     aiConsentGiven = settingsBackup.aiConsentGiven,
+                    languageMode = settingsBackup.languageMode,
+                    themeMode = settingsBackup.themeMode,
                     weight = settingsBackup.weight,
                     height = settingsBackup.height,
-                    knownDiseases = settingsBackup.knownDiseases
+                    age = settingsBackup.age,
+                    gender = settingsBackup.gender,
+                    knownDiseases = settingsBackup.knownDiseases,
+                    activeProfileId = settingsBackup.activeProfileId,
+                    aiSettings = restoredAiSettings
                 )
             )
         }

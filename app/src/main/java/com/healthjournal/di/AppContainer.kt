@@ -8,13 +8,15 @@ import com.healthjournal.data.ai.DeviceAiCapabilityDetector
 import com.healthjournal.data.ai.LocalAiBenchmarkRunner
 import com.healthjournal.data.ai.LocalModelManager
 import com.healthjournal.data.ai.ModelCompatibilityValidator
+import com.healthjournal.data.ai.ModelDownloadManager
 import com.healthjournal.data.ai.ModelInstaller
 import com.healthjournal.data.ai.OpenAiCompatibleProviderImpl
 import com.healthjournal.data.ai.provider.AiProviderSelector
 import com.healthjournal.data.ai.provider.CustomLocalModelProvider
 import com.healthjournal.data.ai.provider.SystemAiProvider
 import com.healthjournal.data.ai.runtime.LiteRtRuntimeAdapter
-import com.healthjournal.data.ai.runtime.MediaPipeLlmRuntimeAdapter
+import com.healthjournal.data.ai.runtime.LlamaCppRuntimeAdapter
+
 import com.healthjournal.data.ai.runtime.SystemAiRuntimeAdapter
 import com.healthjournal.data.local.db.AppDatabase
 import com.healthjournal.data.local.JsonFileStore
@@ -152,11 +154,12 @@ class AppContainer(context: Context) {
     // Model management
     val modelCompatibilityValidator = ModelCompatibilityValidator(deviceCapabilityDetector)
     val localModelManager = LocalModelManager(localAiModelDao, aiPreferences)
-    val modelInstaller = ModelInstaller(context, localModelManager, modelCompatibilityValidator)
+    val modelDownloadManager = ModelDownloadManager()
+    val modelInstaller = ModelInstaller(context, localModelManager, modelCompatibilityValidator, modelDownloadManager)
 
     // Runtime adapters
-    val mediaPipeRuntime = MediaPipeLlmRuntimeAdapter(context)
     val liteRtRuntime = LiteRtRuntimeAdapter(context)
+    val llamaCppRuntime = LlamaCppRuntimeAdapter(context)
     val systemAiRuntime = SystemAiRuntimeAdapter(context)
 
     // Benchmark
@@ -166,7 +169,7 @@ class AppContainer(context: Context) {
     private val claudeProvider = ClaudeAiProviderImpl(::buildClaudeApi)
     private val openAiProvider = OpenAiCompatibleProviderImpl(::buildOpenAiApi)
     private val customLocalProvider = CustomLocalModelProvider(
-        localModelManager, mediaPipeRuntime, liteRtRuntime
+        localModelManager, liteRtRuntime, llamaCppRuntime
     )
     private val systemAiProvider = SystemAiProvider(systemAiRuntime)
 
@@ -180,7 +183,7 @@ class AppContainer(context: Context) {
     )
 
     private val privacyRedactor = PrivacyRedactor()
-    val aiService = AiService(aiProviderRegistry, privacyRedactor)
+    val aiService = AiService(aiProviderRegistry, privacyRedactor, aiPreferences, aiProviderSelector)
 
     // Repositories
     val symptomRepository: SymptomRepository = SymptomRepositoryImpl(symptomStore)
@@ -228,8 +231,9 @@ class AppContainer(context: Context) {
     val getDeletedDiseasesByProfileId = GetDeletedDiseasesByProfileIdUseCase(diseaseRepository)
     val permanentlyDeleteDisease = PermanentlyDeleteDiseaseUseCase(diseaseRepository)
 
-    val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository)
-    val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, userSettingsRepository, familyMemberRepository)
+    val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository, diseaseRepository)
+    val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, userSettingsRepository, familyMemberRepository, diseaseRepository)
+    val generateDiseaseAnalysis = GenerateDiseaseAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository, diseaseRepository)
     val getAllReports = GetAllReportsUseCase(aiReportRepository)
 
     // Export/Import

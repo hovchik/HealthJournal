@@ -1,6 +1,12 @@
 package com.healthjournal.presentation.screen.ai
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -10,6 +16,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.SmartToy
@@ -22,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -325,46 +336,77 @@ private fun AiAnalyzeTab(
             .distinct()
     }
     val hasEnoughData = uniqueDays.size >= 2
+    var selectedPeriod by remember { mutableIntStateOf(2) }
+    val periodOptions = listOf(2, 4, 7, 14)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Generate buttons
-        item(key = "ai_buttons") {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        onClick = { viewModel.generateReport() },
-                        enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
-                        modifier = Modifier.weight(1f)
+        // Generate controls
+        item(key = "ai_controls") {
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // Period selector
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(stringResource(R.string.report_2_days))
+                        Text(
+                            stringResource(R.string.report_period_label),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        periodOptions.forEach { days ->
+                            FilterChip(
+                                selected = selectedPeriod == days,
+                                onClick = { selectedPeriod = days },
+                                label = {
+                                    Text(
+                                        stringResource(R.string.report_period_days, days),
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            )
+                        }
                     }
-                    OutlinedButton(
-                        onClick = { viewModel.analyzePatterns() },
-                        enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
-                        modifier = Modifier.weight(1f)
+
+                    // Generate buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(stringResource(R.string.patterns_4_days))
+                        Button(
+                            onClick = { viewModel.generateReport(selectedPeriod) },
+                            enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(stringResource(R.string.report_generate_summary))
+                        }
+                        OutlinedButton(
+                            onClick = { viewModel.analyzePatterns(selectedPeriod) },
+                            enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(stringResource(R.string.report_generate_patterns))
+                        }
                     }
-                }
-                if (!aiEnabled) {
-                    Text(
-                        stringResource(R.string.ai_disabled_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                } else if (!hasEnoughData) {
-                    Text(
-                        stringResource(R.string.ai_need_more_data),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+
+                    if (!aiEnabled) {
+                        Text(
+                            stringResource(R.string.ai_disabled_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    } else if (!hasEnoughData) {
+                        Text(
+                            stringResource(R.string.ai_need_more_data),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
@@ -424,115 +466,249 @@ private fun AiAnalyzeTab(
             }
         }
 
-        // Report list
-        items(reports, key = { "report_${it.id}" }) { report ->
-            ReportCard(
-                report = report,
-                diseaseName = if (report.diseaseId != 0L) viewModel.getDiseaseName(report.diseaseId) else null,
-                onExportPdf = {
-                    val memberName = viewModel.getProfileName(report.profileId)
-                    PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
+        // Latest report (shown prominently)
+        if (reports.isNotEmpty()) {
+            val latestReport = reports.first()
+            item(key = "latest_report_${latestReport.id}") {
+                ReportCard(
+                    report = latestReport,
+                    diseaseName = if (latestReport.diseaseId != 0L) viewModel.getDiseaseName(latestReport.diseaseId) else null,
+                    onExportPdf = {
+                        val memberName = viewModel.getProfileName(latestReport.profileId)
+                        PdfReportGenerator.generateAndShare(context, latestReport, vitals, memberName)
+                    },
+                    onDelete = { viewModel.deleteReport(latestReport.id) }
+                )
+            }
+        }
+
+        // History (collapsible older reports)
+        val olderReports = if (reports.size > 1) reports.drop(1) else emptyList()
+        if (olderReports.isNotEmpty()) {
+            item(key = "history_header") {
+                var showHistory by remember { mutableStateOf(false) }
+                Column {
+                    TextButton(
+                        onClick = { showHistory = !showHistory }
+                    ) {
+                        Text(
+                            stringResource(
+                                if (showHistory) R.string.ai_hide_history
+                                else R.string.ai_show_history,
+                                olderReports.size
+                            ),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                    AnimatedVisibility(visible = showHistory) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            olderReports.forEach { report ->
+                                ReportCard(
+                                    report = report,
+                                    diseaseName = if (report.diseaseId != 0L) viewModel.getDiseaseName(report.diseaseId) else null,
+                                    onExportPdf = {
+                                        val memberName = viewModel.getProfileName(report.profileId)
+                                        PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
+                                    },
+                                    onDelete = { viewModel.deleteReport(report.id) }
+                                )
+                            }
+                        }
+                    }
                 }
-            )
+            }
         }
     }
 }
 
+/**
+ * Parses structured report content into sections.
+ * Recognizes "=== Section Title ===" headers and splits content accordingly.
+ */
+private data class ReportSection(val title: String, val body: String)
+
+private fun parseReportContent(content: String): List<ReportSection> {
+    if (content.isBlank()) return emptyList()
+
+    val sectionPattern = Regex("""^===\s*(.+?)\s*===$""", RegexOption.MULTILINE)
+    val matches = sectionPattern.findAll(content).toList()
+
+    if (matches.isEmpty()) {
+        // No section headers found - treat as single block
+        return listOf(ReportSection("", content.trim()))
+    }
+
+    val sections = mutableListOf<ReportSection>()
+
+    // Content before first section header (title/note)
+    val preamble = content.substring(0, matches.first().range.first).trim()
+    if (preamble.isNotBlank()) {
+        sections.add(ReportSection("", preamble))
+    }
+
+    // Parse each section
+    for (i in matches.indices) {
+        val title = matches[i].groupValues[1]
+        val start = matches[i].range.last + 1
+        val end = if (i + 1 < matches.size) matches[i + 1].range.first else content.length
+        val body = content.substring(start, end).trim()
+        if (body.isNotBlank()) {
+            sections.add(ReportSection(title, body))
+        }
+    }
+
+    // Disclaimer at the end (text after last section, if not captured)
+    return sections
+}
+
 @Composable
-private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPdf: () -> Unit) {
+private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPdf: () -> Unit, onDelete: (() -> Unit)? = null) {
     val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
     val typeLabel = when (report.type) {
         ReportType.SUMMARY -> stringResource(R.string.report_type_summary)
         ReportType.PATTERN_ANALYSIS -> stringResource(R.string.report_type_patterns)
     }
-    var showPrompt by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val copiedMsg = stringResource(R.string.report_copied)
+    var expanded by remember { mutableStateOf(true) }
+    val sections = remember(report.content) { parseReportContent(report.content) }
 
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Header row
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(typeLabel, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
                     if (diseaseName != null) {
-                        Text(diseaseName, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.tertiary, fontWeight = FontWeight.SemiBold)
+                        Text(
+                            diseaseName,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                 }
-                IconButton(onClick = onExportPdf) {
-                    Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.export_pdf), tint = MaterialTheme.colorScheme.primary)
+                // Expand/collapse
+                IconButton(onClick = { expanded = !expanded }, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 
-            // Metadata row: date, period, AI model
+            // Metadata row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(report.generatedAt.format(formatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                Text(
+                    report.generatedAt.format(formatter),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
                 Text("\u2022", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
-                Text(stringResource(R.string.days_format, report.periodDays), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                Text(
+                    stringResource(R.string.days_format, report.periodDays),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                if (report.providerName.isNotBlank()) {
+                    Text("\u2022", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                    Icon(Icons.Default.SmartToy, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.outline)
+                    Text(
+                        report.providerName,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
-            // AI provider badge
-            if (report.providerName.isNotBlank()) {
-                Spacer(modifier = Modifier.height(6.dp))
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    tonalElevation = 0.dp
+            // Action buttons row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        clipboard.setPrimaryClip(ClipData.newPlainText("report", report.content))
+                        Toast.makeText(context, copiedMsg, Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = Modifier.size(32.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.SmartToy,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                        Text(
-                            stringResource(R.string.report_ai_model, report.providerName),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
+                    Icon(Icons.Default.ContentCopy, contentDescription = stringResource(R.string.report_copy), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                IconButton(onClick = onExportPdf, modifier = Modifier.size(32.dp)) {
+                    Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.export_pdf), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
+                }
+                if (onDelete != null) {
+                    IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.local_model_delete), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Report content
-            Text(report.content, style = MaterialTheme.typography.bodyMedium)
-
-            // Expandable prompt section
-            if (report.prompt.isNotBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                TextButton(
-                    onClick = { showPrompt = !showPrompt },
-                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        stringResource(if (showPrompt) R.string.report_hide_prompt else R.string.report_show_prompt),
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-                AnimatedVisibility(visible = showPrompt) {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                        tonalElevation = 0.dp
-                    ) {
+            // Report content - parsed into sections
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (report.content.isBlank()) {
                         Text(
-                            report.prompt,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(12.dp)
+                            stringResource(R.string.report_no_content),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    } else if (sections.isEmpty()) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(report.content, style = MaterialTheme.typography.bodyMedium)
+                    } else {
+                        sections.forEach { section ->
+                            if (section.title.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    tonalElevation = 0.dp
+                                ) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Text(
+                                            section.title,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            section.body,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+                            } else {
+                                // Preamble (title/note without section header)
+                                Text(
+                                    section.body,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     }
                 }
             }
