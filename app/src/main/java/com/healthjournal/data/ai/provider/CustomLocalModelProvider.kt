@@ -108,7 +108,12 @@ class CustomLocalModelProvider(
 
     private suspend fun resolveRuntime(model: LocalAiModel, localConfig: LocalAiConfig): LocalModelRuntime {
         val path = model.localPath ?: throw IllegalStateException("Model has no local path")
-        return when (model.runtimeType) {
+        val effectiveRuntime = when (model.runtimeType) {
+            "llama_cpp", "litert" -> model.runtimeType
+            "mediapipe_llm" -> if (model.fileFormat == "tflite") "litert" else "llama_cpp"
+            else -> throw IllegalArgumentException("Unsupported runtime type: '${model.runtimeType}'. Supported: llama_cpp, litert")
+        }
+        return when (effectiveRuntime) {
             "llama_cpp" -> {
                 if (!llamaCppRuntime.isAvailable()) {
                     llamaCppRuntime.loadModel(path, contextSize = localConfig.contextSize)
@@ -121,7 +126,7 @@ class CustomLocalModelProvider(
                 }
                 liteRtRuntime
             }
-            else -> throw IllegalArgumentException("Unsupported runtime type: '${model.runtimeType}'. Supported: llama_cpp, litert")
+            else -> throw IllegalArgumentException("Unsupported runtime type: '$effectiveRuntime'. Supported: llama_cpp, litert")
         }
     }
 }

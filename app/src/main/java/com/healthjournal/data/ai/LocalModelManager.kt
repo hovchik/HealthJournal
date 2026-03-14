@@ -100,11 +100,11 @@ class LocalModelManager(
      */
     suspend fun migrateGgufRuntimeType() {
         withContext(Dispatchers.IO) {
-            val ggufFormats = setOf("gguf", "ggml")
             dao.getAll()
-                .filter { it.runtimeType == "mediapipe_llm" && it.fileFormat in ggufFormats }
+                .filter { it.runtimeType == "mediapipe_llm" }
                 .forEach { entity ->
-                    dao.update(entity.copy(runtimeType = "llama_cpp"))
+                    val correctedRuntime = if (entity.fileFormat == "tflite") "litert" else "llama_cpp"
+                    dao.update(entity.copy(runtimeType = correctedRuntime))
                 }
         }
     }
