@@ -131,6 +131,7 @@ class ModelInstaller(
                     installedAt = System.currentTimeMillis()
                 )
                 localModelManager.saveModel(installed)
+                localModelManager.setActiveModel(model.modelId)
 
                 _installProgress.value = InstallProgress(model.modelId, ModelInstallState.INSTALLED, 100)
             } catch (e: Exception) {
@@ -175,6 +176,7 @@ class ModelInstaller(
                     installedAt = System.currentTimeMillis()
                 )
                 localModelManager.saveModel(installed)
+                localModelManager.setActiveModel(model.modelId)
                 _installProgress.value = InstallProgress(model.modelId, ModelInstallState.INSTALLED, 100)
             } catch (e: Exception) {
                 fail(model.modelId, e.message ?: "Import failed")
@@ -202,6 +204,7 @@ class ModelInstaller(
                 installedAt = System.currentTimeMillis()
             )
             localModelManager.saveModel(registered)
+            localModelManager.setActiveModel(model.modelId)
             _installProgress.value = InstallProgress(model.modelId, ModelInstallState.INSTALLED, 100)
         }
     }
