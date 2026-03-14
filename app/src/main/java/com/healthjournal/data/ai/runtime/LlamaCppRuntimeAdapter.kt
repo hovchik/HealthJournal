@@ -2,7 +2,7 @@ package com.healthjournal.data.ai.runtime
 
 import android.content.Context
 import android.util.Log
-import com.llamatik.LlamaBridge
+import com.llamatik.library.platform.LlamaBridge
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -19,6 +19,13 @@ class LlamaCppRuntimeAdapter(private val context: Context) : LocalModelRuntime {
         withContext(Dispatchers.IO) {
             release()
             LlamaBridge.initGenerateModel(modelPath)
+            LlamaBridge.updateGenerateParams(
+                temperature = 0.7f,
+                maxTokens = 1024,
+                topP = 0.9f,
+                topK = 40,
+                repeatPenalty = 1.1f
+            )
             modelLoaded = true
             loadedModelPath = modelPath
             Log.d(TAG, "Loaded GGUF model: $modelPath")
@@ -38,7 +45,7 @@ class LlamaCppRuntimeAdapter(private val context: Context) : LocalModelRuntime {
     override fun release() {
         try {
             if (modelLoaded) {
-                LlamaBridge.nativeCancelGenerate()
+                LlamaBridge.shutdown()
             }
         } catch (e: Exception) {
             Log.w(TAG, "Error releasing llama.cpp model", e)
