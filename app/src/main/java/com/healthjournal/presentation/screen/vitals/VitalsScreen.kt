@@ -58,7 +58,7 @@ fun VitalsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
                 title = {
                     Column {
                         Text(
@@ -67,21 +67,25 @@ fun VitalsScreen(
                         )
                         Text(
                             stringResource(R.string.recording_for, activeProfileName),
-                            style = MaterialTheme.typography.labelMedium,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = onAddVital,
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_vital_desc))
-            }
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                text = { Text(stringResource(R.string.add_vital_desc)) }
+            )
         }
     ) { padding ->
         if (vitals.isEmpty()) {
@@ -91,34 +95,43 @@ fun VitalsScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                        modifier = Modifier.size(72.dp)
+                ElevatedCard(
+                    modifier = Modifier.padding(32.dp),
+                    shape = MaterialTheme.shapes.large,
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(32.dp)
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                Icons.Default.MonitorHeart,
-                                contentDescription = null,
-                                modifier = Modifier.size(36.dp),
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer
-                            )
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.tertiaryContainer,
+                            modifier = Modifier.size(72.dp),
+                            tonalElevation = 2.dp
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.MonitorHeart,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(36.dp),
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            }
                         }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            stringResource(R.string.no_vitals_hint),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        stringResource(R.string.no_vitals_hint),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
                 }
             }
         } else {
             val vitalsByDisease = remember(vitals, diseases) {
                 val diseaseMap = diseases.associateBy { it.id }
                 val grouped = vitals.groupBy { it.diseaseId }
-                // Sort: diseases first (by name), ungrouped (0) last
                 grouped.entries.sortedWith(compareBy {
                     if (it.key == 0L) "\uFFFF" else diseaseMap[it.key]?.name ?: "\uFFFE"
                 }).map { (diseaseId, vitalsList) ->
@@ -135,19 +148,25 @@ fun VitalsScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 vitalsByDisease.forEach { group ->
-                    // Disease header
                     item(key = "disease_header_${group.diseaseId}") {
-                        Text(
-                            group.diseaseName,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = if (group.diseaseId != 0L) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                        Surface(
+                            shape = MaterialTheme.shapes.small,
+                            color = if (group.diseaseId != 0L)
+                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                            else MaterialTheme.colorScheme.surfaceContainerHigh,
                             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                        )
+                        ) {
+                            Text(
+                                group.diseaseName,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (group.diseaseId != 0L) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
                     }
 
-                    // Charts for this disease group
                     val vitalsByType = group.vitals.groupBy { it.type }
                     val chartTypes = vitalsByType.filter { it.value.size >= 2 }
                     if (chartTypes.isNotEmpty()) {
@@ -161,7 +180,10 @@ fun VitalsScreen(
                         }
                         chartTypes.forEach { (type, typeVitals) ->
                             item(key = "chart_${group.diseaseId}_${type.name}") {
-                                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                                ElevatedCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+                                ) {
                                     VitalsChart(
                                         title = type.localizedDisplayName(),
                                         vitals = typeVitals.sortedBy { it.recordedAt },
@@ -174,7 +196,6 @@ fun VitalsScreen(
                         }
                     }
 
-                    // Vitals by date within disease group
                     val vitalsByDate = group.vitals
                         .groupBy { it.recordedAt.toLocalDate() }
                         .toSortedMap(compareByDescending { it })
@@ -194,7 +215,6 @@ fun VitalsScreen(
                         }
                     }
 
-                    // Divider between groups
                     item(key = "divider_${group.diseaseId}") {
                         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                     }
@@ -228,7 +248,7 @@ private fun DateHeader(
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+        modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
     )
 }
 
@@ -243,12 +263,13 @@ private fun VitalDetailCard(vital: VitalSign, onEdit: () -> Unit, onDelete: () -
     val displayName = vital.type.localizedDisplayName()
     val unit = vital.type.localizedUnit()
 
-    Card(
+    ElevatedCard(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onEdit),
-        colors = CardDefaults.cardColors(
+        colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
             Box(
@@ -267,7 +288,7 @@ private fun VitalDetailCard(vital: VitalSign, onEdit: () -> Unit, onDelete: () -
             ) {
                 Surface(
                     shape = CircleShape,
-                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f),
+                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f),
                     modifier = Modifier.size(44.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -281,12 +302,19 @@ private fun VitalDetailCard(vital: VitalSign, onEdit: () -> Unit, onDelete: () -
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(displayName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                    Text(
-                        "$valueStr $unit",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Surface(
+                        shape = MaterialTheme.shapes.extraSmall,
+                        color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f),
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    ) {
+                        Text(
+                            "$valueStr $unit",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+                    }
                     if (vital.notes.isNotBlank()) {
                         Text(
                             vital.notes,

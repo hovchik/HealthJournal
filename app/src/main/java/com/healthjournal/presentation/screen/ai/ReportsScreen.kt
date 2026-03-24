@@ -74,13 +74,17 @@ fun ReportsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
                 title = {
                     Text(
                         stringResource(R.string.reports_title),
                         fontWeight = FontWeight.Bold
                     )
-                }
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
             )
         }
     ) { padding ->
@@ -93,6 +97,7 @@ fun ReportsScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -154,8 +159,8 @@ fun ReportsScreen(
                 }
             }
 
-            // Tabs
-            TabRow(selectedTabIndex = selectedTab) {
+            // Tabs with improved styling
+            PrimaryTabRow(selectedTabIndex = selectedTab) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTab == index,
@@ -204,7 +209,7 @@ private fun DateHeader(
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+        modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
     )
 }
 
@@ -230,13 +235,14 @@ private fun RecordsTab(
         // Export PDF button
         if (symptoms.isNotEmpty() || vitals.isNotEmpty()) {
             item(key = "export_records") {
-                OutlinedButton(
+                FilledTonalButton(
                     onClick = {
                         PdfReportGenerator.generateRecordsPdfAndShare(
                             context, symptoms, vitals, medications, memberName
                         )
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(8.dp))
@@ -248,10 +254,26 @@ private fun RecordsTab(
         // Vitals records
         if (vitals.isNotEmpty()) {
             item(key = "vitals_section") {
-                Text(stringResource(R.string.vitals_title),
-                    style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.padding(top = 8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.SmartToy, contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer)
+                        }
+                    }
+                    Text(stringResource(R.string.vitals_title),
+                        style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary)
+                }
             }
 
             val vitalsByDate = vitals.sortedByDescending { it.recordedAt }
@@ -263,14 +285,28 @@ private fun RecordsTab(
                 }
                 items(vitalsForDate, key = { "rv_${it.id}" }) { vital ->
                     val valueStr = if (vital.secondaryValue != null) "${vital.value.toInt()}/${vital.secondaryValue.toInt()}" else vital.value.toString()
-                    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                    ) {
                         Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Column {
                                 Text(vital.type.localizedDisplayName(), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                                 Text(vital.recordedAt.format(timeFormatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
                             }
-                            Text("$valueStr ${vital.type.localizedUnit()}", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                            Surface(
+                                shape = MaterialTheme.shapes.extraSmall,
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                            ) {
+                                Text(
+                                    "$valueStr ${vital.type.localizedUnit()}",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -280,10 +316,26 @@ private fun RecordsTab(
         // Symptoms records
         if (symptoms.isNotEmpty()) {
             item(key = "symptoms_section") {
-                Text(stringResource(R.string.symptoms_title),
-                    style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.Person, contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
+                    }
+                    Text(stringResource(R.string.symptoms_title),
+                        style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary)
+                }
             }
 
             val symptomsByDate = symptoms.sortedByDescending { it.recordedAt }
@@ -294,7 +346,10 @@ private fun RecordsTab(
                     DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
                 }
                 items(symptomsForDate, key = { "rs_${it.id}" }) { symptom ->
-                    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                    ) {
                         Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Column(modifier = Modifier.weight(1f)) {
@@ -304,7 +359,18 @@ private fun RecordsTab(
                                 }
                                 Text(symptom.recordedAt.format(timeFormatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
                             }
-                            Text("${symptom.intensity}/10", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.tertiary)
+                            Surface(
+                                shape = MaterialTheme.shapes.extraSmall,
+                                color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+                            ) {
+                                Text(
+                                    "${symptom.intensity}/10",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -313,8 +379,13 @@ private fun RecordsTab(
 
         if (symptoms.isEmpty() && vitals.isEmpty()) {
             item(key = "empty_records") {
-                Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.no_records_hint), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        Text(stringResource(R.string.no_records_hint), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
             }
         }
@@ -346,7 +417,10 @@ private fun AiAnalyzeTab(
     ) {
         // Generate controls
         item(key = "ai_controls") {
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+            ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     // Period selector
                     Row(
@@ -381,14 +455,16 @@ private fun AiAnalyzeTab(
                         Button(
                             onClick = { viewModel.generateReport(selectedPeriod) },
                             enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             Text(stringResource(R.string.report_generate_summary))
                         }
                         OutlinedButton(
                             onClick = { viewModel.analyzePatterns(selectedPeriod) },
                             enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             Text(stringResource(R.string.report_generate_patterns))
                         }
@@ -414,11 +490,16 @@ private fun AiAnalyzeTab(
         // Loading
         if (uiState.isLoading) {
             item(key = "loading") {
-                Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator()
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(stringResource(R.string.ai_analyzing))
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(stringResource(R.string.ai_analyzing))
+                        }
                     }
                 }
             }
@@ -441,11 +522,14 @@ private fun AiAnalyzeTab(
         val chartTypes = vitalsByType.filter { it.value.size >= 2 }
         if (chartTypes.isNotEmpty()) {
             item(key = "charts_header") {
-                Text(stringResource(R.string.vitals_charts_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.vitals_charts_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
             chartTypes.forEach { (type, typeVitals) ->
                 item(key = "chart_${type.name}") {
-                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+                    ) {
                         VitalsChart(
                             title = type.displayName,
                             vitals = typeVitals.sortedBy { it.recordedAt },
@@ -459,7 +543,10 @@ private fun AiAnalyzeTab(
         // Empty state
         if (reports.isEmpty() && !uiState.isLoading) {
             item(key = "empty_ai") {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                ) {
                     Text(stringResource(R.string.no_reports_hint), modifier = Modifier.padding(16.dp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
@@ -488,8 +575,9 @@ private fun AiAnalyzeTab(
             item(key = "history_header") {
                 var showHistory by remember { mutableStateOf(false) }
                 Column {
-                    TextButton(
-                        onClick = { showHistory = !showHistory }
+                    FilledTonalButton(
+                        onClick = { showHistory = !showHistory },
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Text(
                             stringResource(
@@ -521,10 +609,6 @@ private fun AiAnalyzeTab(
     }
 }
 
-/**
- * Parses structured report content into sections.
- * Recognizes "=== Section Title ===" headers and splits content accordingly.
- */
 private data class ReportSection(val title: String, val body: String)
 
 private fun parseReportContent(content: String): List<ReportSection> {
@@ -534,19 +618,16 @@ private fun parseReportContent(content: String): List<ReportSection> {
     val matches = sectionPattern.findAll(content).toList()
 
     if (matches.isEmpty()) {
-        // No section headers found - treat as single block
         return listOf(ReportSection("", content.trim()))
     }
 
     val sections = mutableListOf<ReportSection>()
 
-    // Content before first section header (title/note)
     val preamble = content.substring(0, matches.first().range.first).trim()
     if (preamble.isNotBlank()) {
         sections.add(ReportSection("", preamble))
     }
 
-    // Parse each section
     for (i in matches.indices) {
         val title = matches[i].groupValues[1]
         val start = matches[i].range.last + 1
@@ -557,7 +638,6 @@ private fun parseReportContent(content: String): List<ReportSection> {
         }
     }
 
-    // Disclaimer at the end (text after last section, if not captured)
     return sections
 }
 
@@ -573,7 +653,10 @@ private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPd
     var expanded by remember { mutableStateOf(true) }
     val sections = remember(report.content) { parseReportContent(report.content) }
 
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Header row
             Row(
@@ -582,8 +665,19 @@ private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPd
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(typeLabel, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                    Surface(
+                        shape = MaterialTheme.shapes.extraSmall,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            typeLabel,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        )
+                    }
                     if (diseaseName != null) {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             diseaseName,
                             style = MaterialTheme.typography.labelMedium,
@@ -601,6 +695,8 @@ private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPd
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Metadata row
             Row(
@@ -681,9 +777,9 @@ private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPd
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Surface(
                                     modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
+                                    shape = MaterialTheme.shapes.medium,
                                     color = MaterialTheme.colorScheme.surfaceContainerLow,
-                                    tonalElevation = 0.dp
+                                    tonalElevation = 1.dp
                                 ) {
                                     Column(modifier = Modifier.padding(12.dp)) {
                                         Text(
@@ -701,7 +797,6 @@ private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPd
                                     }
                                 }
                             } else {
-                                // Preamble (title/note without section header)
                                 Text(
                                     section.body,
                                     style = MaterialTheme.typography.bodySmall,

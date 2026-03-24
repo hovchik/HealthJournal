@@ -66,7 +66,8 @@ fun MainApp() {
                     exit = slideOutVertically(targetOffsetY = { it })
                 ) {
                     NavigationBar(
-                        tonalElevation = 0.dp
+                        tonalElevation = 3.dp,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
                     ) {
                         bottomNavItems.forEach { screen ->
                             val title = stringResource(screen.titleResId)
@@ -88,6 +89,13 @@ fun MainApp() {
                                     )
                                 },
                                 selected = selected,
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                ),
                                 onClick = {
                                     navController.navigate(screen.route) {
                                         popUpTo(Screen.Home.route) { saveState = true }
