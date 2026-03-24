@@ -7,11 +7,21 @@
     <group
         android:translateX="24"
         android:translateY="24">
+        <!-- Heart shape - colorful health symbol -->
         <path
             android:fillColor="#FFFFFF"
-            android:pathData="M30,6C16.8,6 6,16.8 6,30s10.8,24 24,24s24,-10.8 24,-24S43.2,6 30,6zM30,48c-9.9,0 -18,-8.1 -18,-18s8.1,-18 18,-18s18,8.1 18,18S39.9,48 30,48z" />
+            android:pathData="M30,12 C24.5,5 16,4 10.5,9 C5,14 4.5,23 10,29 L30,50 L50,29 C55.5,23 55,14 49.5,9 C44,4 35.5,5 30,12 Z" />
+        <!-- Plus/cross inside the heart -->
         <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M30,18c-6.6,0 -12,5.4 -12,12s5.4,12 12,12s12,-5.4 12,-12S36.6,18 30,18zM33,33h-6v-6h-6v-6h6v-6h6v6h6v6h-6V33z" />
+            android:fillColor="#0D9488"
+            android:pathData="M26,22 L26,18 L34,18 L34,22 L38,22 L38,30 L34,30 L34,34 L26,34 L26,30 L22,30 L22,22 Z" />
+        <!-- Pulse line at bottom -->
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="2.5"
+            android:fillColor="#00000000"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M6,46 L16,46 L20,38 L24,52 L28,42 L32,48 L36,40 L40,46 L54,46" />
     </group>
 </vector>

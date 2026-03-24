@@ -64,13 +64,17 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
                 title = {
                     Text(
                         stringResource(R.string.nav_settings),
                         fontWeight = FontWeight.Bold
                     )
-                }
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
             )
         }
     ) { padding ->
@@ -144,10 +148,11 @@ fun SettingsScreen(
                             .padding(bottom = 12.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = { exportLauncher.launch("health_journal_backup.json") },
                             enabled = !isAnyLoading,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             if (uiState.isExporting) {
                                 CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
@@ -157,10 +162,11 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(stringResource(R.string.backup_export))
                         }
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = { importLauncher.launch(arrayOf("application/json")) },
                             enabled = !isAnyLoading,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             if (uiState.isImporting) {
                                 CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
@@ -178,10 +184,11 @@ fun SettingsScreen(
                             .padding(horizontal = 16.dp)
                             .padding(bottom = 12.dp)
                     ) {
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = { settingsViewModel.shareData(context) },
                             enabled = !isAnyLoading,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             if (uiState.isSharing) {
                                 CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
@@ -206,7 +213,8 @@ fun SettingsScreen(
                             containerColor = if (uiState.isError) MaterialTheme.colorScheme.errorContainer
                             else MaterialTheme.colorScheme.primaryContainer
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -344,7 +352,6 @@ fun SettingsScreen(
 private fun PermissionsSection() {
     val context = LocalContext.current
 
-    // Notification permission state (API 33+)
     var notificationGranted by remember {
         mutableStateOf(
             if (Build.VERSION.SDK_INT >= 33) {
@@ -360,7 +367,6 @@ private fun PermissionsSection() {
         notificationGranted = granted
     }
 
-    // On-device AI: check if a model is downloaded
     val app = context.applicationContext as com.healthjournal.HealthJournalApp
     val localModelManager = app.container.localModelManager
     var aiAvailable by remember { mutableStateOf<Boolean?>(null) }
@@ -377,7 +383,6 @@ private fun PermissionsSection() {
         color = MaterialTheme.colorScheme.error
     ) {
         SettingsGroupCard {
-            // Notifications permission (API 33+)
             if (Build.VERSION.SDK_INT >= 33) {
                 Row(
                     modifier = Modifier
@@ -431,7 +436,8 @@ private fun PermissionsSection() {
                         FilledTonalButton(
                             onClick = {
                                 notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            }
+                            },
+                            shape = MaterialTheme.shapes.medium
                         ) {
                             Text(stringResource(R.string.perm_grant))
                         }
@@ -440,7 +446,6 @@ private fun PermissionsSection() {
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             }
 
-            // On-device AI status
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -502,7 +507,10 @@ private fun PermissionsSection() {
                         }
                     }
                 } else {
-                    FilledTonalButton(onClick = { checkAiAvailability() }) {
+                    FilledTonalButton(
+                        onClick = { checkAiAvailability() },
+                        shape = MaterialTheme.shapes.medium
+                    ) {
                         Text(stringResource(R.string.perm_ai_check))
                     }
                 }
@@ -510,7 +518,6 @@ private fun PermissionsSection() {
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-            // Open system app settings
             Surface(
                 onClick = {
                     val intent = Intent(AndroidSettings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -576,7 +583,7 @@ private fun SettingsSection(
             title,
             style = MaterialTheme.typography.labelLarge,
             color = color,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 4.dp)
         )
         content()
@@ -587,11 +594,12 @@ private fun SettingsSection(
 private fun SettingsGroupCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Card(
-        colors = CardDefaults.cardColors(
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
         Column(content = content)
     }
