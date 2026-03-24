@@ -442,6 +442,7 @@
     <string name="confirm_permanent_delete">¿Está seguro de que desea eliminar esta enfermedad permanentemente? Esta acción no se puede deshacer.</string>
     <string name="confirm">Confirmar</string>
     <string name="cancel">Cancelar</string>
+    <string name="all">Todos</string>
     <string name="all_diseases">Todas las enfermedades</string>
     <string name="disease_filter">Enfermedad</string>
 

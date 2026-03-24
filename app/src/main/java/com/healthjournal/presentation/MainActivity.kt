@@ -47,15 +47,11 @@ fun MainApp() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        val editRoutes = setOf(
-            Screen.AddSymptom.route, Screen.EditSymptom.route,
-            Screen.AddVital.route, Screen.EditVital.route,
-            Screen.AddMedication.route, Screen.EditMedication.route,
-            Screen.AddSymptomToDisease.route,
-            Screen.AddVitalToDisease.route,
-            Screen.AddMedicationToDisease.route,
+        val hideBottomBarRoutes = setOf(
+            Screen.Onboarding.route,
+            Screen.ProfileSelection.route
         )
-        val showBottomBar = currentRoute in bottomNavItems.map { it.route } || currentRoute in editRoutes
+        val showBottomBar = currentRoute != null && currentRoute !in hideBottomBarRoutes
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
