@@ -61,4 +61,4 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object Subscription : Screen("subscription", R.string.subscription_title, Icons.Default.Star)
 }
 
-val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.Reports, Screen.Settings)
+val bottomNavItems = listOf(Screen.Home, Screen.Reports, Screen.Settings)

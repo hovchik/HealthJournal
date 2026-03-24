@@ -483,7 +483,9 @@ private fun CloudProviderSection(
 ) {
     val providerOptions = listOf(
         AiProviderId.CLAUDE.key to stringResource(R.string.ai_provider_claude),
-        AiProviderId.OPENAI_COMPATIBLE.key to stringResource(R.string.ai_provider_openai)
+        AiProviderId.OPENAI_COMPATIBLE.key to stringResource(R.string.ai_provider_openai),
+        AiProviderId.DEEPSEEK.key to stringResource(R.string.ai_provider_deepseek),
+        AiProviderId.GEMINI.key to stringResource(R.string.ai_provider_gemini)
     )
     var providerMenuExpanded by remember { mutableStateOf(false) }
     val cloudProviderId = if (settings.selectedProviderId == AiProviderId.LOCAL.key)
@@ -518,8 +520,12 @@ private fun CloudProviderSection(
                     },
                     leadingIcon = {
                         Icon(
-                            if (key == AiProviderId.CLAUDE.key) Icons.Default.Star
-                            else Icons.Default.Cloud,
+                            when (key) {
+                                AiProviderId.CLAUDE.key -> Icons.Default.Star
+                                AiProviderId.DEEPSEEK.key -> Icons.Default.AutoAwesome
+                                AiProviderId.GEMINI.key -> Icons.Default.Diamond
+                                else -> Icons.Default.Cloud
+                            },
                             contentDescription = null,
                             modifier = Modifier.size(20.dp)
                         )
@@ -537,6 +543,14 @@ private fun CloudProviderSection(
         AiProviderId.OPENAI_COMPATIBLE.key -> OpenAiConfigSection(
             config = settings.openAiConfig,
             onUpdate = { viewModel.updateOpenAiConfig(it) }
+        )
+        AiProviderId.DEEPSEEK.key -> DeepSeekConfigSection(
+            config = settings.deepSeekConfig,
+            onUpdate = { viewModel.updateDeepSeekConfig(it) }
+        )
+        AiProviderId.GEMINI.key -> GeminiConfigSection(
+            config = settings.geminiConfig,
+            onUpdate = { viewModel.updateGeminiConfig(it) }
         )
     }
 }
@@ -1429,6 +1443,104 @@ private fun OpenAiConfigSection(
                 onValueChange = { onUpdate(config.copy(baseUrl = it)) },
                 label = { Text(stringResource(R.string.ai_base_url)) },
                 modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+        }
+    }
+}
+
+@Composable
+private fun DeepSeekConfigSection(
+    config: DeepSeekConfig,
+    onUpdate: (DeepSeekConfig) -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedTextField(
+                value = config.apiKey,
+                onValueChange = { onUpdate(config.copy(apiKey = it)) },
+                label = { Text(stringResource(R.string.ai_api_key)) },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                singleLine = true
+            )
+            OutlinedTextField(
+                value = config.model,
+                onValueChange = { onUpdate(config.copy(model = it)) },
+                label = { Text(stringResource(R.string.ai_model)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            OutlinedTextField(
+                value = config.baseUrl,
+                onValueChange = { onUpdate(config.copy(baseUrl = it)) },
+                label = { Text(stringResource(R.string.ai_base_url)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            OutlinedTextField(
+                value = config.timeoutSeconds.toString(),
+                onValueChange = { onUpdate(config.copy(timeoutSeconds = it.toIntOrNull() ?: 120)) },
+                label = { Text(stringResource(R.string.ai_timeout)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true
+            )
+        }
+    }
+}
+
+@Composable
+private fun GeminiConfigSection(
+    config: GeminiConfig,
+    onUpdate: (GeminiConfig) -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedTextField(
+                value = config.apiKey,
+                onValueChange = { onUpdate(config.copy(apiKey = it)) },
+                label = { Text(stringResource(R.string.ai_api_key)) },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                singleLine = true
+            )
+            OutlinedTextField(
+                value = config.model,
+                onValueChange = { onUpdate(config.copy(model = it)) },
+                label = { Text(stringResource(R.string.ai_model)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            OutlinedTextField(
+                value = config.baseUrl,
+                onValueChange = { onUpdate(config.copy(baseUrl = it)) },
+                label = { Text(stringResource(R.string.ai_base_url)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            OutlinedTextField(
+                value = config.timeoutSeconds.toString(),
+                onValueChange = { onUpdate(config.copy(timeoutSeconds = it.toIntOrNull() ?: 90)) },
+                label = { Text(stringResource(R.string.ai_timeout)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true
             )
         }

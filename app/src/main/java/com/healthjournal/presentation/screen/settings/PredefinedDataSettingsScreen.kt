@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Healing
 import androidx.compose.material.icons.filled.Medication
@@ -40,13 +41,17 @@ fun PredefinedDataSettingsScreen(
     val customMedications by viewModel.customMedications.collectAsStateWithLifecycle()
     val disabledRelations by viewModel.disabledRelations.collectAsStateWithLifecycle()
     val customRelations by viewModel.customRelations.collectAsStateWithLifecycle()
+    val disabledGroups by viewModel.disabledGroups.collectAsStateWithLifecycle()
+    val customGroups by viewModel.customGroups.collectAsStateWithLifecycle()
 
     var showAddSymptomDialog by remember { mutableStateOf(false) }
     var showAddMedicationDialog by remember { mutableStateOf(false) }
     var showAddRelationDialog by remember { mutableStateOf(false) }
+    var showAddGroupDialog by remember { mutableStateOf(false) }
     var symptomsExpanded by rememberSaveable { mutableStateOf(false) }
     var medicationsExpanded by rememberSaveable { mutableStateOf(false) }
     var relationsExpanded by rememberSaveable { mutableStateOf(false) }
+    var groupsExpanded by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
@@ -124,6 +129,19 @@ fun PredefinedDataSettingsScreen(
                 customRelations.toList()
             } else {
                 customRelations.filter { it.contains(searchQuery, ignoreCase = true) }.toList()
+            }
+
+            val filteredGroups = if (searchQuery.isBlank()) {
+                PredefinedData.groupItems
+            } else {
+                PredefinedData.groupItems.filter { item ->
+                    context.getString(item.nameResId).contains(searchQuery, ignoreCase = true)
+                }
+            }
+            val filteredCustomGroups = if (searchQuery.isBlank()) {
+                customGroups.toList()
+            } else {
+                customGroups.filter { it.contains(searchQuery, ignoreCase = true) }.toList()
             }
 
             val isSearching = searchQuery.isNotBlank()
@@ -230,6 +248,41 @@ fun PredefinedDataSettingsScreen(
                     )
                 }
             }
+
+            item(key = "section_divider_3") { Spacer(modifier = Modifier.height(8.dp)) }
+
+            // Groups section header
+            item(key = "groups_header") {
+                SectionHeader(
+                    icon = { Icon(Icons.Default.Category, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp)) },
+                    title = stringResource(R.string.predefined_groups_section),
+                    count = PredefinedData.groupItems.count { it.key !in disabledGroups } + customGroups.size,
+                    total = PredefinedData.groupItems.size + customGroups.size,
+                    expanded = groupsExpanded || isSearching,
+                    onToggle = { if (!isSearching) groupsExpanded = !groupsExpanded },
+                    onAdd = { showAddGroupDialog = true }
+                )
+            }
+
+            // Groups content
+            if (groupsExpanded || isSearching) {
+                items(filteredGroups, key = { "g_${it.key}" }) { item ->
+                    val enabled = item.key !in disabledGroups
+                    val label = stringResource(item.nameResId)
+                    ToggleItem(
+                        label = label,
+                        checked = enabled,
+                        onCheckedChange = { viewModel.toggleGroup(item.key, it) }
+                    )
+                }
+
+                items(filteredCustomGroups, key = { "cg_$it" }) { custom ->
+                    CustomItem(
+                        label = custom,
+                        onRemove = { viewModel.removeCustomGroup(custom) }
+                    )
+                }
+            }
         }
     }
 
@@ -262,6 +315,17 @@ fun PredefinedDataSettingsScreen(
             onConfirm = { name ->
                 viewModel.addCustomRelation(name)
                 showAddRelationDialog = false
+            }
+        )
+    }
+
+    if (showAddGroupDialog) {
+        AddCustomItemDialog(
+            title = stringResource(R.string.add_custom_group),
+            onDismiss = { showAddGroupDialog = false },
+            onConfirm = { name ->
+                viewModel.addCustomGroup(name)
+                showAddGroupDialog = false
             }
         )
     }

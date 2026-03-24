@@ -155,6 +155,8 @@
     <string name="ai_select_provider">Select provider</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-compatible</string>
+    <string name="ai_provider_deepseek">DeepSeek</string>
+    <string name="ai_provider_gemini">Google Gemini</string>
     <string name="ai_provider_local">Local analysis (on-device)</string>
     <string name="ai_privacy_redact">Data redaction</string>
     <string name="ai_privacy_redact_desc">Remove phone numbers and emails before sending</string>
@@ -224,6 +226,24 @@
     <string name="custom_label">Custom</string>
     <string name="predefined_relations_section">Relationships</string>
     <string name="add_custom_relation">Add custom relationship</string>
+    <string name="predefined_groups_section">Groups</string>
+    <string name="add_custom_group">Add custom group</string>
+    <string name="group_chronic">Chronic</string>
+    <string name="group_seasonal">Seasonal</string>
+    <string name="group_allergies">Allergies</string>
+    <string name="group_infections">Infections</string>
+    <string name="group_cardiovascular">Cardiovascular</string>
+    <string name="group_respiratory">Respiratory</string>
+    <string name="group_gastrointestinal">Gastrointestinal</string>
+    <string name="group_neurological">Neurological</string>
+    <string name="group_musculoskeletal">Musculoskeletal</string>
+    <string name="group_dermatological">Dermatological</string>
+    <string name="group_mental_health">Mental Health</string>
+    <string name="group_endocrine">Endocrine</string>
+    <string name="group_urological">Urological</string>
+    <string name="group_dental">Dental</string>
+    <string name="group_eye">Eye</string>
+    <string name="group_other">Other</string>
     <string name="ai_browse_model">Browse</string>
 
     <!-- Settings Sections -->
