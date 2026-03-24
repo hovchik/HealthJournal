@@ -39,6 +39,7 @@ fun SettingsScreen(
     onFamilyMembers: () -> Unit,
     onPredefinedData: () -> Unit,
     onDeletedDiseases: () -> Unit,
+    onSubscription: () -> Unit,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -86,6 +87,22 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            // Subscription section
+            SettingsSection(
+                title = stringResource(R.string.settings_section_subscription),
+                color = MaterialTheme.colorScheme.tertiary
+            ) {
+                SettingsGroupCard {
+                    SettingsListItem(
+                        icon = Icons.Default.Star,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.subscription_title),
+                        subtitle = stringResource(R.string.subscription_desc),
+                        onClick = onSubscription
+                    )
+                }
+            }
+
             // Profile section
             SettingsSection(
                 title = stringResource(R.string.settings_section_profile),

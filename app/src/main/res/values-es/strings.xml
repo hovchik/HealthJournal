@@ -500,4 +500,35 @@
     <!-- Storage permission -->
     <string name="storage_permission_required">Se necesita permiso de almacenamiento para buscar modelos</string>
     <string name="storage_permission_grant">Conceder acceso al almacenamiento</string>
+
+    <!-- Subscription -->
+    <string name="subscription_title">Suscripci\u00f3n</string>
+    <string name="subscription_desc">Gestionar plan y Cloud AI</string>
+    <string name="subscription_current_plan">Plan actual</string>
+    <string name="subscription_plan_free">Gratis</string>
+    <string name="subscription_plan_basic">B\u00e1sico</string>
+    <string name="subscription_plan_pro">Pro</string>
+    <string name="subscription_plan_unlimited">Ilimitado</string>
+    <string name="subscription_per_month">/mes</string>
+    <string name="subscription_free_price">Gratis</string>
+    <string name="subscription_recommended">Recomendado</string>
+    <string name="subscription_subscribe">Suscribirse</string>
+    <string name="subscription_current">Plan actual</string>
+    <string name="subscription_cloud_ai_usage">Uso de Cloud AI</string>
+    <string name="subscription_reports_used">%1$d de %2$d informes usados</string>
+    <string name="subscription_unlimited_reports">%1$d informes generados (ilimitado)</string>
+    <string name="subscription_pricing_title">C\u00f3mo funciona el precio de Cloud AI</string>
+    <string name="subscription_pricing_desc">Cada informe AI usa ~2.700\u20133.000 tokens (entrada + salida). Pro ($3.99/mes para 30 informes) cubre los costos de la API Claude Sonnet con margen. Ilimitado ($7.99/mes) es para usuarios intensivos.</string>
+    <string name="subscription_feat_vitals">Seguimiento de s\u00edntomas, signos vitales y medicamentos</string>
+    <string name="subscription_feat_local_ai">An\u00e1lisis AI local (en dispositivo)</string>
+    <string name="subscription_feat_one_family">1 perfil familiar</string>
+    <string name="subscription_feat_cloud_ai">Cloud AI (Claude, GPT)</string>
+    <string name="subscription_feat_pdf">Exportar informes en PDF</string>
+    <string name="subscription_feat_export">Exportaci\u00f3n/importaci\u00f3n completa de datos</string>
+    <string name="subscription_feat_unlimited_family">Perfiles familiares ilimitados</string>
+    <string name="subscription_feat_cloud_ai_30">Cloud AI \u2014 30 informes/mes</string>
+    <string name="subscription_feat_cloud_ai_unlimited">Cloud AI \u2014 ilimitado</string>
+    <string name="subscription_required">Cloud AI requiere una suscripci\u00f3n Pro o Ilimitada</string>
+    <string name="subscription_limit_reached">L\u00edmite de informes Cloud AI alcanzado este mes</string>
+    <string name="settings_section_subscription">Suscripci\u00f3n</string>
 </resources>

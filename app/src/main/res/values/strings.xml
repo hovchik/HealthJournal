@@ -511,4 +511,35 @@
     <string name="disease_ai_analyzing">AI анализирует данные заболевания…</string>
     <string name="disease_ai_no_reports">Нет AI-анализов для этого заболевания. Нажмите кнопку выше для генерации.</string>
     <string name="disease_ai_report_title">Анализ заболевания</string>
+
+    <!-- Subscription -->
+    <string name="subscription_title">Подписка</string>
+    <string name="subscription_desc">Управление планом и Cloud AI</string>
+    <string name="subscription_current_plan">Текущий план</string>
+    <string name="subscription_plan_free">Бесплатный</string>
+    <string name="subscription_plan_basic">Базовый</string>
+    <string name="subscription_plan_pro">Pro</string>
+    <string name="subscription_plan_unlimited">Безлимитный</string>
+    <string name="subscription_per_month">/мес</string>
+    <string name="subscription_free_price">Бесплатно</string>
+    <string name="subscription_recommended">Рекомендуемый</string>
+    <string name="subscription_subscribe">Подписаться</string>
+    <string name="subscription_current">Текущий план</string>
+    <string name="subscription_cloud_ai_usage">Использование Cloud AI</string>
+    <string name="subscription_reports_used">%1$d из %2$d отчётов использовано</string>
+    <string name="subscription_unlimited_reports">%1$d отчётов сгенерировано (безлимит)</string>
+    <string name="subscription_pricing_title">Как формируется цена Cloud AI</string>
+    <string name="subscription_pricing_desc">Каждый AI-отчёт использует ~2700–3000 токенов (ввод + ответ). Цена Pro ($3.99/мес за 30 отчётов) покрывает стоимость API Claude Sonnet с запасом. Безлимитный план ($7.99/мес) для активных пользователей.</string>
+    <string name="subscription_feat_vitals">Трекинг симптомов, показателей, лекарств</string>
+    <string name="subscription_feat_local_ai">Локальный AI-анализ (на устройстве)</string>
+    <string name="subscription_feat_one_family">1 профиль семьи</string>
+    <string name="subscription_feat_cloud_ai">Cloud AI (Claude, GPT)</string>
+    <string name="subscription_feat_pdf">Экспорт отчётов в PDF</string>
+    <string name="subscription_feat_export">Полный экспорт/импорт данных</string>
+    <string name="subscription_feat_unlimited_family">Безлимитные профили семьи</string>
+    <string name="subscription_feat_cloud_ai_30">Cloud AI — 30 отчётов/мес</string>
+    <string name="subscription_feat_cloud_ai_unlimited">Cloud AI — безлимит</string>
+    <string name="subscription_required">Для Cloud AI нужна подписка Pro или Безлимитный</string>
+    <string name="subscription_limit_reached">Достигнут лимит Cloud AI отчётов на этот месяц</string>
+    <string name="settings_section_subscription">Подписка</string>
 </resources>

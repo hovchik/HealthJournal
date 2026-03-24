@@ -500,4 +500,35 @@
     <!-- Storage permission -->
     <string name="storage_permission_required">Storage permission is required to scan for models</string>
     <string name="storage_permission_grant">Grant storage access</string>
+
+    <!-- Subscription -->
+    <string name="subscription_title">Subscription</string>
+    <string name="subscription_desc">Manage plan and Cloud AI</string>
+    <string name="subscription_current_plan">Current plan</string>
+    <string name="subscription_plan_free">Free</string>
+    <string name="subscription_plan_basic">Basic</string>
+    <string name="subscription_plan_pro">Pro</string>
+    <string name="subscription_plan_unlimited">Unlimited</string>
+    <string name="subscription_per_month">/mo</string>
+    <string name="subscription_free_price">Free</string>
+    <string name="subscription_recommended">Recommended</string>
+    <string name="subscription_subscribe">Subscribe</string>
+    <string name="subscription_current">Current plan</string>
+    <string name="subscription_cloud_ai_usage">Cloud AI Usage</string>
+    <string name="subscription_reports_used">%1$d of %2$d reports used</string>
+    <string name="subscription_unlimited_reports">%1$d reports generated (unlimited)</string>
+    <string name="subscription_pricing_title">How Cloud AI pricing works</string>
+    <string name="subscription_pricing_desc">Each AI report uses ~2,700–3,000 tokens (input + output). Pro ($3.99/mo for 30 reports) covers Claude Sonnet API costs with margin. Unlimited ($7.99/mo) is for power users.</string>
+    <string name="subscription_feat_vitals">Symptom, vitals &amp; medication tracking</string>
+    <string name="subscription_feat_local_ai">Local AI analysis (on-device)</string>
+    <string name="subscription_feat_one_family">1 family profile</string>
+    <string name="subscription_feat_cloud_ai">Cloud AI (Claude, GPT)</string>
+    <string name="subscription_feat_pdf">PDF report export</string>
+    <string name="subscription_feat_export">Full data export/import</string>
+    <string name="subscription_feat_unlimited_family">Unlimited family profiles</string>
+    <string name="subscription_feat_cloud_ai_30">Cloud AI — 30 reports/mo</string>
+    <string name="subscription_feat_cloud_ai_unlimited">Cloud AI — unlimited</string>
+    <string name="subscription_required">Cloud AI requires a Pro or Unlimited subscription</string>
+    <string name="subscription_limit_reached">Cloud AI report limit reached for this month</string>
+    <string name="settings_section_subscription">Subscription</string>
 </resources>

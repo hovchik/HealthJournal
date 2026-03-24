@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Summarize
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.healthjournal.R
@@ -57,6 +58,7 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object DiseaseAiAnalysis : Screen("disease_ai_analysis/{diseaseId}", R.string.disease_ai_analysis_title, Icons.Default.Psychology) {
         fun createRoute(diseaseId: Long) = "disease_ai_analysis/$diseaseId"
     }
+    data object Subscription : Screen("subscription", R.string.subscription_title, Icons.Default.Star)
 }
 
 val bottomNavItems = listOf(Screen.Home, Screen.Vitals, Screen.Medications, Screen.Reports, Screen.Settings)
