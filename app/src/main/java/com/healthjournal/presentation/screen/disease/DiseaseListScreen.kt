@@ -1,12 +1,10 @@
 package com.healthjournal.presentation.screen.disease
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,6 +48,7 @@ fun DiseaseListScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var showDeletedSection by remember { mutableStateOf(false) }
     var confirmDeleteDisease by remember { mutableStateOf<Disease?>(null) }
+    var selectedGroup by remember { mutableStateOf<String?>(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val undoLabel = stringResource(R.string.undo)
@@ -67,6 +67,18 @@ fun DiseaseListScreen(
         diseases.groupBy { it.group.ifBlank { "" } }
             .toSortedMap(compareBy { if (it.isEmpty()) "\uFFFF" else it })
     }
+
+    val allGroups = remember(groupedDiseases) {
+        groupedDiseases.keys.toList()
+    }
+
+    val filteredDiseases = remember(diseases, selectedGroup) {
+        if (selectedGroup == null) diseases
+        else diseases.filter { (it.group.ifBlank { "" }) == selectedGroup }
+    }
+
+    val activeCount = diseases.count { it.active }
+    val resolvedCount = diseases.count { !it.active }
 
     // Show snackbar when disease is deleted
     LaunchedEffect(recentlyDeleted) {
@@ -129,35 +141,111 @@ fun DiseaseListScreen(
                 modifier = Modifier.fillMaxSize().padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     Surface(
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(72.dp)
+                        modifier = Modifier.size(88.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 Icons.Default.LocalHospital,
                                 contentDescription = null,
-                                modifier = Modifier.size(36.dp),
+                                modifier = Modifier.size(40.dp),
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         stringResource(R.string.no_diseases_hint),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyLarge
                     )
+                    FilledTonalButton(onClick = { showAddDialog = true }) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(R.string.add_disease))
+                    }
                 }
             }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 88.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Quick stats row
+                if (diseases.isNotEmpty()) {
+                    item(key = "stats") {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            StatCard(
+                                label = stringResource(R.string.symptoms_title),
+                                count = allSymptoms.size,
+                                icon = Icons.Default.Sick,
+                                color = MaterialTheme.colorScheme.primary,
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            StatCard(
+                                label = stringResource(R.string.nav_vitals),
+                                count = allVitals.size,
+                                icon = Icons.Default.MonitorHeart,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                            StatCard(
+                                label = stringResource(R.string.nav_medications),
+                                count = allMedications.size,
+                                icon = Icons.Default.Medication,
+                                color = MaterialTheme.colorScheme.secondary,
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+
+                // Group filter chips
+                if (allGroups.size > 1 || (allGroups.size == 1 && allGroups.first().isNotEmpty())) {
+                    item(key = "group_filters") {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            item {
+                                FilterChip(
+                                    selected = selectedGroup == null,
+                                    onClick = { selectedGroup = null },
+                                    label = { Text(stringResource(R.string.all)) },
+                                    leadingIcon = if (selectedGroup == null) {
+                                        { Icon(Icons.Default.Done, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                                    } else null
+                                )
+                            }
+                            items(allGroups, key = { "filter_$it" }) { group ->
+                                val label = group.ifBlank { stringResource(R.string.ungrouped) }
+                                FilterChip(
+                                    selected = selectedGroup == group,
+                                    onClick = { selectedGroup = if (selectedGroup == group) null else group },
+                                    label = { Text(label) },
+                                    leadingIcon = if (selectedGroup == group) {
+                                        { Icon(Icons.Default.Done, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                                    } else {
+                                        { Icon(Icons.Default.Folder, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
                 // Deleted diseases section
                 if (showDeletedSection && deletedDiseases.isNotEmpty()) {
                     item(key = "deleted_header") {
@@ -173,29 +261,45 @@ fun DiseaseListScreen(
                     }
                     item(key = "deleted_divider") {
                         HorizontalDivider(
-                            modifier = Modifier.padding(vertical = 8.dp),
+                            modifier = Modifier.padding(vertical = 4.dp),
                             color = MaterialTheme.colorScheme.outlineVariant
                         )
                     }
                 }
 
-                // Active diseases grouped
-                groupedDiseases.forEach { (group, diseasesInGroup) ->
-                    if (groupedDiseases.size > 1 || group.isNotEmpty()) {
-                        item(key = "group_header_$group") {
-                            GroupHeader(
-                                group = group.ifBlank { stringResource(R.string.ungrouped) },
-                                count = diseasesInGroup.size
-                            )
-                        }
-                    }
-
-                    items(diseasesInGroup, key = { it.id }) { disease ->
+                // Active diseases - grouped or filtered
+                if (selectedGroup != null) {
+                    items(filteredDiseases, key = { it.id }) { disease ->
                         val symptomCount = allSymptoms.count { it.diseaseId == disease.id }
                         val vitalCount = allVitals.count { it.diseaseId == disease.id }
                         val medCount = allMedications.count { it.diseaseId == disease.id }
 
-                        AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
+                        DiseaseCard(
+                            disease = disease,
+                            symptomCount = symptomCount,
+                            vitalCount = vitalCount,
+                            medicationCount = medCount,
+                            dateFormatter = dateFormatter,
+                            onClick = { onDiseaseClick(disease.id) },
+                            onDelete = { viewModel.deleteDisease(disease) }
+                        )
+                    }
+                } else {
+                    groupedDiseases.forEach { (group, diseasesInGroup) ->
+                        if (groupedDiseases.size > 1 || group.isNotEmpty()) {
+                            item(key = "group_header_$group") {
+                                GroupHeader(
+                                    group = group.ifBlank { stringResource(R.string.ungrouped) },
+                                    count = diseasesInGroup.size
+                                )
+                            }
+                        }
+
+                        items(diseasesInGroup, key = { it.id }) { disease ->
+                            val symptomCount = allSymptoms.count { it.diseaseId == disease.id }
+                            val vitalCount = allVitals.count { it.diseaseId == disease.id }
+                            val medCount = allMedications.count { it.diseaseId == disease.id }
+
                             DiseaseCard(
                                 disease = disease,
                                 symptomCount = symptomCount,
@@ -245,6 +349,44 @@ fun DiseaseListScreen(
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun StatCard(
+    label: String,
+    count: Int,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    color: androidx.compose.ui.graphics.Color,
+    containerColor: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        color = containerColor.copy(alpha = 0.4f),
+        tonalElevation = 1.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
+            Text(
+                "$count",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
+            Text(
+                label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
@@ -388,105 +530,115 @@ private fun DiseaseCard(
     val accentColor = if (disease.active) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.outline
 
-    Card(
+    ElevatedCard(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        shape = MaterialTheme.shapes.large
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+        Column {
+            // Top colored accent bar
             Box(
                 modifier = Modifier
-                    .width(5.dp)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 24.dp, bottomStart = 24.dp))
-                    .background(accentColor)
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                accentColor,
+                                accentColor.copy(alpha = 0.3f)
+                            )
+                        )
+                    )
             )
-            Column(modifier = Modifier.weight(1f).padding(16.dp)) {
+
+            Column(modifier = Modifier.padding(16.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Surface(
-                                shape = CircleShape,
-                                color = accentColor.copy(alpha = 0.12f),
-                                modifier = Modifier.size(36.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        Icons.Default.LocalHospital,
-                                        contentDescription = null,
-                                        tint = accentColor,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = accentColor.copy(alpha = 0.12f),
+                            modifier = Modifier.size(44.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.LocalHospital,
+                                    contentDescription = null,
+                                    tint = accentColor,
+                                    modifier = Modifier.size(22.dp)
+                                )
                             }
-                            Column {
+                        }
+                        Column {
+                            Text(
+                                disease.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
                                 Text(
-                                    disease.name,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    disease.createdAt.format(dateFormatter),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.outline
                                 )
                                 if (!disease.active) {
                                     Surface(
-                                        shape = MaterialTheme.shapes.extraSmall,
+                                        shape = RoundedCornerShape(6.dp),
                                         color = MaterialTheme.colorScheme.errorContainer
                                     ) {
                                         Text(
                                             stringResource(R.string.disease_resolved),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onErrorContainer,
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp)
                                         )
                                     }
                                 }
                             }
-                        }
-                        if (disease.notes.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                disease.notes,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
                         }
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
                         Icon(
                             Icons.Outlined.DeleteOutline,
                             contentDescription = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f),
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f),
                             modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Creation date
-                Text(
-                    stringResource(R.string.created_date, disease.createdAt.format(dateFormatter)),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline
-                )
+                if (disease.notes.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        disease.notes,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 // Group badge
                 if (disease.group.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
@@ -505,30 +657,50 @@ private fun DiseaseCard(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                // Count chips in a Surface row
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow
                 ) {
-                    CountChip(
-                        icon = Icons.Default.Sick,
-                        count = symptomCount,
-                        label = stringResource(R.string.symptoms_title),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    CountChip(
-                        icon = Icons.Default.MonitorHeart,
-                        count = vitalCount,
-                        label = stringResource(R.string.nav_vitals),
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                    CountChip(
-                        icon = Icons.Default.Medication,
-                        count = medicationCount,
-                        label = stringResource(R.string.nav_medications),
-                        color = MaterialTheme.colorScheme.secondary
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        CountChip(
+                            icon = Icons.Default.Sick,
+                            count = symptomCount,
+                            label = stringResource(R.string.symptoms_title),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(1.dp)
+                                .height(24.dp)
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                        )
+                        CountChip(
+                            icon = Icons.Default.MonitorHeart,
+                            count = vitalCount,
+                            label = stringResource(R.string.nav_vitals),
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(1.dp)
+                                .height(24.dp)
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                        )
+                        CountChip(
+                            icon = Icons.Default.Medication,
+                            count = medicationCount,
+                            label = stringResource(R.string.nav_medications),
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 }
             }
         }
@@ -542,9 +714,15 @@ private fun CountChip(
     label: String,
     color: androidx.compose.ui.graphics.Color
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(14.dp), tint = color)
-        Text("$count", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = color)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Icon(icon, contentDescription = null, modifier = Modifier.size(14.dp), tint = color)
+            Text("$count", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = color)
+        }
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
