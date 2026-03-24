@@ -7,10 +7,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.healthjournal.presentation.screen.ai.AiChatScreen
 import com.healthjournal.presentation.screen.ai.ReportsScreen
+import com.healthjournal.presentation.screen.appointments.AppointmentsScreen
+import com.healthjournal.presentation.screen.dashboard.DashboardScreen
 import com.healthjournal.presentation.screen.disease.DiseaseDetailScreen
 import com.healthjournal.presentation.screen.disease.DiseaseListScreen
 import com.healthjournal.presentation.screen.disease.FamilyDiseaseComparisonScreen
+import com.healthjournal.presentation.screen.family.FamilyDashboardScreen
+import com.healthjournal.presentation.screen.gamification.AchievementsScreen
 import com.healthjournal.presentation.screen.home.AddSymptomScreen
 import com.healthjournal.presentation.screen.home.AddVitalScreen
 import com.healthjournal.presentation.screen.home.HomeScreen
@@ -18,8 +23,11 @@ import com.healthjournal.presentation.screen.home.ProfileSelectionScreen
 import com.healthjournal.presentation.screen.medications.AddMedicationScreen
 import com.healthjournal.presentation.screen.medications.MedicationsScreen
 import com.healthjournal.presentation.screen.onboarding.OnboardingScreen
+import com.healthjournal.presentation.screen.reminders.RemindersScreen
+import com.healthjournal.presentation.screen.security.SecuritySettingsScreen
 import com.healthjournal.presentation.screen.settings.AiSettingsScreen
 import com.healthjournal.presentation.screen.settings.FamilyMembersScreen
+import com.healthjournal.presentation.screen.settings.HealthConnectScreen
 import com.healthjournal.presentation.screen.settings.LanguageSettingsScreen
 import com.healthjournal.presentation.screen.settings.PredefinedDataSettingsScreen
 import com.healthjournal.presentation.screen.disease.DiseaseAiAnalysisScreen
@@ -165,7 +173,15 @@ fun HealthNavHost(
                 onFamilyMembers = { navController.navigate(Screen.FamilyMembers.route) },
                 onPredefinedData = { navController.navigate(Screen.PredefinedDataSettings.route) },
                 onDeletedDiseases = { navController.navigate(Screen.DeletedDiseases.route) },
-                onSubscription = { navController.navigate(Screen.Subscription.route) }
+                onSubscription = { navController.navigate(Screen.Subscription.route) },
+                onReminders = { navController.navigate(Screen.Reminders.route) },
+                onDashboard = { navController.navigate(Screen.Dashboard.route) },
+                onAppointments = { navController.navigate(Screen.Appointments.route) },
+                onAiChat = { navController.navigate(Screen.AiChat.route) },
+                onSecurity = { navController.navigate(Screen.SecuritySettings.route) },
+                onAchievements = { navController.navigate(Screen.Achievements.route) },
+                onHealthConnect = { navController.navigate(Screen.HealthConnect.route) },
+                onFamilyDashboard = { navController.navigate(Screen.FamilyDashboard.route) }
             )
         }
         composable(Screen.Subscription.route) {
@@ -188,6 +204,32 @@ fun HealthNavHost(
         }
         composable(Screen.DeletedDiseases.route) {
             DeletedDiseasesScreen(onBack = { navController.popBackStack() })
+        }
+
+        // New screens
+        composable(Screen.Reminders.route) {
+            RemindersScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.Dashboard.route) {
+            DashboardScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.Appointments.route) {
+            AppointmentsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.AiChat.route) {
+            AiChatScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.SecuritySettings.route) {
+            SecuritySettingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.Achievements.route) {
+            AchievementsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.HealthConnect.route) {
+            HealthConnectScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.FamilyDashboard.route) {
+            FamilyDashboardScreen(onBack = { navController.popBackStack() })
         }
     }
 }

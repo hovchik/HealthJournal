@@ -68,5 +68,22 @@ class AiService(
         return provider.analyzePatterns(sanitizedInput, settings)
     }
 
+    suspend fun generateResponse(prompt: String): String {
+        val settings = AiSettings()
+        val input = AiInput(
+            symptoms = emptyList(),
+            vitals = emptyList(),
+            medications = emptyList(),
+            periodDays = 7,
+            outputLanguage = "ru"
+        )
+        val provider = getActiveProvider(settings)
+        val result = provider.generateDoctorSummary(
+            input.copy(),
+            settings
+        )
+        return result.text.ifBlank { "No response generated" }
+    }
+
     fun getAllProviders(): List<AiProvider> = registry.getAll()
 }

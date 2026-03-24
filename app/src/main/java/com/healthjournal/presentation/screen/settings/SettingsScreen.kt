@@ -40,6 +40,14 @@ fun SettingsScreen(
     onPredefinedData: () -> Unit,
     onDeletedDiseases: () -> Unit,
     onSubscription: () -> Unit,
+    onReminders: () -> Unit = {},
+    onDashboard: () -> Unit = {},
+    onAppointments: () -> Unit = {},
+    onAiChat: () -> Unit = {},
+    onSecurity: () -> Unit = {},
+    onAchievements: () -> Unit = {},
+    onHealthConnect: () -> Unit = {},
+    onFamilyDashboard: () -> Unit = {},
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -315,7 +323,8 @@ fun SettingsScreen(
                                 val themeOptions = listOf(
                                     "SYSTEM" to stringResource(R.string.theme_system),
                                     "LIGHT" to stringResource(R.string.theme_light),
-                                    "DARK" to stringResource(R.string.theme_dark)
+                                    "DARK" to stringResource(R.string.theme_dark),
+                                    "AMOLED" to stringResource(R.string.theme_amoled)
                                 )
                                 themeOptions.forEachIndexed { index, (mode, label) ->
                                     SegmentedButton(
@@ -331,6 +340,7 @@ fun SettingsScreen(
                                                     when (mode) {
                                                         "LIGHT" -> Icons.Default.LightMode
                                                         "DARK" -> Icons.Default.DarkMode
+                                                        "AMOLED" -> Icons.Default.Contrast
                                                         else -> Icons.Default.SettingsBrightness
                                                     },
                                                     contentDescription = null,
@@ -353,6 +363,78 @@ fun SettingsScreen(
                         title = stringResource(R.string.ai_settings_title),
                         subtitle = stringResource(R.string.ai_settings_desc),
                         onClick = onAiSettings
+                    )
+                }
+            }
+
+            // Features section
+            SettingsSection(
+                title = stringResource(R.string.settings_section_features),
+                color = MaterialTheme.colorScheme.primary
+            ) {
+                SettingsGroupCard {
+                    SettingsListItem(
+                        icon = Icons.Default.Notifications,
+                        iconTint = MaterialTheme.colorScheme.error,
+                        title = stringResource(R.string.reminders_title),
+                        subtitle = stringResource(R.string.reminders_desc),
+                        onClick = onReminders
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.Timeline,
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        title = stringResource(R.string.dashboard_title),
+                        subtitle = stringResource(R.string.dashboard_desc),
+                        onClick = onDashboard
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.Event,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.appointments_title),
+                        subtitle = stringResource(R.string.appointments_desc),
+                        onClick = onAppointments
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.Chat,
+                        iconTint = MaterialTheme.colorScheme.secondary,
+                        title = stringResource(R.string.ai_chat_title),
+                        subtitle = stringResource(R.string.ai_chat_desc),
+                        onClick = onAiChat
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.Watch,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.health_connect_title),
+                        subtitle = stringResource(R.string.health_connect_desc),
+                        onClick = onHealthConnect
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.FamilyRestroom,
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        title = stringResource(R.string.family_dashboard_title),
+                        subtitle = stringResource(R.string.family_dashboard_desc),
+                        onClick = onFamilyDashboard
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.EmojiEvents,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        title = stringResource(R.string.achievements_title),
+                        subtitle = stringResource(R.string.achievements_desc),
+                        onClick = onAchievements
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.Security,
+                        iconTint = MaterialTheme.colorScheme.error,
+                        title = stringResource(R.string.security_title),
+                        subtitle = stringResource(R.string.security_desc),
+                        onClick = onSecurity
                     )
                 }
             }

@@ -42,6 +42,36 @@ private val LightColorScheme = lightColorScheme(
     surfaceContainerHighest = Color(0xFFE1E4DF)
 )
 
+// AMOLED pure black theme
+private val AmoledColorScheme = darkColorScheme(
+    primary = Color(0xFF95D5B2),
+    onPrimary = Color(0xFF003822),
+    primaryContainer = Color(0xFF1B5139),
+    onPrimaryContainer = Color(0xFFB7E4C7),
+    secondary = Color(0xFFA7D7C5),
+    onSecondary = Color(0xFF11372A),
+    secondaryContainer = Color(0xFF295240),
+    onSecondaryContainer = Color(0xFFD8F3DC),
+    tertiary = Color(0xFF89CFF0),
+    onTertiary = Color(0xFF003350),
+    tertiaryContainer = Color(0xFF0D3B5E),
+    onTertiaryContainer = Color(0xFFBDE0FE),
+    error = Color(0xFFFFB4AB),
+    background = Color(0xFF000000),
+    onBackground = Color(0xFFE1E4DF),
+    surface = Color(0xFF000000),
+    onSurface = Color(0xFFE1E4DF),
+    surfaceVariant = Color(0xFF2A2D2A),
+    onSurfaceVariant = Color(0xFFC1C9BF),
+    outline = Color(0xFF8B938A),
+    outlineVariant = Color(0xFF2A2D2A),
+    surfaceContainerLowest = Color(0xFF000000),
+    surfaceContainerLow = Color(0xFF0A0C0A),
+    surfaceContainer = Color(0xFF111311),
+    surfaceContainerHigh = Color(0xFF1A1C1A),
+    surfaceContainerHighest = Color(0xFF222422)
+)
+
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF95D5B2),
     onPrimary = Color(0xFF003822),
@@ -165,13 +195,15 @@ fun HealthJournalTheme(
     themeMode: String = "SYSTEM",
     content: @Composable () -> Unit
 ) {
+    val isAmoled = themeMode == "AMOLED"
     val darkTheme = when (themeMode) {
-        "DARK" -> true
+        "DARK", "AMOLED" -> true
         "LIGHT" -> false
         else -> isSystemInDarkTheme()
     }
 
     val colorScheme = when {
+        isAmoled -> AmoledColorScheme
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context)
