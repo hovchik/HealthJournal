@@ -10,6 +10,7 @@ import com.healthjournal.domain.repository.AiReportRepository
 import com.healthjournal.domain.repository.DiseaseRepository
 import com.healthjournal.domain.repository.FamilyMemberRepository
 import com.healthjournal.domain.repository.MedicationRepository
+import com.healthjournal.domain.repository.SubscriptionRepository
 import com.healthjournal.domain.repository.SymptomRepository
 import com.healthjournal.domain.repository.UserSettingsRepository
 import com.healthjournal.domain.repository.VitalSignRepository
@@ -25,7 +26,8 @@ class GenerateAiSummaryUseCase(
     private val medicationRepository: MedicationRepository,
     private val userSettingsRepository: UserSettingsRepository,
     private val familyMemberRepository: FamilyMemberRepository,
-    private val diseaseRepository: DiseaseRepository
+    private val diseaseRepository: DiseaseRepository,
+    private val subscriptionRepository: SubscriptionRepository? = null
 ) {
     suspend operator fun invoke(
         periodDays: Int = 2,
@@ -85,7 +87,29 @@ class GenerateAiSummaryUseCase(
         )
 
         val prompt = PromptTemplate.buildSummaryPrompt(input)
+
+        // Check subscription for cloud AI usage
+        subscriptionRepository?.let { subRepo ->
+            val isCloudProvider = aiSettings.selectedProviderId != "local"
+            if (isCloudProvider) {
+                subRepo.resetMonthlyUsageIfNeeded()
+                val status = subRepo.getSubscriptionStatus().first()
+                if (!status.canUseCloudAi) {
+                    throw SubscriptionRequiredException()
+                }
+            }
+        }
+
         val result = aiService.generateDoctorSummary(input, aiSettings)
+
+        // Increment cloud AI usage after successful call
+        subscriptionRepository?.let { subRepo ->
+            val isCloudProvider = result.providerId.key != "local"
+            if (isCloudProvider) {
+                subRepo.incrementCloudAiUsage()
+            }
+        }
+
         val providerName = result.modelUsed.ifBlank { result.providerId.key }
         val report = AiReport(
             content = result.text,
@@ -110,7 +134,8 @@ class GeneratePatternAnalysisUseCase(
     private val vitalSignRepository: VitalSignRepository,
     private val userSettingsRepository: UserSettingsRepository,
     private val familyMemberRepository: FamilyMemberRepository,
-    private val diseaseRepository: DiseaseRepository
+    private val diseaseRepository: DiseaseRepository,
+    private val subscriptionRepository: SubscriptionRepository? = null
 ) {
     suspend operator fun invoke(
         periodDays: Int = 4,
@@ -167,7 +192,29 @@ class GeneratePatternAnalysisUseCase(
         )
 
         val prompt = PromptTemplate.buildPatternPrompt(input)
+
+        // Check subscription for cloud AI usage
+        subscriptionRepository?.let { subRepo ->
+            val isCloudProvider = aiSettings.selectedProviderId != "local"
+            if (isCloudProvider) {
+                subRepo.resetMonthlyUsageIfNeeded()
+                val status = subRepo.getSubscriptionStatus().first()
+                if (!status.canUseCloudAi) {
+                    throw SubscriptionRequiredException()
+                }
+            }
+        }
+
         val result = aiService.analyzePatterns(input, aiSettings)
+
+        // Increment cloud AI usage after successful call
+        subscriptionRepository?.let { subRepo ->
+            val isCloudProvider = result.providerId.key != "local"
+            if (isCloudProvider) {
+                subRepo.incrementCloudAiUsage()
+            }
+        }
+
         val providerName = result.modelUsed.ifBlank { result.providerId.key }
         val report = AiReport(
             content = result.text,
@@ -193,7 +240,8 @@ class GenerateDiseaseAnalysisUseCase(
     private val medicationRepository: MedicationRepository,
     private val userSettingsRepository: UserSettingsRepository,
     private val familyMemberRepository: FamilyMemberRepository,
-    private val diseaseRepository: DiseaseRepository
+    private val diseaseRepository: DiseaseRepository,
+    private val subscriptionRepository: SubscriptionRepository? = null
 ) {
     suspend operator fun invoke(
         diseaseId: Long,
@@ -251,7 +299,29 @@ class GenerateDiseaseAnalysisUseCase(
         )
 
         val prompt = PromptTemplate.buildDiseaseAnalysisPrompt(input)
+
+        // Check subscription for cloud AI usage
+        subscriptionRepository?.let { subRepo ->
+            val isCloudProvider = aiSettings.selectedProviderId != "local"
+            if (isCloudProvider) {
+                subRepo.resetMonthlyUsageIfNeeded()
+                val status = subRepo.getSubscriptionStatus().first()
+                if (!status.canUseCloudAi) {
+                    throw SubscriptionRequiredException()
+                }
+            }
+        }
+
         val result = aiService.generateDoctorSummary(input, aiSettings)
+
+        // Increment cloud AI usage after successful call
+        subscriptionRepository?.let { subRepo ->
+            val isCloudProvider = result.providerId.key != "local"
+            if (isCloudProvider) {
+                subRepo.incrementCloudAiUsage()
+            }
+        }
+
         val providerName = result.modelUsed.ifBlank { result.providerId.key }
         val report = AiReport(
             content = result.text,
@@ -274,6 +344,10 @@ class GetAllReportsUseCase(
 ) {
     operator fun invoke(): Flow<List<AiReport>> = repository.getAllReports()
 }
+
+class SubscriptionRequiredException : Exception(
+    "Cloud AI requires an active Pro or Unlimited subscription"
+)
 
 private data class PatientInfo(
     val weight: String,

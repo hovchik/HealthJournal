@@ -101,6 +101,9 @@ dependencies {
 // Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.7.0")
 
+    // Google Play Billing (subscriptions)
+    implementation("com.android.billingclient:billing-ktx:7.1.1")
+
     // Test
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")

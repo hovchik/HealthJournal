@@ -26,6 +26,7 @@ import com.healthjournal.presentation.screen.disease.DiseaseAiAnalysisScreen
 import com.healthjournal.presentation.screen.settings.DeletedDiseasesScreen
 import com.healthjournal.presentation.screen.settings.SettingsScreen
 import com.healthjournal.presentation.screen.settings.UserInfoScreen
+import com.healthjournal.presentation.screen.subscription.SubscriptionScreen
 import com.healthjournal.presentation.screen.vitals.VitalsScreen
 
 @Composable
@@ -163,8 +164,12 @@ fun HealthNavHost(
                 onUserInfo = { navController.navigate(Screen.UserInfo.route) },
                 onFamilyMembers = { navController.navigate(Screen.FamilyMembers.route) },
                 onPredefinedData = { navController.navigate(Screen.PredefinedDataSettings.route) },
-                onDeletedDiseases = { navController.navigate(Screen.DeletedDiseases.route) }
+                onDeletedDiseases = { navController.navigate(Screen.DeletedDiseases.route) },
+                onSubscription = { navController.navigate(Screen.Subscription.route) }
             )
+        }
+        composable(Screen.Subscription.route) {
+            SubscriptionScreen(onBack = { navController.popBackStack() })
         }
         composable(Screen.LanguageSettings.route) {
             LanguageSettingsScreen(onBack = { navController.popBackStack() })

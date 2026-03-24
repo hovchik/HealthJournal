@@ -193,6 +193,7 @@ class AppContainer(context: Context) {
     val userSettingsRepository: UserSettingsRepository = UserSettingsRepositoryImpl(context)
     val familyMemberRepository: FamilyMemberRepository = FamilyMemberRepositoryImpl(familyMemberStore)
     val diseaseRepository: DiseaseRepository = DiseaseRepositoryImpl(diseaseStore)
+    val subscriptionRepository: SubscriptionRepository = SubscriptionRepositoryImpl(context)
 
     // Use Cases
     val getAllSymptoms = GetAllSymptomsUseCase(symptomRepository)
@@ -231,10 +232,15 @@ class AppContainer(context: Context) {
     val getDeletedDiseasesByProfileId = GetDeletedDiseasesByProfileIdUseCase(diseaseRepository)
     val permanentlyDeleteDisease = PermanentlyDeleteDiseaseUseCase(diseaseRepository)
 
-    val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository, diseaseRepository)
-    val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, userSettingsRepository, familyMemberRepository, diseaseRepository)
-    val generateDiseaseAnalysis = GenerateDiseaseAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository, diseaseRepository)
+    val generateAiSummary = GenerateAiSummaryUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository, diseaseRepository, subscriptionRepository)
+    val generatePatternAnalysis = GeneratePatternAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, userSettingsRepository, familyMemberRepository, diseaseRepository, subscriptionRepository)
+    val generateDiseaseAnalysis = GenerateDiseaseAnalysisUseCase(aiService, aiReportRepository, symptomRepository, vitalSignRepository, medicationRepository, userSettingsRepository, familyMemberRepository, diseaseRepository, subscriptionRepository)
     val getAllReports = GetAllReportsUseCase(aiReportRepository)
+
+    // Subscription Use Cases
+    val getSubscriptionStatus = GetSubscriptionStatusUseCase(subscriptionRepository)
+    val setSubscriptionPlan = SetSubscriptionPlanUseCase(subscriptionRepository)
+    val incrementCloudAiUsage = IncrementCloudAiUsageUseCase(subscriptionRepository)
 
     // Export/Import
     val dataExportImportManager = DataExportImportManager(

@@ -498,4 +498,35 @@
     <!-- Storage permission -->
     <string name="storage_permission_required">\u626b\u63cf\u6a21\u578b\u9700\u8981\u5b58\u50a8\u8bbf\u95ee\u6743\u9650</string>
     <string name="storage_permission_grant">\u6388\u4e88\u5b58\u50a8\u8bbf\u95ee\u6743\u9650</string>
+
+    <!-- Subscription -->
+    <string name="subscription_title">\u8ba2\u9605</string>
+    <string name="subscription_desc">\u7ba1\u7406\u8ba1\u5212\u548c Cloud AI</string>
+    <string name="subscription_current_plan">\u5f53\u524d\u8ba1\u5212</string>
+    <string name="subscription_plan_free">\u514d\u8d39</string>
+    <string name="subscription_plan_basic">\u57fa\u7840\u7248</string>
+    <string name="subscription_plan_pro">Pro</string>
+    <string name="subscription_plan_unlimited">\u65e0\u9650\u7248</string>
+    <string name="subscription_per_month">/\u6708</string>
+    <string name="subscription_free_price">\u514d\u8d39</string>
+    <string name="subscription_recommended">\u63a8\u8350</string>
+    <string name="subscription_subscribe">\u8ba2\u9605</string>
+    <string name="subscription_current">\u5f53\u524d\u8ba1\u5212</string>
+    <string name="subscription_cloud_ai_usage">Cloud AI \u4f7f\u7528\u60c5\u51b5</string>
+    <string name="subscription_reports_used">\u5df2\u4f7f\u7528 %1$d / %2$d \u4efd\u62a5\u544a</string>
+    <string name="subscription_unlimited_reports">\u5df2\u751f\u6210 %1$d \u4efd\u62a5\u544a\uff08\u65e0\u9650\uff09</string>
+    <string name="subscription_pricing_title">Cloud AI \u5b9a\u4ef7\u8bf4\u660e</string>
+    <string name="subscription_pricing_desc">\u6bcf\u4efd AI \u62a5\u544a\u4f7f\u7528\u7ea6 2700\u20133000 \u4e2a token\u3002Pro\uff08$3.99/\u6708\uff0c30 \u4efd\u62a5\u544a\uff09\u8986\u76d6 Claude Sonnet API \u6210\u672c\u3002\u65e0\u9650\u7248\uff08$7.99/\u6708\uff09\u9002\u5408\u91cd\u5ea6\u7528\u6237\u3002</string>
+    <string name="subscription_feat_vitals">\u75c7\u72b6\u3001\u751f\u547d\u4f53\u5f81\u548c\u836f\u7269\u8ddf\u8e2a</string>
+    <string name="subscription_feat_local_ai">\u672c\u5730 AI \u5206\u6790\uff08\u8bbe\u5907\u7aef\uff09</string>
+    <string name="subscription_feat_one_family">1 \u4e2a\u5bb6\u5ead\u6210\u5458\u914d\u7f6e</string>
+    <string name="subscription_feat_cloud_ai">Cloud AI\uff08Claude\u3001GPT\uff09</string>
+    <string name="subscription_feat_pdf">PDF \u62a5\u544a\u5bfc\u51fa</string>
+    <string name="subscription_feat_export">\u5b8c\u6574\u6570\u636e\u5bfc\u51fa/\u5bfc\u5165</string>
+    <string name="subscription_feat_unlimited_family">\u65e0\u9650\u5bb6\u5ead\u6210\u5458\u914d\u7f6e</string>
+    <string name="subscription_feat_cloud_ai_30">Cloud AI \u2014 30 \u4efd\u62a5\u544a/\u6708</string>
+    <string name="subscription_feat_cloud_ai_unlimited">Cloud AI \u2014 \u65e0\u9650</string>
+    <string name="subscription_required">Cloud AI \u9700\u8981 Pro \u6216\u65e0\u9650\u7248\u8ba2\u9605</string>
+    <string name="subscription_limit_reached">\u672c\u6708 Cloud AI \u62a5\u544a\u989d\u5ea6\u5df2\u7528\u5b8c</string>
+    <string name="settings_section_subscription">\u8ba2\u9605</string>
 </resources>
