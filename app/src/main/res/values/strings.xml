@@ -155,6 +155,8 @@
     <string name="ai_select_provider">Выберите провайдера</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-совместимый</string>
+    <string name="ai_provider_deepseek">DeepSeek</string>
+    <string name="ai_provider_gemini">Google Gemini</string>
     <string name="ai_provider_local">Локальный анализ (на устройстве)</string>
     <string name="ai_privacy_redact">Редактирование данных</string>
     <string name="ai_privacy_redact_desc">Удалять телефоны и email перед отправкой</string>
@@ -224,6 +226,24 @@
     <string name="custom_label">Своё</string>
     <string name="predefined_relations_section">Родство</string>
     <string name="add_custom_relation">Добавить своё родство</string>
+    <string name="predefined_groups_section">Группы</string>
+    <string name="add_custom_group">Добавить свою группу</string>
+    <string name="group_chronic">Хронические</string>
+    <string name="group_seasonal">Сезонные</string>
+    <string name="group_allergies">Аллергии</string>
+    <string name="group_infections">Инфекции</string>
+    <string name="group_cardiovascular">Сердечно-сосудистые</string>
+    <string name="group_respiratory">Респираторные</string>
+    <string name="group_gastrointestinal">Желудочно-кишечные</string>
+    <string name="group_neurological">Неврологические</string>
+    <string name="group_musculoskeletal">Опорно-двигательные</string>
+    <string name="group_dermatological">Дерматологические</string>
+    <string name="group_mental_health">Психическое здоровье</string>
+    <string name="group_endocrine">Эндокринные</string>
+    <string name="group_urological">Урологические</string>
+    <string name="group_dental">Стоматологические</string>
+    <string name="group_eye">Глазные</string>
+    <string name="group_other">Другое</string>
     <string name="ai_browse_model">Обзор</string>
 
     <!-- Settings Sections -->

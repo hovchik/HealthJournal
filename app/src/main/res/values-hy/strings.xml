@@ -155,6 +155,8 @@
     <string name="ai_select_provider">Ընտրեք մատակարարը</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI-համատեղելի</string>
+    <string name="ai_provider_deepseek">DeepSeek</string>
+    <string name="ai_provider_gemini">Google Gemini</string>
     <string name="ai_provider_local">Տեղական մոդել</string>
     <string name="ai_privacy_redact">Տվյալների խմբագրում</string>
     <string name="ai_privacy_redact_desc">Հեռացնել հեռախոսները և էլ. հասցեները ուղարկելից առաջ</string>
@@ -222,9 +224,25 @@
     <string name="custom_label">Սեփական</string>
     <string name="predefined_relations_section">Ազգակցություններ</string>
     <string name="add_custom_relation">Ավելացնել սեփական ազգակցություն</string>
+    <string name="predefined_groups_section">Խմբեր</string>
+    <string name="add_custom_group">Ավելացնել սեփական խմբ</string>
+    <string name="group_chronic">Քրոնիկ</string>
+    <string name="group_seasonal">Սեզոնային</string>
+    <string name="group_allergies">Ալերգիաներ</string>
+    <string name="group_infections">Վարակներ</string>
+    <string name="group_cardiovascular">Սիրտ-անոթային</string>
+    <string name="group_respiratory">Շնչառական</string>
+    <string name="group_gastrointestinal">Ստամոքսային</string>
+    <string name="group_neurological">Նեյրոլոգիական</string>
+    <string name="group_musculoskeletal">Մկանային-կմաu056dքային</string>
+    <string name="group_dermatological">Մաշկային</string>
+    <string name="group_mental_health">Հոգեկան առողջություն</string>
+    <string name="group_endocrine">Էնդոկրին</string>
+    <string name="group_urological">Ուրոլոգիական</string>
+    <string name="group_dental">Ատամնաբուժական</string>
+    <string name="group_eye">Աչքի</string>
+    <string name="group_other">Այլ</string>
     <string name="ai_browse_model">Ընտրել</string>
-
-    <!-- Settings Sections -->
     <string name="settings_section_profile">Պրոֆիլ</string>
     <string name="settings_section_data">Տվյալներ</string>
     <string name="settings_section_preferences">Կարգավորումներ</string>

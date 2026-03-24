@@ -155,6 +155,8 @@
     <string name="ai_select_provider">选择提供商</string>
     <string name="ai_provider_claude">Claude (Anthropic)</string>
     <string name="ai_provider_openai">OpenAI 兼容</string>
+    <string name="ai_provider_deepseek">DeepSeek</string>
+    <string name="ai_provider_gemini">Google Gemini</string>
     <string name="ai_provider_local">本地分析（设备端）</string>
     <string name="ai_privacy_redact">数据脱敏</string>
     <string name="ai_privacy_redact_desc">发送前删除电话号码和电子邮件</string>
@@ -224,6 +226,24 @@
     <string name="custom_label">自定义</string>
     <string name="predefined_relations_section">关系</string>
     <string name="add_custom_relation">添加自定义关系</string>
+    <string name="predefined_groups_section">分组</string>
+    <string name="add_custom_group">添加自定义分组</string>
+    <string name="group_chronic">慢性病</string>
+    <string name="group_seasonal">季节性</string>
+    <string name="group_allergies">过敏</string>
+    <string name="group_infections">感染</string>
+    <string name="group_cardiovascular">心血管</string>
+    <string name="group_respiratory">呼吸系统</string>
+    <string name="group_gastrointestinal">消化系统</string>
+    <string name="group_neurological">神经系统</string>
+    <string name="group_musculoskeletal">肌肉骨骼</string>
+    <string name="group_dermatological">皮肤科</string>
+    <string name="group_mental_health">心理健康</string>
+    <string name="group_endocrine">内分泌</string>
+    <string name="group_urological">泌尿科</string>
+    <string name="group_dental">口腔科</string>
+    <string name="group_eye">眼科</string>
+    <string name="group_other">其他</string>
     <string name="ai_browse_model">浏览</string>
 
     <!-- Settings Sections -->

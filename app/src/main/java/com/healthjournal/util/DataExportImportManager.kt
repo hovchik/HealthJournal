@@ -46,12 +46,15 @@ data class PredefinedDataBackup(
     val disabledSymptoms: List<String> = emptyList(),
     val disabledMedications: List<String> = emptyList(),
     val disabledRelations: List<String> = emptyList(),
+    val disabledGroups: List<String> = emptyList(),
     val customSymptoms: List<String> = emptyList(),
     val customMedications: List<String> = emptyList(),
     val customRelations: List<String> = emptyList(),
+    val customGroups: List<String> = emptyList(),
     val enabledSymptomKeys: List<String> = emptyList(),
     val enabledMedicationKeys: List<String> = emptyList(),
-    val enabledRelationKeys: List<String> = emptyList()
+    val enabledRelationKeys: List<String> = emptyList(),
+    val enabledGroupKeys: List<String> = emptyList()
 )
 
 class DataExportImportManager(
@@ -81,14 +84,18 @@ class DataExportImportManager(
         val customSymptoms = predefinedPrefs[PredefinedDataKeys.CUSTOM_SYMPTOMS] ?: emptySet()
         val customMedications = predefinedPrefs[PredefinedDataKeys.CUSTOM_MEDICATIONS] ?: emptySet()
         val customRelations = predefinedPrefs[PredefinedDataKeys.CUSTOM_RELATIONS] ?: emptySet()
+        val disabledGroups = predefinedPrefs[PredefinedDataKeys.DISABLED_GROUPS] ?: emptySet()
+        val customGroups = predefinedPrefs[PredefinedDataKeys.CUSTOM_GROUPS] ?: emptySet()
 
         val predefinedData = PredefinedDataBackup(
             disabledSymptoms = disabledSymptoms.toList(),
             disabledMedications = disabledMedications.toList(),
             disabledRelations = disabledRelations.toList(),
+            disabledGroups = disabledGroups.toList(),
             customSymptoms = customSymptoms.toList(),
             customMedications = customMedications.toList(),
             customRelations = customRelations.toList(),
+            customGroups = customGroups.toList(),
             enabledSymptomKeys = PredefinedData.symptoms
                 .filter { it.key !in disabledSymptoms }
                 .map { it.key } + customSymptoms.toList(),
@@ -97,7 +104,10 @@ class DataExportImportManager(
                 .map { it.key } + customMedications.toList(),
             enabledRelationKeys = PredefinedData.relationshipItems
                 .filter { it.key !in disabledRelations }
-                .map { it.key } + customRelations.toList()
+                .map { it.key } + customRelations.toList(),
+            enabledGroupKeys = PredefinedData.groupItems
+                .filter { it.key !in disabledGroups }
+                .map { it.key } + customGroups.toList()
         )
 
         return BackupData(
@@ -200,6 +210,8 @@ class DataExportImportManager(
                 mutable[PredefinedDataKeys.CUSTOM_SYMPTOMS] = pd.customSymptoms.toSet()
                 mutable[PredefinedDataKeys.CUSTOM_MEDICATIONS] = pd.customMedications.toSet()
                 mutable[PredefinedDataKeys.CUSTOM_RELATIONS] = pd.customRelations.toSet()
+                mutable[PredefinedDataKeys.DISABLED_GROUPS] = pd.disabledGroups.toSet()
+                mutable[PredefinedDataKeys.CUSTOM_GROUPS] = pd.customGroups.toSet()
                 mutable
             }
         }

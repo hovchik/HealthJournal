@@ -4,7 +4,9 @@ import android.content.Context
 import com.healthjournal.BuildConfig
 import com.healthjournal.data.ai.AiPreferences
 import com.healthjournal.data.ai.ClaudeAiProviderImpl
+import com.healthjournal.data.ai.DeepSeekAiProviderImpl
 import com.healthjournal.data.ai.DeviceAiCapabilityDetector
+import com.healthjournal.data.ai.GeminiAiProviderImpl
 import com.healthjournal.data.ai.LocalAiBenchmarkRunner
 import com.healthjournal.data.ai.LocalModelManager
 import com.healthjournal.data.ai.ModelCompatibilityValidator
@@ -22,11 +24,14 @@ import com.healthjournal.data.local.db.AppDatabase
 import com.healthjournal.data.local.JsonFileStore
 import com.healthjournal.data.local.dto.*
 import com.healthjournal.data.remote.api.ClaudeApi
+import com.healthjournal.data.remote.gemini.GeminiApi
 import com.healthjournal.data.remote.openai.OpenAiApi
 import com.healthjournal.data.repository.*
 import com.healthjournal.domain.ai.AiProviderRegistry
 import com.healthjournal.domain.ai.AiService
 import com.healthjournal.domain.model.ai.ClaudeConfig
+import com.healthjournal.domain.model.ai.DeepSeekConfig
+import com.healthjournal.domain.model.ai.GeminiConfig
 import com.healthjournal.domain.model.ai.OpenAiConfig
 import com.healthjournal.domain.repository.*
 import com.healthjournal.domain.usecase.*
@@ -141,6 +146,45 @@ class AppContainer(context: Context) {
             .create(OpenAiApi::class.java)
     }
 
+    private fun buildDeepSeekApi(config: DeepSeekConfig): OpenAiApi {
+        val client = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer ${config.apiKey}")
+                    .addHeader("Content-Type", "application/json")
+                    .build()
+                chain.proceed(request)
+            }
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(config.timeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(config.timeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl(config.baseUrl)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create(OpenAiApi::class.java)
+    }
+
+    private fun buildGeminiApi(config: GeminiConfig): GeminiApi {
+        val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(config.timeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(config.timeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl(config.baseUrl)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create(GeminiApi::class.java)
+    }
+
     // === On-device AI infrastructure ===
 
     // Database
@@ -168,18 +212,20 @@ class AppContainer(context: Context) {
     // AI providers
     private val claudeProvider = ClaudeAiProviderImpl(::buildClaudeApi)
     private val openAiProvider = OpenAiCompatibleProviderImpl(::buildOpenAiApi)
+    private val deepSeekProvider = DeepSeekAiProviderImpl(::buildDeepSeekApi)
+    private val geminiProvider = GeminiAiProviderImpl(::buildGeminiApi)
     private val customLocalProvider = CustomLocalModelProvider(
         localModelManager, liteRtRuntime, llamaCppRuntime
     )
     private val systemAiProvider = SystemAiProvider(systemAiRuntime)
 
     val aiProviderRegistry = AiProviderRegistry(
-        listOf(claudeProvider, openAiProvider, customLocalProvider)
+        listOf(claudeProvider, openAiProvider, deepSeekProvider, geminiProvider, customLocalProvider)
     )
 
     val aiProviderSelector = AiProviderSelector(
         aiPreferences, systemAiProvider, customLocalProvider,
-        listOf(claudeProvider, openAiProvider), systemAiRuntime
+        listOf(claudeProvider, openAiProvider, deepSeekProvider, geminiProvider), systemAiRuntime
     )
 
     private val privacyRedactor = PrivacyRedactor()

@@ -40,6 +40,14 @@ class PredefinedDataSettingsViewModel(application: Application) : AndroidViewMod
         .map { it[PredefinedDataKeys.CUSTOM_RELATIONS] ?: emptySet() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
+    val disabledGroups: StateFlow<Set<String>> = dataStore.data
+        .map { it[PredefinedDataKeys.DISABLED_GROUPS] ?: emptySet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
+    val customGroups: StateFlow<Set<String>> = dataStore.data
+        .map { it[PredefinedDataKeys.CUSTOM_GROUPS] ?: emptySet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
     fun toggleSymptom(key: String, enabled: Boolean) {
         viewModelScope.launch {
             dataStore.edit { prefs ->
@@ -126,6 +134,36 @@ class PredefinedDataSettingsViewModel(application: Application) : AndroidViewMod
                 val current = prefs[PredefinedDataKeys.CUSTOM_RELATIONS]?.toMutableSet() ?: mutableSetOf()
                 current.remove(name)
                 prefs[PredefinedDataKeys.CUSTOM_RELATIONS] = current
+            }
+        }
+    }
+
+    fun toggleGroup(key: String, enabled: Boolean) {
+        viewModelScope.launch {
+            dataStore.edit { prefs ->
+                val current = prefs[PredefinedDataKeys.DISABLED_GROUPS]?.toMutableSet() ?: mutableSetOf()
+                if (enabled) current.remove(key) else current.add(key)
+                prefs[PredefinedDataKeys.DISABLED_GROUPS] = current
+            }
+        }
+    }
+
+    fun addCustomGroup(name: String) {
+        viewModelScope.launch {
+            dataStore.edit { prefs ->
+                val current = prefs[PredefinedDataKeys.CUSTOM_GROUPS]?.toMutableSet() ?: mutableSetOf()
+                current.add(name)
+                prefs[PredefinedDataKeys.CUSTOM_GROUPS] = current
+            }
+        }
+    }
+
+    fun removeCustomGroup(name: String) {
+        viewModelScope.launch {
+            dataStore.edit { prefs ->
+                val current = prefs[PredefinedDataKeys.CUSTOM_GROUPS]?.toMutableSet() ?: mutableSetOf()
+                current.remove(name)
+                prefs[PredefinedDataKeys.CUSTOM_GROUPS] = current
             }
         }
     }

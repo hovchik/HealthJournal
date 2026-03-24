@@ -162,4 +162,23 @@ object PredefinedData {
         PredefinedItem("friend", R.string.rel_friend),
         PredefinedItem("other", R.string.rel_other)
     )
+
+    val groupItems = listOf(
+        PredefinedItem("chronic", R.string.group_chronic),
+        PredefinedItem("seasonal", R.string.group_seasonal),
+        PredefinedItem("allergies", R.string.group_allergies),
+        PredefinedItem("infections", R.string.group_infections),
+        PredefinedItem("cardiovascular", R.string.group_cardiovascular),
+        PredefinedItem("respiratory", R.string.group_respiratory),
+        PredefinedItem("gastrointestinal", R.string.group_gastrointestinal),
+        PredefinedItem("neurological", R.string.group_neurological),
+        PredefinedItem("musculoskeletal", R.string.group_musculoskeletal),
+        PredefinedItem("dermatological", R.string.group_dermatological),
+        PredefinedItem("mental_health", R.string.group_mental_health),
+        PredefinedItem("endocrine", R.string.group_endocrine),
+        PredefinedItem("urological", R.string.group_urological),
+        PredefinedItem("dental", R.string.group_dental),
+        PredefinedItem("eye", R.string.group_eye),
+        PredefinedItem("other", R.string.group_other)
+    )
 }

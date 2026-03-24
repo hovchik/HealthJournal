@@ -95,6 +95,18 @@ class AiSettingsViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun updateDeepSeekConfig(config: DeepSeekConfig) {
+        viewModelScope.launch {
+            settingsRepo.setAiSettings(aiSettings.value.copy(deepSeekConfig = config))
+        }
+    }
+
+    fun updateGeminiConfig(config: GeminiConfig) {
+        viewModelScope.launch {
+            settingsRepo.setAiSettings(aiSettings.value.copy(geminiConfig = config))
+        }
+    }
+
     fun updateLocalConfig(config: LocalAiConfig) {
         viewModelScope.launch {
             settingsRepo.setAiSettings(aiSettings.value.copy(localAiConfig = config))

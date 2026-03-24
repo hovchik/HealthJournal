@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 enum class AiProviderId(val key: String) {
     CLAUDE("claude"),
     OPENAI_COMPATIBLE("openai"),
+    DEEPSEEK("deepseek"),
+    GEMINI("gemini"),
     LOCAL("local");
 
     companion object {
@@ -50,7 +52,7 @@ data class ValidationResult(
 @Serializable
 data class ClaudeConfig(
     val apiKey: String = "",
-    val model: String = "claude-sonnet-4-20250514",
+    val model: String = "claude-sonnet-4-6-20250627",
     val baseUrl: String = "https://api.anthropic.com/",
     val timeoutSeconds: Int = 60,
     val streamingEnabled: Boolean = false
@@ -60,8 +62,24 @@ data class ClaudeConfig(
 data class OpenAiConfig(
     val baseUrl: String = "https://api.openai.com/v1/",
     val apiKey: String = "",
-    val model: String = "gpt-4o-mini",
+    val model: String = "gpt-4.1-mini",
     val extraHeaders: Map<String, String> = emptyMap()
+)
+
+@Serializable
+data class DeepSeekConfig(
+    val apiKey: String = "",
+    val model: String = "deepseek-reasoner",
+    val baseUrl: String = "https://api.deepseek.com/v1/",
+    val timeoutSeconds: Int = 120
+)
+
+@Serializable
+data class GeminiConfig(
+    val apiKey: String = "",
+    val model: String = "gemini-2.5-flash",
+    val baseUrl: String = "https://generativelanguage.googleapis.com/v1beta/",
+    val timeoutSeconds: Int = 90
 )
 
 @Serializable
@@ -79,6 +97,8 @@ data class AiSettings(
     val privacyRedactEnabled: Boolean = false,
     val claudeConfig: ClaudeConfig = ClaudeConfig(),
     val openAiConfig: OpenAiConfig = OpenAiConfig(),
+    val deepSeekConfig: DeepSeekConfig = DeepSeekConfig(),
+    val geminiConfig: GeminiConfig = GeminiConfig(),
     val localAiConfig: LocalAiConfig = LocalAiConfig()
 )
 
