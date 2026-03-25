@@ -8,6 +8,8 @@
     <string name="nav_medications">Лекарства</string>
     <string name="nav_reports">Отчёты</string>
     <string name="nav_settings">Настройки</string>
+    <string name="nav_appointments">Приёмы</string>
+    <string name="nav_achievements">Награды</string>
 
     <!-- Common -->
     <string name="back">Назад</string>
@@ -598,7 +600,9 @@
     <string name="no_appointments_hint">Нет запланированных приёмов.</string>
     <string name="no_doctors_hint">Нет сохранённых врачей.</string>
     <string name="appointments_tab">Приёмы</string>
+    <string name="calendar_tab">Календарь</string>
     <string name="doctors_tab">Врачи</string>
+    <string name="no_appointments_for_day">Нет приёмов на этот день</string>
     <string name="specialty">Специальность</string>
     <string name="location">Место</string>
     <string name="email_label">Email</string>
@@ -620,6 +624,10 @@
     <string name="health_connect_unavailable">Health Connect недоступен</string>
     <string name="health_connect_data_types">Поддерживаемые типы данных</string>
     <string name="health_connect_import">Импортировать данные за 7 дней</string>
+    <string name="health_connect_permissions_needed">Требуются разрешения</string>
+    <string name="health_connect_permissions_desc">Для импорта данных необходимо предоставить доступ к Health Connect</string>
+    <string name="health_connect_grant_permissions">Предоставить разрешения</string>
+    <string name="health_connect_permissions_hint">Предоставьте разрешения для импорта данных</string>
 
     <!-- Security -->
     <string name="security_title">Безопасность</string>

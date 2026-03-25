@@ -1,6 +1,7 @@
 package com.healthjournal.presentation.screen.settings
 
 import android.app.Application
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.health.connect.client.PermissionController
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -40,6 +42,23 @@ class HealthConnectViewModel(application: Application) : AndroidViewModel(applic
     private val _message = MutableStateFlow<String?>(null)
     val message = _message.asStateFlow()
 
+    private val _hasPermissions = MutableStateFlow(false)
+    val hasPermissions = _hasPermissions.asStateFlow()
+
+    init {
+        checkPermissions()
+    }
+
+    fun checkPermissions() {
+        viewModelScope.launch {
+            _hasPermissions.value = try {
+                healthConnectManager.hasAllPermissions()
+            } catch (_: Exception) {
+                false
+            }
+        }
+    }
+
     fun importData() {
         viewModelScope.launch {
             _isImporting.value = true
@@ -58,6 +77,10 @@ class HealthConnectViewModel(application: Application) : AndroidViewModel(applic
             }
         }
     }
+
+    fun clearMessage() {
+        _message.value = null
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +92,14 @@ fun HealthConnectScreen(
     val isImporting by viewModel.isImporting.collectAsStateWithLifecycle()
     val importedCount by viewModel.importedCount.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val hasPermissions by viewModel.hasPermissions.collectAsStateWithLifecycle()
     val isAvailable = viewModel.healthConnectManager.isAvailable
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = PermissionController.createRequestPermissionResultContract()
+    ) {
+        viewModel.checkPermissions()
+    }
 
     Scaffold(
         topBar = {
@@ -130,6 +160,51 @@ fun HealthConnectScreen(
                 }
             }
 
+            // Permissions card
+            if (isAvailable && !hasPermissions) {
+                ElevatedCard(
+                    shape = MaterialTheme.shapes.large,
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.HealthAndSafety,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                stringResource(R.string.health_connect_permissions_needed),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
+                        Text(
+                            stringResource(R.string.health_connect_permissions_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                        Button(
+                            onClick = {
+                                permissionLauncher.launch(viewModel.healthConnectManager.requiredPermissions)
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(stringResource(R.string.health_connect_grant_permissions))
+                        }
+                    }
+                }
+            }
+
             // Supported data types
             Text(stringResource(R.string.health_connect_data_types), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
@@ -164,7 +239,7 @@ fun HealthConnectScreen(
             // Import button
             Button(
                 onClick = { viewModel.importData() },
-                enabled = isAvailable && !isImporting,
+                enabled = isAvailable && hasPermissions && !isImporting,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (isImporting) {
@@ -174,16 +249,37 @@ fun HealthConnectScreen(
                 Text(stringResource(R.string.health_connect_import))
             }
 
+            if (!hasPermissions && isAvailable) {
+                Text(
+                    stringResource(R.string.health_connect_permissions_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
             message?.let { msg ->
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (msg.startsWith("Error")) MaterialTheme.colorScheme.errorContainer
+                        else MaterialTheme.colorScheme.primaryContainer
+                    ),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(
-                        msg,
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            msg,
+                            modifier = Modifier.weight(1f),
+                            color = if (msg.startsWith("Error")) MaterialTheme.colorScheme.onErrorContainer
+                            else MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        TextButton(onClick = { viewModel.clearMessage() }) {
+                            Text(stringResource(R.string.close))
+                        }
+                    }
                 }
             }
         }

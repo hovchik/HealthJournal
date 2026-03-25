@@ -71,12 +71,12 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     // New screens
     data object Reminders : Screen("reminders", R.string.reminders_title, Icons.Default.Notifications)
     data object Dashboard : Screen("dashboard", R.string.dashboard_title, Icons.Default.Timeline)
-    data object Appointments : Screen("appointments", R.string.appointments_title, Icons.Default.Event)
+    data object Appointments : Screen("appointments", R.string.nav_appointments, Icons.Default.Event)
     data object AiChat : Screen("ai_chat", R.string.ai_chat_title, Icons.Default.Chat)
     data object SecuritySettings : Screen("security_settings", R.string.security_title, Icons.Default.Security)
-    data object Achievements : Screen("achievements", R.string.achievements_title, Icons.Default.EmojiEvents)
+    data object Achievements : Screen("achievements", R.string.nav_achievements, Icons.Default.EmojiEvents)
     data object HealthConnect : Screen("health_connect", R.string.health_connect_title, Icons.Default.Watch)
     data object FamilyDashboard : Screen("family_dashboard", R.string.family_dashboard_title, Icons.Default.FamilyRestroom)
 }
 
-val bottomNavItems = listOf(Screen.Home, Screen.Reports, Screen.Settings)
+val bottomNavItems = listOf(Screen.Home, Screen.Appointments, Screen.Achievements, Screen.Reports, Screen.Settings)

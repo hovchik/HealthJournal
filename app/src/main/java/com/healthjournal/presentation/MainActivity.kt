@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Psychology
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -52,9 +54,32 @@ fun MainApp() {
             Screen.ProfileSelection.route
         )
         val showBottomBar = currentRoute != null && currentRoute !in hideBottomBarRoutes
+        val showAiFab = showBottomBar && currentRoute != Screen.AiChat.route
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
+            floatingActionButton = {
+                AnimatedVisibility(
+                    visible = showAiFab,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it })
+                ) {
+                    SmallFloatingActionButton(
+                        onClick = {
+                            navController.navigate(Screen.AiChat.route) {
+                                launchSingleTop = true
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    ) {
+                        Icon(
+                            Icons.Default.Psychology,
+                            contentDescription = "AI Assistant"
+                        )
+                    }
+                }
+            },
             bottomBar = {
                 AnimatedVisibility(
                     visible = showBottomBar,

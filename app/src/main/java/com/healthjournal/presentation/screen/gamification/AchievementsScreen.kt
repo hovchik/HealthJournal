@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AchievementsScreen(
     onBack: () -> Unit,
+    isTopLevel: Boolean = false,
     viewModel: AchievementsViewModel = viewModel()
 ) {
     val stats by viewModel.stats.collectAsStateWithLifecycle()
@@ -38,8 +39,10 @@ fun AchievementsScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.achievements_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                    if (!isTopLevel) {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                        }
                     }
                 }
             )

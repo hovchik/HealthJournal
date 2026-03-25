@@ -214,7 +214,11 @@ fun HealthNavHost(
             DashboardScreen(onBack = { navController.popBackStack() })
         }
         composable(Screen.Appointments.route) {
-            AppointmentsScreen(onBack = { navController.popBackStack() })
+            AppointmentsScreen(
+                onBack = { navController.popBackStack() },
+                isTopLevel = navController.previousBackStackEntry?.destination?.route == null ||
+                    navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route }
+            )
         }
         composable(Screen.AiChat.route) {
             AiChatScreen(onBack = { navController.popBackStack() })
@@ -223,7 +227,11 @@ fun HealthNavHost(
             SecuritySettingsScreen(onBack = { navController.popBackStack() })
         }
         composable(Screen.Achievements.route) {
-            AchievementsScreen(onBack = { navController.popBackStack() })
+            AchievementsScreen(
+                onBack = { navController.popBackStack() },
+                isTopLevel = navController.previousBackStackEntry?.destination?.route == null ||
+                    navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route }
+            )
         }
         composable(Screen.HealthConnect.route) {
             HealthConnectScreen(onBack = { navController.popBackStack() })
