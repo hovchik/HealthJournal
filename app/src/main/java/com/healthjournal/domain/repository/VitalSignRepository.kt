@@ -11,6 +11,7 @@ interface VitalSignRepository {
     fun getVitalSignsByDateRange(from: LocalDateTime, to: LocalDateTime): Flow<List<VitalSign>>
     suspend fun getVitalSignById(id: Long): VitalSign?
     suspend fun insertVitalSign(vitalSign: VitalSign): Long
+    suspend fun insertIfNotDuplicate(vitalSign: VitalSign): Long?
     suspend fun updateVitalSign(vitalSign: VitalSign)
     suspend fun deleteVitalSign(vitalSign: VitalSign)
     suspend fun softDeleteByDiseaseId(diseaseId: Long)

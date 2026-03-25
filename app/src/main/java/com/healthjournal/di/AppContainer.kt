@@ -286,6 +286,7 @@ class AppContainer(context: Context) {
     val getVitalSignsByType = GetVitalSignsByTypeUseCase(vitalSignRepository)
     val getVitalSignsByDateRange = GetVitalSignsByDateRangeUseCase(vitalSignRepository)
     val addVitalSign = AddVitalSignUseCase(vitalSignRepository)
+    val addVitalSignIfNotDuplicate = AddVitalSignIfNotDuplicateUseCase(vitalSignRepository)
     val updateVitalSign = UpdateVitalSignUseCase(vitalSignRepository)
     val getVitalSignById = GetVitalSignByIdUseCase(vitalSignRepository)
     val deleteVitalSign = DeleteVitalSignUseCase(vitalSignRepository)

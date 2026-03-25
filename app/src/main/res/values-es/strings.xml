@@ -145,6 +145,7 @@
     <string name="import_data">Importar datos</string>
     <string name="export_success">Datos exportados correctamente</string>
     <string name="import_success">Datos importados correctamente</string>
+    <string name="import_success_count">Se importaron %1$d registros correctamente</string>
     <string name="export_error">Error de exportación: %1$s</string>
     <string name="import_error">Error de importación: %1$s</string>
 
@@ -616,6 +617,7 @@
     <string name="health_connect_unavailable">Health Connect no disponible</string>
     <string name="health_connect_data_types">Tipos de datos compatibles</string>
     <string name="health_connect_import">Importar datos de 7 días</string>
+    <string name="health_connect_import_1_day">Importar datos de 1 día</string>
     <string name="health_connect_permissions_needed">Permisos requeridos</string>
     <string name="health_connect_permissions_desc">Concede acceso a Health Connect para importar datos de salud</string>
     <string name="health_connect_grant_permissions">Conceder permisos</string>

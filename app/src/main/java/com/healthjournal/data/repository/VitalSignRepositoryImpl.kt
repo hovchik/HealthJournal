@@ -6,6 +6,7 @@ import com.healthjournal.domain.model.VitalSign
 import com.healthjournal.domain.model.VitalType
 import com.healthjournal.domain.repository.VitalSignRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -35,6 +36,19 @@ class VitalSignRepositoryImpl constructor(
 
     override suspend fun insertVitalSign(vitalSign: VitalSign): Long =
         store.insert(VitalSignDto.from(vitalSign))
+
+    override suspend fun insertIfNotDuplicate(vitalSign: VitalSign): Long? {
+        val dto = VitalSignDto.from(vitalSign)
+        val existing = store.getAll()
+        val isDuplicate = existing.any {
+            it.type == dto.type &&
+            it.recordedAt == dto.recordedAt &&
+            it.value == dto.value &&
+            it.profileId == dto.profileId &&
+            !it.isDeleted
+        }
+        return if (isDuplicate) null else store.insert(dto)
+    }
 
     override suspend fun updateVitalSign(vitalSign: VitalSign) =
         store.update(VitalSignDto.from(vitalSign))

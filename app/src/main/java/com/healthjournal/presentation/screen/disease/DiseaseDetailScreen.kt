@@ -69,7 +69,12 @@ fun DiseaseDetailScreen(
     val vitals = allVitals.filter { it.diseaseId == diseaseId }
     val medications = allMedications.filter { it.diseaseId == diseaseId }
 
-    val currentDisease = disease ?: return
+    val currentDisease = disease ?: run {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     val pagerState = rememberPagerState(pageCount = { 3 })
 

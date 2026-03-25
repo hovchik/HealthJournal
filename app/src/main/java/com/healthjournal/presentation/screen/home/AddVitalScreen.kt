@@ -167,9 +167,10 @@ fun AddVitalScreen(
                         val v = value.toDoubleOrNull()
                         if (v != null) {
                             val recordedAt = LocalDateTime.of(selectedDate, selectedTime)
-                            if (isEditing && editingVital != null) {
+                            val currentVital = editingVital
+                            if (isEditing && currentVital != null) {
                                 viewModel.updateVitalSign(
-                                    editingVital!!.copy(
+                                    currentVital.copy(
                                         type = selectedType,
                                         value = v,
                                         secondaryValue = secondaryValue.toDoubleOrNull(),

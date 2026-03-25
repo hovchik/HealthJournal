@@ -32,6 +32,12 @@ class AddVitalSignUseCase constructor(
     suspend operator fun invoke(vitalSign: VitalSign): Long = repository.insertVitalSign(vitalSign)
 }
 
+class AddVitalSignIfNotDuplicateUseCase constructor(
+    private val repository: VitalSignRepository
+) {
+    suspend operator fun invoke(vitalSign: VitalSign): Long? = repository.insertIfNotDuplicate(vitalSign)
+}
+
 class UpdateVitalSignUseCase constructor(
     private val repository: VitalSignRepository
 ) {
