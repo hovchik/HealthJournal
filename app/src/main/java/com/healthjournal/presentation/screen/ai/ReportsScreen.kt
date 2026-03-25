@@ -228,13 +228,12 @@ private fun HealthSummaryTab(vitals: List<VitalSign>) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             vitalsByDate.forEach { (date, dayVitals) ->
-                val dateLabel = when (date) {
-                    LocalDate.now() -> stringResource(R.string.date_today)
-                    LocalDate.now().minusDays(1) -> stringResource(R.string.date_yesterday)
-                    else -> date.format(dateFormatter)
-                }
-
                 item(key = "health_date_$date") {
+                    val dateLabel = when (date) {
+                        LocalDate.now() -> stringResource(R.string.date_today)
+                        LocalDate.now().minusDays(1) -> stringResource(R.string.date_yesterday)
+                        else -> date.format(dateFormatter)
+                    }
                     Text(
                         dateLabel,
                         style = MaterialTheme.typography.labelLarge,
