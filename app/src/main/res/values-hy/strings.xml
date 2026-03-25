@@ -554,19 +554,105 @@
     <string name="theme_amoled">AMOLED</string>
 
     <!-- Reminders -->
-    <string name="reminders_title">Հիշdelays delays</string>
-    <string name="reminders_desc">Դdelays delays delays delays delays</string>
-    <string name="add_reminder"> Delays delays delay</string>
-    <string name="no_reminders_hint">Delays delay. Delays delays delay.</string>
-    <string name="reminder_title">Delays</string>
-    <string name="reminder_description">Delays</string>
-    <string name="reminder_type">Delays</string>
-    <string name="missed_dose_title">Delays delays</string>
-    <string name="missed_dose_desc">Delays delays %1$s</string>
-    <string name="channel_medication_reminders">Delays delays delays</string>
-    <string name="channel_medication_desc">Delays delays delays delays</string>
-    <string name="channel_checkin_reminders">Delays delays delays</string>
-    <string name="channel_checkin_desc">Delays delays delays delays</string>
-    <string name="channel_appointment_reminders">Delays delays delays</string>
-    <string name="channel_appointment_desc">Delays delays delays delays</string>
+    <string name="reminders_title">Հիշեցումներ</string>
+    <string name="reminders_desc">Դեղերի և առողջական ստուգման ծանուցումներ</string>
+    <string name="add_reminder">Ավելացնել հիշեցում</string>
+    <string name="no_reminders_hint">Հիշեցումներ չկան։ Ավելացրեք ձեր առաջին հիշեցումը։</string>
+    <string name="reminder_title">Վերնագիր</string>
+    <string name="reminder_description">Նկարագրություն</string>
+    <string name="reminder_type">Հիշեցումի տեսակ</string>
+    <string name="missed_dose_title">Բաց թողված դոզա</string>
+    <string name="missed_dose_desc">Դուք բաց թողեցիք %1$s ընդունելը</string>
+    <string name="channel_medication_reminders">Դեղերի հիշեցումներ</string>
+    <string name="channel_medication_desc">Դեղեր ընդունելու ծանուցումներ</string>
+    <string name="channel_checkin_reminders">Ստուգման հիշեցումներ</string>
+    <string name="channel_checkin_desc">Ախտանիշների և ցուցանիշների գրանցման հիշեցումներ</string>
+    <string name="channel_appointment_reminders">Այցելության հիշեցումներ</string>
+    <string name="channel_appointment_desc">Բժշկի այցելությունների ծանուցումներ</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Վահանակ</string>
+    <string name="dashboard_desc">Գրաֆիկներ, միտումներ, ախտանիշների ջերմային քարտեզ</string>
+    <string name="symptom_heatmap_title">Ախտանիշների ջերմային քարտեզ</string>
+    <string name="correlations_title">Կորելյացիաներ</string>
+    <string name="latest_value">Վերջինը՝ %1$s %2$s</string>
+
+    <!-- Appointments -->
+    <string name="appointments_title">Բժշկի այցելություններ</string>
+    <string name="appointments_desc">Այցելություններ, բժիշկներ, հաշվետվություններ</string>
+    <string name="add_appointment">Ավելացնել այցելություն</string>
+    <string name="add_doctor">Ավելացնել բժիշկ</string>
+    <string name="no_appointments_hint">Պլանավորված այցելություններ չկան։</string>
+    <string name="no_doctors_hint">Պահպանված բժիշկներ չկան։</string>
+    <string name="appointments_tab">Այցելություններ</string>
+    <string name="doctors_tab">Բժիշկներ</string>
+    <string name="specialty">Մասնագիտություն</string>
+    <string name="location">Տեղադրություն</string>
+    <string name="email_label">Էլ. փոստ</string>
+    <string name="address_label">Հասցե</string>
+
+    <!-- AI Chat -->
+    <string name="ai_chat_title">AI օգնական</string>
+    <string name="ai_chat_desc">Զրուցեք AI-ի հետ ձեր առողջության մասին</string>
+    <string name="ai_chat_placeholder">Տվեք առողջության հարց…</string>
+    <string name="ai_chat_welcome">AI առողջության օգնական</string>
+    <string name="ai_chat_hint">Հարցրեք ձեր ախտանիշների, ցուցանիշների կամ դեղերի մասին</string>
+    <string name="ai_chat_clear">Մաքրել զրույցը</string>
+
+    <!-- Health Connect -->
+    <string name="health_connect_title">Health Connect</string>
+    <string name="health_connect_desc">Տվյալների ներմուծում կրելի սարքերից</string>
+    <string name="health_connect_status">Կապակցման կարգավիճակ</string>
+    <string name="health_connect_available">Health Connect հասանելի է</string>
+    <string name="health_connect_unavailable">Health Connect հասանելի չէ</string>
+    <string name="health_connect_data_types">Աջակցվող տվյալների տեսակներ</string>
+    <string name="health_connect_import">Ներմուծել 7 օրվա տվյալներ</string>
+
+    <!-- Security -->
+    <string name="security_title">Անվտանգություն</string>
+    <string name="security_desc">Կենսաչափություն, PIN, գործողությունների մատյան</string>
+    <string name="biometric_lock_title">Կենսաչափական կողպեք</string>
+    <string name="biometric_lock_desc">Բացել մատնահետքով կամ դեմքով</string>
+    <string name="biometric_not_available">Կենսաչափությունը հասանելի չէ այս սարքում</string>
+    <string name="pin_lock_title">PIN կոդ</string>
+    <string name="pin_lock_desc">Լրացուցիչ պաշտպանություն PIN կոդով</string>
+    <string name="audit_log_title">Գործողությունների մատյան</string>
+    <string name="audit_log_desc">Մուտքերի և փոփոխությունների հետևելում</string>
+    <string name="security_info">Բոլոր տվյալները պահվում են տեղայնորեն ձեր սարքում։ Կենսաչափական կողպեքը պաշտպանում է չթույլատրված մուտքից։</string>
+
+    <!-- Achievements -->
+    <string name="achievements_title">Նվաճումներ</string>
+    <string name="achievements_desc">Շարքեր, մրցանակներ, առաջընթաց</string>
+    <string name="achievements_list">Բոլոր նվաճումները</string>
+    <string name="achievements_count">Մրցանակներ</string>
+    <string name="streak_current">Ընթացիկ շարք</string>
+    <string name="streak_longest">Լավագույն շարք</string>
+    <string name="total_checkins">Ընդամենը գրառումներ</string>
+    <string name="achievement_unlocked_at">Ստացված՝ %1$s</string>
+
+    <!-- Family Dashboard -->
+    <string name="family_dashboard_title">Ընտանիքի վահանակ</string>
+    <string name="family_dashboard_desc">Ընտանիքի առողջության ամփոփում</string>
+
+    <!-- Medication Enhancements -->
+    <string name="drug_interactions_title">Դեղերի փոխազդեցություններ</string>
+    <string name="drug_interaction_warning">Զգուշացում՝ փոխազդեցություններ հայտնաբերվել են</string>
+    <string name="adherence_title">Համապատասխանություն</string>
+    <string name="adherence_percent">%1$.0f%% ընդունված</string>
+    <string name="interaction_minor">Թեթև</string>
+    <string name="interaction_moderate">Միջին</string>
+    <string name="interaction_major">Լուրջ</string>
+    <string name="interaction_contraindicated">Հակացուցված</string>
+
+    <!-- Data Export Enhanced -->
+    <string name="export_csv">Արտահանել CSV</string>
+    <string name="export_fhir">Արտահանել FHIR</string>
+    <string name="export_format_select">Ընտրեք ձևաչափը</string>
+
+    <!-- Disease AI Analysis -->
+    <string name="disease_ai_analysis_title">AI հիվանդության վերլուծություն</string>
+    <string name="disease_ai_generate">Վերլուծել հիվանդությունը (AI)</string>
+    <string name="disease_ai_analyzing">AI-ն վերլուծում է հիվանդության տվյալները…</string>
+    <string name="disease_ai_no_reports">AI վերլուծություններ չկան այս հիվանդության համար։ Սեղմեք վերևի կոճակը ստեղծելու համար։</string>
+    <string name="disease_ai_report_title">Հիվանդության վերլուծություն</string>
 </resources>
