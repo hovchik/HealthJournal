@@ -636,6 +636,10 @@
     <string name="health_connect_permissions_desc">Для импорта данных необходимо предоставить доступ к Health Connect</string>
     <string name="health_connect_grant_permissions">Предоставить разрешения</string>
     <string name="health_connect_permissions_hint">Предоставьте разрешения для импорта данных</string>
+    <string name="health_connect_auto_sync">Автоматическая синхронизация</string>
+    <string name="health_connect_auto_sync_desc">Периодический импорт данных из Health Connect</string>
+    <string name="health_connect_sync_interval">Интервал синхронизации</string>
+    <string name="health_connect_hours_format">%1$d ч</string>
 
     <!-- Security -->
     <string name="security_title">Безопасность</string>
@@ -648,6 +652,29 @@
     <string name="audit_log_title">Журнал действий</string>
     <string name="audit_log_desc">Отслеживание доступа и изменений</string>
     <string name="security_info">Все данные хранятся локально на устройстве. Биометрическая блокировка защищает от несанкционированного доступа.</string>
+    <string name="biometric_verify_title">Подтвердите личность</string>
+    <string name="biometric_verify_subtitle">Для включения биометрической блокировки</string>
+    <string name="biometric_unlock_title">Разблокировка</string>
+    <string name="biometric_unlock_subtitle">Разблокируйте приложение</string>
+    <string name="app_locked_title">Приложение заблокировано</string>
+    <string name="app_locked_desc">Для доступа к данным разблокируйте приложение</string>
+    <string name="enter_pin">Введите PIN-код</string>
+    <string name="pin_incorrect">Неверный PIN-код</string>
+    <string name="unlock">Разблокировать</string>
+    <string name="use_biometric">Использовать биометрию</string>
+    <string name="set_pin_title">Установите PIN-код</string>
+    <string name="set_pin_desc">Введите PIN-код от 4 до 6 цифр</string>
+    <string name="confirm_pin_title">Подтвердите PIN-код</string>
+    <string name="confirm_pin_desc">Введите PIN-код повторно</string>
+    <string name="pin_label">PIN-код</string>
+    <string name="pin_mismatch">PIN-коды не совпадают</string>
+    <string name="change_pin">Изменить PIN-код</string>
+    <string name="verify_current_pin">Текущий PIN-код</string>
+    <string name="set_new_pin">Новый PIN-код</string>
+    <string name="next">Далее</string>
+    <string name="notification_permission_needed">Уведомления отключены</string>
+    <string name="notification_permission_desc">Разрешите уведомления для работы напоминаний</string>
+    <string name="grant_permission">Разрешить</string>
 
     <!-- Achievements -->
     <string name="achievements_title">Достижения</string>
