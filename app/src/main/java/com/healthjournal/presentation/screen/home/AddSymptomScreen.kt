@@ -193,9 +193,10 @@ fun AddSymptomScreen(
                         if (name.isNotBlank()) {
                             val triggerList = triggers.split(",").map { it.trim() }.filter { it.isNotBlank() }
                             val recordedAt = LocalDateTime.of(selectedDate, selectedTime)
-                            if (isEditing && editingSymptom != null) {
+                            val currentSymptom = editingSymptom
+                            if (isEditing && currentSymptom != null) {
                                 viewModel.updateSymptom(
-                                    editingSymptom.copy(
+                                    currentSymptom.copy(
                                         name = name,
                                         intensity = intensity.toInt(),
                                         value = value.takeIf { it.isNotBlank() },
