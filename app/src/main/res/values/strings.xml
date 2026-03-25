@@ -709,4 +709,12 @@
     <string name="export_csv">Экспорт CSV</string>
     <string name="export_fhir">Экспорт FHIR</string>
     <string name="export_format_select">Выберите формат</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">Очистить все данные</string>
+    <string name="clear_data_desc">Удалить все записи о здоровье</string>
+    <string name="clear_data_confirm_title">Удалить все данные?</string>
+    <string name="clear_data_confirm_desc">Это действие необратимо. Все симптомы, показатели, лекарства, болезни и отчёты будут удалены. Рекомендуем сначала создать резервную копию.</string>
+    <string name="clear_data_success">Все данные удалены</string>
+
 </resources>

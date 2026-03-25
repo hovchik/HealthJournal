@@ -714,4 +714,12 @@
     <string name="health_min_label">最小</string>
     <string name="health_max_label">最大</string>
     <string name="nav_ai_chat">AI</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">清除所有数据</string>
+    <string name="clear_data_desc">删除所有健康记录</string>
+    <string name="clear_data_confirm_title">删除所有数据？</string>
+    <string name="clear_data_confirm_desc">此操作不可撤销。所有症状、生命体征、药物、疾病和报告将被删除。建议先创建备份。</string>
+    <string name="clear_data_success">所有数据已删除</string>
+
 </resources>

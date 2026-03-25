@@ -713,4 +713,12 @@
     <string name="health_min_label">Mín</string>
     <string name="health_max_label">Máx</string>
     <string name="nav_ai_chat">AI</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">Borrar todos los datos</string>
+    <string name="clear_data_desc">Eliminar todos los registros de salud</string>
+    <string name="clear_data_confirm_title">¿Eliminar todos los datos?</string>
+    <string name="clear_data_confirm_desc">Esta acción no se puede deshacer. Se eliminarán todos los síntomas, signos vitales, medicamentos, enfermedades e informes. Recomendamos crear una copia de seguridad primero.</string>
+    <string name="clear_data_success">Todos los datos han sido eliminados</string>
+
 </resources>

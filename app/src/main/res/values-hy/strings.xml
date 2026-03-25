@@ -712,4 +712,12 @@
     <string name="health_min_label">Նվազ</string>
     <string name="health_max_label">Առավ</string>
     <string name="nav_ai_chat">AI</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">Մաքրել բոլոր տվյալները</string>
+    <string name="clear_data_desc">Ջնջել առողջության բոլոր գրառումները</string>
+    <string name="clear_data_confirm_title">Ջնջե՞լ բոլոր տվյալները</string>
+    <string name="clear_data_confirm_desc">Այս գործողությունը հետ չի հնարավորիններ կընտանոնլավորընել։ Խորհուրդենք նախ պահուստային կրկնօրինակ ստեղծել։</string>
+    <string name="clear_data_success">Բոլոր տվյալները ջնջվել են</string>
+
 </resources>

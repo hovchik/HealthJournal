@@ -254,8 +254,9 @@ private fun AddReminderDialog(
     var description by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(ReminderType.CUSTOM) }
     var selectedFrequency by remember { mutableStateOf(ReminderFrequency.DAILY) }
-    var hour by remember { mutableIntStateOf(9) }
-    var minute by remember { mutableIntStateOf(0) }
+    var hour by remember { mutableIntStateOf(LocalTime.now().hour) }
+    var minute by remember { mutableIntStateOf(LocalTime.now().minute) }
+    var showTimePicker by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -325,20 +326,18 @@ private fun AddReminderDialog(
                 }
 
                 // Time
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(stringResource(R.string.time_label), modifier = Modifier.weight(1f))
-                    OutlinedTextField(
-                        value = "%02d:%02d".format(hour, minute),
-                        onValueChange = {
-                            val parts = it.split(":")
-                            if (parts.size == 2) {
-                                hour = parts[0].toIntOrNull()?.coerceIn(0, 23) ?: hour
-                                minute = parts[1].toIntOrNull()?.coerceIn(0, 59) ?: minute
-                            }
-                        },
-                        modifier = Modifier.width(100.dp),
-                        singleLine = true
-                    )
+                    FilledTonalButton(
+                        onClick = { showTimePicker = true }
+                    ) {
+                        Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("%02d:%02d".format(hour, minute))
+                    }
                 }
             }
         },
@@ -355,4 +354,36 @@ private fun AddReminderDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         }
     )
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = hour,
+            initialMinute = minute,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            title = { Text(stringResource(R.string.time_label)) },
+            text = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    TimePicker(state = timePickerState)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    hour = timePickerState.hour
+                    minute = timePickerState.minute
+                    showTimePicker = false
+                }) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
 }

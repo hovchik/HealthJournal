@@ -70,6 +70,8 @@ fun SettingsScreen(
     }
 
     val isAnyLoading = uiState.isExporting || uiState.isImporting || uiState.isSharing
+    var showClearDataDialog by remember { mutableStateOf(false) }
+    val clearSuccessMsg = stringResource(R.string.clear_data_success)
 
     Scaffold(
         topBar = {
@@ -230,6 +232,17 @@ fun SettingsScreen(
                             Text(stringResource(R.string.backup_share))
                         }
                     }
+
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+                    // Clear all data
+                    SettingsListItem(
+                        icon = Icons.Default.DeleteForever,
+                        iconTint = MaterialTheme.colorScheme.error,
+                        title = stringResource(R.string.clear_data_title),
+                        subtitle = stringResource(R.string.clear_data_desc),
+                        onClick = { showClearDataDialog = true }
+                    )
                 }
 
                 // Status message
@@ -237,6 +250,7 @@ fun SettingsScreen(
                     val displayMessage = when (message) {
                         "export_success" -> exportSuccessMsg
                         "import_success" -> importSuccessMsg
+                        "clear_success" -> clearSuccessMsg
                         else -> message
                     }
                     Card(
@@ -414,6 +428,32 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(4.dp))
         }
+    }
+
+    // Clear data confirmation dialog
+    if (showClearDataDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearDataDialog = false },
+            icon = { Icon(Icons.Default.DeleteForever, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+            title = { Text(stringResource(R.string.clear_data_confirm_title)) },
+            text = { Text(stringResource(R.string.clear_data_confirm_desc)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        settingsViewModel.clearAllData()
+                        showClearDataDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearDataDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 }
 

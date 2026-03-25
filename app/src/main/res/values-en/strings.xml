@@ -711,4 +711,12 @@
     <string name="disease_ai_analyzing">AI is analyzing disease data…</string>
     <string name="disease_ai_no_reports">No AI analyses for this disease. Tap the button above to generate one.</string>
     <string name="disease_ai_report_title">Disease Analysis</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">Clear all data</string>
+    <string name="clear_data_desc">Delete all health records</string>
+    <string name="clear_data_confirm_title">Delete all data?</string>
+    <string name="clear_data_confirm_desc">This action cannot be undone. All symptoms, vitals, medications, diseases, and reports will be deleted. We recommend creating a backup first.</string>
+    <string name="clear_data_success">All data has been deleted</string>
+
 </resources>

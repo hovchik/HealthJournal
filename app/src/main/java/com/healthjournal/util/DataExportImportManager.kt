@@ -157,6 +157,16 @@ class DataExportImportManager(
         restoreBackup(backup)
     }
 
+    suspend fun clearAllData() {
+        symptomStore.replaceAll(emptyList())
+        vitalSignStore.replaceAll(emptyList())
+        medicationStore.replaceAll(emptyList())
+        medicationLogStore.replaceAll(emptyList())
+        aiReportStore.replaceAll(emptyList())
+        familyMemberStore.replaceAll(emptyList())
+        diseaseStore.replaceAll(emptyList())
+    }
+
     suspend fun importData(uri: Uri) {
         val jsonString = context.contentResolver.openInputStream(uri)?.use { stream ->
             stream.bufferedReader(Charsets.UTF_8).readText()
