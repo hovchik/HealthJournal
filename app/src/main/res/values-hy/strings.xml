@@ -561,6 +561,11 @@
     <string name="reminder_title">Վերնագիր</string>
     <string name="reminder_description">Նկարագրություն</string>
     <string name="reminder_type">Հիշեցումի տեսակ</string>
+    <string name="reminder_frequency">Հաճախականություն</string>
+    <string name="freq_once">Մեկ</string>
+    <string name="freq_daily">Օր</string>
+    <string name="freq_weekly">Շաբ.</string>
+    <string name="freq_monthly">Ամիս</string>
     <string name="missed_dose_title">Բաց թողված դոզա</string>
     <string name="missed_dose_desc">Դուք բաց թողեցիք %1$s ընդունելը</string>
     <string name="channel_medication_reminders">Դեղերի հիշեցումներ</string>

@@ -563,6 +563,11 @@
     <string name="reminder_title">\u6807\u9898</string>
     <string name="reminder_description">\u63cf\u8ff0</string>
     <string name="reminder_type">\u63d0\u9192\u7c7b\u578b</string>
+    <string name="reminder_frequency">频率</string>
+    <string name="freq_once">一次</string>
+    <string name="freq_daily">每天</string>
+    <string name="freq_weekly">每周</string>
+    <string name="freq_monthly">每月</string>
     <string name="missed_dose_title">\u6f0f\u670d</string>
     <string name="missed_dose_desc">\u60a8\u6f0f\u670d\u4e86 %1$s</string>
     <string name="channel_medication_reminders">\u836f\u7269\u63d0\u9192</string>

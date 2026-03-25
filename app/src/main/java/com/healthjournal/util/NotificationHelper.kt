@@ -73,10 +73,12 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val contentText = reminder.description.ifBlank { reminder.title }
+
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(icon)
             .setContentTitle(reminder.title)
-            .setContentText(reminder.description)
+            .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)

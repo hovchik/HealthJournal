@@ -298,6 +298,32 @@ private fun AddReminderDialog(
                     }
                 }
 
+                // Frequency selector
+                Text(stringResource(R.string.reminder_frequency), style = MaterialTheme.typography.labelMedium)
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                    val frequencies = listOf(
+                        ReminderFrequency.ONCE, ReminderFrequency.DAILY,
+                        ReminderFrequency.WEEKLY, ReminderFrequency.MONTHLY
+                    )
+                    frequencies.forEachIndexed { index, freq ->
+                        SegmentedButton(
+                            selected = selectedFrequency == freq,
+                            onClick = { selectedFrequency = freq },
+                            shape = SegmentedButtonDefaults.itemShape(index, frequencies.size)
+                        ) {
+                            Text(
+                                when (freq) {
+                                    ReminderFrequency.ONCE -> stringResource(R.string.freq_once)
+                                    ReminderFrequency.DAILY -> stringResource(R.string.freq_daily)
+                                    ReminderFrequency.WEEKLY -> stringResource(R.string.freq_weekly)
+                                    ReminderFrequency.MONTHLY -> stringResource(R.string.freq_monthly)
+                                },
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+                }
+
                 // Time
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.time_label), modifier = Modifier.weight(1f))

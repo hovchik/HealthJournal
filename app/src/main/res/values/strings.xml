@@ -584,6 +584,11 @@
     <string name="reminder_title">Заголовок</string>
     <string name="reminder_description">Описание</string>
     <string name="reminder_type">Тип напоминания</string>
+    <string name="reminder_frequency">Частота</string>
+    <string name="freq_once">Раз</string>
+    <string name="freq_daily">День</string>
+    <string name="freq_weekly">Нед.</string>
+    <string name="freq_monthly">Мес.</string>
     <string name="missed_dose_title">Пропущен приём</string>
     <string name="missed_dose_desc">Вы пропустили приём %1$s</string>
     <string name="channel_medication_reminders">Напоминания о лекарствах</string>

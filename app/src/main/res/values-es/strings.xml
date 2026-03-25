@@ -565,6 +565,11 @@
     <string name="reminder_title">Título</string>
     <string name="reminder_description">Descripción</string>
     <string name="reminder_type">Tipo de recordatorio</string>
+    <string name="reminder_frequency">Frecuencia</string>
+    <string name="freq_once">Una vez</string>
+    <string name="freq_daily">Diario</string>
+    <string name="freq_weekly">Sem.</string>
+    <string name="freq_monthly">Mes</string>
     <string name="missed_dose_title">Dosis olvidada</string>
     <string name="missed_dose_desc">Olvidaste tomar %1$s</string>
     <string name="channel_medication_reminders">Recordatorios de medicamentos</string>

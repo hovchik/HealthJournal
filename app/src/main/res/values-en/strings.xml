@@ -572,6 +572,11 @@
     <string name="reminder_title">Title</string>
     <string name="reminder_description">Description</string>
     <string name="reminder_type">Reminder type</string>
+    <string name="reminder_frequency">Frequency</string>
+    <string name="freq_once">Once</string>
+    <string name="freq_daily">Daily</string>
+    <string name="freq_weekly">Week</string>
+    <string name="freq_monthly">Month</string>
     <string name="missed_dose_title">Missed dose</string>
     <string name="missed_dose_desc">You missed taking %1$s</string>
     <string name="channel_medication_reminders">Medication reminders</string>
