@@ -80,6 +80,12 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Bold
                     )
                 },
+                actions = {
+                    IconButton(onClick = onAiChat) {
+                        Icon(Icons.Default.Psychology, contentDescription = stringResource(R.string.nav_ai_chat),
+                            tint = MaterialTheme.colorScheme.primary)
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer

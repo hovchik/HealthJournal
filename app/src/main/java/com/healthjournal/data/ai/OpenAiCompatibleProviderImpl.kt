@@ -47,6 +47,20 @@ class OpenAiCompatibleProviderImpl(
         return AiFlagsResult(text = text, providerId = id, modelUsed = config.openAiConfig.model)
     }
 
+    override suspend fun generateChatResponse(prompt: String, config: AiSettings): String {
+        val api = apiFactory(config.openAiConfig)
+        val request = OpenAiRequest(
+            model = config.openAiConfig.model,
+            messages = listOf(
+                OpenAiMessage(role = "system", content = "You are a helpful health assistant. Answer the user's health-related questions based on the provided context. Be concise and informative."),
+                OpenAiMessage(role = "user", content = prompt)
+            )
+        )
+        val response = api.chatCompletion(request)
+        return response.choices.firstOrNull()?.message?.content
+            ?: throw IllegalStateException("Empty response from OpenAI-compatible API")
+    }
+
     override fun validateConfig(config: AiSettings): ValidationResult {
         val c = config.openAiConfig
         if (c.apiKey.isBlank()) return ValidationResult(false, "API key is required")

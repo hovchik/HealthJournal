@@ -20,4 +20,16 @@ interface AiProvider {
     fun validateConfig(config: AiSettings): ValidationResult
 
     fun isOnlineRequired(): Boolean
+
+    /**
+     * Generates a chat response from a raw user prompt.
+     * Default implementation delegates to generateDoctorSummary with the prompt as user content.
+     */
+    suspend fun generateChatResponse(prompt: String, config: AiSettings): String {
+        val input = AiInput(
+            symptoms = emptyList(), vitals = emptyList(), medications = emptyList(),
+            periodDays = 7, outputLanguage = "en"
+        )
+        return generateDoctorSummary(input, config).text
+    }
 }

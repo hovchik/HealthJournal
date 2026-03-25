@@ -45,6 +45,19 @@ class ClaudeAiProviderImpl(
         return AiFlagsResult(text = text, providerId = id, modelUsed = config.claudeConfig.model)
     }
 
+    override suspend fun generateChatResponse(prompt: String, config: AiSettings): String {
+        val api = apiFactory(config.claudeConfig)
+        val request = ClaudeRequest(
+            model = config.claudeConfig.model,
+            maxTokens = 2048,
+            system = "You are a helpful health assistant. Answer the user's health-related questions based on the provided context. Be concise and informative.",
+            messages = listOf(ClaudeMessage(role = "user", content = prompt))
+        )
+        val response = api.sendMessage(request)
+        return response.content.firstOrNull()?.text
+            ?: throw IllegalStateException("Empty response from Claude")
+    }
+
     override fun validateConfig(config: AiSettings): ValidationResult {
         val c = config.claudeConfig
         if (c.apiKey.isBlank()) return ValidationResult(false, "Claude API key is required")

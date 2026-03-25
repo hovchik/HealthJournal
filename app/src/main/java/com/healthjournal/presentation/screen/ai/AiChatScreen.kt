@@ -45,10 +45,8 @@ fun AiChatScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.ai_chat_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    if (!isTopLevel) {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
-                        }
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {

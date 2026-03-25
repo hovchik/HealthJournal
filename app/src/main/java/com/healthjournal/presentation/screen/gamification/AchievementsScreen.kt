@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter
 fun AchievementsScreen(
     onBack: () -> Unit,
     isTopLevel: Boolean = false,
+    onAiChat: () -> Unit = {},
     viewModel: AchievementsViewModel = viewModel()
 ) {
     val stats by viewModel.stats.collectAsStateWithLifecycle()
@@ -43,6 +44,12 @@ fun AchievementsScreen(
                         IconButton(onClick = onBack) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                         }
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onAiChat) {
+                        Icon(Icons.Default.Psychology, contentDescription = stringResource(R.string.nav_ai_chat),
+                            tint = MaterialTheme.colorScheme.primary)
                     }
                 }
             )

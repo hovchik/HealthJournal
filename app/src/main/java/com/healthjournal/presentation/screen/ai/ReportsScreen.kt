@@ -22,6 +22,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -52,6 +54,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportsScreen(
+    onAiChat: () -> Unit = {},
     viewModel: AiReportViewModel = viewModel()
 ) {
     val reports by viewModel.reports.collectAsStateWithLifecycle()
@@ -81,6 +84,12 @@ fun ReportsScreen(
                         stringResource(R.string.reports_title),
                         fontWeight = FontWeight.Bold
                     )
+                },
+                actions = {
+                    IconButton(onClick = onAiChat) {
+                        Icon(Icons.Default.Psychology, contentDescription = stringResource(R.string.nav_ai_chat),
+                            tint = MaterialTheme.colorScheme.primary)
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -507,7 +516,64 @@ private fun RecordsTab(
             }
         }
 
-        if (symptoms.isEmpty() && vitals.isEmpty()) {
+        // Medications records
+        if (medications.isNotEmpty()) {
+            item(key = "medications_section") {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.Medication, contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                        }
+                    }
+                    Text(stringResource(R.string.medications_title),
+                        style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.secondary)
+                }
+            }
+
+            items(medications, key = { "rm_${it.id}" }) { medication ->
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                ) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(medication.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                            if (medication.dosage.isNotBlank()) {
+                                Text(medication.dosage, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                        if (medication.active) {
+                            Surface(
+                                shape = MaterialTheme.shapes.extraSmall,
+                                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
+                            ) {
+                                Text(
+                                    stringResource(R.string.disease_active),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (symptoms.isEmpty() && vitals.isEmpty() && medications.isEmpty()) {
             item(key = "empty_records") {
                 ElevatedCard(
                     modifier = Modifier.fillMaxWidth(),

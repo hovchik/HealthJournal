@@ -16,6 +16,7 @@ data class ChatMessage(
 class AiChatViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
     private val aiService = container.aiService
+    private val userSettingsRepository = container.userSettingsRepository
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     val messages = _messages.asStateFlow()
@@ -66,7 +67,11 @@ class AiChatViewModel(application: Application) : AndroidViewModel(application) 
                     appendLine("User: $userMessage")
                 }
 
-                val response = aiService.generateResponse(prompt)
+                val settings = userSettingsRepository.getUserSettings().first()
+                val response = aiService.generateResponse(
+                    prompt = prompt,
+                    settings = settings.aiSettings
+                )
                 _messages.value = _messages.value + ChatMessage(response, isUser = false)
             } catch (e: Exception) {
                 _messages.value = _messages.value + ChatMessage(
