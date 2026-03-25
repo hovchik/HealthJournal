@@ -720,4 +720,9 @@
     <string name="clear_data_confirm_desc">Այս գործողությունը հետ չի հնարավորիններ կընտանոնլավորընել։ Խորհուրդենք նախ պահուստային կրկնօրինակ ստեղծել։</string>
     <string name="clear_data_success">Բոլոր տվյալները ջնջվել են</string>
 
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">Ախտանիշներ</string>
+    <string name="correlation_avg_format">Միջ. %1$s: %2$.1f ախտանիշների օրերին vs %3$.1f սովորական օրերին</string>
+
 </resources>

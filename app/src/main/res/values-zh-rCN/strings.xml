@@ -722,4 +722,9 @@
     <string name="clear_data_confirm_desc">此操作不可撤销。所有症状、生命体征、药物、疾病和报告将被删除。建议先创建备份。</string>
     <string name="clear_data_success">所有数据已删除</string>
 
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">症状</string>
+    <string name="correlation_avg_format">平均 %1$s: %2$.1f (高症状日) vs %3$.1f (低症状日)</string>
+
 </resources>

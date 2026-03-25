@@ -717,4 +717,9 @@
     <string name="clear_data_confirm_desc">Это действие необратимо. Все симптомы, показатели, лекарства, болезни и отчёты будут удалены. Рекомендуем сначала создать резервную копию.</string>
     <string name="clear_data_success">Все данные удалены</string>
 
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">Симптомы</string>
+    <string name="correlation_avg_format">Ср. %1$s: %2$.1f в дни симптомов vs %3$.1f в обычные дни</string>
+
 </resources>

@@ -27,6 +27,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
 import com.healthjournal.domain.model.VitalSign
 import com.healthjournal.domain.model.VitalType
+import com.healthjournal.util.localizedDisplayName
+import com.healthjournal.util.localizedUnit
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -226,7 +228,7 @@ private fun VitalTrendCard(type: VitalType, vitals: List<VitalSign>) {
 
     ElevatedCard(shape = MaterialTheme.shapes.medium) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(type.displayName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text(type.localizedDisplayName(), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
 
             Canvas(modifier = Modifier.fillMaxWidth().height(120.dp)) {
@@ -268,7 +270,7 @@ private fun VitalTrendCard(type: VitalType, vitals: List<VitalSign>) {
                 "${lastVital.value.toInt()}/${lastVital.secondaryValue.toInt()}"
             } else "%.1f".format(lastVital.value)
             Text(
-                stringResource(R.string.latest_value, valueStr, type.unit),
+                stringResource(R.string.latest_value, valueStr, type.localizedUnit()),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

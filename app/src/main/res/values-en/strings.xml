@@ -719,4 +719,9 @@
     <string name="clear_data_confirm_desc">This action cannot be undone. All symptoms, vitals, medications, diseases, and reports will be deleted. We recommend creating a backup first.</string>
     <string name="clear_data_success">All data has been deleted</string>
 
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">Symptoms</string>
+    <string name="correlation_avg_format">Avg %1$s: %2$.1f on high-symptom days vs %3$.1f on low-symptom days</string>
+
 </resources>

@@ -721,4 +721,9 @@
     <string name="clear_data_confirm_desc">Esta acción no se puede deshacer. Se eliminarán todos los síntomas, signos vitales, medicamentos, enfermedades e informes. Recomendamos crear una copia de seguridad primero.</string>
     <string name="clear_data_success">Todos los datos han sido eliminados</string>
 
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">Síntomas</string>
+    <string name="correlation_avg_format">Prom %1$s: %2$.1f en días con síntomas vs %3$.1f en días normales</string>
+
 </resources>
