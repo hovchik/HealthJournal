@@ -71,7 +71,7 @@ object LocaleManager {
         "es" -> "español"
         "zh-CN" -> "简体中文"
         "hy" -> "հայերեն"
-        else -> "русском"
+        else -> "English"
     }
 
     private fun parseLocale(tag: String): Locale = when (tag) {
