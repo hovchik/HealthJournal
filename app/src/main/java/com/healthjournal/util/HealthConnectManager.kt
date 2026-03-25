@@ -1,7 +1,6 @@
 package com.healthjournal.util
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission

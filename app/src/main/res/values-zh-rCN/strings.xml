@@ -657,4 +657,19 @@
     <string name="disease_ai_analyzing">AI \u6b63\u5728\u5206\u6790\u75be\u75c5\u6570\u636e\u2026</string>
     <string name="disease_ai_no_reports">\u6b64\u75be\u75c5\u65e0 AI \u5206\u6790\u3002\u70b9\u51fb\u4e0a\u65b9\u6309\u94ae\u751f\u6210\u3002</string>
     <string name="disease_ai_report_title">\u75be\u75c5\u5206\u6790</string>
+
+    <!-- Navigation (short labels) -->
+    <string name="nav_appointments">预约</string>
+    <string name="nav_achievements">成就</string>
+
+    <!-- Calendar -->
+    <string name="calendar_tab">日历</string>
+    <string name="no_appointments_for_day">这天没有预约</string>
+
+    <!-- Health Connect permissions -->
+    <string name="health_connect_permissions_needed">需要权限</string>
+    <string name="health_connect_permissions_desc">授予 Health Connect 访问权限以导入健康数据</string>
+    <string name="health_connect_grant_permissions">授予权限</string>
+    <string name="health_connect_permissions_hint">授予权限以导入数据</string>
+
 </resources>

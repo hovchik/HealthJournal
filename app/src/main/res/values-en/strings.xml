@@ -611,6 +611,18 @@
     <string name="health_connect_unavailable">Health Connect unavailable</string>
     <string name="health_connect_data_types">Supported data types</string>
     <string name="health_connect_import">Import data for 7 days</string>
+    <string name="health_connect_permissions_needed">Permissions required</string>
+    <string name="health_connect_permissions_desc">Grant access to Health Connect to import your health data</string>
+    <string name="health_connect_grant_permissions">Grant permissions</string>
+    <string name="health_connect_permissions_hint">Grant permissions to import data</string>
+
+    <!-- Navigation (short labels) -->
+    <string name="nav_appointments">Appts</string>
+    <string name="nav_achievements">Awards</string>
+
+    <!-- Calendar -->
+    <string name="calendar_tab">Calendar</string>
+    <string name="no_appointments_for_day">No appointments for this day</string>
 
     <!-- Security -->
     <string name="security_title">Security</string>

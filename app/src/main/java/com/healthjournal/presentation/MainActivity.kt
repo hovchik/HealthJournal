@@ -54,7 +54,11 @@ fun MainApp() {
             Screen.ProfileSelection.route
         )
         val showBottomBar = currentRoute != null && currentRoute !in hideBottomBarRoutes
-        val showAiFab = showBottomBar && currentRoute != Screen.AiChat.route
+        val screensWithOwnFab = setOf(
+            Screen.AiChat.route,
+            Screen.Appointments.route
+        )
+        val showAiFab = showBottomBar && currentRoute !in screensWithOwnFab
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),

@@ -291,66 +291,54 @@ fun SettingsScreen(
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                     // Theme selector
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                            modifier = Modifier.size(40.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.Default.Palette,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(22.dp)
-                                )
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.Palette,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             }
-                        }
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 stringResource(R.string.theme_settings_title),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                                val themeOptions = listOf(
-                                    "SYSTEM" to stringResource(R.string.theme_system),
-                                    "LIGHT" to stringResource(R.string.theme_light),
-                                    "DARK" to stringResource(R.string.theme_dark),
-                                    "AMOLED" to stringResource(R.string.theme_amoled)
-                                )
-                                themeOptions.forEachIndexed { index, (mode, label) ->
-                                    SegmentedButton(
-                                        selected = settings.themeMode == mode,
-                                        onClick = { settingsViewModel.setThemeMode(mode) },
-                                        shape = SegmentedButtonDefaults.itemShape(
-                                            index = index,
-                                            count = themeOptions.size
-                                        ),
-                                        icon = {
-                                            SegmentedButtonDefaults.Icon(active = settings.themeMode == mode) {
-                                                Icon(
-                                                    when (mode) {
-                                                        "LIGHT" -> Icons.Default.LightMode
-                                                        "DARK" -> Icons.Default.DarkMode
-                                                        "AMOLED" -> Icons.Default.Contrast
-                                                        else -> Icons.Default.SettingsBrightness
-                                                    },
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(16.dp)
-                                                )
-                                            }
-                                        }
-                                    ) {
-                                        Text(label, style = MaterialTheme.typography.labelSmall)
-                                    }
+                        }
+                        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                            val themeOptions = listOf(
+                                "SYSTEM" to stringResource(R.string.theme_system),
+                                "LIGHT" to stringResource(R.string.theme_light),
+                                "DARK" to stringResource(R.string.theme_dark),
+                                "AMOLED" to stringResource(R.string.theme_amoled)
+                            )
+                            themeOptions.forEachIndexed { index, (mode, label) ->
+                                SegmentedButton(
+                                    selected = settings.themeMode == mode,
+                                    onClick = { settingsViewModel.setThemeMode(mode) },
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = themeOptions.size
+                                    ),
+                                    icon = {}
+                                ) {
+                                    Text(label, style = MaterialTheme.typography.labelSmall)
                                 }
                             }
                         }

@@ -61,18 +61,15 @@ fun AppointmentsScreen(
             )
         },
         floatingActionButton = {
-            if (selectedTab != 1) {
-                ExtendedFloatingActionButton(
-                    onClick = { if (selectedTab == 0) showAddDialog = true else showAddDialog = true },
-                    icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                    text = { Text(stringResource(R.string.add_appointment)) }
-                )
-            } else {
-                ExtendedFloatingActionButton(
-                    onClick = { showAddDoctorDialog = true },
-                    icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                    text = { Text(stringResource(R.string.add_doctor)) }
-                )
+            FloatingActionButton(
+                onClick = {
+                    if (selectedTab == 1) showAddDoctorDialog = true
+                    else showAddDialog = true
+                }
+            ) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(
+                    if (selectedTab == 1) R.string.add_doctor else R.string.add_appointment
+                ))
             }
         }
     ) { padding ->
