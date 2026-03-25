@@ -12,10 +12,10 @@ class AuditLogRepositoryImpl(
 ) : AuditLogRepository {
 
     override fun getAllEntries(): Flow<List<AuditLogEntry>> =
-        store.getAll().map { list -> list.map { it.toDomain() }.sortedByDescending { it.timestamp } }
+        store.observeAll().map { list -> list.map { it.toDomain() }.sortedByDescending { it.timestamp } }
 
     override fun getRecentEntries(limit: Int): Flow<List<AuditLogEntry>> =
-        store.getAll().map { list ->
+        store.observeAll().map { list ->
             list.map { it.toDomain() }.sortedByDescending { it.timestamp }.take(limit)
         }
 

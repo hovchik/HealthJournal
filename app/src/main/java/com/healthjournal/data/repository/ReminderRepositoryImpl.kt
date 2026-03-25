@@ -12,10 +12,10 @@ class ReminderRepositoryImpl(
 ) : ReminderRepository {
 
     override fun getAllReminders(): Flow<List<Reminder>> =
-        store.getAll().map { list -> list.map { it.toDomain() }.sortedBy { it.time } }
+        store.observeAll().map { list -> list.map { it.toDomain() }.sortedBy { it.time } }
 
     override fun getEnabledReminders(): Flow<List<Reminder>> =
-        store.getAll().map { list -> list.filter { it.enabled }.map { it.toDomain() }.sortedBy { it.time } }
+        store.observeAll().map { list -> list.filter { it.enabled }.map { it.toDomain() }.sortedBy { it.time } }
 
     override suspend fun getReminderById(id: Long): Reminder? =
         store.getById(id)?.toDomain()
@@ -27,5 +27,5 @@ class ReminderRepositoryImpl(
         store.update(ReminderDto.from(reminder))
 
     override suspend fun deleteReminder(reminder: Reminder) =
-        store.delete(reminder.id)
+        store.delete(ReminderDto.from(reminder))
 }

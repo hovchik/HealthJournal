@@ -16,10 +16,10 @@ class AppointmentRepositoryImpl(
 ) : AppointmentRepository {
 
     override fun getAllAppointments(): Flow<List<Appointment>> =
-        appointmentStore.getAll().map { list -> list.map { it.toDomain() }.sortedBy { it.dateTime } }
+        appointmentStore.observeAll().map { list -> list.map { it.toDomain() }.sortedBy { it.dateTime } }
 
     override fun getUpcomingAppointments(): Flow<List<Appointment>> =
-        appointmentStore.getAll().map { list ->
+        appointmentStore.observeAll().map { list ->
             val now = LocalDateTime.now()
             list.map { it.toDomain() }
                 .filter { it.dateTime.isAfter(now) && !it.completed }
@@ -36,10 +36,10 @@ class AppointmentRepositoryImpl(
         appointmentStore.update(AppointmentDto.from(appointment))
 
     override suspend fun deleteAppointment(appointment: Appointment) =
-        appointmentStore.delete(appointment.id)
+        appointmentStore.delete(AppointmentDto.from(appointment))
 
     override fun getAllDoctors(): Flow<List<DoctorContact>> =
-        doctorStore.getAll().map { list -> list.map { it.toDomain() }.sortedBy { it.name } }
+        doctorStore.observeAll().map { list -> list.map { it.toDomain() }.sortedBy { it.name } }
 
     override suspend fun insertDoctor(doctor: DoctorContact): Long =
         doctorStore.insert(DoctorContactDto.from(doctor))
@@ -48,5 +48,5 @@ class AppointmentRepositoryImpl(
         doctorStore.update(DoctorContactDto.from(doctor))
 
     override suspend fun deleteDoctor(doctor: DoctorContact) =
-        doctorStore.delete(doctor.id)
+        doctorStore.delete(DoctorContactDto.from(doctor))
 }
