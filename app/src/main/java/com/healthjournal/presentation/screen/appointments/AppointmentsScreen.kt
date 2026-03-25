@@ -79,9 +79,11 @@ fun AppointmentsScreen(
                     text = { Text(stringResource(R.string.calendar_tab)) },
                     icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp)) })
                 Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 },
-                    text = { Text(stringResource(R.string.doctors_tab)) })
+                    text = { Text(stringResource(R.string.doctors_tab)) },
+                    icon = { Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(18.dp)) })
                 Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 },
-                    text = { Text(stringResource(R.string.appointments_tab)) })
+                    text = { Text(stringResource(R.string.appointments_tab)) },
+                    icon = { Icon(Icons.Default.EventNote, contentDescription = null, modifier = Modifier.size(18.dp)) })
             }
 
             when (selectedTab) {

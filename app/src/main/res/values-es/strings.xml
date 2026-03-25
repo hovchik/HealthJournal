@@ -671,4 +671,14 @@
     <string name="disease_ai_analyzing">AI está analizando datos de la enfermedad…</string>
     <string name="disease_ai_no_reports">No hay análisis AI para esta enfermedad. Toca el botón de arriba para generar uno.</string>
     <string name="disease_ai_report_title">Análisis de enfermedad</string>
+
+    <!-- Health Summary Tab -->
+    <string name="reports_tab_health">Salud</string>
+    <string name="health_daily_summary">Resumen diario</string>
+    <string name="health_no_data">Sin datos de salud. Importa desde Health Connect.</string>
+    <string name="health_avg_label">Prom</string>
+    <string name="health_total_label">Total</string>
+    <string name="health_min_label">Mín</string>
+    <string name="health_max_label">Máx</string>
+    <string name="nav_ai_chat">AI</string>
 </resources>

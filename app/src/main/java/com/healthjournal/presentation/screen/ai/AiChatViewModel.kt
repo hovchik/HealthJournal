@@ -34,13 +34,12 @@ class AiChatViewModel(application: Application) : AndroidViewModel(application) 
             _isLoading.value = true
 
             try {
-                // Build context from health data
+                // Build health data context
                 val symptoms = symptomRepo.getAllSymptoms().first().takeLast(10)
                 val vitals = vitalRepo.getAllVitalSigns().first().takeLast(10)
                 val meds = medicationRepo.getActiveMedications().first()
 
-                val context = buildString {
-                    appendLine("Recent health data context:")
+                val healthContext = buildString {
                     if (symptoms.isNotEmpty()) {
                         appendLine("Recent symptoms: ${symptoms.joinToString { "${it.name} (${it.intensity}/10)" }}")
                     }
@@ -52,14 +51,20 @@ class AiChatViewModel(application: Application) : AndroidViewModel(application) 
                     }
                 }
 
-                val prompt = """You are a helpful health assistant for a health journal app.
-You do NOT diagnose or prescribe. You help users understand their health data and suggest when to see a doctor.
+                // Build conversation history for context
+                val conversationHistory = _messages.value.takeLast(10).joinToString("\n") { msg ->
+                    if (msg.isUser) "User: ${msg.content}" else "Assistant: ${msg.content}"
+                }
 
-$context
-
-User question: $userMessage
-
-Provide a helpful, concise response."""
+                val prompt = buildString {
+                    if (healthContext.isNotBlank()) {
+                        appendLine("[Health data: $healthContext]")
+                    }
+                    if (conversationHistory.isNotBlank()) {
+                        appendLine(conversationHistory)
+                    }
+                    appendLine("User: $userMessage")
+                }
 
                 val response = aiService.generateResponse(prompt)
                 _messages.value = _messages.value + ChatMessage(response, isUser = false)

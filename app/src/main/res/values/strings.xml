@@ -10,6 +10,7 @@
     <string name="nav_settings">Настройки</string>
     <string name="nav_appointments">Приёмы</string>
     <string name="nav_achievements">Награды</string>
+    <string name="nav_ai_chat">AI</string>
 
     <!-- Common -->
     <string name="back">Назад</string>
@@ -72,6 +73,13 @@
     <string name="reports_title">Отчёты</string>
     <string name="reports_tab_records">Записи</string>
     <string name="reports_tab_ai">AI Анализ</string>
+    <string name="reports_tab_health">Здоровье</string>
+    <string name="health_daily_summary">Сводка за день</string>
+    <string name="health_no_data">Нет данных о здоровье. Импортируйте из Health Connect.</string>
+    <string name="health_avg_label">Среднее</string>
+    <string name="health_total_label">Всего</string>
+    <string name="health_min_label">Мин</string>
+    <string name="health_max_label">Макс</string>
     <string name="report_2_days">Отчёт (2 дня)</string>
     <string name="patterns_4_days">Паттерны (4 дня)</string>
     <string name="ai_analyzing">AI анализирует данные…</string>

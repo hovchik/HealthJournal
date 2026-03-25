@@ -670,4 +670,14 @@
     <string name="health_connect_grant_permissions">Տրամադրել թույլտվություններ</string>
     <string name="health_connect_permissions_hint">Տրամադրեք թույլտվություններ տվյալների ներմուծման համար</string>
 
+
+    <!-- Health Summary Tab -->
+    <string name="reports_tab_health">Առողջություն</string>
+    <string name="health_daily_summary">Օրվա ամփոփում</string>
+    <string name="health_no_data">Առողջական տվյալներ չկան։ Ներմուծեք Health Connect-ից։</string>
+    <string name="health_avg_label">Միջին</string>
+    <string name="health_total_label">Ընդամենը</string>
+    <string name="health_min_label">Նվազ</string>
+    <string name="health_max_label">Առավ</string>
+    <string name="nav_ai_chat">AI</string>
 </resources>

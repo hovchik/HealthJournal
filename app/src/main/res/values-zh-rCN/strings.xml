@@ -672,4 +672,14 @@
     <string name="health_connect_grant_permissions">授予权限</string>
     <string name="health_connect_permissions_hint">授予权限以导入数据</string>
 
+
+    <!-- Health Summary Tab -->
+    <string name="reports_tab_health">健康</string>
+    <string name="health_daily_summary">每日摘要</string>
+    <string name="health_no_data">没有健康数据。从 Health Connect 导入。</string>
+    <string name="health_avg_label">平均</string>
+    <string name="health_total_label">总计</string>
+    <string name="health_min_label">最小</string>
+    <string name="health_max_label">最大</string>
+    <string name="nav_ai_chat">AI</string>
 </resources>

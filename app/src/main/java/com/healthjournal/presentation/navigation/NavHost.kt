@@ -221,7 +221,11 @@ fun HealthNavHost(
             )
         }
         composable(Screen.AiChat.route) {
-            AiChatScreen(onBack = { navController.popBackStack() })
+            AiChatScreen(
+                onBack = { navController.popBackStack() },
+                isTopLevel = navController.previousBackStackEntry?.destination?.route == null ||
+                    navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route }
+            )
         }
         composable(Screen.SecuritySettings.route) {
             SecuritySettingsScreen(onBack = { navController.popBackStack() })

@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AiChatScreen(
     onBack: () -> Unit,
+    isTopLevel: Boolean = false,
     viewModel: AiChatViewModel = viewModel()
 ) {
     val messages by viewModel.messages.collectAsStateWithLifecycle()
@@ -44,8 +45,10 @@ fun AiChatScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.ai_chat_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                    if (!isTopLevel) {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                        }
                     }
                 },
                 actions = {
