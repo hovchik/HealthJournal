@@ -726,4 +726,9 @@
     <string name="correlation_symptoms">Síntomas</string>
     <string name="correlation_avg_format">Prom %1$s: %2$.1f en días con síntomas vs %3$.1f en días normales</string>
 
+
+    <!-- Show more/less -->
+    <string name="show_less">Mostrar menos</string>
+    <string name="show_more_count">Mostrar %1$d más</string>
+
 </resources>

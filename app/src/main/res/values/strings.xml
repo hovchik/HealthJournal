@@ -722,4 +722,9 @@
     <string name="correlation_symptoms">Симптомы</string>
     <string name="correlation_avg_format">Ср. %1$s: %2$.1f в дни симптомов vs %3$.1f в обычные дни</string>
 
+
+    <!-- Show more/less -->
+    <string name="show_less">Скрыть</string>
+    <string name="show_more_count">Показать ещё %1$d</string>
+
 </resources>

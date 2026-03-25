@@ -725,4 +725,9 @@
     <string name="correlation_symptoms">Ախտանիշներ</string>
     <string name="correlation_avg_format">Միջ. %1$s: %2$.1f ախտանիշների օրերին vs %3$.1f սովորական օրերին</string>
 
+
+    <!-- Show more/less -->
+    <string name="show_less">Թաքցնել</string>
+    <string name="show_more_count">Ցույց տալ ևս %1$d</string>
+
 </resources>

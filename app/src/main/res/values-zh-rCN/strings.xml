@@ -727,4 +727,9 @@
     <string name="correlation_symptoms">症状</string>
     <string name="correlation_avg_format">平均 %1$s: %2$.1f (高症状日) vs %3$.1f (低症状日)</string>
 
+
+    <!-- Show more/less -->
+    <string name="show_less">收起</string>
+    <string name="show_more_count">显示更多 %1$d 条</string>
+
 </resources>

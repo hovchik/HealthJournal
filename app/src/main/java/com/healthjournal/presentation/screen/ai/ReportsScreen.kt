@@ -428,6 +428,10 @@ private fun RecordsTab(
                 val byType = vitalsForDate.groupBy { it.type }
                 byType.forEach { (type, typeVitals) ->
                     item(key = "rv_type_${date}_${type.name}") {
+                        var expanded by remember { mutableStateOf(typeVitals.size <= 4) }
+                        val sortedVitals = typeVitals.sortedByDescending { it.recordedAt }
+                        val displayVitals = if (expanded) sortedVitals else sortedVitals.take(3)
+
                         ElevatedCard(
                             modifier = Modifier.fillMaxWidth(),
                             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
@@ -456,7 +460,7 @@ private fun RecordsTab(
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(6.dp))
-                                typeVitals.sortedByDescending { it.recordedAt }.forEach { vital ->
+                                displayVitals.forEach { vital ->
                                     val valueStr = if (vital.secondaryValue != null) {
                                         "${vital.value.toInt()}/${vital.secondaryValue.toInt()}"
                                     } else if (vital.value == vital.value.toLong().toDouble()) {
@@ -492,6 +496,24 @@ private fun RecordsTab(
                                             vital.recordedAt.format(timeFormatter),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.outline
+                                        )
+                                    }
+                                }
+                                // Show expand/collapse button when more than 4 records
+                                if (typeVitals.size > 4) {
+                                    TextButton(
+                                        onClick = { expanded = !expanded },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(
+                                            if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            if (expanded) stringResource(R.string.show_less)
+                                            else stringResource(R.string.show_more_count, typeVitals.size - 3)
                                         )
                                     }
                                 }

@@ -724,4 +724,9 @@
     <string name="correlation_symptoms">Symptoms</string>
     <string name="correlation_avg_format">Avg %1$s: %2$.1f on high-symptom days vs %3$.1f on low-symptom days</string>
 
+
+    <!-- Show more/less -->
+    <string name="show_less">Show less</string>
+    <string name="show_more_count">Show %1$d more</string>
+
 </resources>
