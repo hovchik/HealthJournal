@@ -236,9 +236,9 @@ class HealthConnectManager(private val context: Context) {
         }
     }
 
-    suspend fun importAllRecent(profileId: Long): List<VitalSign> {
+    suspend fun importRecent(profileId: Long, days: Int): List<VitalSign> {
         val endTime = Instant.now()
-        val startTime = endTime.minus(java.time.Duration.ofDays(7))
+        val startTime = endTime.minus(java.time.Duration.ofDays(days.toLong()))
 
         val vitals = mutableListOf<VitalSign>()
         vitals.addAll(readHeartRate(startTime, endTime))
@@ -252,4 +252,6 @@ class HealthConnectManager(private val context: Context) {
 
         return vitals.map { it.copy(profileId = profileId) }
     }
+
+    suspend fun importAllRecent(profileId: Long): List<VitalSign> = importRecent(profileId, days = 7)
 }

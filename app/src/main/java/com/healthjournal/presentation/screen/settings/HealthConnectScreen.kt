@@ -72,17 +72,23 @@ class HealthConnectViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun importData() {
+    fun importData(days: Int = 7) {
         viewModelScope.launch {
             _isImporting.value = true
             try {
                 val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
-                val vitals = healthConnectManager.importAllRecent(profileId)
-                for (vital in vitals) {
-                    container.addVitalSign(vital)
+                val vitals = if (days == 1) {
+                    healthConnectManager.importRecent(profileId, days = 1)
+                } else {
+                    healthConnectManager.importAllRecent(profileId)
                 }
-                _importedCount.value = vitals.size
-                _message.value = getApplication<Application>().getString(R.string.import_success)
+                var imported = 0
+                for (vital in vitals) {
+                    val id = container.addVitalSignIfNotDuplicate(vital)
+                    if (id != null) imported++
+                }
+                _importedCount.value = imported
+                _message.value = getApplication<Application>().getString(R.string.import_success_count, imported)
             } catch (e: Exception) {
                 _message.value = getApplication<Application>().getString(R.string.import_error, e.message ?: "")
             } finally {
@@ -330,9 +336,9 @@ fun HealthConnectScreen(
                 }
             }
 
-            // Import button
+            // Import buttons
             Button(
-                onClick = { viewModel.importData() },
+                onClick = { viewModel.importData(days = 1) },
                 enabled = isAvailable && hasPermissions && !isImporting,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -340,6 +346,14 @@ fun HealthConnectScreen(
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                     Spacer(modifier = Modifier.width(8.dp))
                 }
+                Text(stringResource(R.string.health_connect_import_1_day))
+            }
+
+            OutlinedButton(
+                onClick = { viewModel.importData(days = 7) },
+                enabled = isAvailable && hasPermissions && !isImporting,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(stringResource(R.string.health_connect_import))
             }
 

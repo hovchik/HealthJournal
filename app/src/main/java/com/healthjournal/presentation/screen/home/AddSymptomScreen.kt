@@ -195,7 +195,7 @@ fun AddSymptomScreen(
                             val recordedAt = LocalDateTime.of(selectedDate, selectedTime)
                             if (isEditing && editingSymptom != null) {
                                 viewModel.updateSymptom(
-                                    editingSymptom!!.copy(
+                                    editingSymptom.copy(
                                         name = name,
                                         intensity = intensity.toInt(),
                                         value = value.takeIf { it.isNotBlank() },

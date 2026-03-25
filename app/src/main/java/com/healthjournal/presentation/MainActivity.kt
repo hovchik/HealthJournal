@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -45,12 +46,23 @@ fun MainApp() {
     val onboardingViewModel: OnboardingViewModel = viewModel()
     val settings by onboardingViewModel.settings.collectAsStateWithLifecycle()
 
-    val startDestination = if (settings.onboardingCompleted) Screen.Home.route else Screen.Onboarding.route
+    // Avoid flashing: wait for settings to load before deciding start destination.
+    // The default UserSettings() has onboardingCompleted=false, which would briefly
+    // show Onboarding before switching to Home, causing a splash screen flash.
+    val isSettingsLoaded by onboardingViewModel.isLoaded.collectAsStateWithLifecycle()
+
+    val startDestination = remember(isSettingsLoaded) {
+        if (!isSettingsLoaded) null
+        else if (settings.onboardingCompleted) Screen.Home.route else Screen.Onboarding.route
+    }
 
     var isLocked by remember { mutableStateOf(isAppLockEnabled(context)) }
 
     HealthJournalTheme(themeMode = settings.themeMode) {
-        if (isLocked) {
+        if (startDestination == null) {
+            // Show nothing while settings are loading to prevent flash
+            Box(modifier = Modifier.fillMaxSize())
+        } else if (isLocked) {
             LockScreen(onUnlocked = { isLocked = false })
         } else {
             val navBackStackEntry by navController.currentBackStackEntryAsState()

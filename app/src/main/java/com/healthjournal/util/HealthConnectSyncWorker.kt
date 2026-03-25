@@ -13,7 +13,10 @@ class HealthConnectSyncWorker(
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        val app = applicationContext as? HealthJournalApp ?: return Result.failure()
+        val app = applicationContext as? HealthJournalApp ?: run {
+            Log.e(TAG, "Application context is not HealthJournalApp, cannot sync")
+            return Result.failure()
+        }
         val container = app.container
         val healthConnectManager = container.healthConnectManager
 
@@ -32,11 +35,13 @@ class HealthConnectSyncWorker(
             val profileId = container.userSettingsRepository.getUserSettings().first().activeProfileId
             val vitals = healthConnectManager.importAllRecent(profileId)
 
+            var imported = 0
             for (vital in vitals) {
-                container.addVitalSign(vital)
+                val id = container.addVitalSignIfNotDuplicate(vital)
+                if (id != null) imported++
             }
 
-            Log.i(TAG, "Health Connect sync completed: ${vitals.size} records imported")
+            Log.i(TAG, "Health Connect sync completed: $imported new records imported (${vitals.size - imported} duplicates skipped)")
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "Health Connect sync failed", e)

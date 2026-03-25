@@ -155,6 +155,7 @@
     <string name="import_data">Импорт данных</string>
     <string name="export_success">Данные успешно экспортированы</string>
     <string name="import_success">Данные успешно импортированы</string>
+    <string name="import_success_count">Успешно импортировано %1$d записей</string>
     <string name="export_error">Ошибка экспорта: %1$s</string>
     <string name="import_error">Ошибка импорта: %1$s</string>
 
@@ -637,6 +638,7 @@
     <string name="health_connect_unavailable">Health Connect недоступен</string>
     <string name="health_connect_data_types">Поддерживаемые типы данных</string>
     <string name="health_connect_import">Импортировать данные за 7 дней</string>
+    <string name="health_connect_import_1_day">Импортировать данные за 1 день</string>
     <string name="health_connect_permissions_needed">Требуются разрешения</string>
     <string name="health_connect_permissions_desc">Для импорта данных необходимо предоставить доступ к Health Connect</string>
     <string name="health_connect_grant_permissions">Предоставить разрешения</string>

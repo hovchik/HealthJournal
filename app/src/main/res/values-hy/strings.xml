@@ -145,6 +145,7 @@
     <string name="import_data">Ներմուծել տվյալները</string>
     <string name="export_success">Տվյալները հաջողությամբ արտահանվեց</string>
     <string name="import_success">Տվյալները հաջողությամբ ներմուծվեց</string>
+    <string name="import_success_count">Հաջողությամբ ներմուծվեց %1$d գրառում</string>
     <string name="export_error">Արտահանման սխալ: %1$s</string>
     <string name="import_error">Ներմուծման սխալ: %1$s</string>
 
@@ -612,6 +613,7 @@
     <string name="health_connect_unavailable">Health Connect հասանելի չէ</string>
     <string name="health_connect_data_types">Աջակցվող տվյալների տեսակներ</string>
     <string name="health_connect_import">Ներմուծել 7 օրվա տվյալներ</string>
+    <string name="health_connect_import_1_day">Ներմուծել 1 օրվա տվյալներ</string>
 
     <!-- Security -->
     <string name="security_title">Անվտանգություն</string>

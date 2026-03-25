@@ -8,11 +8,13 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthjournal.HealthJournalApp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 data class ExportImportUiState(
@@ -70,10 +72,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             _uiState.value = _uiState.value.copy(isSharing = true, message = null)
             try {
                 val jsonString = exportImportManager.exportToString()
-                val cacheDir = File(context.cacheDir, "shared")
-                cacheDir.mkdirs()
-                val file = File(cacheDir, "health_journal_backup.json")
-                file.writeText(jsonString, Charsets.UTF_8)
+                val file = withContext(Dispatchers.IO) {
+                    val cacheDir = File(context.cacheDir, "shared")
+                    cacheDir.mkdirs()
+                    val f = File(cacheDir, "health_journal_backup.json")
+                    f.writeText(jsonString, Charsets.UTF_8)
+                    f
+                }
 
                 val uri = FileProvider.getUriForFile(
                     context,
