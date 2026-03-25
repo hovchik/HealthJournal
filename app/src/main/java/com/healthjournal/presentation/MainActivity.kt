@@ -9,8 +9,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,7 +19,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.healthjournal.R
 import com.healthjournal.presentation.navigation.HealthNavHost
 import com.healthjournal.presentation.navigation.Screen
 import com.healthjournal.presentation.navigation.bottomNavItems
@@ -38,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
@@ -57,38 +53,8 @@ fun MainApp() {
         )
         val showBottomBar = currentRoute != null && currentRoute !in hideBottomBarRoutes
 
-        val showTopBar = currentRoute != null && currentRoute !in hideBottomBarRoutes
-
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            topBar = {
-                if (showTopBar) {
-                    TopAppBar(
-                        title = {},
-                        actions = {
-                            IconButton(
-                                onClick = {
-                                    navController.navigate(Screen.AiChat.route) {
-                                        launchSingleTop = true
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    Icons.Default.Psychology,
-                                    contentDescription = stringResource(R.string.nav_ai_chat),
-                                    tint = if (currentRoute == Screen.AiChat.route)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    )
-                }
-            },
             bottomBar = {
                 AnimatedVisibility(
                     visible = showBottomBar,

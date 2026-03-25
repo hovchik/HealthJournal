@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.HealthJournalApp
 import com.healthjournal.R
 import com.healthjournal.domain.model.VitalType
+import com.healthjournal.util.localizedDisplayName
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -69,9 +70,9 @@ class HealthConnectViewModel(application: Application) : AndroidViewModel(applic
                     container.addVitalSign(vital)
                 }
                 _importedCount.value = vitals.size
-                _message.value = "Imported ${vitals.size} records"
+                _message.value = getApplication<Application>().getString(R.string.import_success)
             } catch (e: Exception) {
-                _message.value = "Error: ${e.message}"
+                _message.value = getApplication<Application>().getString(R.string.import_error, e.message ?: "")
             } finally {
                 _isImporting.value = false
             }
@@ -227,7 +228,7 @@ fun HealthConnectScreen(
                             Icon(icon, contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text(type.displayName, style = MaterialTheme.typography.bodyMedium)
+                            Text(type.localizedDisplayName(), style = MaterialTheme.typography.bodyMedium)
                         }
                         if (index < dataTypes.lastIndex) {
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))

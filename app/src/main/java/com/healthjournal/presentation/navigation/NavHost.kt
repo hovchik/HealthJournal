@@ -66,7 +66,8 @@ fun HealthNavHost(
             DiseaseListScreen(
                 onDiseaseClick = { id -> navController.navigate(Screen.DiseaseDetail.createRoute(id)) },
                 onAddSymptom = { navController.navigate(Screen.AddSymptom.route) },
-                onAddVital = { navController.navigate(Screen.AddVital.route) }
+                onAddVital = { navController.navigate(Screen.AddVital.route) },
+                onAiChat = { navController.navigate(Screen.AiChat.route) { launchSingleTop = true } }
             )
         }
         composable(Screen.AddSymptom.route) {
@@ -163,7 +164,9 @@ fun HealthNavHost(
             AddMedicationScreen(onBack = { navController.popBackStack() }, diseaseId = diseaseId)
         }
         composable(Screen.Reports.route) {
-            ReportsScreen()
+            ReportsScreen(
+                onAiChat = { navController.navigate(Screen.AiChat.route) { launchSingleTop = true } }
+            )
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
@@ -217,7 +220,8 @@ fun HealthNavHost(
             AppointmentsScreen(
                 onBack = { navController.popBackStack() },
                 isTopLevel = navController.previousBackStackEntry?.destination?.route == null ||
-                    navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route }
+                    navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route },
+                onAiChat = { navController.navigate(Screen.AiChat.route) { launchSingleTop = true } }
             )
         }
         composable(Screen.AiChat.route) {
@@ -234,7 +238,8 @@ fun HealthNavHost(
             AchievementsScreen(
                 onBack = { navController.popBackStack() },
                 isTopLevel = navController.previousBackStackEntry?.destination?.route == null ||
-                    navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route }
+                    navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route },
+                onAiChat = { navController.navigate(Screen.AiChat.route) { launchSingleTop = true } }
             )
         }
         composable(Screen.HealthConnect.route) {

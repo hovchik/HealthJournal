@@ -38,6 +38,7 @@ import java.util.Locale
 @Composable
 fun AppointmentsScreen(
     onBack: () -> Unit,
+    onAiChat: () -> Unit = {},
     isTopLevel: Boolean = false,
     viewModel: AppointmentsViewModel = viewModel()
 ) {
@@ -56,6 +57,12 @@ fun AppointmentsScreen(
                         IconButton(onClick = onBack) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                         }
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onAiChat) {
+                        Icon(Icons.Default.Psychology, contentDescription = stringResource(R.string.nav_ai_chat),
+                            tint = MaterialTheme.colorScheme.primary)
                     }
                 }
             )

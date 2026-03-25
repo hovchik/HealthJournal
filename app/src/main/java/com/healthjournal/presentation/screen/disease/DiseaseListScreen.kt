@@ -40,6 +40,7 @@ fun DiseaseListScreen(
     onDiseaseClick: (Long) -> Unit,
     onAddSymptom: () -> Unit = {},
     onAddVital: () -> Unit = {},
+    onAiChat: () -> Unit = {},
     viewModel: DiseaseViewModel = viewModel()
 ) {
     val diseases by viewModel.diseases.collectAsStateWithLifecycle()
@@ -119,6 +120,10 @@ fun DiseaseListScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onAiChat) {
+                        Icon(Icons.Default.Psychology, contentDescription = stringResource(R.string.nav_ai_chat),
+                            tint = MaterialTheme.colorScheme.primary)
+                    }
                     if (deletedDiseases.isNotEmpty()) {
                         IconButton(onClick = { showDeletedSection = !showDeletedSection }) {
                             Icon(
