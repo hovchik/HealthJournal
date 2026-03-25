@@ -857,22 +857,31 @@ private fun EditDiseaseDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.edit_disease)) },
+        icon = {
+            Icon(Icons.Default.Edit, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
+        title = {
+            Text(stringResource(R.string.edit_disease),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.disease_name)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium
                 )
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text(stringResource(R.string.notes)) },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    maxLines = 2,
+                    shape = MaterialTheme.shapes.medium
                 )
                 ExposedDropdownMenuBox(
                     expanded = groupExpanded,
@@ -942,12 +951,16 @@ private fun EditDiseaseDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(name, notes, active, selectedGroup) }, enabled = name.isNotBlank()) {
+            Button(onClick = { onConfirm(name, notes, active, selectedGroup) },
+                enabled = name.isNotBlank(), shape = MaterialTheme.shapes.medium) {
                 Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
-        }
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
+                Text(stringResource(R.string.close))
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 }

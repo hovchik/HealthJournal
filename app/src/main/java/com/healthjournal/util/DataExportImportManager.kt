@@ -20,6 +20,10 @@ data class BackupData(
     val aiReports: List<AiReportDto> = emptyList(),
     val familyMembers: List<FamilyMemberDto> = emptyList(),
     val diseases: List<DiseaseDto> = emptyList(),
+    val appointments: List<AppointmentDto> = emptyList(),
+    val reminders: List<ReminderDto> = emptyList(),
+    val doctorContacts: List<DoctorContactDto> = emptyList(),
+    val auditLog: List<AuditLogDto> = emptyList(),
     val userSettings: UserSettingsBackup? = null,
     val predefinedData: PredefinedDataBackup? = null
 )
@@ -66,6 +70,10 @@ class DataExportImportManager(
     private val aiReportStore: JsonFileStore<AiReportDto>,
     private val familyMemberStore: JsonFileStore<FamilyMemberDto>,
     private val diseaseStore: JsonFileStore<DiseaseDto>,
+    private val appointmentStore: JsonFileStore<AppointmentDto>,
+    private val reminderStore: JsonFileStore<ReminderDto>,
+    private val doctorContactStore: JsonFileStore<DoctorContactDto>,
+    private val auditLogStore: JsonFileStore<AuditLogDto>,
     private val userSettingsRepository: UserSettingsRepository
 ) {
     private val json = Json {
@@ -119,6 +127,10 @@ class DataExportImportManager(
             aiReports = aiReportStore.getAll(),
             familyMembers = familyMemberStore.getAll(),
             diseases = diseaseStore.getAll(),
+            appointments = appointmentStore.getAll(),
+            reminders = reminderStore.getAll(),
+            doctorContacts = doctorContactStore.getAll(),
+            auditLog = auditLogStore.getAll(),
             userSettings = UserSettingsBackup(
                 userName = settings.userName,
                 doctorName = settings.doctorName,
@@ -157,6 +169,20 @@ class DataExportImportManager(
         restoreBackup(backup)
     }
 
+    suspend fun clearAllData() {
+        symptomStore.replaceAll(emptyList())
+        vitalSignStore.replaceAll(emptyList())
+        medicationStore.replaceAll(emptyList())
+        medicationLogStore.replaceAll(emptyList())
+        aiReportStore.replaceAll(emptyList())
+        familyMemberStore.replaceAll(emptyList())
+        diseaseStore.replaceAll(emptyList())
+        appointmentStore.replaceAll(emptyList())
+        reminderStore.replaceAll(emptyList())
+        doctorContactStore.replaceAll(emptyList())
+        auditLogStore.replaceAll(emptyList())
+    }
+
     suspend fun importData(uri: Uri) {
         val jsonString = context.contentResolver.openInputStream(uri)?.use { stream ->
             stream.bufferedReader(Charsets.UTF_8).readText()
@@ -174,6 +200,10 @@ class DataExportImportManager(
         aiReportStore.replaceAll(backup.aiReports)
         familyMemberStore.replaceAll(backup.familyMembers)
         diseaseStore.replaceAll(backup.diseases)
+        appointmentStore.replaceAll(backup.appointments)
+        reminderStore.replaceAll(backup.reminders)
+        doctorContactStore.replaceAll(backup.doctorContacts)
+        auditLogStore.replaceAll(backup.auditLog)
 
         // Restore user settings (keep onboarding completed)
         backup.userSettings?.let { settingsBackup ->

@@ -273,7 +273,7 @@ private fun HealthSummaryTab(vitals: List<VitalSign>) {
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        type.displayName,
+                                        type.localizedDisplayName(),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.SemiBold
                                     )
@@ -282,7 +282,7 @@ private fun HealthSummaryTab(vitals: List<VitalSign>) {
                                         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
                                     ) {
                                         Text(
-                                            "$count ${type.unit}",
+                                            "$count ${type.localizedUnit()}",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
@@ -290,6 +290,7 @@ private fun HealthSummaryTab(vitals: List<VitalSign>) {
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
+                                val unitStr = type.localizedUnit()
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -297,12 +298,12 @@ private fun HealthSummaryTab(vitals: List<VitalSign>) {
                                     val isStepsOrSleep = type == com.healthjournal.domain.model.VitalType.STEPS ||
                                             type == com.healthjournal.domain.model.VitalType.SLEEP
                                     if (isStepsOrSleep) {
-                                        HealthStatItem(stringResource(R.string.health_total_label), "%.0f".format(total))
+                                        HealthStatItem(stringResource(R.string.health_total_label), "%.0f %s".format(total, unitStr))
                                     } else {
-                                        HealthStatItem(stringResource(R.string.health_avg_label), "%.1f".format(avg))
+                                        HealthStatItem(stringResource(R.string.health_avg_label), "%.1f %s".format(avg, unitStr))
                                     }
-                                    HealthStatItem(stringResource(R.string.health_min_label), "%.1f".format(min))
-                                    HealthStatItem(stringResource(R.string.health_max_label), "%.1f".format(max))
+                                    HealthStatItem(stringResource(R.string.health_min_label), "%.1f %s".format(min, unitStr))
+                                    HealthStatItem(stringResource(R.string.health_max_label), "%.1f %s".format(max, unitStr))
                                 }
                             }
                         }
@@ -422,29 +423,100 @@ private fun RecordsTab(
                 item(key = "rv_date_$date") {
                     DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
                 }
-                items(vitalsForDate, key = { "rv_${it.id}" }) { vital ->
-                    val valueStr = if (vital.secondaryValue != null) "${vital.value.toInt()}/${vital.secondaryValue.toInt()}" else vital.value.toString()
-                    ElevatedCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
-                    ) {
-                        Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Column {
-                                Text(vital.type.localizedDisplayName(), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                                Text(vital.recordedAt.format(timeFormatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
-                            }
-                            Surface(
-                                shape = MaterialTheme.shapes.extraSmall,
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
-                            ) {
-                                Text(
-                                    "$valueStr ${vital.type.localizedUnit()}",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                )
+
+                // Group by type within each date
+                val byType = vitalsForDate.groupBy { it.type }
+                byType.forEach { (type, typeVitals) ->
+                    item(key = "rv_type_${date}_${type.name}") {
+                        var expanded by remember { mutableStateOf(typeVitals.size <= 4) }
+                        val sortedVitals = typeVitals.sortedByDescending { it.recordedAt }
+                        val displayVitals = if (expanded) sortedVitals else sortedVitals.take(3)
+
+                        ElevatedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        type.localizedDisplayName(),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Surface(
+                                        shape = MaterialTheme.shapes.extraSmall,
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                                    ) {
+                                        Text(
+                                            "${typeVitals.size} ${type.localizedUnit()}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                displayVitals.forEach { vital ->
+                                    val valueStr = if (vital.secondaryValue != null) {
+                                        "${vital.value.toInt()}/${vital.secondaryValue.toInt()}"
+                                    } else if (vital.value == vital.value.toLong().toDouble()) {
+                                        vital.value.toLong().toString()
+                                    } else {
+                                        "%.1f".format(vital.value)
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                "$valueStr ${type.localizedUnit()}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                            if (!vital.notes.isNullOrBlank()) {
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    vital.notes,
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    modifier = Modifier.weight(1f, fill = false)
+                                                )
+                                            }
+                                        }
+                                        Text(
+                                            vital.recordedAt.format(timeFormatter),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.outline
+                                        )
+                                    }
+                                }
+                                // Show expand/collapse button when more than 4 records
+                                if (typeVitals.size > 4) {
+                                    TextButton(
+                                        onClick = { expanded = !expanded },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(
+                                            if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            if (expanded) stringResource(R.string.show_less)
+                                            else stringResource(R.string.show_more_count, typeVitals.size - 3)
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -727,7 +799,7 @@ private fun AiAnalyzeTab(
                         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
                     ) {
                         VitalsChart(
-                            title = type.displayName,
+                            title = type.localizedDisplayName(),
                             vitals = typeVitals.sortedBy { it.recordedAt },
                             modifier = Modifier.fillMaxWidth().padding(16.dp)
                         )

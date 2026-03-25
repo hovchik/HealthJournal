@@ -563,6 +563,11 @@
     <string name="reminder_title">\u6807\u9898</string>
     <string name="reminder_description">\u63cf\u8ff0</string>
     <string name="reminder_type">\u63d0\u9192\u7c7b\u578b</string>
+    <string name="reminder_frequency">频率</string>
+    <string name="freq_once">一次</string>
+    <string name="freq_daily">每天</string>
+    <string name="freq_weekly">每周</string>
+    <string name="freq_monthly">每月</string>
     <string name="missed_dose_title">\u6f0f\u670d</string>
     <string name="missed_dose_desc">\u60a8\u6f0f\u670d\u4e86 %1$s</string>
     <string name="channel_medication_reminders">\u836f\u7269\u63d0\u9192</string>
@@ -621,6 +626,29 @@
     <string name="audit_log_title">\u5ba1\u8ba1\u65e5\u5fd7</string>
     <string name="audit_log_desc">\u8ddf\u8e2a\u8bbf\u95ee\u548c\u66f4\u6539</string>
     <string name="security_info">\u6240\u6709\u6570\u636e\u5b58\u50a8\u5728\u8bbe\u5907\u672c\u5730\u3002\u751f\u7269\u8bc6\u522b\u9501\u53ef\u4fdd\u62a4\u514d\u53d7\u672a\u6388\u6743\u8bbf\u95ee\u3002</string>
+    <string name="biometric_verify_title">验证身份</string>
+    <string name="biometric_verify_subtitle">启用生物识别锁</string>
+    <string name="biometric_unlock_title">解锁</string>
+    <string name="biometric_unlock_subtitle">解锁应用</string>
+    <string name="app_locked_title">应用已锁定</string>
+    <string name="app_locked_desc">解锁应用以访问数据</string>
+    <string name="enter_pin">输入 PIN</string>
+    <string name="pin_incorrect">PIN 不正确</string>
+    <string name="unlock">解锁</string>
+    <string name="use_biometric">使用生物识别</string>
+    <string name="set_pin_title">设置 PIN</string>
+    <string name="set_pin_desc">输入 4 到 6 位数字的 PIN</string>
+    <string name="confirm_pin_title">确认 PIN</string>
+    <string name="confirm_pin_desc">重新输入 PIN</string>
+    <string name="pin_label">PIN</string>
+    <string name="pin_mismatch">PIN 不一致</string>
+    <string name="change_pin">更改 PIN</string>
+    <string name="verify_current_pin">当前 PIN</string>
+    <string name="set_new_pin">新 PIN</string>
+    <string name="next">下一步</string>
+    <string name="notification_permission_needed">通知已禁用</string>
+    <string name="notification_permission_desc">允许通知以使提醒正常工作</string>
+    <string name="grant_permission">允许</string>
 
     <!-- Achievements -->
     <string name="achievements_title">\u6210\u5c31</string>
@@ -671,6 +699,10 @@
     <string name="health_connect_permissions_desc">授予 Health Connect 访问权限以导入健康数据</string>
     <string name="health_connect_grant_permissions">授予权限</string>
     <string name="health_connect_permissions_hint">授予权限以导入数据</string>
+    <string name="health_connect_auto_sync">自动同步</string>
+    <string name="health_connect_auto_sync_desc">定期从 Health Connect 导入数据</string>
+    <string name="health_connect_sync_interval">同步间隔</string>
+    <string name="health_connect_hours_format">%1$d 小时</string>
 
 
     <!-- Health Summary Tab -->
@@ -682,4 +714,22 @@
     <string name="health_min_label">最小</string>
     <string name="health_max_label">最大</string>
     <string name="nav_ai_chat">AI</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">清除所有数据</string>
+    <string name="clear_data_desc">删除所有健康记录</string>
+    <string name="clear_data_confirm_title">删除所有数据？</string>
+    <string name="clear_data_confirm_desc">此操作不可撤销。所有症状、生命体征、药物、疾病和报告将被删除。建议先创建备份。</string>
+    <string name="clear_data_success">所有数据已删除</string>
+
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">症状</string>
+    <string name="correlation_avg_format">平均 %1$s: %2$.1f (高症状日) vs %3$.1f (低症状日)</string>
+
+
+    <!-- Show more/less -->
+    <string name="show_less">收起</string>
+    <string name="show_more_count">显示更多 %1$d 条</string>
+
 </resources>

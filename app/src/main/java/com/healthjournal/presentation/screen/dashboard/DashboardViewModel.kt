@@ -7,6 +7,7 @@ import com.healthjournal.HealthJournalApp
 import com.healthjournal.domain.model.Symptom
 import com.healthjournal.domain.model.VitalSign
 import com.healthjournal.domain.model.VitalType
+import com.healthjournal.util.displayNameResId
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -84,10 +85,14 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 if (maxRange > 0) {
                     val strength = (diff / maxRange).toFloat().coerceIn(0f, 1f)
                     if (strength > 0.1f) {
+                        val app = getApplication<Application>()
+                        val typeName = app.getString(type.displayNameResId)
+                        val symptomsLabel = app.getString(com.healthjournal.R.string.correlation_symptoms)
+                        val avgLabel = app.getString(com.healthjournal.R.string.correlation_avg_format, typeName, highAvg, normalAvg)
                         results.add(
                             CorrelationItem(
-                                label = "${type.displayName} ↔ Symptoms",
-                                description = "Avg ${type.displayName}: %.1f on high-symptom days vs %.1f on low-symptom days".format(highAvg, normalAvg),
+                                label = "$typeName ↔ $symptomsLabel",
+                                description = avgLabel,
                                 strength = strength
                             )
                         )

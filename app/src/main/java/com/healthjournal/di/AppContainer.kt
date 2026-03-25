@@ -331,6 +331,10 @@ class AppContainer(context: Context) {
         aiReportStore = aiReportStore,
         familyMemberStore = familyMemberStore,
         diseaseStore = diseaseStore,
+        appointmentStore = appointmentStore,
+        reminderStore = reminderStore,
+        doctorContactStore = doctorContactStore,
+        auditLogStore = auditLogStore,
         userSettingsRepository = userSettingsRepository
     )
 }

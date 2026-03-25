@@ -572,6 +572,11 @@
     <string name="reminder_title">Title</string>
     <string name="reminder_description">Description</string>
     <string name="reminder_type">Reminder type</string>
+    <string name="reminder_frequency">Frequency</string>
+    <string name="freq_once">Once</string>
+    <string name="freq_daily">Daily</string>
+    <string name="freq_weekly">Week</string>
+    <string name="freq_monthly">Month</string>
     <string name="missed_dose_title">Missed dose</string>
     <string name="missed_dose_desc">You missed taking %1$s</string>
     <string name="channel_medication_reminders">Medication reminders</string>
@@ -622,6 +627,10 @@
     <string name="health_connect_permissions_desc">Grant access to Health Connect to import your health data</string>
     <string name="health_connect_grant_permissions">Grant permissions</string>
     <string name="health_connect_permissions_hint">Grant permissions to import data</string>
+    <string name="health_connect_auto_sync">Automatic sync</string>
+    <string name="health_connect_auto_sync_desc">Periodically import data from Health Connect</string>
+    <string name="health_connect_sync_interval">Sync interval</string>
+    <string name="health_connect_hours_format">%1$d h</string>
 
     <!-- Navigation (short labels) -->
     <string name="nav_appointments">Appts</string>
@@ -643,6 +652,29 @@
     <string name="audit_log_title">Audit log</string>
     <string name="audit_log_desc">Track access and changes</string>
     <string name="security_info">All data is stored locally on your device. Biometric lock protects against unauthorized access.</string>
+    <string name="biometric_verify_title">Verify your identity</string>
+    <string name="biometric_verify_subtitle">To enable biometric lock</string>
+    <string name="biometric_unlock_title">Unlock</string>
+    <string name="biometric_unlock_subtitle">Unlock the app</string>
+    <string name="app_locked_title">App is locked</string>
+    <string name="app_locked_desc">Unlock the app to access your data</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="pin_incorrect">Incorrect PIN</string>
+    <string name="unlock">Unlock</string>
+    <string name="use_biometric">Use biometrics</string>
+    <string name="set_pin_title">Set PIN</string>
+    <string name="set_pin_desc">Enter a PIN of 4 to 6 digits</string>
+    <string name="confirm_pin_title">Confirm PIN</string>
+    <string name="confirm_pin_desc">Re-enter your PIN</string>
+    <string name="pin_label">PIN</string>
+    <string name="pin_mismatch">PINs do not match</string>
+    <string name="change_pin">Change PIN</string>
+    <string name="verify_current_pin">Current PIN</string>
+    <string name="set_new_pin">New PIN</string>
+    <string name="next">Next</string>
+    <string name="notification_permission_needed">Notifications disabled</string>
+    <string name="notification_permission_desc">Allow notifications for reminders to work</string>
+    <string name="grant_permission">Allow</string>
 
     <!-- Achievements -->
     <string name="achievements_title">Achievements</string>
@@ -679,4 +711,22 @@
     <string name="disease_ai_analyzing">AI is analyzing disease data…</string>
     <string name="disease_ai_no_reports">No AI analyses for this disease. Tap the button above to generate one.</string>
     <string name="disease_ai_report_title">Disease Analysis</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">Clear all data</string>
+    <string name="clear_data_desc">Delete all health records</string>
+    <string name="clear_data_confirm_title">Delete all data?</string>
+    <string name="clear_data_confirm_desc">This action cannot be undone. All symptoms, vitals, medications, diseases, and reports will be deleted. We recommend creating a backup first.</string>
+    <string name="clear_data_success">All data has been deleted</string>
+
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">Symptoms</string>
+    <string name="correlation_avg_format">Avg %1$s: %2$.1f on high-symptom days vs %3$.1f on low-symptom days</string>
+
+
+    <!-- Show more/less -->
+    <string name="show_less">Show less</string>
+    <string name="show_more_count">Show %1$d more</string>
+
 </resources>

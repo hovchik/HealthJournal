@@ -1,5 +1,10 @@
 package com.healthjournal.presentation.screen.reminders
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,9 +16,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
@@ -29,8 +36,33 @@ fun RemindersScreen(
     onBack: () -> Unit,
     viewModel: RemindersViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val reminders by viewModel.reminders.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
+
+    // Notification permission state
+    var hasNotificationPermission by remember {
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            } else true
+        )
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        hasNotificationPermission = granted
+    }
+
+    // Request permission on first visit if needed
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -51,38 +83,88 @@ fun RemindersScreen(
             )
         }
     ) { padding ->
-        if (reminders.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        Icons.Default.NotificationsNone,
-                        contentDescription = null,
-                        modifier = Modifier.size(64.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        stringResource(R.string.no_reminders_hint),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+        Column(
+            modifier = Modifier.fillMaxSize().padding(padding)
+        ) {
+            // Notification permission banner
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.NotificationsOff,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                stringResource(R.string.notification_permission_needed),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Text(
+                                stringResource(R.string.notification_permission_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                        TextButton(
+                            onClick = {
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        ) {
+                            Text(stringResource(R.string.grant_permission))
+                        }
+                    }
                 }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(reminders, key = { it.id }) { reminder ->
-                    ReminderCard(
-                        reminder = reminder,
-                        onToggle = { viewModel.toggleReminder(reminder) },
-                        onDelete = { viewModel.deleteReminder(reminder) }
-                    )
+
+            if (reminders.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            Icons.Default.NotificationsNone,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            stringResource(R.string.no_reminders_hint),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(reminders, key = { it.id }) { reminder ->
+                        ReminderCard(
+                            reminder = reminder,
+                            onToggle = { viewModel.toggleReminder(reminder) },
+                            onDelete = { viewModel.deleteReminder(reminder) }
+                        )
+                    }
                 }
             }
         }
@@ -172,30 +254,42 @@ private fun AddReminderDialog(
     var description by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(ReminderType.CUSTOM) }
     var selectedFrequency by remember { mutableStateOf(ReminderFrequency.DAILY) }
-    var hour by remember { mutableIntStateOf(9) }
-    var minute by remember { mutableIntStateOf(0) }
+    var hour by remember { mutableIntStateOf(LocalTime.now().hour) }
+    var minute by remember { mutableIntStateOf(LocalTime.now().minute) }
+    var showTimePicker by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_reminder)) },
+        icon = {
+            Icon(Icons.Default.NotificationsActive, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
+        title = {
+            Text(stringResource(R.string.add_reminder),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text(stringResource(R.string.reminder_title)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium
                 )
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text(stringResource(R.string.reminder_description)) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 2,
+                    shape = MaterialTheme.shapes.medium
                 )
 
                 // Type selector
-                Text(stringResource(R.string.reminder_type), style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.reminder_type), style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                     val types = listOf(ReminderType.MEDICATION, ReminderType.VITAL_CHECK, ReminderType.CUSTOM)
                     types.forEachIndexed { index, type ->
@@ -216,35 +310,115 @@ private fun AddReminderDialog(
                     }
                 }
 
-                // Time
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.time_label), modifier = Modifier.weight(1f))
-                    OutlinedTextField(
-                        value = "%02d:%02d".format(hour, minute),
-                        onValueChange = {
-                            val parts = it.split(":")
-                            if (parts.size == 2) {
-                                hour = parts[0].toIntOrNull()?.coerceIn(0, 23) ?: hour
-                                minute = parts[1].toIntOrNull()?.coerceIn(0, 59) ?: minute
-                            }
-                        },
-                        modifier = Modifier.width(100.dp),
-                        singleLine = true
+                // Frequency selector
+                Text(stringResource(R.string.reminder_frequency), style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                    val frequencies = listOf(
+                        ReminderFrequency.ONCE, ReminderFrequency.DAILY,
+                        ReminderFrequency.WEEKLY, ReminderFrequency.MONTHLY
                     )
+                    frequencies.forEachIndexed { index, freq ->
+                        SegmentedButton(
+                            selected = selectedFrequency == freq,
+                            onClick = { selectedFrequency = freq },
+                            shape = SegmentedButtonDefaults.itemShape(index, frequencies.size)
+                        ) {
+                            Text(
+                                when (freq) {
+                                    ReminderFrequency.ONCE -> stringResource(R.string.freq_once)
+                                    ReminderFrequency.DAILY -> stringResource(R.string.freq_daily)
+                                    ReminderFrequency.WEEKLY -> stringResource(R.string.freq_weekly)
+                                    ReminderFrequency.MONTHLY -> stringResource(R.string.freq_monthly)
+                                },
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+                }
+
+                // Time
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                    ) {
+                        Icon(Icons.Default.AccessTime, contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(R.string.time_label),
+                            style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                        FilledTonalButton(
+                            onClick = { showTimePicker = true },
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Text("%02d:%02d".format(hour, minute),
+                                style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                        }
+                    }
                 }
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     if (title.isNotBlank()) {
                         onConfirm(title, description, selectedType, selectedFrequency, LocalTime.of(hour, minute))
                     }
-                }
+                },
+                enabled = title.isNotBlank(),
+                shape = MaterialTheme.shapes.medium
             ) { Text(stringResource(R.string.save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
-        }
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = hour,
+            initialMinute = minute,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            title = {
+                Text(stringResource(R.string.time_label),
+                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            },
+            text = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    TimeInput(state = timePickerState)
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        hour = timePickerState.hour
+                        minute = timePickerState.minute
+                        showTimePicker = false
+                    },
+                    shape = MaterialTheme.shapes.medium
+                ) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { showTimePicker = false },
+                    shape = MaterialTheme.shapes.medium
+                ) { Text(stringResource(R.string.cancel)) }
+            },
+            shape = MaterialTheme.shapes.extraLarge
+        )
+    }
 }

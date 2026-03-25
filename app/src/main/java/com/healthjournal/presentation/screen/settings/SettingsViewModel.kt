@@ -95,6 +95,18 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun clearAllData() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isExporting = true, message = null)
+            try {
+                exportImportManager.clearAllData()
+                _uiState.value = _uiState.value.copy(isExporting = false, message = "clear_success", isError = false)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(isExporting = false, message = e.message, isError = true)
+            }
+        }
+    }
+
     fun clearMessage() {
         _uiState.value = _uiState.value.copy(message = null)
     }

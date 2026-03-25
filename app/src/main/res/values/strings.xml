@@ -584,6 +584,11 @@
     <string name="reminder_title">Заголовок</string>
     <string name="reminder_description">Описание</string>
     <string name="reminder_type">Тип напоминания</string>
+    <string name="reminder_frequency">Частота</string>
+    <string name="freq_once">Раз</string>
+    <string name="freq_daily">День</string>
+    <string name="freq_weekly">Нед.</string>
+    <string name="freq_monthly">Мес.</string>
     <string name="missed_dose_title">Пропущен приём</string>
     <string name="missed_dose_desc">Вы пропустили приём %1$s</string>
     <string name="channel_medication_reminders">Напоминания о лекарствах</string>
@@ -636,6 +641,10 @@
     <string name="health_connect_permissions_desc">Для импорта данных необходимо предоставить доступ к Health Connect</string>
     <string name="health_connect_grant_permissions">Предоставить разрешения</string>
     <string name="health_connect_permissions_hint">Предоставьте разрешения для импорта данных</string>
+    <string name="health_connect_auto_sync">Автоматическая синхронизация</string>
+    <string name="health_connect_auto_sync_desc">Периодический импорт данных из Health Connect</string>
+    <string name="health_connect_sync_interval">Интервал синхронизации</string>
+    <string name="health_connect_hours_format">%1$d ч</string>
 
     <!-- Security -->
     <string name="security_title">Безопасность</string>
@@ -648,6 +657,29 @@
     <string name="audit_log_title">Журнал действий</string>
     <string name="audit_log_desc">Отслеживание доступа и изменений</string>
     <string name="security_info">Все данные хранятся локально на устройстве. Биометрическая блокировка защищает от несанкционированного доступа.</string>
+    <string name="biometric_verify_title">Подтвердите личность</string>
+    <string name="biometric_verify_subtitle">Для включения биометрической блокировки</string>
+    <string name="biometric_unlock_title">Разблокировка</string>
+    <string name="biometric_unlock_subtitle">Разблокируйте приложение</string>
+    <string name="app_locked_title">Приложение заблокировано</string>
+    <string name="app_locked_desc">Для доступа к данным разблокируйте приложение</string>
+    <string name="enter_pin">Введите PIN-код</string>
+    <string name="pin_incorrect">Неверный PIN-код</string>
+    <string name="unlock">Разблокировать</string>
+    <string name="use_biometric">Использовать биометрию</string>
+    <string name="set_pin_title">Установите PIN-код</string>
+    <string name="set_pin_desc">Введите PIN-код от 4 до 6 цифр</string>
+    <string name="confirm_pin_title">Подтвердите PIN-код</string>
+    <string name="confirm_pin_desc">Введите PIN-код повторно</string>
+    <string name="pin_label">PIN-код</string>
+    <string name="pin_mismatch">PIN-коды не совпадают</string>
+    <string name="change_pin">Изменить PIN-код</string>
+    <string name="verify_current_pin">Текущий PIN-код</string>
+    <string name="set_new_pin">Новый PIN-код</string>
+    <string name="next">Далее</string>
+    <string name="notification_permission_needed">Уведомления отключены</string>
+    <string name="notification_permission_desc">Разрешите уведомления для работы напоминаний</string>
+    <string name="grant_permission">Разрешить</string>
 
     <!-- Achievements -->
     <string name="achievements_title">Достижения</string>
@@ -677,4 +709,22 @@
     <string name="export_csv">Экспорт CSV</string>
     <string name="export_fhir">Экспорт FHIR</string>
     <string name="export_format_select">Выберите формат</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">Очистить все данные</string>
+    <string name="clear_data_desc">Удалить все записи о здоровье</string>
+    <string name="clear_data_confirm_title">Удалить все данные?</string>
+    <string name="clear_data_confirm_desc">Это действие необратимо. Все симптомы, показатели, лекарства, болезни и отчёты будут удалены. Рекомендуем сначала создать резервную копию.</string>
+    <string name="clear_data_success">Все данные удалены</string>
+
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">Симптомы</string>
+    <string name="correlation_avg_format">Ср. %1$s: %2$.1f в дни симптомов vs %3$.1f в обычные дни</string>
+
+
+    <!-- Show more/less -->
+    <string name="show_less">Скрыть</string>
+    <string name="show_more_count">Показать ещё %1$d</string>
+
 </resources>

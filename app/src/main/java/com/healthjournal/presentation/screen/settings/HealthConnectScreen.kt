@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.HealthJournalApp
 import com.healthjournal.R
 import com.healthjournal.domain.model.VitalType
+import com.healthjournal.util.HealthConnectSyncWorker
 import com.healthjournal.util.localizedDisplayName
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,6 +47,16 @@ class HealthConnectViewModel(application: Application) : AndroidViewModel(applic
 
     private val _hasPermissions = MutableStateFlow(false)
     val hasPermissions = _hasPermissions.asStateFlow()
+
+    private val _autoSyncEnabled = MutableStateFlow(
+        HealthConnectSyncWorker.isEnabled(application)
+    )
+    val autoSyncEnabled = _autoSyncEnabled.asStateFlow()
+
+    private val _syncIntervalHours = MutableStateFlow(
+        HealthConnectSyncWorker.getSyncInterval(application)
+    )
+    val syncIntervalHours = _syncIntervalHours.asStateFlow()
 
     init {
         checkPermissions()
@@ -79,6 +91,19 @@ class HealthConnectViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
+    fun setAutoSync(enabled: Boolean) {
+        val context = getApplication<Application>()
+        val interval = _syncIntervalHours.value
+        HealthConnectSyncWorker.setEnabled(context, enabled, interval)
+        _autoSyncEnabled.value = enabled
+    }
+
+    fun setSyncInterval(hours: Long) {
+        val context = getApplication<Application>()
+        HealthConnectSyncWorker.setSyncInterval(context, hours)
+        _syncIntervalHours.value = hours
+    }
+
     fun clearMessage() {
         _message.value = null
     }
@@ -95,6 +120,8 @@ fun HealthConnectScreen(
     val message by viewModel.message.collectAsStateWithLifecycle()
     val hasPermissions by viewModel.hasPermissions.collectAsStateWithLifecycle()
     val isAvailable = viewModel.healthConnectManager.isAvailable
+    val autoSyncEnabled by viewModel.autoSyncEnabled.collectAsStateWithLifecycle()
+    val syncIntervalHours by viewModel.syncIntervalHours.collectAsStateWithLifecycle()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = PermissionController.createRequestPermissionResultContract()
@@ -201,6 +228,72 @@ fun HealthConnectScreen(
                             Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(stringResource(R.string.health_connect_grant_permissions))
+                        }
+                    }
+                }
+            }
+
+            // Auto-sync scheduler card
+            if (isAvailable && hasPermissions) {
+                ElevatedCard(shape = MaterialTheme.shapes.large) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.Sync,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    stringResource(R.string.health_connect_auto_sync),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    stringResource(R.string.health_connect_auto_sync_desc),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = autoSyncEnabled,
+                                onCheckedChange = { viewModel.setAutoSync(it) }
+                            )
+                        }
+
+                        if (autoSyncEnabled) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                stringResource(R.string.health_connect_sync_interval),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                                val intervals = listOf(1L, 3L, 6L, 12L, 24L)
+                                intervals.forEachIndexed { index, hours ->
+                                    SegmentedButton(
+                                        selected = syncIntervalHours == hours,
+                                        onClick = { viewModel.setSyncInterval(hours) },
+                                        shape = SegmentedButtonDefaults.itemShape(index, intervals.size)
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.health_connect_hours_format, hours),
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

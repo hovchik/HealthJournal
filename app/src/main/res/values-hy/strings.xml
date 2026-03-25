@@ -561,6 +561,11 @@
     <string name="reminder_title">Վերնագիր</string>
     <string name="reminder_description">Նկարագրություն</string>
     <string name="reminder_type">Հիշեցումի տեսակ</string>
+    <string name="reminder_frequency">Հաճախականություն</string>
+    <string name="freq_once">Մեկ</string>
+    <string name="freq_daily">Օր</string>
+    <string name="freq_weekly">Շաբ.</string>
+    <string name="freq_monthly">Ամիս</string>
     <string name="missed_dose_title">Բաց թողված դոզա</string>
     <string name="missed_dose_desc">Դուք բաց թողեցիք %1$s ընդունելը</string>
     <string name="channel_medication_reminders">Դեղերի հիշեցումներ</string>
@@ -619,6 +624,29 @@
     <string name="audit_log_title">Գործողությունների մատյան</string>
     <string name="audit_log_desc">Մուտքերի և փոփոխությունների հետևելում</string>
     <string name="security_info">Բոլոր տվյալները պահվում են տեղայնորեն ձեր սարքում։ Կենսաչափական կողպեքը պաշտպանում է չթույլատրված մուտքից։</string>
+    <string name="biometric_verify_title">Հաստատեք ձեր ինքնությունը</string>
+    <string name="biometric_verify_subtitle">Կենսաչափական կողպեքը միացնելու համար</string>
+    <string name="biometric_unlock_title">Ապակողպել</string>
+    <string name="biometric_unlock_subtitle">Ապակողպեք հավելվածը</string>
+    <string name="app_locked_title">Հավելվածը կողպված է</string>
+    <string name="app_locked_desc">Ապակողպեք հավելվածը տվյալներին հասանելու համար</string>
+    <string name="enter_pin">Մուտքագրեք PIN-կոդը</string>
+    <string name="pin_incorrect">Սխալ PIN-կոդ</string>
+    <string name="unlock">Ապակողպել</string>
+    <string name="use_biometric">Օգտագործել կենսաչափություն</string>
+    <string name="set_pin_title">Սահմանեք PIN-կոդ</string>
+    <string name="set_pin_desc">Մուտքագրեք 4-6 թվանից PIN-կոդ</string>
+    <string name="confirm_pin_title">Հաստատեք PIN-կոդը</string>
+    <string name="confirm_pin_desc">Կրկին մուտքագրեք PIN-կոդը</string>
+    <string name="pin_label">PIN</string>
+    <string name="pin_mismatch">PIN-կոդերը չեն համընկնում</string>
+    <string name="change_pin">Փոխել PIN-կոդը</string>
+    <string name="verify_current_pin">Ընթացիկ PIN-կոդ</string>
+    <string name="set_new_pin">Նոր PIN-կոդ</string>
+    <string name="next">Հաջորդ</string>
+    <string name="notification_permission_needed">Ծանուցումները անջատված են</string>
+    <string name="notification_permission_desc">Թույլատրեք ծանուցումները հիշեցումների համար</string>
+    <string name="grant_permission">Թույլատրել</string>
 
     <!-- Achievements -->
     <string name="achievements_title">Նվաճումներ</string>
@@ -669,6 +697,10 @@
     <string name="health_connect_permissions_desc">Տրամադրեք հասանելիություն Health Connect-ին տվյալները ներմուծելու համար</string>
     <string name="health_connect_grant_permissions">Տրամադրել թույլտվություններ</string>
     <string name="health_connect_permissions_hint">Տրամադրեք թույլտվություններ տվյալների ներմուծման համար</string>
+    <string name="health_connect_auto_sync">Ինքնահամական համաիամանեցում</string>
+    <string name="health_connect_auto_sync_desc">Պարբերաբար ներմուծել տվյալները Health Connect-ից</string>
+    <string name="health_connect_sync_interval">Սինքրոնացման միջակայք</string>
+    <string name="health_connect_hours_format">%1$d ժ</string>
 
 
     <!-- Health Summary Tab -->
@@ -680,4 +712,22 @@
     <string name="health_min_label">Նվազ</string>
     <string name="health_max_label">Առավ</string>
     <string name="nav_ai_chat">AI</string>
+
+    <!-- Clear data -->
+    <string name="clear_data_title">Մաքրել բոլոր տվյալները</string>
+    <string name="clear_data_desc">Ջնջել առողջության բոլոր գրառումները</string>
+    <string name="clear_data_confirm_title">Ջնջե՞լ բոլոր տվյալները</string>
+    <string name="clear_data_confirm_desc">Այս գործողությունը հետ չի հնարավորիններ կընտանոնլավորընել։ Խորհուրդենք նախ պահուստային կրկնօրինակ ստեղծել։</string>
+    <string name="clear_data_success">Բոլոր տվյալները ջնջվել են</string>
+
+
+    <!-- Correlation -->
+    <string name="correlation_symptoms">Ախտանիշներ</string>
+    <string name="correlation_avg_format">Միջ. %1$s: %2$.1f ախտանիշների օրերին vs %3$.1f սովորական օրերին</string>
+
+
+    <!-- Show more/less -->
+    <string name="show_less">Թաքցնել</string>
+    <string name="show_more_count">Ցույց տալ ևս %1$d</string>
+
 </resources>

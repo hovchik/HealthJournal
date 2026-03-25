@@ -447,27 +447,36 @@ private fun AddCustomItemDialog(
     var text by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(title) },
+        icon = {
+            Icon(Icons.Default.Add, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
+        title = {
+            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        },
         text = {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium
             )
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = { if (text.isNotBlank()) onConfirm(text.trim()) },
-                enabled = text.isNotBlank()
+                enabled = text.isNotBlank(),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
                 Text(stringResource(R.string.close))
             }
-        }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 }
