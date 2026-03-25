@@ -80,6 +80,20 @@ class CustomLocalModelProvider(
         }
     }
 
+    override suspend fun generateChatResponse(prompt: String, config: AiSettings): String {
+        val model = modelManager.getActiveModel()
+        if (model == null) {
+            return "No local model is installed. Please download a model in AI Settings or select a cloud provider."
+        }
+        return try {
+            val runtime = resolveRuntime(model, config.localAiConfig)
+            runtime.runPrompt(prompt)
+        } catch (e: Exception) {
+            Log.e(TAG, "Model '${model.displayName}' failed for chat", e)
+            "Local model failed: ${e.message}. Try a different model or cloud AI provider."
+        }
+    }
+
     override fun validateConfig(config: AiSettings): ValidationResult {
         val model = modelManager.getActiveModelSync()
         return if (model != null) {

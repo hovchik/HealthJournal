@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
+import com.healthjournal.domain.model.ai.AiProviderId
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,6 +31,7 @@ fun AiChatScreen(
 ) {
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val selectedProviderId by viewModel.selectedProviderId.collectAsStateWithLifecycle()
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -45,10 +47,8 @@ fun AiChatScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.ai_chat_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    if (!isTopLevel) {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
-                        }
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {
@@ -60,30 +60,41 @@ fun AiChatScreen(
         },
         bottomBar = {
             Surface(tonalElevation = 3.dp) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = inputText,
-                        onValueChange = { inputText = it },
-                        modifier = Modifier.weight(1f),
-                        placeholder = { Text(stringResource(R.string.ai_chat_placeholder)) },
-                        shape = RoundedCornerShape(24.dp),
-                        maxLines = 3,
-                        enabled = !isLoading
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    // AI Provider selector
+                    AiProviderSelector(
+                        providers = viewModel.availableProviders,
+                        selectedProviderId = selectedProviderId,
+                        onProviderSelected = { viewModel.selectProvider(it) },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    FilledIconButton(
-                        onClick = {
-                            if (inputText.isNotBlank()) {
-                                viewModel.sendMessage(inputText.trim())
-                                inputText = ""
-                            }
-                        },
-                        enabled = inputText.isNotBlank() && !isLoading
+
+                    // Input row
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null)
+                        OutlinedTextField(
+                            value = inputText,
+                            onValueChange = { inputText = it },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text(stringResource(R.string.ai_chat_placeholder)) },
+                            shape = RoundedCornerShape(24.dp),
+                            maxLines = 3,
+                            enabled = !isLoading
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        FilledIconButton(
+                            onClick = {
+                                if (inputText.isNotBlank()) {
+                                    viewModel.sendMessage(inputText.trim())
+                                    inputText = ""
+                                }
+                            },
+                            enabled = inputText.isNotBlank() && !isLoading
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null)
+                        }
                     }
                 }
             }
@@ -141,6 +152,60 @@ fun AiChatScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AiProviderSelector(
+    providers: List<com.healthjournal.domain.ai.AiProvider>,
+    selectedProviderId: AiProviderId?,
+    onProviderSelected: (AiProviderId) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val selectedProvider = providers.firstOrNull { it.id == selectedProviderId }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier
+    ) {
+        OutlinedTextField(
+            value = selectedProvider?.let { stringResource(it.displayNameResId) }
+                ?: stringResource(R.string.ai_select_provider),
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier.menuAnchor().fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            textStyle = MaterialTheme.typography.bodySmall,
+            singleLine = true
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            providers.forEach { provider ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            stringResource(provider.displayNameResId),
+                            fontWeight = if (provider.id == selectedProviderId) FontWeight.Bold else FontWeight.Normal
+                        )
+                    },
+                    onClick = {
+                        onProviderSelected(provider.id)
+                        expanded = false
+                    },
+                    leadingIcon = {
+                        if (provider.id == selectedProviderId) {
+                            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+                        }
+                    }
+                )
             }
         }
     }

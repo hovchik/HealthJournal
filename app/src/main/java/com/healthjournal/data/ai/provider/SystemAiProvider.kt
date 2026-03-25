@@ -41,6 +41,13 @@ class SystemAiProvider(
         return AiFlagsResult(text = result, providerId = id, modelUsed = "Android AICore")
     }
 
+    override suspend fun generateChatResponse(prompt: String, config: AiSettings): String {
+        if (!systemRuntime.isAvailable()) {
+            return "System AI is not available on this device. Please select a cloud AI provider."
+        }
+        return systemRuntime.runPrompt(prompt)
+    }
+
     override fun validateConfig(config: AiSettings): ValidationResult {
         return if (systemRuntime.isAvailable()) {
             ValidationResult(true, systemRuntime.getStatusMessage())

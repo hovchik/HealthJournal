@@ -64,6 +64,28 @@ class GeminiAiProviderImpl(
         return AiFlagsResult(text = text, providerId = id, modelUsed = config.geminiConfig.model)
     }
 
+    override suspend fun generateChatResponse(prompt: String, config: AiSettings): String {
+        val api = apiFactory(config.geminiConfig)
+        val request = GeminiRequest(
+            systemInstruction = GeminiContent(
+                parts = listOf(GeminiPart(text = "You are a helpful health assistant. Answer the user's health-related questions based on the provided context. Be concise and informative."))
+            ),
+            contents = listOf(
+                GeminiContent(
+                    role = "user",
+                    parts = listOf(GeminiPart(text = prompt))
+                )
+            )
+        )
+        val response = api.generateContent(
+            model = config.geminiConfig.model,
+            apiKey = config.geminiConfig.apiKey,
+            request = request
+        )
+        return response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text
+            ?: throw IllegalStateException("Empty response from Gemini")
+    }
+
     override fun validateConfig(config: AiSettings): ValidationResult {
         val c = config.geminiConfig
         if (c.apiKey.isBlank()) return ValidationResult(false, "Gemini API key is required")

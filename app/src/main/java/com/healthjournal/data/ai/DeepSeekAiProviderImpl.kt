@@ -47,6 +47,20 @@ class DeepSeekAiProviderImpl(
         return AiFlagsResult(text = text, providerId = id, modelUsed = config.deepSeekConfig.model)
     }
 
+    override suspend fun generateChatResponse(prompt: String, config: AiSettings): String {
+        val api = apiFactory(config.deepSeekConfig)
+        val request = OpenAiRequest(
+            model = config.deepSeekConfig.model,
+            messages = listOf(
+                OpenAiMessage(role = "system", content = "You are a helpful health assistant. Answer the user's health-related questions based on the provided context. Be concise and informative."),
+                OpenAiMessage(role = "user", content = prompt)
+            )
+        )
+        val response = api.chatCompletion(request)
+        return response.choices.firstOrNull()?.message?.content
+            ?: throw IllegalStateException("Empty response from DeepSeek")
+    }
+
     override fun validateConfig(config: AiSettings): ValidationResult {
         val c = config.deepSeekConfig
         if (c.apiKey.isBlank()) return ValidationResult(false, "DeepSeek API key is required")

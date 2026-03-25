@@ -79,4 +79,4 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object FamilyDashboard : Screen("family_dashboard", R.string.family_dashboard_title, Icons.Default.FamilyRestroom)
 }
 
-val bottomNavItems = listOf(Screen.Home, Screen.Appointments, Screen.AiChat, Screen.Achievements, Screen.Reports, Screen.Settings)
+val bottomNavItems = listOf(Screen.Home, Screen.Appointments, Screen.Achievements, Screen.Reports, Screen.Settings)

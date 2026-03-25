@@ -4,6 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.healthjournal.HealthJournalApp
+import com.healthjournal.domain.ai.AiProvider
+import com.healthjournal.domain.model.ai.AiProviderId
+import com.healthjournal.domain.model.ai.AiSettings
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -16,6 +19,8 @@ data class ChatMessage(
 class AiChatViewModel(application: Application) : AndroidViewModel(application) {
     private val container = (application as HealthJournalApp).container
     private val aiService = container.aiService
+    private val aiProviderRegistry = container.aiProviderRegistry
+    private val userSettingsRepository = container.userSettingsRepository
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     val messages = _messages.asStateFlow()
@@ -23,9 +28,26 @@ class AiChatViewModel(application: Application) : AndroidViewModel(application) 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
+    private val _selectedProviderId = MutableStateFlow<AiProviderId?>(null)
+    val selectedProviderId = _selectedProviderId.asStateFlow()
+
     private val symptomRepo = container.symptomRepository
     private val vitalRepo = container.vitalSignRepository
     private val medicationRepo = container.medicationRepository
+
+    val availableProviders: List<AiProvider> = aiProviderRegistry.getAll()
+
+    init {
+        viewModelScope.launch {
+            val settings = userSettingsRepository.getUserSettings().first()
+            val savedId = AiProviderId.fromKey(settings.aiSettings.selectedProviderId)
+            _selectedProviderId.value = savedId
+        }
+    }
+
+    fun selectProvider(providerId: AiProviderId) {
+        _selectedProviderId.value = providerId
+    }
 
     fun sendMessage(userMessage: String) {
         viewModelScope.launch {
@@ -66,7 +88,12 @@ class AiChatViewModel(application: Application) : AndroidViewModel(application) 
                     appendLine("User: $userMessage")
                 }
 
-                val response = aiService.generateResponse(prompt)
+                val settings = userSettingsRepository.getUserSettings().first()
+                val response = aiService.generateResponse(
+                    prompt = prompt,
+                    settings = settings.aiSettings,
+                    providerId = _selectedProviderId.value
+                )
                 _messages.value = _messages.value + ChatMessage(response, isUser = false)
             } catch (e: Exception) {
                 _messages.value = _messages.value + ChatMessage(
