@@ -70,6 +70,13 @@
     <string name="reports_title">Reports</string>
     <string name="reports_tab_records">Records</string>
     <string name="reports_tab_ai">AI Analysis</string>
+    <string name="reports_tab_health">Health</string>
+    <string name="health_daily_summary">Daily summary</string>
+    <string name="health_no_data">No health data. Import from Health Connect.</string>
+    <string name="health_avg_label">Avg</string>
+    <string name="health_total_label">Total</string>
+    <string name="health_min_label">Min</string>
+    <string name="health_max_label">Max</string>
     <string name="report_2_days">Report (2 days)</string>
     <string name="patterns_4_days">Patterns (4 days)</string>
     <string name="ai_analyzing">AI is analyzing data…</string>
@@ -611,6 +618,19 @@
     <string name="health_connect_unavailable">Health Connect unavailable</string>
     <string name="health_connect_data_types">Supported data types</string>
     <string name="health_connect_import">Import data for 7 days</string>
+    <string name="health_connect_permissions_needed">Permissions required</string>
+    <string name="health_connect_permissions_desc">Grant access to Health Connect to import your health data</string>
+    <string name="health_connect_grant_permissions">Grant permissions</string>
+    <string name="health_connect_permissions_hint">Grant permissions to import data</string>
+
+    <!-- Navigation (short labels) -->
+    <string name="nav_appointments">Appts</string>
+    <string name="nav_achievements">Awards</string>
+    <string name="nav_ai_chat">AI</string>
+
+    <!-- Calendar -->
+    <string name="calendar_tab">Calendar</string>
+    <string name="no_appointments_for_day">No appointments for this day</string>
 
     <!-- Security -->
     <string name="security_title">Security</string>

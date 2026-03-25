@@ -655,4 +655,29 @@
     <string name="disease_ai_analyzing">AI-ն վերլուծում է հիվանդության տվյալները…</string>
     <string name="disease_ai_no_reports">AI վերլուծություններ չկան այս հիվանդության համար։ Սեղմեք վերևի կոճակը ստեղծելու համար։</string>
     <string name="disease_ai_report_title">Հիվանդության վերլուծություն</string>
+
+    <!-- Navigation (short labels) -->
+    <string name="nav_appointments">Այցեր</string>
+    <string name="nav_achievements">Մրցանակներ</string>
+
+    <!-- Calendar -->
+    <string name="calendar_tab">Օրացույց</string>
+    <string name="no_appointments_for_day">Այս օրը այցեր չկան</string>
+
+    <!-- Health Connect permissions -->
+    <string name="health_connect_permissions_needed">Անհրաժեշտ թույլտվություններ</string>
+    <string name="health_connect_permissions_desc">Տրամադրեք հասանելիություն Health Connect-ին տվյալները ներմուծելու համար</string>
+    <string name="health_connect_grant_permissions">Տրամադրել թույլտվություններ</string>
+    <string name="health_connect_permissions_hint">Տրամադրեք թույլտվություններ տվյալների ներմուծման համար</string>
+
+
+    <!-- Health Summary Tab -->
+    <string name="reports_tab_health">Առողջություն</string>
+    <string name="health_daily_summary">Օրվա ամփոփում</string>
+    <string name="health_no_data">Առողջական տվյալներ չկան։ Ներմուծեք Health Connect-ից։</string>
+    <string name="health_avg_label">Միջին</string>
+    <string name="health_total_label">Ընդամենը</string>
+    <string name="health_min_label">Նվազ</string>
+    <string name="health_max_label">Առավ</string>
+    <string name="nav_ai_chat">AI</string>
 </resources>

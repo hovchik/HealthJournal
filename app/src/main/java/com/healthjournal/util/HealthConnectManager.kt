@@ -12,22 +12,27 @@ import com.healthjournal.domain.model.VitalType
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 
 class HealthConnectManager(private val context: Context) {
 
-    private val client: HealthConnectClient? by lazy {
+    private var _client: HealthConnectClient? = null
+    private var _isAvailable: Boolean = false
+
+    init {
         try {
-            if (HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE) {
-                HealthConnectClient.getOrCreate(context)
-            } else null
+            val status = HealthConnectClient.getSdkStatus(context)
+            if (status == HealthConnectClient.SDK_AVAILABLE) {
+                _client = HealthConnectClient.getOrCreate(context)
+                _isAvailable = true
+            } else {
+                Log.w("HealthConnect", "Health Connect SDK status: $status")
+            }
         } catch (e: Exception) {
             Log.w("HealthConnect", "Health Connect not available", e)
-            null
         }
     }
 
-    val isAvailable: Boolean get() = client != null
+    val isAvailable: Boolean get() = _isAvailable
 
     val requiredPermissions = setOf(
         HealthPermission.getReadPermission(HeartRateRecord::class),
@@ -41,12 +46,18 @@ class HealthConnectManager(private val context: Context) {
     )
 
     suspend fun hasAllPermissions(): Boolean {
-        val granted = client?.permissionController?.getGrantedPermissions() ?: return false
-        return requiredPermissions.all { it in granted }
+        val client = _client ?: return false
+        return try {
+            val granted = client.permissionController.getGrantedPermissions()
+            requiredPermissions.all { it in granted }
+        } catch (e: Exception) {
+            Log.e("HealthConnect", "Error checking permissions", e)
+            false
+        }
     }
 
     suspend fun readHeartRate(startTime: Instant, endTime: Instant): List<VitalSign> {
-        val hc = client ?: return emptyList()
+        val hc = _client ?: return emptyList()
         return try {
             val response = hc.readRecords(
                 ReadRecordsRequest(
@@ -70,7 +81,7 @@ class HealthConnectManager(private val context: Context) {
     }
 
     suspend fun readSteps(startTime: Instant, endTime: Instant): List<VitalSign> {
-        val hc = client ?: return emptyList()
+        val hc = _client ?: return emptyList()
         return try {
             val response = hc.readRecords(
                 ReadRecordsRequest(
@@ -92,7 +103,7 @@ class HealthConnectManager(private val context: Context) {
     }
 
     suspend fun readSleep(startTime: Instant, endTime: Instant): List<VitalSign> {
-        val hc = client ?: return emptyList()
+        val hc = _client ?: return emptyList()
         return try {
             val response = hc.readRecords(
                 ReadRecordsRequest(
@@ -115,7 +126,7 @@ class HealthConnectManager(private val context: Context) {
     }
 
     suspend fun readSpO2(startTime: Instant, endTime: Instant): List<VitalSign> {
-        val hc = client ?: return emptyList()
+        val hc = _client ?: return emptyList()
         return try {
             val response = hc.readRecords(
                 ReadRecordsRequest(
@@ -137,7 +148,7 @@ class HealthConnectManager(private val context: Context) {
     }
 
     suspend fun readBloodPressure(startTime: Instant, endTime: Instant): List<VitalSign> {
-        val hc = client ?: return emptyList()
+        val hc = _client ?: return emptyList()
         return try {
             val response = hc.readRecords(
                 ReadRecordsRequest(
@@ -159,6 +170,72 @@ class HealthConnectManager(private val context: Context) {
         }
     }
 
+    suspend fun readTemperature(startTime: Instant, endTime: Instant): List<VitalSign> {
+        val hc = _client ?: return emptyList()
+        return try {
+            val response = hc.readRecords(
+                ReadRecordsRequest(
+                    recordType = BodyTemperatureRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records.map { record ->
+                VitalSign(
+                    type = VitalType.TEMPERATURE,
+                    value = record.temperature.inCelsius,
+                    recordedAt = LocalDateTime.ofInstant(record.time, ZoneId.systemDefault())
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("HealthConnect", "Error reading temperature", e)
+            emptyList()
+        }
+    }
+
+    suspend fun readBloodGlucose(startTime: Instant, endTime: Instant): List<VitalSign> {
+        val hc = _client ?: return emptyList()
+        return try {
+            val response = hc.readRecords(
+                ReadRecordsRequest(
+                    recordType = BloodGlucoseRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records.map { record ->
+                VitalSign(
+                    type = VitalType.GLUCOSE,
+                    value = record.level.inMillimolesPerLiter,
+                    recordedAt = LocalDateTime.ofInstant(record.time, ZoneId.systemDefault())
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("HealthConnect", "Error reading blood glucose", e)
+            emptyList()
+        }
+    }
+
+    suspend fun readWeight(startTime: Instant, endTime: Instant): List<VitalSign> {
+        val hc = _client ?: return emptyList()
+        return try {
+            val response = hc.readRecords(
+                ReadRecordsRequest(
+                    recordType = WeightRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records.map { record ->
+                VitalSign(
+                    type = VitalType.WEIGHT,
+                    value = record.weight.inKilograms,
+                    recordedAt = LocalDateTime.ofInstant(record.time, ZoneId.systemDefault())
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("HealthConnect", "Error reading weight", e)
+            emptyList()
+        }
+    }
+
     suspend fun importAllRecent(profileId: Long): List<VitalSign> {
         val endTime = Instant.now()
         val startTime = endTime.minus(java.time.Duration.ofDays(7))
@@ -169,6 +246,9 @@ class HealthConnectManager(private val context: Context) {
         vitals.addAll(readSleep(startTime, endTime))
         vitals.addAll(readSpO2(startTime, endTime))
         vitals.addAll(readBloodPressure(startTime, endTime))
+        vitals.addAll(readTemperature(startTime, endTime))
+        vitals.addAll(readBloodGlucose(startTime, endTime))
+        vitals.addAll(readWeight(startTime, endTime))
 
         return vitals.map { it.copy(profileId = profileId) }
     }

@@ -611,6 +611,18 @@
     <string name="health_connect_unavailable">Health Connect no disponible</string>
     <string name="health_connect_data_types">Tipos de datos compatibles</string>
     <string name="health_connect_import">Importar datos de 7 días</string>
+    <string name="health_connect_permissions_needed">Permisos requeridos</string>
+    <string name="health_connect_permissions_desc">Concede acceso a Health Connect para importar datos de salud</string>
+    <string name="health_connect_grant_permissions">Conceder permisos</string>
+    <string name="health_connect_permissions_hint">Concede permisos para importar datos</string>
+
+    <!-- Navigation (short labels) -->
+    <string name="nav_appointments">Citas</string>
+    <string name="nav_achievements">Logros</string>
+
+    <!-- Calendar -->
+    <string name="calendar_tab">Calendario</string>
+    <string name="no_appointments_for_day">No hay citas para este día</string>
 
     <!-- Security -->
     <string name="security_title">Seguridad</string>
@@ -659,4 +671,14 @@
     <string name="disease_ai_analyzing">AI está analizando datos de la enfermedad…</string>
     <string name="disease_ai_no_reports">No hay análisis AI para esta enfermedad. Toca el botón de arriba para generar uno.</string>
     <string name="disease_ai_report_title">Análisis de enfermedad</string>
+
+    <!-- Health Summary Tab -->
+    <string name="reports_tab_health">Salud</string>
+    <string name="health_daily_summary">Resumen diario</string>
+    <string name="health_no_data">Sin datos de salud. Importa desde Health Connect.</string>
+    <string name="health_avg_label">Prom</string>
+    <string name="health_total_label">Total</string>
+    <string name="health_min_label">Mín</string>
+    <string name="health_max_label">Máx</string>
+    <string name="nav_ai_chat">AI</string>
 </resources>

@@ -73,14 +73,14 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         stringResource(R.string.nav_settings),
                         fontWeight = FontWeight.Bold
                     )
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
@@ -92,8 +92,8 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = 12.dp, vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Subscription section
             SettingsSection(
@@ -291,66 +291,54 @@ fun SettingsScreen(
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                     // Theme selector
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                            modifier = Modifier.size(40.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.Default.Palette,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(22.dp)
-                                )
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.Palette,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             }
-                        }
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 stringResource(R.string.theme_settings_title),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                                val themeOptions = listOf(
-                                    "SYSTEM" to stringResource(R.string.theme_system),
-                                    "LIGHT" to stringResource(R.string.theme_light),
-                                    "DARK" to stringResource(R.string.theme_dark),
-                                    "AMOLED" to stringResource(R.string.theme_amoled)
-                                )
-                                themeOptions.forEachIndexed { index, (mode, label) ->
-                                    SegmentedButton(
-                                        selected = settings.themeMode == mode,
-                                        onClick = { settingsViewModel.setThemeMode(mode) },
-                                        shape = SegmentedButtonDefaults.itemShape(
-                                            index = index,
-                                            count = themeOptions.size
-                                        ),
-                                        icon = {
-                                            SegmentedButtonDefaults.Icon(active = settings.themeMode == mode) {
-                                                Icon(
-                                                    when (mode) {
-                                                        "LIGHT" -> Icons.Default.LightMode
-                                                        "DARK" -> Icons.Default.DarkMode
-                                                        "AMOLED" -> Icons.Default.Contrast
-                                                        else -> Icons.Default.SettingsBrightness
-                                                    },
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(16.dp)
-                                                )
-                                            }
-                                        }
-                                    ) {
-                                        Text(label, style = MaterialTheme.typography.labelSmall)
-                                    }
+                        }
+                        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                            val themeOptions = listOf(
+                                "SYSTEM" to stringResource(R.string.theme_system),
+                                "LIGHT" to stringResource(R.string.theme_light),
+                                "DARK" to stringResource(R.string.theme_dark),
+                                "AMOLED" to stringResource(R.string.theme_amoled)
+                            )
+                            themeOptions.forEachIndexed { index, (mode, label) ->
+                                SegmentedButton(
+                                    selected = settings.themeMode == mode,
+                                    onClick = { settingsViewModel.setThemeMode(mode) },
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = themeOptions.size
+                                    ),
+                                    icon = {}
+                                ) {
+                                    Text(label, style = MaterialTheme.typography.labelSmall)
                                 }
                             }
                         }
@@ -390,22 +378,6 @@ fun SettingsScreen(
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                     SettingsListItem(
-                        icon = Icons.Default.Event,
-                        iconTint = MaterialTheme.colorScheme.tertiary,
-                        title = stringResource(R.string.appointments_title),
-                        subtitle = stringResource(R.string.appointments_desc),
-                        onClick = onAppointments
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                    SettingsListItem(
-                        icon = Icons.Default.Chat,
-                        iconTint = MaterialTheme.colorScheme.secondary,
-                        title = stringResource(R.string.ai_chat_title),
-                        subtitle = stringResource(R.string.ai_chat_desc),
-                        onClick = onAiChat
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                    SettingsListItem(
                         icon = Icons.Default.Watch,
                         iconTint = MaterialTheme.colorScheme.tertiary,
                         title = stringResource(R.string.health_connect_title),
@@ -422,14 +394,6 @@ fun SettingsScreen(
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                     SettingsListItem(
-                        icon = Icons.Default.EmojiEvents,
-                        iconTint = MaterialTheme.colorScheme.tertiary,
-                        title = stringResource(R.string.achievements_title),
-                        subtitle = stringResource(R.string.achievements_desc),
-                        onClick = onAchievements
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                    SettingsListItem(
                         icon = Icons.Default.Security,
                         iconTint = MaterialTheme.colorScheme.error,
                         title = stringResource(R.string.security_title),
@@ -442,7 +406,7 @@ fun SettingsScreen(
             // Permissions section
             PermissionsSection()
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
@@ -719,17 +683,17 @@ private fun SettingsListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Surface(
                 shape = CircleShape,
                 color = iconTint.copy(alpha = 0.12f),
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(36.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(22.dp))
+                    Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
                 }
             }
             Column(modifier = Modifier.weight(1f)) {
@@ -738,12 +702,12 @@ private fun SettingsListItem(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
             Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
-                tint = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.size(18.dp))
+                tint = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.size(16.dp))
         }
     }
 }

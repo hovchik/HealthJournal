@@ -69,19 +69,20 @@ fun ReportsScreen(
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf(
         stringResource(R.string.reports_tab_records),
-        stringResource(R.string.reports_tab_ai)
+        stringResource(R.string.reports_tab_ai),
+        stringResource(R.string.reports_tab_health)
     )
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         stringResource(R.string.reports_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
@@ -98,7 +99,7 @@ fun ReportsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 FilterChip(
@@ -186,8 +187,137 @@ fun ReportsScreen(
             when (selectedTab) {
                 0 -> RecordsTab(filteredSymptoms, filteredVitals, filteredMedications, context, viewModel)
                 1 -> AiAnalyzeTab(reports, filteredVitals, filteredSymptoms, uiState, aiEnabled, context, viewModel)
+                2 -> HealthSummaryTab(filteredVitals)
             }
         }
+    }
+}
+
+@Composable
+private fun HealthSummaryTab(vitals: List<VitalSign>) {
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+
+    // Group vitals by date, then by type
+    val vitalsByDate = remember(vitals) {
+        vitals.sortedByDescending { it.recordedAt }
+            .groupBy { it.recordedAt.toLocalDate() }
+    }
+
+    if (vitals.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
+                Icon(
+                    Icons.Default.SmartToy,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    stringResource(R.string.health_no_data),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            vitalsByDate.forEach { (date, dayVitals) ->
+                item(key = "health_date_$date") {
+                    val dateLabel = when (date) {
+                        LocalDate.now() -> stringResource(R.string.date_today)
+                        LocalDate.now().minusDays(1) -> stringResource(R.string.date_yesterday)
+                        else -> date.format(dateFormatter)
+                    }
+                    Text(
+                        dateLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                val byType = dayVitals.groupBy { it.type }
+                byType.forEach { (type, typeVitals) ->
+                    item(key = "health_${date}_${type.name}") {
+                        val values = typeVitals.map { it.value }
+                        val avg = values.average()
+                        val min = values.min()
+                        val max = values.max()
+                        val total = values.sum()
+                        val count = values.size
+
+                        ElevatedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        type.displayName,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Surface(
+                                        shape = MaterialTheme.shapes.extraSmall,
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                                    ) {
+                                        Text(
+                                            "$count ${type.unit}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    val isStepsOrSleep = type == com.healthjournal.domain.model.VitalType.STEPS ||
+                                            type == com.healthjournal.domain.model.VitalType.SLEEP
+                                    if (isStepsOrSleep) {
+                                        HealthStatItem(stringResource(R.string.health_total_label), "%.0f".format(total))
+                                    } else {
+                                        HealthStatItem(stringResource(R.string.health_avg_label), "%.1f".format(avg))
+                                    }
+                                    HealthStatItem(stringResource(R.string.health_min_label), "%.1f".format(min))
+                                    HealthStatItem(stringResource(R.string.health_max_label), "%.1f".format(max))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HealthStatItem(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            value,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -423,16 +553,15 @@ private fun AiAnalyzeTab(
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     // Period selector
+                    Text(
+                        stringResource(R.string.report_period_label),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text(
-                            stringResource(R.string.report_period_label),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
                         periodOptions.forEach { days ->
                             FilterChip(
                                 selected = selectedPeriod == days,
@@ -442,7 +571,8 @@ private fun AiAnalyzeTab(
                                         stringResource(R.string.report_period_days, days),
                                         style = MaterialTheme.typography.labelSmall
                                     )
-                                }
+                                },
+                                modifier = Modifier.weight(1f)
                             )
                         }
                     }
