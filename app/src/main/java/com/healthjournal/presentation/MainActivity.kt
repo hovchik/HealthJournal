@@ -103,9 +103,8 @@ fun MainApp() {
                                     ),
                                     onClick = {
                                         navController.navigate(screen.route) {
-                                            popUpTo(Screen.Home.route) { saveState = true }
+                                            popUpTo(Screen.Home.route) { inclusive = false }
                                             launchSingleTop = true
-                                            restoreState = true
                                         }
                                     }
                                 )
