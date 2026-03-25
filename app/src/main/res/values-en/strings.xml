@@ -622,6 +622,10 @@
     <string name="health_connect_permissions_desc">Grant access to Health Connect to import your health data</string>
     <string name="health_connect_grant_permissions">Grant permissions</string>
     <string name="health_connect_permissions_hint">Grant permissions to import data</string>
+    <string name="health_connect_auto_sync">Automatic sync</string>
+    <string name="health_connect_auto_sync_desc">Periodically import data from Health Connect</string>
+    <string name="health_connect_sync_interval">Sync interval</string>
+    <string name="health_connect_hours_format">%1$d h</string>
 
     <!-- Navigation (short labels) -->
     <string name="nav_appointments">Appts</string>
@@ -643,6 +647,29 @@
     <string name="audit_log_title">Audit log</string>
     <string name="audit_log_desc">Track access and changes</string>
     <string name="security_info">All data is stored locally on your device. Biometric lock protects against unauthorized access.</string>
+    <string name="biometric_verify_title">Verify your identity</string>
+    <string name="biometric_verify_subtitle">To enable biometric lock</string>
+    <string name="biometric_unlock_title">Unlock</string>
+    <string name="biometric_unlock_subtitle">Unlock the app</string>
+    <string name="app_locked_title">App is locked</string>
+    <string name="app_locked_desc">Unlock the app to access your data</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="pin_incorrect">Incorrect PIN</string>
+    <string name="unlock">Unlock</string>
+    <string name="use_biometric">Use biometrics</string>
+    <string name="set_pin_title">Set PIN</string>
+    <string name="set_pin_desc">Enter a PIN of 4 to 6 digits</string>
+    <string name="confirm_pin_title">Confirm PIN</string>
+    <string name="confirm_pin_desc">Re-enter your PIN</string>
+    <string name="pin_label">PIN</string>
+    <string name="pin_mismatch">PINs do not match</string>
+    <string name="change_pin">Change PIN</string>
+    <string name="verify_current_pin">Current PIN</string>
+    <string name="set_new_pin">New PIN</string>
+    <string name="next">Next</string>
+    <string name="notification_permission_needed">Notifications disabled</string>
+    <string name="notification_permission_desc">Allow notifications for reminders to work</string>
+    <string name="grant_permission">Allow</string>
 
     <!-- Achievements -->
     <string name="achievements_title">Achievements</string>

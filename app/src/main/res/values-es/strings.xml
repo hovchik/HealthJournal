@@ -615,6 +615,10 @@
     <string name="health_connect_permissions_desc">Concede acceso a Health Connect para importar datos de salud</string>
     <string name="health_connect_grant_permissions">Conceder permisos</string>
     <string name="health_connect_permissions_hint">Concede permisos para importar datos</string>
+    <string name="health_connect_auto_sync">Sincronización automática</string>
+    <string name="health_connect_auto_sync_desc">Importar datos periódicamente desde Health Connect</string>
+    <string name="health_connect_sync_interval">Intervalo de sincronización</string>
+    <string name="health_connect_hours_format">%1$d h</string>
 
     <!-- Navigation (short labels) -->
     <string name="nav_appointments">Citas</string>
@@ -635,6 +639,29 @@
     <string name="audit_log_title">Registro de auditoría</string>
     <string name="audit_log_desc">Seguimiento de accesos y cambios</string>
     <string name="security_info">Todos los datos se almacenan localmente en tu dispositivo. El bloqueo biométrico protege contra accesos no autorizados.</string>
+    <string name="biometric_verify_title">Verifica tu identidad</string>
+    <string name="biometric_verify_subtitle">Para activar el bloqueo biométrico</string>
+    <string name="biometric_unlock_title">Desbloquear</string>
+    <string name="biometric_unlock_subtitle">Desbloquea la aplicación</string>
+    <string name="app_locked_title">Aplicación bloqueada</string>
+    <string name="app_locked_desc">Desbloquea la aplicación para acceder a tus datos</string>
+    <string name="enter_pin">Ingresa el PIN</string>
+    <string name="pin_incorrect">PIN incorrecto</string>
+    <string name="unlock">Desbloquear</string>
+    <string name="use_biometric">Usar biometría</string>
+    <string name="set_pin_title">Establecer PIN</string>
+    <string name="set_pin_desc">Ingresa un PIN de 4 a 6 dígitos</string>
+    <string name="confirm_pin_title">Confirmar PIN</string>
+    <string name="confirm_pin_desc">Vuelve a ingresar tu PIN</string>
+    <string name="pin_label">PIN</string>
+    <string name="pin_mismatch">Los PINs no coinciden</string>
+    <string name="change_pin">Cambiar PIN</string>
+    <string name="verify_current_pin">PIN actual</string>
+    <string name="set_new_pin">Nuevo PIN</string>
+    <string name="next">Siguiente</string>
+    <string name="notification_permission_needed">Notificaciones desactivadas</string>
+    <string name="notification_permission_desc">Permite las notificaciones para que funcionen los recordatorios</string>
+    <string name="grant_permission">Permitir</string>
 
     <!-- Achievements -->
     <string name="achievements_title">Logros</string>
