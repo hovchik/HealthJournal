@@ -548,4 +548,25 @@
     <string name="subscription_required">Cloud AI-\u0576 \u057a\u0561\u0570\u0561\u0576\u057b\u0578\u0582\u0574 \u0567 Pro \u056f\u0561\u0574 \u0531\u0576\u057d\u0561\u0570\u0574\u0561\u0576\u0561\u0583\u0561\u056f \u0562\u0561\u056a\u0561\u0576\u0578\u0580\u0564\u0561\u0563\u0580\u0578\u0582\u0569\u0575\u0578\u0582\u0576</string>
     <string name="subscription_limit_reached">Cloud AI \u0570\u0561\u0577\u057e\u0565\u057f\u057e\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580\u056b \u057d\u0561\u0570\u0574\u0561\u0576\u0561\u0579\u0561\u0583\u0568 \u057d\u057a\u0561\u057c\u057e\u0565\u056c \u0567 \u0561\u0575\u057d \u0561\u0574\u057d\u057e\u0561</string>
     <string name="settings_section_subscription">\u0532\u0561\u056a\u0561\u0576\u0578\u0580\u0564\u0561\u0563\u0580\u0578\u0582\u0569\u0575\u0578\u0582\u0576</string>
+    <string name="settings_section_features">Գործառույթներ</string>
+
+    <!-- Theme -->
+    <string name="theme_amoled">AMOLED</string>
+
+    <!-- Reminders -->
+    <string name="reminders_title">Հիշdelays delays</string>
+    <string name="reminders_desc">Դdelays delays delays delays delays</string>
+    <string name="add_reminder"> Delays delays delay</string>
+    <string name="no_reminders_hint">Delays delay. Delays delays delay.</string>
+    <string name="reminder_title">Delays</string>
+    <string name="reminder_description">Delays</string>
+    <string name="reminder_type">Delays</string>
+    <string name="missed_dose_title">Delays delays</string>
+    <string name="missed_dose_desc">Delays delays %1$s</string>
+    <string name="channel_medication_reminders">Delays delays delays</string>
+    <string name="channel_medication_desc">Delays delays delays delays</string>
+    <string name="channel_checkin_reminders">Delays delays delays</string>
+    <string name="channel_checkin_desc">Delays delays delays delays</string>
+    <string name="channel_appointment_reminders">Delays delays delays</string>
+    <string name="channel_appointment_desc">Delays delays delays delays</string>
 </resources>

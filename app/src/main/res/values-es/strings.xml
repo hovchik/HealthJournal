@@ -552,4 +552,111 @@
     <string name="subscription_required">Cloud AI requiere una suscripci\u00f3n Pro o Ilimitada</string>
     <string name="subscription_limit_reached">L\u00edmite de informes Cloud AI alcanzado este mes</string>
     <string name="settings_section_subscription">Suscripci\u00f3n</string>
+    <string name="settings_section_features">Funciones</string>
+
+    <!-- Theme -->
+    <string name="theme_amoled">AMOLED</string>
+
+    <!-- Reminders -->
+    <string name="reminders_title">Recordatorios</string>
+    <string name="reminders_desc">Notificaciones de medicamentos y revisiones</string>
+    <string name="add_reminder">Añadir recordatorio</string>
+    <string name="no_reminders_hint">No hay recordatorios. Añade tu primer recordatorio.</string>
+    <string name="reminder_title">Título</string>
+    <string name="reminder_description">Descripción</string>
+    <string name="reminder_type">Tipo de recordatorio</string>
+    <string name="missed_dose_title">Dosis olvidada</string>
+    <string name="missed_dose_desc">Olvidaste tomar %1$s</string>
+    <string name="channel_medication_reminders">Recordatorios de medicamentos</string>
+    <string name="channel_medication_desc">Notificaciones para tomar medicamentos</string>
+    <string name="channel_checkin_reminders">Recordatorios de registro</string>
+    <string name="channel_checkin_desc">Recordatorios para registrar síntomas y signos vitales</string>
+    <string name="channel_appointment_reminders">Recordatorios de citas</string>
+    <string name="channel_appointment_desc">Notificaciones de próximas visitas al médico</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Panel</string>
+    <string name="dashboard_desc">Gráficos, tendencias, mapa de calor de síntomas</string>
+    <string name="symptom_heatmap_title">Mapa de calor de síntomas</string>
+    <string name="correlations_title">Correlaciones</string>
+    <string name="latest_value">Último: %1$s %2$s</string>
+
+    <!-- Appointments -->
+    <string name="appointments_title">Citas médicas</string>
+    <string name="appointments_desc">Seguimiento de visitas, médicos, informes</string>
+    <string name="add_appointment">Añadir cita</string>
+    <string name="add_doctor">Añadir médico</string>
+    <string name="no_appointments_hint">No hay citas programadas.</string>
+    <string name="no_doctors_hint">No hay médicos guardados.</string>
+    <string name="appointments_tab">Citas</string>
+    <string name="doctors_tab">Médicos</string>
+    <string name="specialty">Especialidad</string>
+    <string name="location">Ubicación</string>
+    <string name="email_label">Email</string>
+    <string name="address_label">Dirección</string>
+
+    <!-- AI Chat -->
+    <string name="ai_chat_title">Asistente AI</string>
+    <string name="ai_chat_desc">Chatea con AI sobre tu salud</string>
+    <string name="ai_chat_placeholder">Haz una pregunta sobre salud…</string>
+    <string name="ai_chat_welcome">Asistente de salud AI</string>
+    <string name="ai_chat_hint">Pregunta sobre tus síntomas, signos vitales o medicamentos</string>
+    <string name="ai_chat_clear">Borrar chat</string>
+
+    <!-- Health Connect -->
+    <string name="health_connect_title">Health Connect</string>
+    <string name="health_connect_desc">Importar datos de dispositivos portátiles</string>
+    <string name="health_connect_status">Estado de conexión</string>
+    <string name="health_connect_available">Health Connect disponible</string>
+    <string name="health_connect_unavailable">Health Connect no disponible</string>
+    <string name="health_connect_data_types">Tipos de datos compatibles</string>
+    <string name="health_connect_import">Importar datos de 7 días</string>
+
+    <!-- Security -->
+    <string name="security_title">Seguridad</string>
+    <string name="security_desc">Biometría, PIN, registro de auditoría</string>
+    <string name="biometric_lock_title">Bloqueo biométrico</string>
+    <string name="biometric_lock_desc">Desbloquear con huella o rostro</string>
+    <string name="biometric_not_available">Biometría no disponible en este dispositivo</string>
+    <string name="pin_lock_title">Código PIN</string>
+    <string name="pin_lock_desc">Protección adicional con PIN</string>
+    <string name="audit_log_title">Registro de auditoría</string>
+    <string name="audit_log_desc">Seguimiento de accesos y cambios</string>
+    <string name="security_info">Todos los datos se almacenan localmente en tu dispositivo. El bloqueo biométrico protege contra accesos no autorizados.</string>
+
+    <!-- Achievements -->
+    <string name="achievements_title">Logros</string>
+    <string name="achievements_desc">Rachas, premios, progreso</string>
+    <string name="achievements_list">Todos los logros</string>
+    <string name="achievements_count">Premios</string>
+    <string name="streak_current">Racha actual</string>
+    <string name="streak_longest">Mejor racha</string>
+    <string name="total_checkins">Total de registros</string>
+    <string name="achievement_unlocked_at">Desbloqueado: %1$s</string>
+
+    <!-- Family Dashboard -->
+    <string name="family_dashboard_title">Panel familiar</string>
+    <string name="family_dashboard_desc">Resumen de salud familiar</string>
+
+    <!-- Medication Enhancements -->
+    <string name="drug_interactions_title">Interacciones de medicamentos</string>
+    <string name="drug_interaction_warning">Atención: interacciones detectadas</string>
+    <string name="adherence_title">Adherencia</string>
+    <string name="adherence_percent">%1$.0f%% tomado</string>
+    <string name="interaction_minor">Menor</string>
+    <string name="interaction_moderate">Moderada</string>
+    <string name="interaction_major">Mayor</string>
+    <string name="interaction_contraindicated">Contraindicada</string>
+
+    <!-- Data Export Enhanced -->
+    <string name="export_csv">Exportar CSV</string>
+    <string name="export_fhir">Exportar FHIR</string>
+    <string name="export_format_select">Seleccionar formato</string>
+
+    <!-- Disease AI Analysis -->
+    <string name="disease_ai_analysis_title">Análisis AI de enfermedad</string>
+    <string name="disease_ai_generate">Analizar enfermedad (AI)</string>
+    <string name="disease_ai_analyzing">AI está analizando datos de la enfermedad…</string>
+    <string name="disease_ai_no_reports">No hay análisis AI para esta enfermedad. Toca el botón de arriba para generar uno.</string>
+    <string name="disease_ai_report_title">Análisis de enfermedad</string>
 </resources>
