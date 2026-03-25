@@ -519,25 +519,40 @@ private fun AddAppointmentDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_appointment)) },
+        icon = {
+            Icon(Icons.Default.Event, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
+        title = {
+            Text(stringResource(R.string.add_appointment),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 OutlinedTextField(value = doctorName, onValueChange = { doctorName = it },
-                    label = { Text(stringResource(R.string.doctor_name)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    label = { Text(stringResource(R.string.doctor_name)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.medium)
                 OutlinedTextField(value = specialty, onValueChange = { specialty = it },
-                    label = { Text(stringResource(R.string.specialty)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    label = { Text(stringResource(R.string.specialty)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.medium)
                 OutlinedTextField(value = location, onValueChange = { location = it },
-                    label = { Text(stringResource(R.string.location)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                OutlinedTextField(value = dateStr, onValueChange = { dateStr = it },
-                    label = { Text(stringResource(R.string.date_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                OutlinedTextField(value = timeStr, onValueChange = { timeStr = it },
-                    label = { Text(stringResource(R.string.time_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    label = { Text(stringResource(R.string.location)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.medium)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(value = dateStr, onValueChange = { dateStr = it },
+                        label = { Text(stringResource(R.string.date_label)) },
+                        modifier = Modifier.weight(1f), singleLine = true, shape = MaterialTheme.shapes.medium)
+                    OutlinedTextField(value = timeStr, onValueChange = { timeStr = it },
+                        label = { Text(stringResource(R.string.time_label)) },
+                        modifier = Modifier.weight(0.7f), singleLine = true, shape = MaterialTheme.shapes.medium)
+                }
                 OutlinedTextField(value = notes, onValueChange = { notes = it },
-                    label = { Text(stringResource(R.string.notes)) }, modifier = Modifier.fillMaxWidth())
+                    label = { Text(stringResource(R.string.notes)) },
+                    modifier = Modifier.fillMaxWidth(), maxLines = 2, shape = MaterialTheme.shapes.medium)
             }
         },
         confirmButton = {
-            TextButton(onClick = {
+            Button(onClick = {
                 if (doctorName.isNotBlank()) {
                     val date = try { LocalDate.parse(dateStr) } catch (_: Exception) { LocalDate.now().plusDays(1) }
                     val time = try {
@@ -546,9 +561,16 @@ private fun AddAppointmentDialog(
                     } catch (_: Exception) { LocalTime.of(10, 0) }
                     onConfirm(doctorName, specialty, location, LocalDateTime.of(date, time), notes)
                 }
-            }) { Text(stringResource(R.string.save)) }
+            }, enabled = doctorName.isNotBlank(), shape = MaterialTheme.shapes.medium) {
+                Text(stringResource(R.string.save))
+            }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 }
 
@@ -565,26 +587,45 @@ private fun AddDoctorDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_doctor)) },
+        icon = {
+            Icon(Icons.Default.PersonAdd, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
+        title = {
+            Text(stringResource(R.string.add_doctor),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 OutlinedTextField(value = name, onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.doctor_name)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    label = { Text(stringResource(R.string.doctor_name)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.medium)
                 OutlinedTextField(value = specialty, onValueChange = { specialty = it },
-                    label = { Text(stringResource(R.string.specialty)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    label = { Text(stringResource(R.string.specialty)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.medium)
                 OutlinedTextField(value = phone, onValueChange = { phone = it },
-                    label = { Text(stringResource(R.string.doctor_phone)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    label = { Text(stringResource(R.string.doctor_phone)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.medium)
                 OutlinedTextField(value = email, onValueChange = { email = it },
-                    label = { Text(stringResource(R.string.email_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    label = { Text(stringResource(R.string.email_label)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.medium)
                 OutlinedTextField(value = address, onValueChange = { address = it },
-                    label = { Text(stringResource(R.string.address_label)) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    label = { Text(stringResource(R.string.address_label)) },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true, shape = MaterialTheme.shapes.medium)
             }
         },
         confirmButton = {
-            TextButton(onClick = {
+            Button(onClick = {
                 if (name.isNotBlank()) onConfirm(name, specialty, phone, email, address)
-            }) { Text(stringResource(R.string.save)) }
+            }, enabled = name.isNotBlank(), shape = MaterialTheme.shapes.medium) {
+                Text(stringResource(R.string.save))
+            }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 }

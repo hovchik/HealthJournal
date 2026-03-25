@@ -434,25 +434,56 @@ fun SettingsScreen(
     if (showClearDataDialog) {
         AlertDialog(
             onDismissRequest = { showClearDataDialog = false },
-            icon = { Icon(Icons.Default.DeleteForever, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
-            title = { Text(stringResource(R.string.clear_data_confirm_title)) },
-            text = { Text(stringResource(R.string.clear_data_confirm_desc)) },
+            icon = {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        Icon(Icons.Default.DeleteForever, contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(28.dp))
+                    }
+                }
+            },
+            title = {
+                Text(
+                    stringResource(R.string.clear_data_confirm_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Text(
+                    stringResource(R.string.clear_data_confirm_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         settingsViewModel.clearAllData()
                         showClearDataDialog = false
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showClearDataDialog = false }) {
+                OutlinedButton(
+                    onClick = { showClearDataDialog = false },
+                    shape = MaterialTheme.shapes.medium
+                ) {
                     Text(stringResource(R.string.cancel))
                 }
-            }
+            },
+            shape = MaterialTheme.shapes.extraLarge
         )
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material3.*
@@ -90,24 +91,36 @@ fun DeletedDiseasesScreen(
     confirmDeleteDisease?.let { disease ->
         AlertDialog(
             onDismissRequest = { confirmDeleteDisease = null },
-            title = { Text(stringResource(R.string.permanently_delete)) },
-            text = { Text(stringResource(R.string.confirm_permanent_delete)) },
+            icon = {
+                Icon(Icons.Default.Warning, contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(32.dp))
+            },
+            title = {
+                Text(stringResource(R.string.permanently_delete),
+                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            },
+            text = {
+                Text(stringResource(R.string.confirm_permanent_delete),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         viewModel.permanentlyDeleteDisease(disease)
                         confirmDeleteDisease = null
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text(stringResource(R.string.confirm))
-                }
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    shape = MaterialTheme.shapes.medium
+                ) { Text(stringResource(R.string.confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmDeleteDisease = null }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
+                OutlinedButton(
+                    onClick = { confirmDeleteDisease = null },
+                    shape = MaterialTheme.shapes.medium
+                ) { Text(stringResource(R.string.cancel)) }
+            },
+            shape = MaterialTheme.shapes.extraLarge
         )
     }
 }

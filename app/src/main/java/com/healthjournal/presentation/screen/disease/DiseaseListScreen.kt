@@ -341,24 +341,36 @@ fun DiseaseListScreen(
     confirmDeleteDisease?.let { disease ->
         AlertDialog(
             onDismissRequest = { confirmDeleteDisease = null },
-            title = { Text(stringResource(R.string.permanently_delete)) },
-            text = { Text(stringResource(R.string.confirm_permanent_delete)) },
+            icon = {
+                Icon(Icons.Default.Warning, contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(32.dp))
+            },
+            title = {
+                Text(stringResource(R.string.permanently_delete),
+                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            },
+            text = {
+                Text(stringResource(R.string.confirm_permanent_delete),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         viewModel.permanentlyDeleteDisease(disease)
                         confirmDeleteDisease = null
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text(stringResource(R.string.confirm))
-                }
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    shape = MaterialTheme.shapes.medium
+                ) { Text(stringResource(R.string.confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmDeleteDisease = null }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
+                OutlinedButton(
+                    onClick = { confirmDeleteDisease = null },
+                    shape = MaterialTheme.shapes.medium
+                ) { Text(stringResource(R.string.cancel)) }
+            },
+            shape = MaterialTheme.shapes.extraLarge
         )
     }
 }
@@ -764,22 +776,31 @@ private fun AddDiseaseDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_disease)) },
+        icon = {
+            Icon(Icons.Default.MedicalServices, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
+        title = {
+            Text(stringResource(R.string.add_disease),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.disease_name)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium
                 )
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text(stringResource(R.string.notes)) },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    maxLines = 2,
+                    shape = MaterialTheme.shapes.medium
                 )
                 ExposedDropdownMenuBox(
                     expanded = groupExpanded,
@@ -841,17 +862,19 @@ private fun AddDiseaseDialog(
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = { onConfirm(name, notes, selectedGroup) },
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank(),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
                 Text(stringResource(R.string.close))
             }
-        }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 }

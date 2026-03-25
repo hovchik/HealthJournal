@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -378,15 +379,23 @@ private fun AddMemberDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_family_member)) },
+        icon = {
+            Icon(Icons.Default.PersonAdd, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
+        title = {
+            Text(stringResource(R.string.add_family_member),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.member_name)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium
                 )
                 Text(stringResource(R.string.relationship), style = MaterialTheme.typography.labelMedium)
                 FlowRow(
@@ -426,11 +435,15 @@ private fun AddMemberDialog(
                     }
                     onAdd(name, rel)
                 },
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank(),
+                shape = MaterialTheme.shapes.medium
             ) { Text(stringResource(R.string.save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
-        }
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
+                Text(stringResource(R.string.close))
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 }

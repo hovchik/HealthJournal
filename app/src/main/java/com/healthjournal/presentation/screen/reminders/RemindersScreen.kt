@@ -260,25 +260,36 @@ private fun AddReminderDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_reminder)) },
+        icon = {
+            Icon(Icons.Default.NotificationsActive, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
+        title = {
+            Text(stringResource(R.string.add_reminder),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text(stringResource(R.string.reminder_title)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium
                 )
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text(stringResource(R.string.reminder_description)) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 2,
+                    shape = MaterialTheme.shapes.medium
                 )
 
                 // Type selector
-                Text(stringResource(R.string.reminder_type), style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.reminder_type), style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                     val types = listOf(ReminderType.MEDICATION, ReminderType.VITAL_CHECK, ReminderType.CUSTOM)
                     types.forEachIndexed { index, type ->
@@ -300,7 +311,8 @@ private fun AddReminderDialog(
                 }
 
                 // Frequency selector
-                Text(stringResource(R.string.reminder_frequency), style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.reminder_frequency), style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                     val frequencies = listOf(
                         ReminderFrequency.ONCE, ReminderFrequency.DAILY,
@@ -326,33 +338,48 @@ private fun AddReminderDialog(
                 }
 
                 // Time
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.time_label), modifier = Modifier.weight(1f))
-                    FilledTonalButton(
-                        onClick = { showTimePicker = true }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
                     ) {
-                        Icon(Icons.Default.AccessTime, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("%02d:%02d".format(hour, minute))
+                        Icon(Icons.Default.AccessTime, contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(R.string.time_label),
+                            style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                        FilledTonalButton(
+                            onClick = { showTimePicker = true },
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Text("%02d:%02d".format(hour, minute),
+                                style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     if (title.isNotBlank()) {
                         onConfirm(title, description, selectedType, selectedFrequency, LocalTime.of(hour, minute))
                     }
-                }
+                },
+                enabled = title.isNotBlank(),
+                shape = MaterialTheme.shapes.medium
             ) { Text(stringResource(R.string.save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
-        }
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 
     if (showTimePicker) {
@@ -363,27 +390,35 @@ private fun AddReminderDialog(
         )
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
-            title = { Text(stringResource(R.string.time_label)) },
+            title = {
+                Text(stringResource(R.string.time_label),
+                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            },
             text = {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    TimePicker(state = timePickerState)
+                    TimeInput(state = timePickerState)
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    hour = timePickerState.hour
-                    minute = timePickerState.minute
-                    showTimePicker = false
-                }) { Text(stringResource(R.string.save)) }
+                Button(
+                    onClick = {
+                        hour = timePickerState.hour
+                        minute = timePickerState.minute
+                        showTimePicker = false
+                    },
+                    shape = MaterialTheme.shapes.medium
+                ) { Text(stringResource(R.string.save)) }
             },
             dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
+                OutlinedButton(
+                    onClick = { showTimePicker = false },
+                    shape = MaterialTheme.shapes.medium
+                ) { Text(stringResource(R.string.cancel)) }
+            },
+            shape = MaterialTheme.shapes.extraLarge
         )
     }
 }

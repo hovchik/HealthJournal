@@ -261,11 +261,16 @@ private fun PinSetupDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Default.Pin, contentDescription = null) },
+        icon = {
+            Icon(Icons.Default.Pin, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
         title = {
             Text(
                 if (step == 1) stringResource(R.string.set_pin_title)
-                else stringResource(R.string.confirm_pin_title)
+                else stringResource(R.string.confirm_pin_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
             )
         },
         text = {
@@ -276,7 +281,7 @@ private fun PinSetupDialog(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
                     value = if (step == 1) pin else confirmPin,
                     onValueChange = {
@@ -293,12 +298,13 @@ private fun PinSetupDialog(
                         { Text(stringResource(R.string.pin_mismatch)) }
                     } else null,
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     if (step == 1) {
                         if (pin.length >= 4) {
@@ -313,7 +319,8 @@ private fun PinSetupDialog(
                         }
                     }
                 },
-                enabled = if (step == 1) pin.length >= 4 else confirmPin.length >= 4
+                enabled = if (step == 1) pin.length >= 4 else confirmPin.length >= 4,
+                shape = MaterialTheme.shapes.medium
             ) {
                 Text(
                     if (step == 1) stringResource(R.string.next)
@@ -322,10 +329,11 @@ private fun PinSetupDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
                 Text(stringResource(R.string.cancel))
             }
-        }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 }
 
@@ -343,14 +351,19 @@ private fun PinChangeDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Default.Pin, contentDescription = null) },
+        icon = {
+            Icon(Icons.Default.Pin, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        },
         title = {
             Text(
                 when (step) {
                     1 -> stringResource(R.string.verify_current_pin)
                     2 -> stringResource(R.string.set_new_pin)
                     else -> stringResource(R.string.confirm_pin_title)
-                }
+                },
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
             )
         },
         text = {
@@ -384,12 +397,13 @@ private fun PinChangeDialog(
                         }
                     } else null,
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     when (step) {
                         1 -> {
@@ -419,7 +433,8 @@ private fun PinChangeDialog(
                     1 -> oldPin.length >= 4
                     2 -> newPin.length >= 4
                     else -> confirmPin.length >= 4
-                }
+                },
+                shape = MaterialTheme.shapes.medium
             ) {
                 Text(
                     if (step < 3) stringResource(R.string.next)
@@ -428,9 +443,10 @@ private fun PinChangeDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            OutlinedButton(onClick = onDismiss, shape = MaterialTheme.shapes.medium) {
                 Text(stringResource(R.string.cancel))
             }
-        }
+        },
+        shape = MaterialTheme.shapes.extraLarge
     )
 }
