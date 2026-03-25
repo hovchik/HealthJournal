@@ -455,6 +455,7 @@
     <string name="theme_system">Система</string>
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
+    <string name="theme_amoled">AMOLED</string>
 
     <!-- On-device model -->
     <string name="local_model_title">Модель LLM на устройстве</string>
@@ -563,4 +564,101 @@
     <string name="subscription_required">Для Cloud AI нужна подписка Pro или Безлимитный</string>
     <string name="subscription_limit_reached">Достигнут лимит Cloud AI отчётов на этот месяц</string>
     <string name="settings_section_subscription">Подписка</string>
+    <string name="settings_section_features">Функции</string>
+
+    <!-- Reminders -->
+    <string name="reminders_title">Напоминания</string>
+    <string name="reminders_desc">Уведомления о лекарствах, проверках здоровья</string>
+    <string name="add_reminder">Добавить напоминание</string>
+    <string name="no_reminders_hint">Нет напоминаний. Добавьте первое напоминание.</string>
+    <string name="reminder_title">Заголовок</string>
+    <string name="reminder_description">Описание</string>
+    <string name="reminder_type">Тип напоминания</string>
+    <string name="missed_dose_title">Пропущен приём</string>
+    <string name="missed_dose_desc">Вы пропустили приём %1$s</string>
+    <string name="channel_medication_reminders">Напоминания о лекарствах</string>
+    <string name="channel_medication_desc">Уведомления о приёме лекарств</string>
+    <string name="channel_checkin_reminders">Напоминания о проверке</string>
+    <string name="channel_checkin_desc">Напоминания о записи симптомов и показателей</string>
+    <string name="channel_appointment_reminders">Напоминания о приёмах</string>
+    <string name="channel_appointment_desc">Уведомления о предстоящих визитах к врачу</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Дашборд</string>
+    <string name="dashboard_desc">Графики, тренды, тепловая карта симптомов</string>
+    <string name="symptom_heatmap_title">Тепловая карта симптомов</string>
+    <string name="correlations_title">Корреляции</string>
+    <string name="latest_value">Последнее: %1$s %2$s</string>
+
+    <!-- Appointments -->
+    <string name="appointments_title">Приёмы к врачу</string>
+    <string name="appointments_desc">Отслеживание визитов, врачи, отчёты</string>
+    <string name="add_appointment">Добавить приём</string>
+    <string name="add_doctor">Добавить врача</string>
+    <string name="no_appointments_hint">Нет запланированных приёмов.</string>
+    <string name="no_doctors_hint">Нет сохранённых врачей.</string>
+    <string name="appointments_tab">Приёмы</string>
+    <string name="doctors_tab">Врачи</string>
+    <string name="specialty">Специальность</string>
+    <string name="location">Место</string>
+    <string name="email_label">Email</string>
+    <string name="address_label">Адрес</string>
+
+    <!-- AI Chat -->
+    <string name="ai_chat_title">AI Ассистент</string>
+    <string name="ai_chat_desc">Чат с AI о вашем здоровье</string>
+    <string name="ai_chat_placeholder">Задайте вопрос о здоровье…</string>
+    <string name="ai_chat_welcome">AI Ассистент здоровья</string>
+    <string name="ai_chat_hint">Задайте вопрос о ваших симптомах, показателях или лекарствах</string>
+    <string name="ai_chat_clear">Очистить чат</string>
+
+    <!-- Health Connect -->
+    <string name="health_connect_title">Health Connect</string>
+    <string name="health_connect_desc">Импорт данных с носимых устройств</string>
+    <string name="health_connect_status">Статус подключения</string>
+    <string name="health_connect_available">Health Connect доступен</string>
+    <string name="health_connect_unavailable">Health Connect недоступен</string>
+    <string name="health_connect_data_types">Поддерживаемые типы данных</string>
+    <string name="health_connect_import">Импортировать данные за 7 дней</string>
+
+    <!-- Security -->
+    <string name="security_title">Безопасность</string>
+    <string name="security_desc">Биометрия, PIN, журнал действий</string>
+    <string name="biometric_lock_title">Биометрическая блокировка</string>
+    <string name="biometric_lock_desc">Разблокировка отпечатком или лицом</string>
+    <string name="biometric_not_available">Биометрия недоступна на устройстве</string>
+    <string name="pin_lock_title">PIN-код</string>
+    <string name="pin_lock_desc">Дополнительная защита PIN-кодом</string>
+    <string name="audit_log_title">Журнал действий</string>
+    <string name="audit_log_desc">Отслеживание доступа и изменений</string>
+    <string name="security_info">Все данные хранятся локально на устройстве. Биометрическая блокировка защищает от несанкционированного доступа.</string>
+
+    <!-- Achievements -->
+    <string name="achievements_title">Достижения</string>
+    <string name="achievements_desc">Серии, награды, прогресс</string>
+    <string name="achievements_list">Все достижения</string>
+    <string name="achievements_count">Награды</string>
+    <string name="streak_current">Текущая серия</string>
+    <string name="streak_longest">Лучшая серия</string>
+    <string name="total_checkins">Всего записей</string>
+    <string name="achievement_unlocked_at">Получено: %1$s</string>
+
+    <!-- Family Dashboard -->
+    <string name="family_dashboard_title">Семейный дашборд</string>
+    <string name="family_dashboard_desc">Обзор здоровья всей семьи</string>
+
+    <!-- Medication Enhancements -->
+    <string name="drug_interactions_title">Взаимодействия лекарств</string>
+    <string name="drug_interaction_warning">Внимание: обнаружены взаимодействия</string>
+    <string name="adherence_title">Приверженность</string>
+    <string name="adherence_percent">%1$.0f%% приём</string>
+    <string name="interaction_minor">Незначительное</string>
+    <string name="interaction_moderate">Умеренное</string>
+    <string name="interaction_major">Серьёзное</string>
+    <string name="interaction_contraindicated">Противопоказано</string>
+
+    <!-- Data Export Enhanced -->
+    <string name="export_csv">Экспорт CSV</string>
+    <string name="export_fhir">Экспорт FHIR</string>
+    <string name="export_format_select">Выберите формат</string>
 </resources>

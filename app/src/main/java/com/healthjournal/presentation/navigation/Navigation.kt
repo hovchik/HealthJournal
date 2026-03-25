@@ -13,6 +13,14 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Summarize
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Watch
+import androidx.compose.material.icons.filled.FamilyRestroom
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.healthjournal.R
 
@@ -59,6 +67,16 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
         fun createRoute(diseaseId: Long) = "disease_ai_analysis/$diseaseId"
     }
     data object Subscription : Screen("subscription", R.string.subscription_title, Icons.Default.Star)
+
+    // New screens
+    data object Reminders : Screen("reminders", R.string.reminders_title, Icons.Default.Notifications)
+    data object Dashboard : Screen("dashboard", R.string.dashboard_title, Icons.Default.Timeline)
+    data object Appointments : Screen("appointments", R.string.appointments_title, Icons.Default.Event)
+    data object AiChat : Screen("ai_chat", R.string.ai_chat_title, Icons.Default.Chat)
+    data object SecuritySettings : Screen("security_settings", R.string.security_title, Icons.Default.Security)
+    data object Achievements : Screen("achievements", R.string.achievements_title, Icons.Default.EmojiEvents)
+    data object HealthConnect : Screen("health_connect", R.string.health_connect_title, Icons.Default.Watch)
+    data object FamilyDashboard : Screen("family_dashboard", R.string.family_dashboard_title, Icons.Default.FamilyRestroom)
 }
 
 val bottomNavItems = listOf(Screen.Home, Screen.Reports, Screen.Settings)

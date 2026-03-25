@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,6 +27,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.healthjournal.R
 import com.healthjournal.domain.model.Disease
+import com.healthjournal.util.PredefinedData
+import com.healthjournal.util.PredefinedDataKeys
+import com.healthjournal.util.predefinedDataStore
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.flow.map
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -726,6 +732,7 @@ private fun CountChip(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddDiseaseDialog(
     onDismiss: () -> Unit,
@@ -733,7 +740,22 @@ private fun AddDiseaseDialog(
 ) {
     var name by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
-    var group by remember { mutableStateOf("") }
+    var selectedGroup by remember { mutableStateOf("") }
+    var groupExpanded by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val disabledGroups by remember {
+        context.predefinedDataStore.data.map { it[PredefinedDataKeys.DISABLED_GROUPS] ?: emptySet() }
+    }.collectAsState(initial = emptySet())
+    val customGroups by remember {
+        context.predefinedDataStore.data.map { it[PredefinedDataKeys.CUSTOM_GROUPS] ?: emptySet() }
+    }.collectAsState(initial = emptySet())
+
+    val availableGroups = remember(disabledGroups, customGroups) {
+        val predefined = PredefinedData.groupItems
+            .filter { it.key !in disabledGroups }
+        predefined to customGroups.sorted()
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -754,19 +776,68 @@ private fun AddDiseaseDialog(
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2
                 )
-                OutlinedTextField(
-                    value = group,
-                    onValueChange = { group = it },
-                    label = { Text(stringResource(R.string.disease_group)) },
-                    placeholder = { Text(stringResource(R.string.disease_group_hint)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
+                ExposedDropdownMenuBox(
+                    expanded = groupExpanded,
+                    onExpandedChange = { groupExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = selectedGroup,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.disease_group)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = groupExpanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        singleLine = true
+                    )
+                    ExposedDropdownMenu(
+                        expanded = groupExpanded,
+                        onDismissRequest = { groupExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.ungrouped)) },
+                            onClick = {
+                                selectedGroup = ""
+                                groupExpanded = false
+                            }
+                        )
+                        availableGroups.first.forEach { item ->
+                            val label = stringResource(item.nameResId)
+                            DropdownMenuItem(
+                                text = { Text(label) },
+                                onClick = {
+                                    selectedGroup = label
+                                    groupExpanded = false
+                                }
+                            )
+                        }
+                        availableGroups.second.forEach { custom ->
+                            DropdownMenuItem(
+                                text = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(custom)
+                                        Text(
+                                            stringResource(R.string.custom_label),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.outline
+                                        )
+                                    }
+                                },
+                                onClick = {
+                                    selectedGroup = custom
+                                    groupExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
             TextButton(
-                onClick = { onConfirm(name, notes, group) },
+                onClick = { onConfirm(name, notes, selectedGroup) },
                 enabled = name.isNotBlank()
             ) {
                 Text(stringResource(R.string.save))

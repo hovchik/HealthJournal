@@ -104,6 +104,15 @@ dependencies {
     // Google Play Billing (subscriptions)
     implementation("com.android.billingclient:billing-ktx:7.1.1")
 
+    // WorkManager (reminders & notifications)
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+
+    // Biometric (security)
+    implementation("androidx.biometric:biometric:1.1.0")
+
+    // Health Connect (wearable integration)
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha10")
+
     // Test
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")

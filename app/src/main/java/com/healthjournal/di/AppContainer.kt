@@ -35,7 +35,13 @@ import com.healthjournal.domain.model.ai.GeminiConfig
 import com.healthjournal.domain.model.ai.OpenAiConfig
 import com.healthjournal.domain.repository.*
 import com.healthjournal.domain.usecase.*
+import com.healthjournal.data.local.dto.AppointmentDto
+import com.healthjournal.data.local.dto.AuditLogDto
+import com.healthjournal.data.local.dto.DoctorContactDto
+import com.healthjournal.data.local.dto.ReminderDto
 import com.healthjournal.util.DataExportImportManager
+import com.healthjournal.util.GamificationManager
+import com.healthjournal.util.HealthConnectManager
 import com.healthjournal.util.PrivacyRedactor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -88,6 +94,26 @@ class AppContainer(context: Context) {
     private val diseaseStore = JsonFileStore(
         context = context, fileName = "diseases.json",
         serializer = DiseaseDto.serializer(), json = json,
+        getId = { it.id }, setId = { item, id -> item.copy(id = id) }
+    )
+    private val reminderStore = JsonFileStore(
+        context = context, fileName = "reminders.json",
+        serializer = ReminderDto.serializer(), json = json,
+        getId = { it.id }, setId = { item, id -> item.copy(id = id) }
+    )
+    private val appointmentStore = JsonFileStore(
+        context = context, fileName = "appointments.json",
+        serializer = AppointmentDto.serializer(), json = json,
+        getId = { it.id }, setId = { item, id -> item.copy(id = id) }
+    )
+    private val doctorContactStore = JsonFileStore(
+        context = context, fileName = "doctor_contacts.json",
+        serializer = DoctorContactDto.serializer(), json = json,
+        getId = { it.id }, setId = { item, id -> item.copy(id = id) }
+    )
+    private val auditLogStore = JsonFileStore(
+        context = context, fileName = "audit_log.json",
+        serializer = AuditLogDto.serializer(), json = json,
         getId = { it.id }, setId = { item, id -> item.copy(id = id) }
     )
 
@@ -240,6 +266,13 @@ class AppContainer(context: Context) {
     val familyMemberRepository: FamilyMemberRepository = FamilyMemberRepositoryImpl(familyMemberStore)
     val diseaseRepository: DiseaseRepository = DiseaseRepositoryImpl(diseaseStore)
     val subscriptionRepository: SubscriptionRepository = SubscriptionRepositoryImpl(context)
+    val reminderRepository: ReminderRepository = ReminderRepositoryImpl(reminderStore)
+    val appointmentRepository: AppointmentRepository = AppointmentRepositoryImpl(appointmentStore, doctorContactStore)
+    val auditLogRepository: AuditLogRepository = AuditLogRepositoryImpl(auditLogStore)
+
+    // Utilities
+    val healthConnectManager = HealthConnectManager(context)
+    val gamificationManager = GamificationManager(context)
 
     // Use Cases
     val getAllSymptoms = GetAllSymptomsUseCase(symptomRepository)

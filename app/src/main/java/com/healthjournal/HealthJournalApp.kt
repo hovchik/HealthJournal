@@ -3,6 +3,8 @@ package com.healthjournal
 import android.app.Application
 import com.healthjournal.di.AppContainer
 import com.healthjournal.util.LocaleManager
+import com.healthjournal.util.NotificationHelper
+import com.healthjournal.util.ReminderWorker
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -22,5 +24,11 @@ class HealthJournalApp : Application() {
 
         // Migrate GGUF models from wrong "mediapipe_llm" runtime to "llama_cpp"
         runBlocking { container.localModelManager.migrateGgufRuntimeType() }
+
+        // Initialize notification channels
+        NotificationHelper.createNotificationChannels(this)
+
+        // Schedule reminder worker
+        ReminderWorker.schedule(this)
     }
 }
