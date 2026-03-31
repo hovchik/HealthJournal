@@ -215,7 +215,7 @@ private fun DashboardHeader(
                 )
             )
             .statusBarsPadding()
-            .padding(horizontal = 20.dp, top = 20.dp, bottom = 28.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 28.dp)
     ) {
         Column {
             // ── Greeting row ────────────────────────────────────────────
