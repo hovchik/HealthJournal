@@ -5,14 +5,29 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,10 +60,6 @@ fun MainApp() {
     val navController = rememberNavController()
     val onboardingViewModel: OnboardingViewModel = viewModel()
     val settings by onboardingViewModel.settings.collectAsStateWithLifecycle()
-
-    // Avoid flashing: wait for settings to load before deciding start destination.
-    // The default UserSettings() has onboardingCompleted=false, which would briefly
-    // show Onboarding before switching to Home, causing a splash screen flash.
     val isSettingsLoaded by onboardingViewModel.isLoaded.collectAsStateWithLifecycle()
 
     val startDestination = remember(isSettingsLoaded) {
@@ -60,7 +71,6 @@ fun MainApp() {
 
     HealthJournalTheme(themeMode = settings.themeMode) {
         if (startDestination == null) {
-            // Show nothing while settings are loading to prevent flash
             Box(modifier = Modifier.fillMaxSize())
         } else if (isLocked) {
             LockScreen(onUnlocked = { isLocked = false })
@@ -79,49 +89,19 @@ fun MainApp() {
                 bottomBar = {
                     AnimatedVisibility(
                         visible = showBottomBar,
-                        enter = slideInVertically(initialOffsetY = { it }),
-                        exit = slideOutVertically(targetOffsetY = { it })
+                        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
                     ) {
-                        NavigationBar(
-                            tonalElevation = 3.dp,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ) {
-                            bottomNavItems.forEach { screen ->
-                                val title = stringResource(screen.titleResId)
-                                val selected = currentRoute == screen.route
-                                NavigationBarItem(
-                                    icon = {
-                                        Icon(
-                                            screen.icon,
-                                            contentDescription = title
-                                        )
-                                    },
-                                    label = {
-                                        Text(
-                                            title,
-                                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            maxLines = 1,
-                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                        )
-                                    },
-                                    selected = selected,
-                                    colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                                        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                    ),
-                                    onClick = {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(Screen.Home.route) { inclusive = false }
-                                            launchSingleTop = true
-                                        }
-                                    }
-                                )
+                        FloatingNavBar(
+                            items = bottomNavItems,
+                            currentRoute = currentRoute,
+                            onItemClick = { screen ->
+                                navController.navigate(screen.route) {
+                                    popUpTo(Screen.Home.route) { inclusive = false }
+                                    launchSingleTop = true
+                                }
                             }
-                        }
+                        )
                     }
                 }
             ) { innerPadding ->
@@ -129,6 +109,107 @@ fun MainApp() {
                     navController = navController,
                     startDestination = startDestination,
                     modifier = Modifier.padding(innerPadding)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FloatingNavBar(
+    items: List<Screen>,
+    currentRoute: String?,
+    onItemClick: (Screen) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(30.dp),
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 18.dp,
+            tonalElevation = 3.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 8.dp)
+            ) {
+                items.forEach { screen ->
+                    val title = stringResource(screen.titleResId)
+                    val selected = currentRoute == screen.route
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        FloatingNavItem(
+                            icon = screen.icon,
+                            label = title,
+                            selected = selected,
+                            onClick = { onItemClick(screen) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FloatingNavItem(
+    icon: ImageVector,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val bgColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primaryContainer
+                      else Color.Transparent,
+        animationSpec = tween(280),
+        label = "navBg"
+    )
+    val contentColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                      else MaterialTheme.colorScheme.onSurfaceVariant,
+        animationSpec = tween(280),
+        label = "navFg"
+    )
+
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(22.dp),
+        color = bgColor
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                horizontal = if (selected) 14.dp else 10.dp,
+                vertical = 10.dp
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = contentColor,
+                modifier = Modifier
+            )
+            AnimatedVisibility(
+                visible = selected,
+                enter = fadeIn(spring(stiffness = Spring.StiffnessHigh)) +
+                        expandHorizontally(spring(stiffness = Spring.StiffnessMediumLow)),
+                exit = fadeOut(tween(120)) + shrinkHorizontally(tween(180))
+            ) {
+                Text(
+                    text = " $label",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = contentColor,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
                 )
             }
         }
