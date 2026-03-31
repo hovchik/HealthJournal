@@ -1,6 +1,7 @@
 package com.healthjournal.presentation.screen.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
@@ -19,6 +20,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,6 +36,8 @@ import com.healthjournal.util.localizedDisplayName
 import com.healthjournal.util.localizedUnit
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,28 +63,16 @@ fun HomeScreen(
     val yesterdayLabel = stringResource(R.string.date_yesterday)
     val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
 
+    val today = LocalDate.now()
+    val todaySymptomCount = symptoms.count { it.recordedAt.toLocalDate() == today }
+    val todayVitalCount = recentVitals.count { it.recordedAt.toLocalDate() == today }
+
+    val todayDate = remember {
+        today.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.getDefault()))
+    }
+
     Scaffold(
-        topBar = {
-            LargeTopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            stringResource(R.string.home_title),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            stringResource(R.string.recording_for, activeProfileName),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
-                )
-            )
-        },
+        contentWindowInsets = WindowInsets(0),
         floatingActionButton = {
             Column(
                 horizontalAlignment = Alignment.End,
@@ -88,7 +82,7 @@ fun HomeScreen(
                     onClick = onAddVital,
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.large
                 ) {
                     Icon(Icons.Default.MonitorHeart, contentDescription = stringResource(R.string.add_vital_desc))
                 }
@@ -96,19 +90,37 @@ fun HomeScreen(
                     onClick = onAddSymptom,
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    shape = MaterialTheme.shapes.extraLarge,
                     icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                    text = { Text(stringResource(R.string.add_symptom_desc)) }
+                    text = { Text(stringResource(R.string.add_symptom_desc), fontWeight = FontWeight.SemiBold) }
                 )
             }
         }
-    ) { padding ->
+    ) { _ ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 120.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
+            // ── Gradient Header ────────────────────────────────────────────────
+            item(key = "header") {
+                DashboardHeader(
+                    profileName = activeProfileName,
+                    dateText = todayDate,
+                    todaySymptomCount = todaySymptomCount,
+                    todayVitalCount = todayVitalCount
+                )
+            }
+
+            // ── Quick Actions ──────────────────────────────────────────────────
+            item(key = "quick_actions") {
+                QuickActionsRow(
+                    onAddSymptom = onAddSymptom,
+                    onAddVital = onAddVital
+                )
+            }
+
+            // ── Recent Vitals Section ──────────────────────────────────────────
             if (recentVitals.isNotEmpty()) {
                 item(key = "vitals_header") {
                     SectionHeader(
@@ -126,14 +138,18 @@ fun HomeScreen(
                         DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
                     }
                     items(vitalsForDate, key = { "vital_${it.id}" }) { vital ->
-                        AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically()) {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn(tween(300)) + slideInVertically(tween(300)) { it / 3 }
+                        ) {
                             VitalCard(vital, onEdit = { onEditVital(vital.id) })
                         }
                     }
                 }
-                item(key = "vitals_spacer") { Spacer(modifier = Modifier.height(8.dp)) }
+                item(key = "vitals_spacer") { Spacer(modifier = Modifier.height(4.dp)) }
             }
 
+            // ── Symptoms Section ───────────────────────────────────────────────
             item(key = "symptoms_header") {
                 SectionHeader(
                     icon = Icons.Default.Sick,
@@ -145,40 +161,12 @@ fun HomeScreen(
 
             if (symptoms.isEmpty()) {
                 item(key = "empty_symptoms") {
-                    ElevatedCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                        ),
-                        shape = MaterialTheme.shapes.large,
-                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth().padding(32.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Surface(
-                                shape = CircleShape,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                modifier = Modifier.size(64.dp),
-                                tonalElevation = 2.dp
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        Icons.Default.EditNote, contentDescription = null,
-                                        modifier = Modifier.size(32.dp),
-                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                stringResource(R.string.no_symptoms_hint),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
+                    EmptyStateCard(
+                        icon = Icons.Default.EditNote,
+                        message = stringResource(R.string.no_symptoms_hint),
+                        tint = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
                 }
             } else {
                 val symptomsByDate = symptoms.groupBy { it.recordedAt.toLocalDate() }
@@ -188,11 +176,16 @@ fun HomeScreen(
                         DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
                     }
                     items(symptomsForDate, key = { "symptom_${it.id}" }) { symptom ->
-                        SymptomCard(
-                            symptom,
-                            onEdit = { onEditSymptom(symptom.id) },
-                            onDelete = { viewModel.removeSymptom(symptom) }
-                        )
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn(tween(300)) + slideInVertically(tween(300)) { it / 3 }
+                        ) {
+                            SymptomCard(
+                                symptom,
+                                onEdit = { onEditSymptom(symptom.id) },
+                                onDelete = { viewModel.removeSymptom(symptom) }
+                            )
+                        }
                     }
                 }
             }
@@ -200,37 +193,255 @@ fun HomeScreen(
     }
 }
 
+// ── Dashboard Header ──────────────────────────────────────────────────────────
+
+@Composable
+private fun DashboardHeader(
+    profileName: String,
+    dateText: String,
+    todaySymptomCount: Int,
+    todayVitalCount: Int
+) {
+    val primary = MaterialTheme.colorScheme.primary
+    val secondary = MaterialTheme.colorScheme.secondary
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(primary, secondary.copy(alpha = 0.85f))
+                )
+            )
+            .statusBarsPadding()
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 28.dp)
+    ) {
+        Column {
+            // ── Greeting row ────────────────────────────────────────────
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = dateText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = onPrimary.copy(alpha = 0.75f)
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = profileName,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = onPrimary
+                    )
+                }
+
+                // Profile avatar circle
+                Surface(
+                    shape = CircleShape,
+                    color = onPrimary.copy(alpha = 0.20f),
+                    modifier = Modifier.size(50.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = profileName.firstOrNull()?.uppercase() ?: "?",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = onPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            // ── Today's stats row ────────────────────────────────────────
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                HeaderStatChip(
+                    modifier = Modifier.weight(1f),
+                    value = todaySymptomCount.toString(),
+                    label = stringResource(R.string.symptoms_title),
+                    icon = Icons.Default.Sick,
+                    onPrimary = onPrimary
+                )
+                HeaderStatChip(
+                    modifier = Modifier.weight(1f),
+                    value = todayVitalCount.toString(),
+                    label = stringResource(R.string.recent_vitals),
+                    icon = Icons.Default.MonitorHeart,
+                    onPrimary = onPrimary
+                )
+                HeaderStatChip(
+                    modifier = Modifier.weight(1f),
+                    value = if (todaySymptomCount + todayVitalCount > 0) "✓" else "—",
+                    label = stringResource(R.string.date_today),
+                    icon = Icons.Default.CheckCircle,
+                    onPrimary = onPrimary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeaderStatChip(
+    modifier: Modifier = Modifier,
+    value: String,
+    label: String,
+    icon: ImageVector,
+    onPrimary: Color
+) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        color = onPrimary.copy(alpha = 0.18f)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = onPrimary.copy(alpha = 0.85f),
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = onPrimary
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = onPrimary.copy(alpha = 0.75f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+// ── Quick Actions ─────────────────────────────────────────────────────────────
+
+@Composable
+private fun QuickActionsRow(
+    onAddSymptom: () -> Unit,
+    onAddVital: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        QuickActionCard(
+            modifier = Modifier.weight(1f),
+            icon = Icons.Default.Add,
+            label = stringResource(R.string.add_symptom_desc),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            onClick = onAddSymptom
+        )
+        QuickActionCard(
+            modifier = Modifier.weight(1f),
+            icon = Icons.Default.MonitorHeart,
+            label = stringResource(R.string.add_vital_desc),
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            onClick = onAddVital
+        )
+    }
+}
+
+@Composable
+private fun QuickActionCard(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    label: String,
+    containerColor: Color,
+    contentColor: Color,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = contentColor.copy(alpha = 0.15f),
+                modifier = Modifier.size(36.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(20.dp))
+                }
+            }
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                color = contentColor,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+// ── Section Header ────────────────────────────────────────────────────────────
+
 @Composable
 private fun SectionHeader(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     title: String,
-    color: androidx.compose.ui.graphics.Color,
-    containerColor: androidx.compose.ui.graphics.Color
+    color: Color,
+    containerColor: Color
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.padding(vertical = 8.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
     ) {
         Surface(
-            shape = CircleShape,
+            shape = MaterialTheme.shapes.small,
             color = containerColor,
-            modifier = Modifier.size(36.dp),
-            tonalElevation = 1.dp
+            modifier = Modifier.size(34.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(icon, contentDescription = null,
-                    tint = color, modifier = Modifier.size(20.dp))
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(18.dp)
+                )
             }
         }
         Text(
-            title,
+            text = title,
             style = MaterialTheme.typography.titleMedium,
             color = color,
             fontWeight = FontWeight.Bold
         )
     }
 }
+
+// ── Date Header ───────────────────────────────────────────────────────────────
 
 @Composable
 private fun DateHeader(
@@ -246,13 +457,65 @@ private fun DateHeader(
         else -> date.format(dateFormatter)
     }
     Text(
-        label,
+        text = label,
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
     )
 }
+
+// ── Empty State ───────────────────────────────────────────────────────────────
+
+@Composable
+private fun EmptyStateCard(
+    icon: ImageVector,
+    message: String,
+    tint: Color,
+    containerColor: Color
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = containerColor,
+                modifier = Modifier.size(64.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = tint
+                    )
+                }
+            }
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+// ── Symptom Card ──────────────────────────────────────────────────────────────
 
 @Composable
 private fun SymptomCard(symptom: Symptom, onEdit: () -> Unit, onDelete: () -> Unit) {
@@ -262,97 +525,152 @@ private fun SymptomCard(symptom: Symptom, onEdit: () -> Unit, onDelete: () -> Un
         symptom.intensity <= 6 -> MaterialTheme.colorScheme.tertiary
         else -> MaterialTheme.colorScheme.error
     }
+    val intensityBg = intensityColor.copy(alpha = 0.10f)
 
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onEdit),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clickable(onClick = onEdit),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+            // Severity accent bar
             Box(
                 modifier = Modifier
-                    .width(4.dp)
+                    .width(5.dp)
                     .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
-                    .background(intensityColor)
+                    .background(
+                        Brush.verticalGradient(listOf(intensityColor, intensityColor.copy(alpha = 0.5f))),
+                        RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
+                    )
             )
             Row(
-                modifier = Modifier.weight(1f).padding(14.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 14.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.Top
             ) {
+                // Intensity badge
                 Surface(
-                    modifier = Modifier.size(44.dp),
-                    shape = MaterialTheme.shapes.small,
-                    color = intensityColor.copy(alpha = 0.12f),
-                    tonalElevation = 0.dp
+                    modifier = Modifier.size(46.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    color = intensityBg
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
-                            "${symptom.intensity}",
+                            text = "${symptom.intensity}",
                             style = MaterialTheme.typography.titleMedium,
-                            color = intensityColor, fontWeight = FontWeight.Bold
+                            color = intensityColor,
+                            fontWeight = FontWeight.ExtraBold
                         )
                     }
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(symptom.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        text = symptom.name,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
                     if (!symptom.value.isNullOrBlank()) {
                         Text(
-                            symptom.value,
+                            text = symptom.value,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        stringResource(R.string.intensity_format, symptom.intensity),
-                        style = MaterialTheme.typography.bodySmall, color = intensityColor
-                    )
-                    if (symptom.triggers.isNotEmpty()) {
+                    Spacer(Modifier.height(3.dp))
+                    // Intensity chip
+                    Surface(
+                        shape = MaterialTheme.shapes.extraSmall,
+                        color = intensityBg
+                    ) {
                         Text(
-                            stringResource(R.string.triggers_format, symptom.triggers.joinToString(", ")),
+                            text = stringResource(R.string.intensity_format, symptom.intensity),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = intensityColor,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                    if (symptom.triggers.isNotEmpty()) {
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = stringResource(R.string.triggers_format, symptom.triggers.joinToString(", ")),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1, overflow = TextOverflow.Ellipsis
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                     if (symptom.notes.isNotBlank()) {
-                        Text(symptom.notes, style = MaterialTheme.typography.bodySmall,
+                        Text(
+                            text = symptom.notes,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
-                    if (symptom.attachmentPaths.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Icon(Icons.Default.AttachFile, contentDescription = null,
-                                modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.tertiary)
-                            Text("${symptom.attachmentPaths.size}", style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.tertiary)
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = symptom.recordedAt.format(formatter),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                        if (symptom.attachmentPaths.isNotEmpty()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.AttachFile,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(12.dp),
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                                Text(
+                                    text = "${symptom.attachmentPaths.size}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
                         }
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(symptom.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline)
                 }
                 Column {
                     IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.edit),
-                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), modifier = Modifier.size(18.dp))
+                        Icon(
+                            Icons.Outlined.Edit,
+                            contentDescription = stringResource(R.string.edit),
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Outlined.DeleteOutline, contentDescription = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f), modifier = Modifier.size(18.dp))
+                        Icon(
+                            Icons.Outlined.DeleteOutline,
+                            contentDescription = stringResource(R.string.delete),
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.55f),
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
             }
         }
     }
 }
+
+// ── Vital Card ────────────────────────────────────────────────────────────────
 
 @Composable
 private fun VitalCard(vital: VitalSign, onEdit: () -> Unit = {}) {
@@ -362,17 +680,23 @@ private fun VitalCard(vital: VitalSign, onEdit: () -> Unit = {}) {
     } else vital.value.toString()
     val displayName = vital.type.localizedDisplayName()
     val unit = vital.type.localizedUnit()
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
 
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onEdit),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.35f)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clickable(onClick = onEdit),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.45f)
         ),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -382,35 +706,42 @@ private fun VitalCard(vital: VitalSign, onEdit: () -> Unit = {}) {
                 modifier = Modifier.weight(1f)
             ) {
                 Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f),
-                    modifier = Modifier.size(40.dp)
+                    shape = MaterialTheme.shapes.medium,
+                    color = tertiaryColor.copy(alpha = 0.15f),
+                    modifier = Modifier.size(42.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             Icons.Default.MonitorHeart,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(20.dp)
+                            tint = tertiaryColor,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
                 Column {
-                    Text(displayName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
-                    Text(vital.recordedAt.format(formatter), style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        text = displayName,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = vital.recordedAt.format(formatter),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
             Surface(
-                shape = MaterialTheme.shapes.small,
-                color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f)
+                shape = MaterialTheme.shapes.medium,
+                color = tertiaryColor.copy(alpha = 0.15f)
             ) {
                 Text(
-                    "$valueStr $unit",
+                    text = "$valueStr $unit",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = tertiaryColor,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
                 )
             }
         }

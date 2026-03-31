@@ -7,10 +7,14 @@ import android.os.Build
 import android.provider.Settings as AndroidSettings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
@@ -719,13 +723,24 @@ private fun SettingsSection(
     content: @Composable () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            title,
-            style = MaterialTheme.typography.labelLarge,
-            color = color,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(4.dp, 16.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(color)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelLarge,
+                color = color,
+                fontWeight = FontWeight.Bold
+            )
+        }
         content()
     }
 }
@@ -734,12 +749,15 @@ private fun SettingsSection(
 private fun SettingsGroupCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
-    ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    OutlinedCard(
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         shape = MaterialTheme.shapes.large,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(
+            width = 0.75.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
+        )
     ) {
         Column(content = content)
     }
@@ -760,31 +778,45 @@ private fun SettingsListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+                .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            // Rounded-square icon container — more distinctive than circle
             Surface(
-                shape = CircleShape,
-                color = iconTint.copy(alpha = 0.12f),
-                modifier = Modifier.size(36.dp)
+                shape = MaterialTheme.shapes.small,
+                color = iconTint.copy(alpha = 0.13f),
+                modifier = Modifier.size(40.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = iconTint,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
             }
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
                 Text(
-                    subtitle,
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null,
-                tint = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.size(16.dp))
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }
