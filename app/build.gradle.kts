@@ -45,6 +45,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+        // LiteRT 2.1.4 is built with Kotlin 2.3.0 metadata; we're on 2.1.0.
+        // Metadata stays ABI-compatible across minor versions, so skip the
+        // strict version check rather than doing a large Kotlin upgrade.
+        freeCompilerArgs += "-Xskip-metadata-version-check"
     }
 
     buildFeatures {
