@@ -54,11 +54,10 @@ android {
 
     packaging {
         jniLibs {
-            // TFLite 2.16.1 ships prebuilt .so files (e.g. libtensorflowlite_jni.so)
-            // whose ELF LOAD segments are aligned to 4 KB, not the 16 KB required by
-            // Android 15+ devices. Compressing JNI libs makes the installer extract
-            // them with the correct page alignment at runtime.
-            useLegacyPackaging = true
+            // LiteRT 2.1.x ships libLiteRtOpenClAccelerator.so with a LOAD segment
+            // misaligned for 16 KB pages (google-ai-edge/LiteRT#6299). We don't use
+            // GPU/OpenCL acceleration, so drop it to stay Play Store compliant.
+            excludes += listOf("**/libLiteRtOpenClAccelerator.so")
         }
     }
 
@@ -105,8 +104,10 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
-    // TensorFlow Lite (LiteRT runtime for .tflite models)
-    implementation("org.tensorflow:tensorflow-lite:2.16.1")
+    // LiteRT (successor to TensorFlow Lite; drop-in Interpreter API).
+    // 2.1.x ships 16 KB-aligned libLiteRt.so so the app meets Google Play's
+    // Android 15+ page-size requirement enforced Nov 1, 2025.
+    implementation("com.google.ai.edge.litert:litert:2.1.4")
 
 // Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.7.0")
