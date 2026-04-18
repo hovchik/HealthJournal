@@ -52,6 +52,16 @@ android {
         buildConfig = true
     }
 
+    packaging {
+        jniLibs {
+            // TFLite 2.16.1 ships prebuilt .so files (e.g. libtensorflowlite_jni.so)
+            // whose ELF LOAD segments are aligned to 4 KB, not the 16 KB required by
+            // Android 15+ devices. Compressing JNI libs makes the installer extract
+            // them with the correct page alignment at runtime.
+            useLegacyPackaging = true
+        }
+    }
+
 }
 
 dependencies {
