@@ -1,27 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <group
-        android:translateX="24"
-        android:translateY="24">
-        <!-- Heart shape - colorful health symbol -->
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M30,12 C24.5,5 16,4 10.5,9 C5,14 4.5,23 10,29 L30,50 L50,29 C55.5,23 55,14 49.5,9 C44,4 35.5,5 30,12 Z" />
-        <!-- Plus/cross inside the heart -->
-        <path
-            android:fillColor="#0D9488"
-            android:pathData="M26,22 L26,18 L34,18 L34,22 L38,22 L38,30 L34,30 L34,34 L26,34 L26,30 L22,30 L22,22 Z" />
-        <!-- Pulse line at bottom -->
-        <path
-            android:strokeColor="#FFFFFF"
-            android:strokeWidth="2.5"
-            android:fillColor="#00000000"
-            android:strokeLineCap="round"
-            android:strokeLineJoin="round"
-            android:pathData="M6,46 L16,46 L20,38 L24,52 L28,42 L32,48 L36,40 L40,46 L54,46" />
-    </group>
+
+    <!-- Soft backdrop glow (stays within safe zone) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.14"
+        android:pathData="M54,54 m-32,0 a32,32 0,1 1,64 0 a32,32 0,1 1,-64 0" />
+
+    <!-- Heart drop-shadow -->
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.18"
+        android:pathData="M55,77 C55,77 29,60 29,43 C29,34 35,28 43,28 C48,28 53,31 55,35 C57,31 62,28 67,28 C75,28 81,34 81,43 C81,60 55,77 55,77 Z" />
+
+    <!-- Main heart with subtle gradient -->
+    <path android:pathData="M54,75 C54,75 28,58 28,41 C28,32 34,26 42,26 C47,26 52,29 54,33 C56,29 61,26 66,26 C74,26 80,32 80,41 C80,58 54,75 54,75 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="28"
+                android:startY="26"
+                android:endX="80"
+                android:endY="75">
+                <item android:offset="0.0" android:color="#FFFFFF" />
+                <item android:offset="1.0" android:color="#FEF3F2" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Inner highlight on the heart (gloss) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.55"
+        android:pathData="M38,32 C35,35 34,39 35,43 C37,41 39,38 42,36 C44,34 46,33 48,33 C46,31 42,30 38,32 Z" />
+
+    <!-- ECG pulse line across the heart -->
+    <path
+        android:strokeColor="#EF4444"
+        android:strokeWidth="3.6"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M31,51 L41,51 L45,43 L49,59 L53,39 L57,56 L61,47 L65,51 L77,51" />
+
+    <!-- AI sparkle accent (hints at AI-powered feature) -->
+    <path
+        android:fillColor="#FDE047"
+        android:pathData="M80,22 L81.5,26 L85.5,27.5 L81.5,29 L80,33 L78.5,29 L74.5,27.5 L78.5,26 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.9"
+        android:pathData="M80,24 L80.8,26.2 L83,27 L80.8,27.8 L80,30 L79.2,27.8 L77,27 L79.2,26.2 Z" />
 </vector>
