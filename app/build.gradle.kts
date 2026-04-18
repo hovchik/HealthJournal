@@ -45,11 +45,24 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+        // LiteRT 2.1.4 is built with Kotlin 2.3.0 metadata; we're on 2.1.0.
+        // Metadata stays ABI-compatible across minor versions, so skip the
+        // strict version check rather than doing a large Kotlin upgrade.
+        freeCompilerArgs += "-Xskip-metadata-version-check"
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    packaging {
+        jniLibs {
+            // LiteRT 2.1.x ships libLiteRtOpenClAccelerator.so with a LOAD segment
+            // misaligned for 16 KB pages (google-ai-edge/LiteRT#6299). We don't use
+            // GPU/OpenCL acceleration, so drop it to stay Play Store compliant.
+            excludes += listOf("**/libLiteRtOpenClAccelerator.so")
+        }
     }
 
 }
@@ -95,8 +108,10 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
-    // TensorFlow Lite (LiteRT runtime for .tflite models)
-    implementation("org.tensorflow:tensorflow-lite:2.16.1")
+    // LiteRT (successor to TensorFlow Lite; drop-in Interpreter API).
+    // 2.1.x ships 16 KB-aligned libLiteRt.so so the app meets Google Play's
+    // Android 15+ page-size requirement enforced Nov 1, 2025.
+    implementation("com.google.ai.edge.litert:litert:2.1.4")
 
 // Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.7.0")
