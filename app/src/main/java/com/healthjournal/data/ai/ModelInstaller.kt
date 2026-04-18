@@ -2,7 +2,6 @@ package com.healthjournal.data.ai
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
 import com.healthjournal.domain.model.ai.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -193,31 +192,19 @@ class ModelInstaller(
     suspend fun scanForModels(): Int {
         var found = 0
         withContext(Dispatchers.IO) {
+            // Scan only app-owned directories so the feature works without
+            // MANAGE_EXTERNAL_STORAGE or READ_EXTERNAL_STORAGE, which Google
+            // Play restricts and rejects for general-purpose apps. Users who
+            // keep models elsewhere can still import them via the SAF file
+            // picker (importFromUri) which needs no permission.
             val scanDirs = buildList {
-                // 1. Internal local_models/ directory
                 add("local_models" to modelsDir)
-                // 2. Internal app files directory
                 add("App Internal" to context.filesDir)
-                // 3. App-specific external files
                 context.getExternalFilesDir(null)
                     ?.let { add("App External" to it) }
-                // 4. Downloads folder
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    ?.let { add("Downloads" to it) }
-                // 5. Documents folder
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                    ?.let { add("Documents" to it) }
-                // 6. External storage root (deep scan)
-                Environment.getExternalStorageDirectory()
-                    ?.let { add("Storage" to it) }
-                // 7. All external storage volumes (secondary SD cards, USB)
                 context.getExternalFilesDirs(null)?.forEachIndexed { index, dir ->
-                    if (index > 0 && dir != null) {
-                        // Navigate up to the root of the secondary storage
-                        val storageRoot = findStorageRoot(dir)
-                        if (storageRoot.exists()) {
-                            add("SD Card ${index}" to storageRoot)
-                        }
+                    if (index > 0 && dir != null && dir.exists()) {
+                        add("App External ${index}" to dir)
                     }
                 }
             }.filter { it.second.exists() }
@@ -306,17 +293,6 @@ class ModelInstaller(
             // Skip unreadable directories
         }
         return found
-    }
-
-    private fun findStorageRoot(appSpecificDir: File): File {
-        // App-specific dir is like /storage/XXXX-XXXX/Android/data/com.pkg/files
-        // Navigate up to /storage/XXXX-XXXX/
-        var dir = appSpecificDir
-        while (dir.parentFile != null) {
-            if (dir.name == "Android") return dir.parentFile ?: dir
-            dir = dir.parentFile ?: break
-        }
-        return appSpecificDir
     }
 
     private fun isModelFile(name: String): Boolean {
