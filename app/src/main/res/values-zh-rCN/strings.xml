@@ -734,4 +734,16 @@
     <string name="show_less">收起</string>
     <string name="show_more_count">显示更多 %1$d 条</string>
 
+    <!-- Legal &amp; medical disclaimer -->
+    <string name="settings_section_legal">法律信息</string>
+    <string name="legal_medical_disclaimer">医疗免责声明</string>
+    <string name="legal_medical_disclaimer_desc">本应用不能替代医生，也不能进行诊断</string>
+    <string name="legal_terms_of_use">使用条款</string>
+    <string name="legal_terms_of_use_desc">使用本应用时适用的规则</string>
+    <string name="legal_privacy_policy">隐私政策</string>
+    <string name="legal_privacy_policy_desc">存储了哪些数据以及何时会离开您的设备</string>
+    <string name="onboarding_terms_accept">我已阅读并同意《使用条款》和《隐私政策》</string>
+    <string name="ai_not_medical_advice">不构成医疗建议。AI 分析仅供参考，请务必咨询合格的医疗专业人员。</string>
+    <string name="pdf_disclaimer_footer">免责声明：本报告由自动程序生成，不构成医疗建议、诊断或处方。请务必与合格的医疗专业人员讨论报告内容。紧急情况下请拨打当地急救电话。</string>
+
 </resources>

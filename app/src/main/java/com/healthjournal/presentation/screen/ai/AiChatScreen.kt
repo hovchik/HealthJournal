@@ -87,9 +87,39 @@ fun AiChatScreen(
             }
         }
     ) { padding ->
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            // Persistent medical disclaimer — shown on every AI chat screen
+            // because Play's health-apps policy requires a visible "not
+            // medical advice" notice wherever AI output appears.
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.errorContainer,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.MedicalServices,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        stringResource(R.string.ai_not_medical_advice),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
         if (messages.isEmpty()) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -116,7 +146,7 @@ fun AiChatScreen(
         } else {
             LazyColumn(
                 state = listState,
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -140,6 +170,7 @@ fun AiChatScreen(
                     }
                 }
             }
+        }
         }
     }
 }

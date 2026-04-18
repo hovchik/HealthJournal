@@ -13,6 +13,7 @@ data class UserSettings(
     val knownDiseases: List<String> = emptyList(),
     val aiConsentGiven: Boolean = false,
     val onboardingCompleted: Boolean = false,
+    val termsAcceptedAt: Long = 0L,
     val languageMode: String = "SYSTEM",
     val themeMode: String = "SYSTEM",
     val aiSettings: AiSettings = AiSettings(),

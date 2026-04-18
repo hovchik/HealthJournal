@@ -34,7 +34,8 @@ class OnboardingViewModel(application: Application) : AndroidViewModel(applicati
                 settings.value.copy(
                     userName = userName,
                     aiConsentGiven = aiConsent,
-                    onboardingCompleted = true
+                    onboardingCompleted = true,
+                    termsAcceptedAt = System.currentTimeMillis()
                 )
             )
         }

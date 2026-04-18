@@ -41,6 +41,7 @@ private data class OnboardingPageData(
 @Composable
 fun OnboardingScreen(
     onComplete: () -> Unit,
+    onOpenLegalDocument: (String) -> Unit = {},
     viewModel: OnboardingViewModel = viewModel()
 ) {
     val pages = listOf(
@@ -71,6 +72,7 @@ fun OnboardingScreen(
     val scope = rememberCoroutineScope()
     var userName by remember { mutableStateOf("") }
     var aiConsent by remember { mutableStateOf(false) }
+    var termsAccepted by remember { mutableStateOf(false) }
 
     val currentPage = pagerState.currentPage
     val currentPageData = pages[currentPage]
@@ -106,7 +108,10 @@ fun OnboardingScreen(
                         userName = userName,
                         onUserNameChange = { userName = it },
                         aiConsent = aiConsent,
-                        onAiConsentChange = { aiConsent = it }
+                        onAiConsentChange = { aiConsent = it },
+                        termsAccepted = termsAccepted,
+                        onTermsAcceptedChange = { termsAccepted = it },
+                        onOpenLegalDocument = onOpenLegalDocument
                     )
                     else -> StandardOnboardingPage(
                         icon = pages[page].icon,
@@ -182,8 +187,11 @@ fun OnboardingScreen(
                                 viewModel.completeOnboarding(userName, aiConsent)
                                 onComplete()
                             },
+                            enabled = termsAccepted,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = currentPageData.gradientStart
+                                containerColor = currentPageData.gradientStart,
+                                disabledContainerColor = currentPageData.gradientStart.copy(alpha = 0.4f),
+                                disabledContentColor = Color.White.copy(alpha = 0.6f)
                             ),
                             shape = MaterialTheme.shapes.extraLarge
                         ) {
@@ -286,7 +294,10 @@ private fun AiConsentPage(
     userName: String,
     onUserNameChange: (String) -> Unit,
     aiConsent: Boolean,
-    onAiConsentChange: (Boolean) -> Unit
+    onAiConsentChange: (Boolean) -> Unit,
+    termsAccepted: Boolean,
+    onTermsAcceptedChange: (Boolean) -> Unit,
+    onOpenLegalDocument: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -371,6 +382,70 @@ private fun AiConsentPage(
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.9f)
                 )
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // Terms + Privacy acceptance. The Start button is disabled until
+        // this is checked. The links open the bundled docs in the legal
+        // viewer so users can read them before accepting.
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            color = Color.White.copy(alpha = 0.15f),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = termsAccepted,
+                        onCheckedChange = onTermsAcceptedChange,
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color.White,
+                            uncheckedColor = Color.White.copy(alpha = 0.6f),
+                            checkmarkColor = Color(0xFF6A1B9A)
+                        )
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.onboarding_terms_accept),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 48.dp, top = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    TextButton(
+                        onClick = { onOpenLegalDocument("terms") },
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.legal_terms_of_use),
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium,
+                            textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+                        )
+                    }
+                    TextButton(
+                        onClick = { onOpenLegalDocument("privacy") },
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.legal_privacy_policy),
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium,
+                            textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+                        )
+                    }
+                }
             }
         }
     }

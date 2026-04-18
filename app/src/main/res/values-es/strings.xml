@@ -733,4 +733,16 @@
     <string name="show_less">Mostrar menos</string>
     <string name="show_more_count">Mostrar %1$d más</string>
 
+    <!-- Legal &amp; medical disclaimer -->
+    <string name="settings_section_legal">Información legal</string>
+    <string name="legal_medical_disclaimer">Aviso médico</string>
+    <string name="legal_medical_disclaimer_desc">La app no sustituye a un médico ni diagnostica enfermedades</string>
+    <string name="legal_terms_of_use">Términos de uso</string>
+    <string name="legal_terms_of_use_desc">Reglas aplicables al uso de la app</string>
+    <string name="legal_privacy_policy">Política de privacidad</string>
+    <string name="legal_privacy_policy_desc">Qué datos se almacenan y cuándo salen del dispositivo</string>
+    <string name="onboarding_terms_accept">He leído y acepto los Términos de uso y la Política de privacidad</string>
+    <string name="ai_not_medical_advice">No es asesoramiento médico. El análisis de IA es solo informativo. Consulta siempre a un profesional de la salud cualificado.</string>
+    <string name="pdf_disclaimer_footer">Aviso: este informe se ha generado automáticamente y no constituye asesoramiento médico, diagnóstico ni prescripción. Consulta siempre los resultados con un profesional sanitario cualificado. En caso de emergencia, llama al número de emergencias local.</string>
+
 </resources>

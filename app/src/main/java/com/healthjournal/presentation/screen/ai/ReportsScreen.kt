@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -683,6 +684,41 @@ private fun AiAnalyzeTab(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Medical disclaimer banner — Google Play requires a persistent,
+        // unambiguous notice on any screen that presents AI-generated
+        // health content. Sits above the generate controls so it is
+        // visible every time the user looks at a report.
+        item(key = "ai_disclaimer") {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.MedicalServices,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        stringResource(R.string.ai_not_medical_advice),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
         // Generate controls
         item(key = "ai_controls") {
             ElevatedCard(

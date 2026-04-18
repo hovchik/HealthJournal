@@ -20,6 +20,7 @@ import com.healthjournal.presentation.screen.home.AddSymptomScreen
 import com.healthjournal.presentation.screen.home.AddVitalScreen
 import com.healthjournal.presentation.screen.home.HomeScreen
 import com.healthjournal.presentation.screen.home.ProfileSelectionScreen
+import com.healthjournal.presentation.screen.legal.LegalDocumentScreen
 import com.healthjournal.presentation.screen.medications.AddMedicationScreen
 import com.healthjournal.presentation.screen.medications.MedicationsScreen
 import com.healthjournal.presentation.screen.onboarding.OnboardingScreen
@@ -50,6 +51,9 @@ fun HealthNavHost(
                     navController.navigate(Screen.ProfileSelection.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
+                },
+                onOpenLegalDocument = { docKey ->
+                    navController.navigate(Screen.LegalDocument.createRoute(docKey))
                 }
             )
         }
@@ -184,7 +188,10 @@ fun HealthNavHost(
                 onSecurity = { navController.navigate(Screen.SecuritySettings.route) },
                 onAchievements = { navController.navigate(Screen.Achievements.route) },
                 onHealthConnect = { navController.navigate(Screen.HealthConnect.route) },
-                onFamilyDashboard = { navController.navigate(Screen.FamilyDashboard.route) }
+                onFamilyDashboard = { navController.navigate(Screen.FamilyDashboard.route) },
+                onLegalDocument = { docKey ->
+                    navController.navigate(Screen.LegalDocument.createRoute(docKey))
+                }
             )
         }
         composable(Screen.Subscription.route) {
@@ -247,6 +254,13 @@ fun HealthNavHost(
         }
         composable(Screen.FamilyDashboard.route) {
             FamilyDashboardScreen(onBack = { navController.popBackStack() })
+        }
+        composable(
+            Screen.LegalDocument.route,
+            arguments = listOf(navArgument("docKey") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val docKey = backStackEntry.arguments?.getString("docKey").orEmpty()
+            LegalDocumentScreen(docKey = docKey, onBack = { navController.popBackStack() })
         }
     }
 }

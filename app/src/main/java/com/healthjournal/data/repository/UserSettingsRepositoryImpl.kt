@@ -36,6 +36,7 @@ class UserSettingsRepositoryImpl constructor(
         val KNOWN_DISEASES = stringPreferencesKey("known_diseases")
         val AI_CONSENT = booleanPreferencesKey("ai_consent")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val TERMS_ACCEPTED_AT = longPreferencesKey("terms_accepted_at")
         val LANGUAGE_MODE = stringPreferencesKey("language_mode")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val AI_SETTINGS = stringPreferencesKey("ai_settings")
@@ -64,6 +65,7 @@ class UserSettingsRepositoryImpl constructor(
             knownDiseases = knownDiseases,
             aiConsentGiven = prefs[Keys.AI_CONSENT] ?: false,
             onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
+            termsAcceptedAt = prefs[Keys.TERMS_ACCEPTED_AT] ?: 0L,
             languageMode = prefs[Keys.LANGUAGE_MODE] ?: "SYSTEM",
             themeMode = prefs[Keys.THEME_MODE] ?: "SYSTEM",
             aiSettings = aiSettings,
@@ -85,6 +87,7 @@ class UserSettingsRepositoryImpl constructor(
             )
             prefs[Keys.AI_CONSENT] = settings.aiConsentGiven
             prefs[Keys.ONBOARDING_COMPLETED] = settings.onboardingCompleted
+            prefs[Keys.TERMS_ACCEPTED_AT] = settings.termsAcceptedAt
             prefs[Keys.LANGUAGE_MODE] = settings.languageMode
             prefs[Keys.THEME_MODE] = settings.themeMode
             prefs[Keys.AI_SETTINGS] = json.encodeToString(AiSettings.serializer(), settings.aiSettings)
@@ -100,6 +103,12 @@ class UserSettingsRepositoryImpl constructor(
     override suspend fun setOnboardingCompleted(completed: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[Keys.ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    override suspend fun setTermsAcceptedAt(timestamp: Long) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.TERMS_ACCEPTED_AT] = timestamp
         }
     }
 

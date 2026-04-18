@@ -9,6 +9,7 @@ interface UserSettingsRepository {
     suspend fun updateUserSettings(settings: UserSettings)
     suspend fun setAiConsent(consent: Boolean)
     suspend fun setOnboardingCompleted(completed: Boolean)
+    suspend fun setTermsAcceptedAt(timestamp: Long)
     suspend fun setLanguageMode(languageMode: String)
     suspend fun setThemeMode(themeMode: String)
     suspend fun setAiSettings(aiSettings: AiSettings)
