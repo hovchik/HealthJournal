@@ -729,4 +729,16 @@
     <string name="show_less">Скрыть</string>
     <string name="show_more_count">Показать ещё %1$d</string>
 
+    <!-- Legal &amp; medical disclaimer -->
+    <string name="settings_section_legal">Правовая информация</string>
+    <string name="legal_medical_disclaimer">Медицинский отказ от ответственности</string>
+    <string name="legal_medical_disclaimer_desc">Приложение не заменяет врача и не ставит диагнозы</string>
+    <string name="legal_terms_of_use">Условия использования</string>
+    <string name="legal_terms_of_use_desc">Правила использования приложения</string>
+    <string name="legal_privacy_policy">Политика конфиденциальности</string>
+    <string name="legal_privacy_policy_desc">Какие данные хранятся и куда передаются</string>
+    <string name="onboarding_terms_accept">Я прочитал(а) и принимаю Условия использования и Политику конфиденциальности</string>
+    <string name="ai_not_medical_advice">Это не медицинская рекомендация. AI-анализ носит информационный характер. Обязательно консультируйтесь с врачом.</string>
+    <string name="pdf_disclaimer_footer">Отказ от ответственности: отчёт сгенерирован автоматически и не является медицинской консультацией, диагнозом или назначением. Всегда обсуждайте результаты с квалифицированным врачом. В экстренной ситуации звоните в службу скорой помощи.</string>
+
 </resources>

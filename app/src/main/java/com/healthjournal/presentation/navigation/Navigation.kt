@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.filled.FamilyRestroom
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.healthjournal.R
 
@@ -77,6 +78,9 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object Achievements : Screen("achievements", R.string.nav_achievements, Icons.Default.EmojiEvents)
     data object HealthConnect : Screen("health_connect", R.string.health_connect_title, Icons.Default.Watch)
     data object FamilyDashboard : Screen("family_dashboard", R.string.family_dashboard_title, Icons.Default.FamilyRestroom)
+    data object LegalDocument : Screen("legal/{docKey}", R.string.settings_section_legal, Icons.AutoMirrored.Filled.Article) {
+        fun createRoute(docKey: String) = "legal/$docKey"
+    }
 }
 
 val bottomNavItems = listOf(Screen.Home, Screen.Appointments, Screen.Achievements, Screen.Reports, Screen.Settings)

@@ -731,4 +731,16 @@
     <string name="show_less">Show less</string>
     <string name="show_more_count">Show %1$d more</string>
 
+    <!-- Legal &amp; medical disclaimer -->
+    <string name="settings_section_legal">Legal</string>
+    <string name="legal_medical_disclaimer">Medical disclaimer</string>
+    <string name="legal_medical_disclaimer_desc">This app does not replace a doctor or diagnose conditions</string>
+    <string name="legal_terms_of_use">Terms of Use</string>
+    <string name="legal_terms_of_use_desc">Rules that apply when you use the app</string>
+    <string name="legal_privacy_policy">Privacy Policy</string>
+    <string name="legal_privacy_policy_desc">What data is stored and when it leaves your device</string>
+    <string name="onboarding_terms_accept">I have read and accept the Terms of Use and Privacy Policy</string>
+    <string name="ai_not_medical_advice">Not medical advice. AI output is informational only. Always consult a qualified healthcare professional.</string>
+    <string name="pdf_disclaimer_footer">Disclaimer: This report was generated automatically and is not medical advice, a diagnosis, or a prescription. Always discuss the results with a qualified healthcare professional. In an emergency, call your local emergency number.</string>
+
 </resources>

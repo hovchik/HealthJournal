@@ -1,13 +1,5 @@
 package com.healthjournal.presentation.screen.settings
 
-import android.Manifest
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,14 +14,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthjournal.R
@@ -632,89 +621,20 @@ private fun LocalModelSection(
                 }
             }
 
-            // Scan button with progress and permission handling
-            val context = LocalContext.current
+            // Scan button — scans only app-owned directories so no storage
+            // permission is required (Play restricts MANAGE_EXTERNAL_STORAGE
+            // and READ_EXTERNAL_STORAGE for non–file-manager apps). To use a
+            // model stored elsewhere, users can still import it through the
+            // SAF document picker, which needs no permission.
             val isScanning = scanProgress?.isScanning == true
 
-            var hasStoragePermission by remember {
-                mutableStateOf(checkStoragePermission(context))
-            }
-
-            val storagePermissionLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { granted ->
-                hasStoragePermission = granted
-                if (granted) viewModel.scanForModels()
-            }
-
-            val manageStorageLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) {
-                hasStoragePermission = checkStoragePermission(context)
-                if (hasStoragePermission) viewModel.scanForModels()
-            }
-
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                // Permission warning when not granted
-                if (!hasStoragePermission) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Default.FolderOpen,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Text(
-                                stringResource(R.string.storage_permission_required),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                modifier = Modifier.weight(1f)
-                            )
-                            FilledTonalButton(
-                                onClick = {
-                                    requestStoragePermission(
-                                        context = context,
-                                        legacyLauncher = { storagePermissionLauncher.launch(it) },
-                                        manageLauncher = { manageStorageLauncher.launch(it) }
-                                    )
-                                },
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
-                            ) {
-                                Text(
-                                    stringResource(R.string.storage_permission_grant),
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            }
-                        }
-                    }
-                }
-
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedButton(
-                        onClick = {
-                            if (hasStoragePermission) {
-                                viewModel.scanForModels()
-                            } else {
-                                requestStoragePermission(
-                                    context = context,
-                                    legacyLauncher = { storagePermissionLauncher.launch(it) },
-                                    manageLauncher = { manageStorageLauncher.launch(it) }
-                                )
-                            }
-                        },
+                        onClick = { viewModel.scanForModels() },
                         enabled = !isScanning
                     ) {
                         if (isScanning) {
@@ -1553,31 +1473,6 @@ private fun GeminiConfigSection(
 
 private fun formatSize(mb: Long): String {
     return if (mb >= 1024) "%.1f GB".format(mb / 1024.0) else "$mb MB"
-}
-
-private fun checkStoragePermission(context: android.content.Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        Environment.isExternalStorageManager()
-    } else {
-        ContextCompat.checkSelfPermission(
-            context, Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PermissionChecker.PERMISSION_GRANTED
-    }
-}
-
-private fun requestStoragePermission(
-    context: android.content.Context,
-    legacyLauncher: (String) -> Unit,
-    manageLauncher: (Intent) -> Unit
-) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-            data = Uri.parse("package:${context.packageName}")
-        }
-        manageLauncher(intent)
-    } else {
-        legacyLauncher(Manifest.permission.READ_EXTERNAL_STORAGE)
-    }
 }
 
 private fun formatFileSize(bytes: Long): String {

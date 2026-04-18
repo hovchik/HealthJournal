@@ -732,4 +732,16 @@
     <string name="show_less">Թաքցնել</string>
     <string name="show_more_count">Ցույց տալ ևս %1$d</string>
 
+    <!-- Legal &amp; medical disclaimer -->
+    <string name="settings_section_legal">Իրավական տեղեկատվություն</string>
+    <string name="legal_medical_disclaimer">Բժշկական հրաժարում</string>
+    <string name="legal_medical_disclaimer_desc">Հավելվածը չի փոխարինում բժշկին և չի ախտորոշում</string>
+    <string name="legal_terms_of_use">Օգտագործման պայմաններ</string>
+    <string name="legal_terms_of_use_desc">Հավելվածի օգտագործման կանոններ</string>
+    <string name="legal_privacy_policy">Գաղտնիության քաղաքականություն</string>
+    <string name="legal_privacy_policy_desc">Ինչ տվյալներ են պահվում և երբ են դուրս գալիս սարքից</string>
+    <string name="onboarding_terms_accept">Ես կարդացել եմ և ընդունում եմ Օգտագործման պայմանները և Գաղտնիության քաղաքականությունը</string>
+    <string name="ai_not_medical_advice">Սա բժշկական խորհուրդ չէ։ AI վերլուծությունը միայն տեղեկատվական է։ Միշտ խորհրդակցեք որակյալ բժշկի հետ։</string>
+    <string name="pdf_disclaimer_footer">Հրաժարում․ այս հաշվետվությունը ստեղծվել է ավտոմատ կերպով և չի հանդիսանում բժշկական խորհրդատվություն, ախտորոշում կամ դեղատոմս։ Արդյունքները միշտ քննարկեք որակյալ բժշկի հետ։ Արտակարգ իրավիճակում զանգահարեք տեղական շտապ օգնության համարով։</string>
+
 </resources>

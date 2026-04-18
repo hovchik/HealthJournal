@@ -4,7 +4,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Environment
 import android.os.StatFs
 import com.healthjournal.domain.model.ai.*
 
@@ -59,21 +58,11 @@ class DeviceAiCapabilityDetector(private val context: Context) {
     }
 
     private fun getAvailableStorageMb(): Long {
-        // Internal storage free space
-        val internalStat = StatFs(Environment.getDataDirectory().path)
-        val internalMb = (internalStat.availableBlocksLong * internalStat.blockSizeLong) / (1024 * 1024)
-
-        // External storage free space (may be same partition on many devices)
-        val externalMb = try {
-            val externalDir = Environment.getExternalStorageDirectory()
-            if (externalDir.exists() && externalDir.path != Environment.getDataDirectory().path) {
-                val extStat = StatFs(externalDir.path)
-                (extStat.availableBlocksLong * extStat.blockSizeLong) / (1024 * 1024)
-            } else 0L
-        } catch (_: Exception) { 0L }
-
-        // Return the larger value — on unified storage devices both point to the same partition
-        return maxOf(internalMb, externalMb)
+        // Free space on the partition that holds the app's private data.
+        // On modern Android this is the same volume as the app-specific
+        // external files dir, which is where we download model weights.
+        val stat = StatFs(context.filesDir.path)
+        return (stat.availableBlocksLong * stat.blockSizeLong) / (1024 * 1024)
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

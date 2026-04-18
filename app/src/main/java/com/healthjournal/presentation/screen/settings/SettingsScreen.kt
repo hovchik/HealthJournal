@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -53,6 +54,7 @@ fun SettingsScreen(
     onAchievements: () -> Unit = {},
     onHealthConnect: () -> Unit = {},
     onFamilyDashboard: () -> Unit = {},
+    onLegalDocument: (String) -> Unit = {},
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -431,6 +433,41 @@ fun SettingsScreen(
                         title = stringResource(R.string.security_title),
                         subtitle = stringResource(R.string.security_desc),
                         onClick = onSecurity
+                    )
+                }
+            }
+
+            // Legal section — privacy policy, terms of use, medical
+            // disclaimer. Required by Google Play for health apps, and gives
+            // users a persistent way back to the documents they accepted
+            // during onboarding.
+            SettingsSection(
+                title = stringResource(R.string.settings_section_legal),
+                color = MaterialTheme.colorScheme.tertiary
+            ) {
+                SettingsGroupCard {
+                    SettingsListItem(
+                        icon = Icons.Default.MedicalServices,
+                        iconTint = MaterialTheme.colorScheme.error,
+                        title = stringResource(R.string.legal_medical_disclaimer),
+                        subtitle = stringResource(R.string.legal_medical_disclaimer_desc),
+                        onClick = { onLegalDocument("disclaimer") }
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.AutoMirrored.Filled.Article,
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        title = stringResource(R.string.legal_terms_of_use),
+                        subtitle = stringResource(R.string.legal_terms_of_use_desc),
+                        onClick = { onLegalDocument("terms") }
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    SettingsListItem(
+                        icon = Icons.Default.PrivacyTip,
+                        iconTint = MaterialTheme.colorScheme.secondary,
+                        title = stringResource(R.string.legal_privacy_policy),
+                        subtitle = stringResource(R.string.legal_privacy_policy_desc),
+                        onClick = { onLegalDocument("privacy") }
                     )
                 }
             }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Legacy auto-backup rules for Android 11 and below (API <= 30).
+
+    Paired with android:allowBackup="false" on the <application> element,
+    which already disables backup entirely, but we provide empty rules
+    defensively in case a future change re-enables backups.
+-->
+<full-backup-content>
+    <exclude domain="root" />
+    <exclude domain="file" />
+    <exclude domain="database" />
+    <exclude domain="sharedpref" />
+    <exclude domain="external" />
+</full-backup-content>
