@@ -15,6 +15,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +27,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -125,20 +128,20 @@ private fun FloatingNavBar(
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(horizontal = 20.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(30.dp),
-            color = MaterialTheme.colorScheme.surface,
-            shadowElevation = 18.dp,
-            tonalElevation = 3.dp
+            shape = RoundedCornerShape(32.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            shadowElevation = 10.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
                 items.forEach { screen ->
                     val title = stringResource(screen.titleResId)
@@ -167,29 +170,39 @@ private fun FloatingNavItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val bgColor by animateColorAsState(
-        targetValue = if (selected) MaterialTheme.colorScheme.primaryContainer
-                      else Color.Transparent,
-        animationSpec = tween(280),
-        label = "navBg"
-    )
+    val primary = MaterialTheme.colorScheme.primary
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+
     val contentColor by animateColorAsState(
-        targetValue = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
-                      else MaterialTheme.colorScheme.onSurfaceVariant,
-        animationSpec = tween(280),
+        targetValue = if (selected) Color.White else onSurfaceVariant,
+        animationSpec = tween(240),
         label = "navFg"
     )
 
+    val shape = RoundedCornerShape(24.dp)
+    val backgroundModifier = if (selected) {
+        Modifier.background(
+            brush = Brush.linearGradient(
+                colors = listOf(primary, primary.copy(alpha = 0.82f))
+            ),
+            shape = shape
+        )
+    } else Modifier
+
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(22.dp),
-        color = bgColor
+        shape = shape,
+        color = Color.Transparent,
+        tonalElevation = 0.dp
     ) {
         Row(
-            modifier = Modifier.padding(
-                horizontal = if (selected) 14.dp else 10.dp,
-                vertical = 10.dp
-            ),
+            modifier = Modifier
+                .clip(shape)
+                .then(backgroundModifier)
+                .padding(
+                    horizontal = if (selected) 14.dp else 12.dp,
+                    vertical = 10.dp
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

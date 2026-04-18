@@ -203,6 +203,7 @@ private fun DashboardHeader(
     todayVitalCount: Int
 ) {
     val primary = MaterialTheme.colorScheme.primary
+    val tertiary = MaterialTheme.colorScheme.tertiary
     val secondary = MaterialTheme.colorScheme.secondary
     val onPrimary = MaterialTheme.colorScheme.onPrimary
 
@@ -211,11 +212,24 @@ private fun DashboardHeader(
             .fillMaxWidth()
             .background(
                 Brush.linearGradient(
-                    colors = listOf(primary, secondary.copy(alpha = 0.85f))
+                    colors = listOf(
+                        primary,
+                        primary.copy(alpha = 0.92f),
+                        tertiary.copy(alpha = 0.78f)
+                    )
+                )
+            )
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        secondary.copy(alpha = 0.25f),
+                        Color.Transparent
+                    ),
+                    radius = 520f
                 )
             )
             .statusBarsPadding()
-            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 28.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 32.dp)
     ) {
         Column {
             // ── Greeting row ────────────────────────────────────────────
@@ -226,11 +240,12 @@ private fun DashboardHeader(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = dateText,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = onPrimary.copy(alpha = 0.75f)
+                        text = dateText.uppercase(Locale.getDefault()),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = onPrimary.copy(alpha = 0.78f),
+                        fontWeight = FontWeight.SemiBold
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(6.dp))
                     Text(
                         text = profileName,
                         style = MaterialTheme.typography.headlineMedium,
@@ -239,11 +254,15 @@ private fun DashboardHeader(
                     )
                 }
 
-                // Profile avatar circle
+                // Profile avatar circle — glassy, softly bordered
                 Surface(
                     shape = CircleShape,
-                    color = onPrimary.copy(alpha = 0.20f),
-                    modifier = Modifier.size(50.dp)
+                    color = onPrimary.copy(alpha = 0.22f),
+                    border = androidx.compose.foundation.BorderStroke(
+                        width = 1.2.dp,
+                        color = onPrimary.copy(alpha = 0.35f)
+                    ),
+                    modifier = Modifier.size(52.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
@@ -300,16 +319,20 @@ private fun HeaderStatChip(
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        color = onPrimary.copy(alpha = 0.18f)
+        color = onPrimary.copy(alpha = 0.16f),
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = onPrimary.copy(alpha = 0.20f)
+        )
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = onPrimary.copy(alpha = 0.85f),
+                tint = onPrimary.copy(alpha = 0.9f),
                 modifier = Modifier.size(18.dp)
             )
             Text(
@@ -321,7 +344,7 @@ private fun HeaderStatChip(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = onPrimary.copy(alpha = 0.75f),
+                color = onPrimary.copy(alpha = 0.78f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
