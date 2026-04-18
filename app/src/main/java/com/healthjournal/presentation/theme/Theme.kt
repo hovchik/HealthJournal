@@ -13,130 +13,134 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // ── Light Scheme ─────────────────────────────────────────────────────────────
-// Vibrant medical-teal palette for a premium, trustworthy feel
+// Modern wellness palette: calm sage/teal primary, warm terracotta accent,
+// periwinkle for data. Breathes, feels human, still trustworthy.
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF00796B),           // Teal 700 — signature health-app teal
+    primary = Color(0xFF0F766E),           // Teal 700 — calm & trustworthy
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFB2EBF2),  // Light cyan-teal
-    onPrimaryContainer = Color(0xFF002B26),
-    secondary = Color(0xFF388E3C),         // Fresh green for positive indicators
+    primaryContainer = Color(0xFFCCFBF1),  // Soft mint
+    onPrimaryContainer = Color(0xFF042F2A),
+    secondary = Color(0xFFD97757),         // Warm terracotta — human & energetic
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFC8E6C9),
-    onSecondaryContainer = Color(0xFF00210B),
-    tertiary = Color(0xFF1565C0),          // Sapphire blue — vitals & data
+    secondaryContainer = Color(0xFFFDEADF),
+    onSecondaryContainer = Color(0xFF43200C),
+    tertiary = Color(0xFF5B61E5),          // Periwinkle indigo — vitals & data
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFBBDEFB),
-    onTertiaryContainer = Color(0xFF001547),
-    error = Color(0xFFC62828),
+    tertiaryContainer = Color(0xFFE0E1FB),
+    onTertiaryContainer = Color(0xFF0E1259),
+    error = Color(0xFFDC2626),
     onError = Color.White,
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002),
-    background = Color(0xFFF5FAF8),        // Barely-tinted white for cleanliness
-    onBackground = Color(0xFF171D1B),
+    errorContainer = Color(0xFFFEE2E2),
+    onErrorContainer = Color(0xFF450A0A),
+    background = Color(0xFFFAFBF9),        // Warm off-white
+    onBackground = Color(0xFF101614),
     surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF171D1B),
-    surfaceVariant = Color(0xFFDAE5E1),
-    onSurfaceVariant = Color(0xFF3F4946),
-    outline = Color(0xFF6F7976),
-    outlineVariant = Color(0xFFBEC9C5),
-    inverseSurface = Color(0xFF2B3230),
-    inverseOnSurface = Color(0xFFEDF2EF),
-    inversePrimary = Color(0xFF80CBC4),
+    onSurface = Color(0xFF101614),
+    surfaceVariant = Color(0xFFE2E8E4),
+    onSurfaceVariant = Color(0xFF43484A),
+    outline = Color(0xFF747A78),
+    outlineVariant = Color(0xFFD3D9D6),
+    inverseSurface = Color(0xFF252B29),
+    inverseOnSurface = Color(0xFFF0F4F1),
+    inversePrimary = Color(0xFF5EEAD4),
+    surfaceTint = Color(0xFF0F766E),
     surfaceContainerLowest = Color(0xFFFFFFFF),
-    surfaceContainerLow = Color(0xFFEFF5F2),
-    surfaceContainer = Color(0xFFE9EFEC),
-    surfaceContainerHigh = Color(0xFFE3E9E6),
-    surfaceContainerHighest = Color(0xFFDEE4E1)
+    surfaceContainerLow = Color(0xFFF3F6F4),
+    surfaceContainer = Color(0xFFEDF1EE),
+    surfaceContainerHigh = Color(0xFFE7ECE9),
+    surfaceContainerHighest = Color(0xFFE1E6E3)
 )
 
 // ── Dark Scheme ───────────────────────────────────────────────────────────────
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF80CBC4),           // Teal 200
-    onPrimary = Color(0xFF00372F),
-    primaryContainer = Color(0xFF004D46),
-    onPrimaryContainer = Color(0xFFB2EBF2),
-    secondary = Color(0xFFA5D6A7),         // Green 200
-    onSecondary = Color(0xFF003909),
-    secondaryContainer = Color(0xFF1B5E20),
-    onSecondaryContainer = Color(0xFFC8E6C9),
-    tertiary = Color(0xFF90CAF9),          // Blue 200
-    onTertiary = Color(0xFF00338A),
-    tertiaryContainer = Color(0xFF0D47A1),
-    onTertiaryContainer = Color(0xFFBBDEFB),
-    error = Color(0xFFEF9A9A),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFFFDAD6),
-    background = Color(0xFF0E1513),
-    onBackground = Color(0xFFDEE4E1),
-    surface = Color(0xFF0E1513),
-    onSurface = Color(0xFFDEE4E1),
-    surfaceVariant = Color(0xFF3F4946),
-    onSurfaceVariant = Color(0xFFBEC9C5),
-    outline = Color(0xFF899390),
-    outlineVariant = Color(0xFF3F4946),
-    inverseSurface = Color(0xFFDEE4E1),
-    inverseOnSurface = Color(0xFF2B3230),
-    inversePrimary = Color(0xFF00796B),
-    surfaceContainerLowest = Color(0xFF090F0D),
-    surfaceContainerLow = Color(0xFF171D1B),
-    surfaceContainer = Color(0xFF1B211F),
-    surfaceContainerHigh = Color(0xFF262C2A),
-    surfaceContainerHighest = Color(0xFF303634)
+    primary = Color(0xFF5EEAD4),           // Luminous teal
+    onPrimary = Color(0xFF053A34),
+    primaryContainer = Color(0xFF115E59),
+    onPrimaryContainer = Color(0xFFCCFBF1),
+    secondary = Color(0xFFFCA789),         // Warm coral glow
+    onSecondary = Color(0xFF4D1F0A),
+    secondaryContainer = Color(0xFF7C3A1D),
+    onSecondaryContainer = Color(0xFFFDEADF),
+    tertiary = Color(0xFFA5A8F5),          // Soft periwinkle
+    onTertiary = Color(0xFF1A1E68),
+    tertiaryContainer = Color(0xFF3730A3),
+    onTertiaryContainer = Color(0xFFE0E1FB),
+    error = Color(0xFFF87171),
+    onError = Color(0xFF5A0A0A),
+    errorContainer = Color(0xFF7F1D1D),
+    onErrorContainer = Color(0xFFFEE2E2),
+    background = Color(0xFF0B1412),        // Deep slate-teal
+    onBackground = Color(0xFFE1E6E3),
+    surface = Color(0xFF0B1412),
+    onSurface = Color(0xFFE1E6E3),
+    surfaceVariant = Color(0xFF3A4542),
+    onSurfaceVariant = Color(0xFFC3C9C6),
+    outline = Color(0xFF8C9390),
+    outlineVariant = Color(0xFF3A4542),
+    inverseSurface = Color(0xFFE1E6E3),
+    inverseOnSurface = Color(0xFF252B29),
+    inversePrimary = Color(0xFF0F766E),
+    surfaceTint = Color(0xFF5EEAD4),
+    surfaceContainerLowest = Color(0xFF060C0B),
+    surfaceContainerLow = Color(0xFF131A18),
+    surfaceContainer = Color(0xFF171F1D),
+    surfaceContainerHigh = Color(0xFF222A27),
+    surfaceContainerHighest = Color(0xFF2C3532)
 )
 
 // ── AMOLED Scheme ─────────────────────────────────────────────────────────────
 private val AmoledColorScheme = darkColorScheme(
-    primary = Color(0xFF80CBC4),
-    onPrimary = Color(0xFF00372F),
-    primaryContainer = Color(0xFF1A3532),
-    onPrimaryContainer = Color(0xFFB2EBF2),
-    secondary = Color(0xFFA5D6A7),
-    onSecondary = Color(0xFF003909),
-    secondaryContainer = Color(0xFF1A2E1B),
-    onSecondaryContainer = Color(0xFFC8E6C9),
-    tertiary = Color(0xFF90CAF9),
-    onTertiary = Color(0xFF00338A),
-    tertiaryContainer = Color(0xFF0D2352),
-    onTertiaryContainer = Color(0xFFBBDEFB),
-    error = Color(0xFFEF9A9A),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF350003),
-    onErrorContainer = Color(0xFFFFDAD6),
+    primary = Color(0xFF5EEAD4),
+    onPrimary = Color(0xFF053A34),
+    primaryContainer = Color(0xFF0E2E2A),
+    onPrimaryContainer = Color(0xFFCCFBF1),
+    secondary = Color(0xFFFCA789),
+    onSecondary = Color(0xFF4D1F0A),
+    secondaryContainer = Color(0xFF2A160A),
+    onSecondaryContainer = Color(0xFFFDEADF),
+    tertiary = Color(0xFFA5A8F5),
+    onTertiary = Color(0xFF1A1E68),
+    tertiaryContainer = Color(0xFF161847),
+    onTertiaryContainer = Color(0xFFE0E1FB),
+    error = Color(0xFFF87171),
+    onError = Color(0xFF5A0A0A),
+    errorContainer = Color(0xFF2E0A0A),
+    onErrorContainer = Color(0xFFFEE2E2),
     background = Color(0xFF000000),
-    onBackground = Color(0xFFDEE4E1),
+    onBackground = Color(0xFFE1E6E3),
     surface = Color(0xFF000000),
-    onSurface = Color(0xFFDEE4E1),
-    surfaceVariant = Color(0xFF1E2A28),
-    onSurfaceVariant = Color(0xFFBEC9C5),
-    outline = Color(0xFF899390),
-    outlineVariant = Color(0xFF232D2B),
+    onSurface = Color(0xFFE1E6E3),
+    surfaceVariant = Color(0xFF1A2421),
+    onSurfaceVariant = Color(0xFFC3C9C6),
+    outline = Color(0xFF8C9390),
+    outlineVariant = Color(0xFF1F2A27),
+    surfaceTint = Color(0xFF5EEAD4),
     surfaceContainerLowest = Color(0xFF000000),
-    surfaceContainerLow = Color(0xFF0A0F0D),
-    surfaceContainer = Color(0xFF0F1513),
-    surfaceContainerHigh = Color(0xFF1A2020),
-    surfaceContainerHighest = Color(0xFF222929)
+    surfaceContainerLow = Color(0xFF080C0B),
+    surfaceContainer = Color(0xFF0C1210),
+    surfaceContainerHigh = Color(0xFF161C1A),
+    surfaceContainerHighest = Color(0xFF1F2522)
 )
 
 // ── Typography ────────────────────────────────────────────────────────────────
-// Tighter, more modern spacing with better weight hierarchy
+// Modern hierarchy with tighter display tracking and comfortable body line-height
 private val AppTypography = Typography(
     displayLarge = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 57.sp,
+        fontSize = 56.sp,
         lineHeight = 64.sp,
-        letterSpacing = (-0.25).sp
+        letterSpacing = (-0.5).sp
     ),
     displayMedium = TextStyle(
         fontWeight = FontWeight.Bold,
-        fontSize = 45.sp,
+        fontSize = 44.sp,
         lineHeight = 52.sp,
-        letterSpacing = 0.sp
+        letterSpacing = (-0.25).sp
     ),
     displaySmall = TextStyle(
         fontWeight = FontWeight.SemiBold,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
+        fontSize = 34.sp,
+        lineHeight = 42.sp,
         letterSpacing = 0.sp
     ),
     headlineLarge = TextStyle(
@@ -214,12 +218,13 @@ private val AppTypography = Typography(
 )
 
 // ── Shapes ────────────────────────────────────────────────────────────────────
+// Softer corners throughout for a friendlier, more modern feel
 private val AppShapes = Shapes(
-    extraSmall = RoundedCornerShape(8.dp),
-    small = RoundedCornerShape(12.dp),
-    medium = RoundedCornerShape(16.dp),
-    large = RoundedCornerShape(24.dp),
-    extraLarge = RoundedCornerShape(32.dp)
+    extraSmall = RoundedCornerShape(10.dp),
+    small = RoundedCornerShape(14.dp),
+    medium = RoundedCornerShape(18.dp),
+    large = RoundedCornerShape(26.dp),
+    extraLarge = RoundedCornerShape(34.dp)
 )
 
 // ── Theme entry point ─────────────────────────────────────────────────────────

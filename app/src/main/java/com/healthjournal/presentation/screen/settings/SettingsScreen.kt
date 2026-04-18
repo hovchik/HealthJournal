@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
@@ -107,6 +108,13 @@ fun SettingsScreen(
                 .padding(horizontal = 12.dp, vertical = 4.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Profile hero card
+            ProfileHeroCard(
+                userName = settings.userName.ifBlank { stringResource(R.string.rel_self) },
+                subtitle = stringResource(R.string.user_info_desc),
+                onClick = onUserInfo
+            )
+
             // Subscription section
             SettingsSection(
                 title = stringResource(R.string.settings_section_subscription),
@@ -708,6 +716,87 @@ private fun PermissionsSection() {
                         Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.outlineVariant,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileHeroCard(
+    userName: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    val primary = MaterialTheme.colorScheme.primary
+    val tertiary = MaterialTheme.colorScheme.tertiary
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
+    val initial = userName.firstOrNull()?.uppercase() ?: "?"
+
+    Surface(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.large,
+        color = Color.Transparent,
+        tonalElevation = 0.dp,
+        shadowElevation = 6.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(primary, tertiary.copy(alpha = 0.9f))
+                    )
+                )
+                .padding(horizontal = 18.dp, vertical = 18.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = onPrimary.copy(alpha = 0.22f),
+                border = BorderStroke(1.2.dp, onPrimary.copy(alpha = 0.35f)),
+                modifier = Modifier.size(52.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = initial,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = onPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = userName,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = onPrimary,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = onPrimary.copy(alpha = 0.82f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Surface(
+                shape = CircleShape,
+                color = onPrimary.copy(alpha = 0.20f),
+                modifier = Modifier.size(34.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        tint = onPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
