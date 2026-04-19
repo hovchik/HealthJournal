@@ -6,54 +6,87 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Soft backdrop glow (stays within safe zone) -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.14"
-        android:pathData="M54,54 m-32,0 a32,32 0,1 1,64 0 a32,32 0,1 1,-64 0" />
-
-    <!-- Heart drop-shadow -->
+    <!-- Page drop shadow -->
     <path
         android:fillColor="#000000"
-        android:fillAlpha="0.18"
-        android:pathData="M55,77 C55,77 29,60 29,43 C29,34 35,28 43,28 C48,28 53,31 55,35 C57,31 62,28 67,28 C75,28 81,34 81,43 C81,60 55,77 55,77 Z" />
+        android:fillAlpha="0.45"
+        android:pathData="M32,28 Q32,24 36,24 L66,24 L84,42 L84,82 Q84,86 80,86 L36,86 Q32,86 32,82 Z" />
 
-    <!-- Main heart with subtle gradient -->
-    <path android:pathData="M54,75 C54,75 28,58 28,41 C28,32 34,26 42,26 C47,26 52,29 54,33 C56,29 61,26 66,26 C74,26 80,32 80,41 C80,58 54,75 54,75 Z">
+    <!-- Folded top-right corner: darker orange triangle underneath the page -->
+    <path
+        android:fillColor="#7C2D12"
+        android:pathData="M64,22 L82,40 L64,40 Z" />
+
+    <!-- Main page with orange gradient and folded corner cut-out -->
+    <path android:pathData="M30,26 Q30,22 34,22 L64,22 L82,40 L82,80 Q82,84 78,84 L34,84 Q30,84 30,80 Z">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:type="linear"
-                android:startX="28"
-                android:startY="26"
-                android:endX="80"
-                android:endY="75">
-                <item android:offset="0.0" android:color="#FFFFFF" />
-                <item android:offset="1.0" android:color="#FEF3F2" />
+                android:startX="30"
+                android:startY="22"
+                android:endX="82"
+                android:endY="84">
+                <item android:offset="0.0" android:color="#FDBA74" />
+                <item android:offset="0.55" android:color="#FB923C" />
+                <item android:offset="1.0" android:color="#F97316" />
             </gradient>
         </aapt:attr>
     </path>
 
-    <!-- Inner highlight on the heart (gloss) -->
+    <!-- Crease line along the fold edge for depth -->
+    <path
+        android:strokeColor="#7C2D12"
+        android:strokeAlpha="0.6"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M64,22 L82,40" />
+
+    <!-- Soft highlight stripe along the top-left edge -->
     <path
         android:fillColor="#FFFFFF"
-        android:fillAlpha="0.55"
-        android:pathData="M38,32 C35,35 34,39 35,43 C37,41 39,38 42,36 C44,34 46,33 48,33 C46,31 42,30 38,32 Z" />
+        android:fillAlpha="0.22"
+        android:pathData="M34,22 L62,22 L62,24.5 L32.5,24.5 Q32.5,23.5 34,22 Z" />
 
-    <!-- ECG pulse line across the heart -->
+    <!-- Subtle "title underline" (first journal line) -->
     <path
-        android:strokeColor="#EF4444"
-        android:strokeWidth="3.6"
+        android:strokeColor="#431407"
+        android:strokeAlpha="0.35"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
         android:fillColor="#00000000"
+        android:pathData="M38,36 L58,36" />
+
+    <!-- HERO: Bold black ECG pulse wave across the journal page -->
+    <path
+        android:strokeColor="#0C0A09"
+        android:strokeWidth="4"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M31,51 L41,51 L45,43 L49,59 L53,39 L57,56 L61,47 L65,51 L77,51" />
+        android:fillColor="#00000000"
+        android:pathData="M36,54 L42,54 L46,44 L50,68 L54,34 L58,64 L62,50 L66,54 L76,54" />
 
-    <!-- AI sparkle accent (hints at AI-powered feature) -->
+    <!-- Tiny accent dot marking a heartbeat peak (AI-detected highlight) -->
     <path
-        android:fillColor="#FDE047"
-        android:pathData="M80,22 L81.5,26 L85.5,27.5 L81.5,29 L80,33 L78.5,29 L74.5,27.5 L78.5,26 Z" />
+        android:fillColor="#F97316"
+        android:pathData="M54,34 m-2.6,0 a2.6,2.6 0,1 1,5.2 0 a2.6,2.6 0,1 1,-5.2 0" />
     <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.9"
-        android:pathData="M80,24 L80.8,26.2 L83,27 L80.8,27.8 L80,30 L79.2,27.8 L77,27 L79.2,26.2 Z" />
+        android:fillColor="#000000"
+        android:pathData="M54,34 m-1.2,0 a1.2,1.2 0,1 1,2.4 0 a1.2,1.2 0,1 1,-2.4 0" />
+
+    <!-- Faint "journal entry lines" beneath the pulse -->
+    <path
+        android:strokeColor="#431407"
+        android:strokeAlpha="0.3"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M38,72 L74,72" />
+    <path
+        android:strokeColor="#431407"
+        android:strokeAlpha="0.3"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M38,78 L66,78" />
 </vector>
