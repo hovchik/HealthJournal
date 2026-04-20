@@ -12,7 +12,7 @@ android {
     buildToolsVersion = "35.0.0"
 
     defaultConfig {
-        applicationId = "com.healthjournal"
+        applicationId = "com.hovchik.healthjournal"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
