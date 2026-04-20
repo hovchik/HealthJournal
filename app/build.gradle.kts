@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.healthjournal"
+    namespace = "com.hovchik.healthjournal"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
 
