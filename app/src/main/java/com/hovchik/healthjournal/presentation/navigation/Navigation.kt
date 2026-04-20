@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.filled.FamilyRestroom
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -76,7 +75,6 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, val icon:
     data object AiChat : Screen("ai_chat", R.string.nav_ai_chat, Icons.Default.Psychology)
     data object SecuritySettings : Screen("security_settings", R.string.security_title, Icons.Default.Security)
     data object Achievements : Screen("achievements", R.string.nav_achievements, Icons.Default.EmojiEvents)
-    data object HealthConnect : Screen("health_connect", R.string.health_connect_title, Icons.Default.Watch)
     data object FamilyDashboard : Screen("family_dashboard", R.string.family_dashboard_title, Icons.Default.FamilyRestroom)
     data object LegalDocument : Screen("legal/{docKey}", R.string.settings_section_legal, Icons.AutoMirrored.Filled.Article) {
         fun createRoute(docKey: String) = "legal/$docKey"

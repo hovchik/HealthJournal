@@ -75,7 +75,7 @@
     <string name="reports_tab_ai">AI Анализ</string>
     <string name="reports_tab_health">Здоровье</string>
     <string name="health_daily_summary">Сводка за день</string>
-    <string name="health_no_data">Нет данных о здоровье. Импортируйте из Health Connect.</string>
+    <string name="health_no_data">Нет данных. Добавьте показатели вручную.</string>
     <string name="health_avg_label">Среднее</string>
     <string name="health_total_label">Всего</string>
     <string name="health_min_label">Мин</string>
@@ -642,24 +642,6 @@
     <string name="ai_chat_welcome">AI Ассистент здоровья</string>
     <string name="ai_chat_hint">Задайте вопрос о ваших симптомах, показателях или лекарствах</string>
     <string name="ai_chat_clear">Очистить чат</string>
-
-    <!-- Health Connect -->
-    <string name="health_connect_title">Health Connect</string>
-    <string name="health_connect_desc">Импорт данных с носимых устройств</string>
-    <string name="health_connect_status">Статус подключения</string>
-    <string name="health_connect_available">Health Connect доступен</string>
-    <string name="health_connect_unavailable">Health Connect недоступен</string>
-    <string name="health_connect_data_types">Поддерживаемые типы данных</string>
-    <string name="health_connect_import">Импортировать данные за 7 дней</string>
-    <string name="health_connect_import_1_day">Импортировать данные за 1 день</string>
-    <string name="health_connect_permissions_needed">Требуются разрешения</string>
-    <string name="health_connect_permissions_desc">Для импорта данных необходимо предоставить доступ к Health Connect</string>
-    <string name="health_connect_grant_permissions">Предоставить разрешения</string>
-    <string name="health_connect_permissions_hint">Предоставьте разрешения для импорта данных</string>
-    <string name="health_connect_auto_sync">Автоматическая синхронизация</string>
-    <string name="health_connect_auto_sync_desc">Периодический импорт данных из Health Connect</string>
-    <string name="health_connect_sync_interval">Интервал синхронизации</string>
-    <string name="health_connect_hours_format">%1$d ч</string>
 
     <!-- Security -->
     <string name="security_title">Безопасность</string>

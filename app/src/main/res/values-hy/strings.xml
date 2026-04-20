@@ -618,16 +618,6 @@
     <string name="ai_chat_hint">Հարցրեք ձեր ախտանիշների, ցուցանիշների կամ դեղերի մասին</string>
     <string name="ai_chat_clear">Մաքրել զրույցը</string>
 
-    <!-- Health Connect -->
-    <string name="health_connect_title">Health Connect</string>
-    <string name="health_connect_desc">Տվյալների ներմուծում կրելի սարքերից</string>
-    <string name="health_connect_status">Կապակցման կարգավիճակ</string>
-    <string name="health_connect_available">Health Connect հասանելի է</string>
-    <string name="health_connect_unavailable">Health Connect հասանելի չէ</string>
-    <string name="health_connect_data_types">Աջակցվող տվյալների տեսակներ</string>
-    <string name="health_connect_import">Ներմուծել 7 օրվա տվյալներ</string>
-    <string name="health_connect_import_1_day">Ներմուծել 1 օրվա տվյալներ</string>
-
     <!-- Security -->
     <string name="security_title">Անվտանգություն</string>
     <string name="security_desc">Կենսաչափություն, PIN, գործողությունների մատյան</string>
@@ -707,21 +697,10 @@
     <string name="calendar_tab">Օրացույց</string>
     <string name="no_appointments_for_day">Այս օրը այցեր չկան</string>
 
-    <!-- Health Connect permissions -->
-    <string name="health_connect_permissions_needed">Անհրաժեշտ թույլտվություններ</string>
-    <string name="health_connect_permissions_desc">Տրամադրեք հասանելիություն Health Connect-ին տվյալները ներմուծելու համար</string>
-    <string name="health_connect_grant_permissions">Տրամադրել թույլտվություններ</string>
-    <string name="health_connect_permissions_hint">Տրամադրեք թույլտվություններ տվյալների ներմուծման համար</string>
-    <string name="health_connect_auto_sync">Ինքնահամական համաիամանեցում</string>
-    <string name="health_connect_auto_sync_desc">Պարբերաբար ներմուծել տվյալները Health Connect-ից</string>
-    <string name="health_connect_sync_interval">Սինքրոնացման միջակայք</string>
-    <string name="health_connect_hours_format">%1$d ժ</string>
-
-
     <!-- Health Summary Tab -->
     <string name="reports_tab_health">Առողջություն</string>
     <string name="health_daily_summary">Օրվա ամփոփում</string>
-    <string name="health_no_data">Առողջական տվյալներ չկան։ Ներմուծեք Health Connect-ից։</string>
+    <string name="health_no_data">Տվյալներ չկան։ Ցուցանիշները մուտքագրեք ձեռքով։</string>
     <string name="health_avg_label">Միջին</string>
     <string name="health_total_label">Ընդամենը</string>
     <string name="health_min_label">Նվազ</string>

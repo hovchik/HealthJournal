@@ -125,9 +125,6 @@ dependencies {
     // Biometric (security)
     implementation("androidx.biometric:biometric:1.1.0")
 
-    // Health Connect (wearable integration)
-    implementation("androidx.health.connect:connect-client:1.1.0-alpha10")
-
     // Test
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")

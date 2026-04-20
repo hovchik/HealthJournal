@@ -622,24 +622,6 @@
     <string name="ai_chat_hint">Pregunta sobre tus síntomas, signos vitales o medicamentos</string>
     <string name="ai_chat_clear">Borrar chat</string>
 
-    <!-- Health Connect -->
-    <string name="health_connect_title">Health Connect</string>
-    <string name="health_connect_desc">Importar datos de dispositivos portátiles</string>
-    <string name="health_connect_status">Estado de conexión</string>
-    <string name="health_connect_available">Health Connect disponible</string>
-    <string name="health_connect_unavailable">Health Connect no disponible</string>
-    <string name="health_connect_data_types">Tipos de datos compatibles</string>
-    <string name="health_connect_import">Importar datos de 7 días</string>
-    <string name="health_connect_import_1_day">Importar datos de 1 día</string>
-    <string name="health_connect_permissions_needed">Permisos requeridos</string>
-    <string name="health_connect_permissions_desc">Concede acceso a Health Connect para importar datos de salud</string>
-    <string name="health_connect_grant_permissions">Conceder permisos</string>
-    <string name="health_connect_permissions_hint">Concede permisos para importar datos</string>
-    <string name="health_connect_auto_sync">Sincronización automática</string>
-    <string name="health_connect_auto_sync_desc">Importar datos periódicamente desde Health Connect</string>
-    <string name="health_connect_sync_interval">Intervalo de sincronización</string>
-    <string name="health_connect_hours_format">%1$d h</string>
-
     <!-- Navigation (short labels) -->
     <string name="nav_appointments">Citas</string>
     <string name="nav_achievements">Logros</string>
@@ -722,7 +704,7 @@
     <!-- Health Summary Tab -->
     <string name="reports_tab_health">Salud</string>
     <string name="health_daily_summary">Resumen diario</string>
-    <string name="health_no_data">Sin datos de salud. Importa desde Health Connect.</string>
+    <string name="health_no_data">Sin datos. Añade tus constantes vitales manualmente.</string>
     <string name="health_avg_label">Prom</string>
     <string name="health_total_label">Total</string>
     <string name="health_min_label">Mín</string>

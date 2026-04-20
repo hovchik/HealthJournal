@@ -22,17 +22,12 @@ is stored, when it leaves the device, and the controls you have.
 - Family-member profile names and relationships
 - Optional doctor name and phone number (for share/report features)
 
-### 1.3 Wearable data (only if you connect Health Connect)
-With your explicit Health Connect permission, the app reads:
-heart rate, steps, sleep, oxygen saturation, blood pressure, body temperature,
-blood glucose, weight. Data is read-only and copied into your local journal.
-
-### 1.4 Device information
+### 1.3 Device information
 We compute RAM, available storage, Android version, and supported ABIs locally
 to decide which on-device AI models your device can run. This information is
 never transmitted off-device.
 
-### 1.5 App logs
+### 1.4 App logs
 An in-app audit log records data access and modification events so you can
 review them. The audit log is stored locally and is wiped when you clear data.
 

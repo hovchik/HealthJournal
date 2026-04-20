@@ -49,8 +49,12 @@ Optional: 7" and 10" tablet screenshots (1200×1920 / 1920×1200 etc.).
 4. For every other locale (`ru-RU`, `es-ES`, `zh-CN`, `hy-AM`): click
    **Manage translations → Add your own translations**, choose the locale, and
    paste the three text files from the matching folder.
-5. **App category**: Health & Fitness.
-6. **Tags**: Symptom tracker, Medical journal, Medication reminder.
+5. **App category**: Lifestyle (personal journal — not Health & Fitness).
+   Selecting Health & Fitness, or declaring any "health app" feature in the
+   App content form, requires an organization developer account under the
+   Play Console Requirements policy. Individual accounts must keep the
+   category and declarations aligned with a personal journaling tool.
+6. **Tags**: Personal journal, Daily planner, Reminder.
 7. **Contact details**: the dev contact address you use for Play Support.
 8. **Privacy policy URL**: point to a hosted copy of `PRIVACY_POLICY.md`.
 
@@ -68,9 +72,11 @@ forms:
 | Ads | No ads |
 | Government app | No |
 | News app | No |
+| Financial services | No |
+| VPN service | No |
 | COVID-19 contact-tracing | No |
-| Health features | **Medication reminders**, **symptom tracker**, **Health Connect reader** |
-| Permissions declaration | `USE_EXACT_ALARM` — "Calendar or reminder app" (medication dose reminders must not drift) |
+| Health features | **None declared.** The app is a personal journal; symptom and medication notes are free-form text the user types, not data read from a platform health API. Do not tick "medical app", "human subjects research", or "Health Connect client" in the App content form. |
+| Permissions declaration | `USE_EXACT_ALARM` — "Calendar or reminder app" (appointment and dose reminders must not drift) |
 
 ## Regenerating the graphics
 
