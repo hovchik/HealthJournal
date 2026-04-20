@@ -1,0 +1,45 @@
+HealthJournal is a private, local-first health diary for you and your family. Log symptoms, vital signs, medications and doctor appointments, spot patterns over time, and generate a clear, AI-written summary you can hand to your physician.
+
+Everything you enter stays on your device. There is no account to create, no advertising SDK, and no analytics. Your journal leaves the device only when you personally tap "export" or enable Cloud AI with your own API key.
+
+KEY FEATURES
+
+• Symptom tracker — type, intensity 0–10, duration, triggers and notes, with a searchable library of common symptoms.
+• Vitals — blood pressure, heart rate, body temperature, SpO₂, blood glucose, weight, sleep and steps, with charts and trends.
+• Medications — doses, schedules, intake log, adherence %, and drug-interaction warnings.
+• Appointments & doctors — plan visits in the built-in calendar and keep a roster of your clinicians.
+• AI report for the doctor — generates a structured summary in plain language, with a strict "no diagnosis, no prescription" policy.
+• Pattern analysis — the AI highlights correlations between symptoms and vitals across several days.
+• Family profiles — keep separate journals for partner, parents, children. Switch profiles with one tap.
+• Health Connect — optionally import heart rate, steps, sleep, SpO₂, blood pressure, temperature, glucose and weight from your wearable.
+• PDF, CSV and FHIR export — share a clean report or a full dataset with any doctor or clinic.
+• Reminders — precise medication dose alarms and appointment notifications.
+• Biometric / PIN lock — add fingerprint, face or PIN on top of Android's sandbox.
+
+PRIVACY BY DESIGN
+
+• All data is stored in the app's private, sandboxed storage.
+• Android automatic cloud backup and device-to-device transfer are disabled for app data.
+• HTTPS-only networking; cleartext is blocked app-wide.
+• Phone numbers and emails are redacted by default before any Cloud AI request.
+• "Clear all data" in Settings is the complete deletion mechanism — we hold no server copy.
+
+AI, YOUR WAY
+
+• Local AI — rules-based analysis that runs fully on-device; always available, no internet, no key.
+• On-device LLM — optionally download a small AI model to run advanced analysis offline.
+• Cloud AI — bring your own API key for Anthropic Claude, OpenAI, Google Gemini or DeepSeek. You choose the provider; the app never ships a default key.
+
+Cloud AI reports cost real tokens, so we offer optional subscriptions (Basic, Pro, Unlimited) via Google Play Billing. The free tier keeps the journal, reminders and on-device AI fully usable forever.
+
+MEDICAL DISCLAIMER
+
+HealthJournal is a personal journal. It is not a medical device, does not provide diagnosis, treatment or medication advice, and is not for emergency use. In an emergency, call your local emergency number. Always discuss AI-generated summaries with a qualified healthcare professional.
+
+LANGUAGES
+
+English, Русский, Español, 中文 (简体), Հայերեն. The AI response language follows the UI language.
+
+REQUIREMENTS
+
+Android 8.0 (API 26) or later. Internet is only used when you enable Cloud AI.
