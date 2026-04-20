@@ -27,7 +27,7 @@ Android-приложение для ведения медицинского дн
 ## Структура проекта
 
 ```
-com.healthjournal/
+com.hovchik.healthjournal/
 ├── data/
 │   ├── local/
 │   │   ├── entity/       # Room entities (7)

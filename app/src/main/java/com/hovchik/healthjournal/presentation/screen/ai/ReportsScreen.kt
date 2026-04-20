@@ -1,0 +1,1116 @@
+package com.hovchik.healthjournal.presentation.screen.ai
+
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.MedicalServices
+import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hovchik.healthjournal.R
+import com.hovchik.healthjournal.domain.model.AiReport
+import com.hovchik.healthjournal.domain.model.ReportType
+import com.hovchik.healthjournal.domain.model.Symptom
+import com.hovchik.healthjournal.domain.model.VitalSign
+import com.hovchik.healthjournal.domain.model.Medication
+import com.hovchik.healthjournal.presentation.components.VitalsChart
+import com.hovchik.healthjournal.util.PdfReportGenerator
+import com.hovchik.healthjournal.util.localizedDisplayName
+import com.hovchik.healthjournal.util.localizedUnit
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReportsScreen(
+    onAiChat: () -> Unit = {},
+    viewModel: AiReportViewModel = viewModel()
+) {
+    val reports by viewModel.reports.collectAsStateWithLifecycle()
+    val vitals by viewModel.vitals.collectAsStateWithLifecycle()
+    val symptoms by viewModel.symptoms.collectAsStateWithLifecycle()
+    val medications by viewModel.medications.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val aiEnabled by viewModel.aiEnabled.collectAsStateWithLifecycle()
+    val familyMembers by viewModel.familyMembers.collectAsStateWithLifecycle()
+    val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
+    val diseases by viewModel.diseases.collectAsStateWithLifecycle()
+    val selectedDiseaseId by viewModel.selectedDiseaseId.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    var selectedTab by remember { mutableIntStateOf(0) }
+    val tabs = listOf(
+        stringResource(R.string.reports_tab_records),
+        stringResource(R.string.reports_tab_ai),
+        stringResource(R.string.reports_tab_health)
+    )
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        stringResource(R.string.reports_title),
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                actions = {
+                    IconButton(onClick = onAiChat) {
+                        Icon(Icons.Default.Psychology, contentDescription = stringResource(R.string.nav_ai_chat),
+                            tint = MaterialTheme.colorScheme.primary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            // Profile selector
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = activeProfileId == 0L,
+                    onClick = { viewModel.selectProfile(0L) },
+                    label = { Text(stringResource(R.string.rel_self)) },
+                    leadingIcon = {
+                        Box(
+                            modifier = Modifier.size(24.dp).clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Person, contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(16.dp))
+                        }
+                    }
+                )
+                familyMembers.forEach { member ->
+                    FilterChip(
+                        selected = activeProfileId == member.id,
+                        onClick = { viewModel.selectProfile(member.id) },
+                        label = { Text(member.name) },
+                        leadingIcon = {
+                            Box(
+                                modifier = Modifier.size(24.dp).clip(CircleShape)
+                                    .background(Color(member.avatarColor)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(member.name.take(1).uppercase(), color = Color.White,
+                                    style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    )
+                }
+            }
+
+            // Disease filter
+            if (diseases.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilterChip(
+                        selected = selectedDiseaseId == 0L,
+                        onClick = { viewModel.selectDisease(0L) },
+                        label = { Text(stringResource(R.string.all_diseases)) }
+                    )
+                    diseases.forEach { disease ->
+                        FilterChip(
+                            selected = selectedDiseaseId == disease.id,
+                            onClick = { viewModel.selectDisease(disease.id) },
+                            label = { Text(disease.name) }
+                        )
+                    }
+                }
+            }
+
+            // Tabs with improved styling
+            PrimaryTabRow(selectedTabIndex = selectedTab) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTab == index,
+                        onClick = { selectedTab = index },
+                        text = {
+                            Text(title, fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal)
+                        }
+                    )
+                }
+            }
+
+            // Filter data by selected disease
+            val filteredVitals = remember(vitals, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) vitals else vitals.filter { it.diseaseId == selectedDiseaseId }
+            }
+            val filteredSymptoms = remember(symptoms, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) symptoms else symptoms.filter { it.diseaseId == selectedDiseaseId }
+            }
+            val filteredMedications = remember(medications, selectedDiseaseId) {
+                if (selectedDiseaseId == 0L) medications else medications.filter { it.diseaseId == selectedDiseaseId }
+            }
+
+            when (selectedTab) {
+                0 -> RecordsTab(filteredSymptoms, filteredVitals, filteredMedications, context, viewModel)
+                1 -> AiAnalyzeTab(reports, filteredVitals, filteredSymptoms, uiState, aiEnabled, context, viewModel)
+                2 -> HealthSummaryTab(filteredVitals)
+            }
+        }
+    }
+}
+
+@Composable
+private fun HealthSummaryTab(vitals: List<VitalSign>) {
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+
+    // Group vitals by date, then by type
+    val vitalsByDate = remember(vitals) {
+        vitals.sortedByDescending { it.recordedAt }
+            .groupBy { it.recordedAt.toLocalDate() }
+    }
+
+    if (vitals.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
+                Icon(
+                    Icons.Default.SmartToy,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    stringResource(R.string.health_no_data),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            vitalsByDate.forEach { (date, dayVitals) ->
+                item(key = "health_date_$date") {
+                    val dateLabel = when (date) {
+                        LocalDate.now() -> stringResource(R.string.date_today)
+                        LocalDate.now().minusDays(1) -> stringResource(R.string.date_yesterday)
+                        else -> date.format(dateFormatter)
+                    }
+                    Text(
+                        dateLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                val byType = dayVitals.groupBy { it.type }
+                byType.forEach { (type, typeVitals) ->
+                    item(key = "health_${date}_${type.name}") {
+                        val values = typeVitals.map { it.value }
+                        val avg = values.average()
+                        val min = values.min()
+                        val max = values.max()
+                        val total = values.sum()
+                        val count = values.size
+
+                        ElevatedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        type.localizedDisplayName(),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Surface(
+                                        shape = MaterialTheme.shapes.extraSmall,
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                                    ) {
+                                        Text(
+                                            "$count ${type.localizedUnit()}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                val unitStr = type.localizedUnit()
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    val isStepsOrSleep = type == com.hovchik.healthjournal.domain.model.VitalType.STEPS ||
+                                            type == com.hovchik.healthjournal.domain.model.VitalType.SLEEP
+                                    if (isStepsOrSleep) {
+                                        HealthStatItem(stringResource(R.string.health_total_label), "%.0f %s".format(total, unitStr))
+                                    } else {
+                                        HealthStatItem(stringResource(R.string.health_avg_label), "%.1f %s".format(avg, unitStr))
+                                    }
+                                    HealthStatItem(stringResource(R.string.health_min_label), "%.1f %s".format(min, unitStr))
+                                    HealthStatItem(stringResource(R.string.health_max_label), "%.1f %s".format(max, unitStr))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HealthStatItem(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            value,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun DateHeader(
+    date: LocalDate,
+    todayLabel: String,
+    yesterdayLabel: String,
+    dateFormatter: DateTimeFormatter
+) {
+    val today = LocalDate.now()
+    val label = when (date) {
+        today -> todayLabel
+        today.minusDays(1) -> yesterdayLabel
+        else -> date.format(dateFormatter)
+    }
+    Text(
+        label,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
+    )
+}
+
+@Composable
+private fun RecordsTab(
+    symptoms: List<Symptom>,
+    vitals: List<VitalSign>,
+    medications: List<Medication>,
+    context: android.content.Context,
+    viewModel: AiReportViewModel
+) {
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
+    val memberName = viewModel.getProfileName(viewModel.activeProfileId.collectAsStateWithLifecycle().value)
+    val todayLabel = stringResource(R.string.date_today)
+    val yesterdayLabel = stringResource(R.string.date_yesterday)
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // Export PDF button
+        if (symptoms.isNotEmpty() || vitals.isNotEmpty()) {
+            item(key = "export_records") {
+                FilledTonalButton(
+                    onClick = {
+                        PdfReportGenerator.generateRecordsPdfAndShare(
+                            context, symptoms, vitals, medications, memberName
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.records_export_pdf))
+                }
+            }
+        }
+
+        // Vitals records
+        if (vitals.isNotEmpty()) {
+            item(key = "vitals_section") {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.SmartToy, contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer)
+                        }
+                    }
+                    Text(stringResource(R.string.vitals_title),
+                        style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary)
+                }
+            }
+
+            val vitalsByDate = vitals.sortedByDescending { it.recordedAt }
+                .groupBy { it.recordedAt.toLocalDate() }
+
+            vitalsByDate.forEach { (date, vitalsForDate) ->
+                item(key = "rv_date_$date") {
+                    DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
+                }
+
+                // Group by type within each date
+                val byType = vitalsForDate.groupBy { it.type }
+                byType.forEach { (type, typeVitals) ->
+                    item(key = "rv_type_${date}_${type.name}") {
+                        var expanded by remember { mutableStateOf(typeVitals.size <= 4) }
+                        val sortedVitals = typeVitals.sortedByDescending { it.recordedAt }
+                        val displayVitals = if (expanded) sortedVitals else sortedVitals.take(3)
+
+                        ElevatedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        type.localizedDisplayName(),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Surface(
+                                        shape = MaterialTheme.shapes.extraSmall,
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                                    ) {
+                                        Text(
+                                            "${typeVitals.size} ${type.localizedUnit()}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                displayVitals.forEach { vital ->
+                                    val valueStr = if (vital.secondaryValue != null) {
+                                        "${vital.value.toInt()}/${vital.secondaryValue.toInt()}"
+                                    } else if (vital.value == vital.value.toLong().toDouble()) {
+                                        vital.value.toLong().toString()
+                                    } else {
+                                        "%.1f".format(vital.value)
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                "$valueStr ${type.localizedUnit()}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                            if (!vital.notes.isNullOrBlank()) {
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    vital.notes,
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    modifier = Modifier.weight(1f, fill = false)
+                                                )
+                                            }
+                                        }
+                                        Text(
+                                            vital.recordedAt.format(timeFormatter),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.outline
+                                        )
+                                    }
+                                }
+                                // Show expand/collapse button when more than 4 records
+                                if (typeVitals.size > 4) {
+                                    TextButton(
+                                        onClick = { expanded = !expanded },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(
+                                            if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            if (expanded) stringResource(R.string.show_less)
+                                            else stringResource(R.string.show_more_count, typeVitals.size - 3)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Symptoms records
+        if (symptoms.isNotEmpty()) {
+            item(key = "symptoms_section") {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.Person, contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
+                    }
+                    Text(stringResource(R.string.symptoms_title),
+                        style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary)
+                }
+            }
+
+            val symptomsByDate = symptoms.sortedByDescending { it.recordedAt }
+                .groupBy { it.recordedAt.toLocalDate() }
+
+            symptomsByDate.forEach { (date, symptomsForDate) ->
+                item(key = "rs_date_$date") {
+                    DateHeader(date, todayLabel, yesterdayLabel, dateFormatter)
+                }
+                items(symptomsForDate, key = { "rs_${it.id}" }) { symptom ->
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                    ) {
+                        Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(symptom.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                if (symptom.notes.isNotBlank()) {
+                                    Text(symptom.notes, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                                }
+                                Text(symptom.recordedAt.format(timeFormatter), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                            }
+                            Surface(
+                                shape = MaterialTheme.shapes.extraSmall,
+                                color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+                            ) {
+                                Text(
+                                    "${symptom.intensity}/10",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Medications records
+        if (medications.isNotEmpty()) {
+            item(key = "medications_section") {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.Medication, contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                        }
+                    }
+                    Text(stringResource(R.string.medications_title),
+                        style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.secondary)
+                }
+            }
+
+            items(medications, key = { "rm_${it.id}" }) { medication ->
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                ) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(medication.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                            if (medication.dosage.isNotBlank()) {
+                                Text(medication.dosage, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                        if (medication.active) {
+                            Surface(
+                                shape = MaterialTheme.shapes.extraSmall,
+                                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
+                            ) {
+                                Text(
+                                    stringResource(R.string.disease_active),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (symptoms.isEmpty() && vitals.isEmpty() && medications.isEmpty()) {
+            item(key = "empty_records") {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        Text(stringResource(R.string.no_records_hint), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AiAnalyzeTab(
+    reports: List<AiReport>,
+    vitals: List<VitalSign>,
+    symptoms: List<Symptom>,
+    uiState: AiReportUiState,
+    aiEnabled: Boolean,
+    context: android.content.Context,
+    viewModel: AiReportViewModel
+) {
+    val uniqueDays = remember(vitals, symptoms) {
+        (vitals.map { it.recordedAt.toLocalDate() } + symptoms.map { it.recordedAt.toLocalDate() })
+            .distinct()
+    }
+    val hasEnoughData = uniqueDays.size >= 2
+    var selectedPeriod by remember { mutableIntStateOf(2) }
+    val periodOptions = listOf(2, 4, 7, 14)
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Medical disclaimer banner — Google Play requires a persistent,
+        // unambiguous notice on any screen that presents AI-generated
+        // health content. Sits above the generate controls so it is
+        // visible every time the user looks at a report.
+        item(key = "ai_disclaimer") {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.MedicalServices,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        stringResource(R.string.ai_not_medical_advice),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
+        // Generate controls
+        item(key = "ai_controls") {
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // Period selector
+                    Text(
+                        stringResource(R.string.report_period_label),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        periodOptions.forEach { days ->
+                            FilterChip(
+                                selected = selectedPeriod == days,
+                                onClick = { selectedPeriod = days },
+                                label = {
+                                    Text(
+                                        stringResource(R.string.report_period_days, days),
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
+                    // Generate buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { viewModel.generateReport(selectedPeriod) },
+                            enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
+                            modifier = Modifier.weight(1f),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text(stringResource(R.string.report_generate_summary))
+                        }
+                        OutlinedButton(
+                            onClick = { viewModel.analyzePatterns(selectedPeriod) },
+                            enabled = !uiState.isLoading && hasEnoughData && aiEnabled,
+                            modifier = Modifier.weight(1f),
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text(stringResource(R.string.report_generate_patterns))
+                        }
+                    }
+
+                    if (!aiEnabled) {
+                        Text(
+                            stringResource(R.string.ai_disabled_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    } else if (!hasEnoughData) {
+                        Text(
+                            stringResource(R.string.ai_need_more_data),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+
+        // Loading
+        if (uiState.isLoading) {
+            item(key = "loading") {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(stringResource(R.string.ai_analyzing))
+                        }
+                    }
+                }
+            }
+        }
+
+        // Error
+        uiState.error?.let { error ->
+            item(key = "error") {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(stringResource(R.string.error_format, error), color = MaterialTheme.colorScheme.onErrorContainer)
+                        TextButton(onClick = { viewModel.clearError() }) { Text(stringResource(R.string.close)) }
+                    }
+                }
+            }
+        }
+
+        // Vitals charts
+        val vitalsByType = vitals.groupBy { it.type }
+        val chartTypes = vitalsByType.filter { it.value.size >= 2 }
+        if (chartTypes.isNotEmpty()) {
+            item(key = "charts_header") {
+                Text(stringResource(R.string.vitals_charts_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            }
+            chartTypes.forEach { (type, typeVitals) ->
+                item(key = "chart_${type.name}") {
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+                    ) {
+                        VitalsChart(
+                            title = type.localizedDisplayName(),
+                            vitals = typeVitals.sortedBy { it.recordedAt },
+                            modifier = Modifier.fillMaxWidth().padding(16.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Empty state
+        if (reports.isEmpty() && !uiState.isLoading) {
+            item(key = "empty_ai") {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp)
+                ) {
+                    Text(stringResource(R.string.no_reports_hint), modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+
+        // Latest report (shown prominently)
+        if (reports.isNotEmpty()) {
+            val latestReport = reports.first()
+            item(key = "latest_report_${latestReport.id}") {
+                ReportCard(
+                    report = latestReport,
+                    diseaseName = if (latestReport.diseaseId != 0L) viewModel.getDiseaseName(latestReport.diseaseId) else null,
+                    onExportPdf = {
+                        val memberName = viewModel.getProfileName(latestReport.profileId)
+                        PdfReportGenerator.generateAndShare(context, latestReport, vitals, memberName)
+                    },
+                    onDelete = { viewModel.deleteReport(latestReport.id) }
+                )
+            }
+        }
+
+        // History (collapsible older reports)
+        val olderReports = if (reports.size > 1) reports.drop(1) else emptyList()
+        if (olderReports.isNotEmpty()) {
+            item(key = "history_header") {
+                var showHistory by remember { mutableStateOf(false) }
+                Column {
+                    FilledTonalButton(
+                        onClick = { showHistory = !showHistory },
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Text(
+                            stringResource(
+                                if (showHistory) R.string.ai_hide_history
+                                else R.string.ai_show_history,
+                                olderReports.size
+                            ),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                    AnimatedVisibility(visible = showHistory) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            olderReports.forEach { report ->
+                                ReportCard(
+                                    report = report,
+                                    diseaseName = if (report.diseaseId != 0L) viewModel.getDiseaseName(report.diseaseId) else null,
+                                    onExportPdf = {
+                                        val memberName = viewModel.getProfileName(report.profileId)
+                                        PdfReportGenerator.generateAndShare(context, report, vitals, memberName)
+                                    },
+                                    onDelete = { viewModel.deleteReport(report.id) }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private data class ReportSection(val title: String, val body: String)
+
+private fun parseReportContent(content: String): List<ReportSection> {
+    if (content.isBlank()) return emptyList()
+
+    val sectionPattern = Regex("""^===\s*(.+?)\s*===$""", RegexOption.MULTILINE)
+    val matches = sectionPattern.findAll(content).toList()
+
+    if (matches.isEmpty()) {
+        return listOf(ReportSection("", content.trim()))
+    }
+
+    val sections = mutableListOf<ReportSection>()
+
+    val preamble = content.substring(0, matches.first().range.first).trim()
+    if (preamble.isNotBlank()) {
+        sections.add(ReportSection("", preamble))
+    }
+
+    for (i in matches.indices) {
+        val title = matches[i].groupValues[1]
+        val start = matches[i].range.last + 1
+        val end = if (i + 1 < matches.size) matches[i + 1].range.first else content.length
+        val body = content.substring(start, end).trim()
+        if (body.isNotBlank()) {
+            sections.add(ReportSection(title, body))
+        }
+    }
+
+    return sections
+}
+
+@Composable
+private fun ReportCard(report: AiReport, diseaseName: String? = null, onExportPdf: () -> Unit, onDelete: (() -> Unit)? = null) {
+    val formatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm") }
+    val typeLabel = when (report.type) {
+        ReportType.SUMMARY -> stringResource(R.string.report_type_summary)
+        ReportType.PATTERN_ANALYSIS -> stringResource(R.string.report_type_patterns)
+    }
+    val context = LocalContext.current
+    val copiedMsg = stringResource(R.string.report_copied)
+    var expanded by remember { mutableStateOf(true) }
+    val sections = remember(report.content) { parseReportContent(report.content) }
+
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Header row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Surface(
+                        shape = MaterialTheme.shapes.extraSmall,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            typeLabel,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        )
+                    }
+                    if (diseaseName != null) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            diseaseName,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+                // Expand/collapse
+                IconButton(onClick = { expanded = !expanded }, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Metadata row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    report.generatedAt.format(formatter),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
+                Text("\u2022", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                Text(
+                    stringResource(R.string.days_format, report.periodDays),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                if (report.providerName.isNotBlank()) {
+                    Text("\u2022", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                    Icon(Icons.Default.SmartToy, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.outline)
+                    Text(
+                        report.providerName,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+            // Action buttons row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        clipboard.setPrimaryClip(ClipData.newPlainText("report", report.content))
+                        Toast.makeText(context, copiedMsg, Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(Icons.Default.ContentCopy, contentDescription = stringResource(R.string.report_copy), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                IconButton(onClick = onExportPdf, modifier = Modifier.size(32.dp)) {
+                    Icon(Icons.Default.PictureAsPdf, contentDescription = stringResource(R.string.export_pdf), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
+                }
+                if (onDelete != null) {
+                    IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.local_model_delete), modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+
+            // Report content - parsed into sections
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (report.content.isBlank()) {
+                        Text(
+                            stringResource(R.string.report_no_content),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    } else if (sections.isEmpty()) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(report.content, style = MaterialTheme.typography.bodyMedium)
+                    } else {
+                        sections.forEach { section ->
+                            if (section.title.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = MaterialTheme.shapes.medium,
+                                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    tonalElevation = 1.dp
+                                ) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Text(
+                                            section.title,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            section.body,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+                            } else {
+                                Text(
+                                    section.body,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
