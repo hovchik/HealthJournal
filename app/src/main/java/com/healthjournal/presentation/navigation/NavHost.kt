@@ -221,7 +221,15 @@ fun HealthNavHost(
             RemindersScreen(onBack = { navController.popBackStack() })
         }
         composable(Screen.Dashboard.route) {
-            DashboardScreen(onBack = { navController.popBackStack() })
+            DashboardScreen(
+                onBack = { navController.popBackStack() },
+                isTopLevel = navController.previousBackStackEntry?.destination?.route == null ||
+                    navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route },
+                onAddSymptom = { navController.navigate(Screen.AddSymptom.route) },
+                onAddVital = { navController.navigate(Screen.AddVital.route) },
+                onAddMedication = { navController.navigate(Screen.AddMedication.route) },
+                onAiChat = { navController.navigate(Screen.AiChat.route) { launchSingleTop = true } }
+            )
         }
         composable(Screen.Appointments.route) {
             AppointmentsScreen(
