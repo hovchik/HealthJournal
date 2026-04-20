@@ -72,7 +72,7 @@
     <string name="reports_tab_ai">AI Analysis</string>
     <string name="reports_tab_health">Health</string>
     <string name="health_daily_summary">Daily summary</string>
-    <string name="health_no_data">No health data. Import from Health Connect.</string>
+    <string name="health_no_data">No data yet. Add vitals manually.</string>
     <string name="health_avg_label">Avg</string>
     <string name="health_total_label">Total</string>
     <string name="health_min_label">Min</string>
@@ -628,24 +628,6 @@
     <string name="ai_chat_welcome">AI Health Assistant</string>
     <string name="ai_chat_hint">Ask a question about your symptoms, vitals, or medications</string>
     <string name="ai_chat_clear">Clear chat</string>
-
-    <!-- Health Connect -->
-    <string name="health_connect_title">Health Connect</string>
-    <string name="health_connect_desc">Import data from wearable devices</string>
-    <string name="health_connect_status">Connection status</string>
-    <string name="health_connect_available">Health Connect available</string>
-    <string name="health_connect_unavailable">Health Connect unavailable</string>
-    <string name="health_connect_data_types">Supported data types</string>
-    <string name="health_connect_import">Import data for 7 days</string>
-    <string name="health_connect_import_1_day">Import data for 1 day</string>
-    <string name="health_connect_permissions_needed">Permissions required</string>
-    <string name="health_connect_permissions_desc">Grant access to Health Connect to import your health data</string>
-    <string name="health_connect_grant_permissions">Grant permissions</string>
-    <string name="health_connect_permissions_hint">Grant permissions to import data</string>
-    <string name="health_connect_auto_sync">Automatic sync</string>
-    <string name="health_connect_auto_sync_desc">Periodically import data from Health Connect</string>
-    <string name="health_connect_sync_interval">Sync interval</string>
-    <string name="health_connect_hours_format">%1$d h</string>
 
     <!-- Navigation (short labels) -->
     <string name="nav_appointments">Appts</string>

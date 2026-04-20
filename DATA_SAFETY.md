@@ -7,10 +7,11 @@ in the form.
 ## Data collection and sharing
 
 ### Health & fitness
-| Data type | Collected | Shared | Processed ephemerally | Required | Purpose |
-|---|---|---|---|---|---|
-| Health info (symptoms, medications, vitals) | Yes | **Only if user enables Cloud AI** | No | Optional | App functionality, personalization |
-| Fitness info (steps, sleep, activity) | Yes (via Health Connect, user-gated) | Only if user enables Cloud AI | No | Optional | App functionality |
+None collected through platform APIs. The app does not integrate with Health
+Connect, Google Fit, or any wearable SDK. Any symptom, medication, or vital-sign
+notes the user types into the journal are stored as free-form "personal notes"
+in the app's private sandbox and are never read from, or written to, platform
+health data stores.
 
 ### Personal info
 | Data type | Collected | Shared | Purpose |
@@ -67,7 +68,6 @@ No data is shared with:
 | `POST_NOTIFICATIONS` | Yes | Medication reminders and appointment alerts |
 | `USE_EXACT_ALARM` / `SCHEDULE_EXACT_ALARM` | Yes | Precise medication-dose reminders (drift from inexact alarms would harm dosing accuracy — qualifies for the "Calendar / reminder app" use case) |
 | `USE_BIOMETRIC` | Yes | Optional app lock |
-| `health.READ_HEART_RATE` / `READ_STEPS` / `READ_SLEEP` / `READ_OXYGEN_SATURATION` / `READ_BLOOD_PRESSURE` / `READ_BODY_TEMPERATURE` / `READ_BLOOD_GLUCOSE` / `READ_WEIGHT` | Yes | Optional Health Connect import so users can consolidate data from wearables in their journal |
 
 Permissions **intentionally not declared** (previous versions had them;
 removed for Play compliance):
@@ -81,14 +81,9 @@ removed for Play compliance):
   picker, and the "scan for models" feature now only inspects app-owned
   directories (`filesDir`, `getExternalFilesDir()`), which require no
   permission.
-
-## Health Connect declaration
-
-- The app is a `Health Connect` client reading 8 data types (listed above).
-- Runtime permission rationale is presented via
-  `ViewPermissionUsageActivity` and the `androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE`
-  intent filter.
-- We will submit the Health Connect data-access review in Play Console.
+- `android.permission.health.*` (Health Connect read permissions) — removed.
+  The app no longer integrates with Health Connect; users record vitals
+  manually in the journal.
 
 ## Backup behavior
 

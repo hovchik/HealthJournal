@@ -11,7 +11,6 @@ KEY FEATURES
 • AI report for the doctor — generates a structured summary in plain language, with a strict "no diagnosis, no prescription" policy.
 • Pattern analysis — the AI highlights correlations between symptoms and vitals across several days.
 • Family profiles — keep separate journals for partner, parents, children. Switch profiles with one tap.
-• Health Connect — optionally import heart rate, steps, sleep, SpO₂, blood pressure, temperature, glucose and weight from your wearable.
 • PDF, CSV and FHIR export — share a clean report or a full dataset with any doctor or clinic.
 • Reminders — precise medication dose alarms and appointment notifications.
 • Biometric / PIN lock — add fingerprint, face or PIN on top of Android's sandbox.

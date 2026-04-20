@@ -11,7 +11,6 @@ FUNCIONES PRINCIPALES
 • Informe de IA para el médico — resumen estructurado en lenguaje claro, sin diagnósticos ni prescripciones.
 • Análisis de patrones — la IA detecta correlaciones entre síntomas y signos vitales en varios días.
 • Perfiles familiares — diarios separados para pareja, padres, hijos. Cambia de perfil con un toque.
-• Health Connect — importa opcionalmente frecuencia cardíaca, pasos, sueño, SpO₂, tensión, temperatura, glucosa y peso desde tu wearable.
 • Exportación PDF, CSV y FHIR — comparte un informe limpio o el conjunto completo con cualquier clínica.
 • Recordatorios — alarmas exactas de tomas y notificaciones de citas.
 • Bloqueo biométrico / PIN — huella, rostro o PIN además del sandbox de Android.

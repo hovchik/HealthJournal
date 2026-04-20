@@ -3,7 +3,6 @@ package com.hovchik.healthjournal
 import android.app.Application
 import com.hovchik.healthjournal.di.AppContainer
 import com.hovchik.healthjournal.util.LocaleManager
-import com.hovchik.healthjournal.util.HealthConnectSyncWorker
 import com.hovchik.healthjournal.util.NotificationHelper
 import com.hovchik.healthjournal.util.ReminderWorker
 import kotlinx.coroutines.flow.first
@@ -31,11 +30,5 @@ class HealthJournalApp : Application() {
 
         // Schedule reminder worker
         ReminderWorker.schedule(this)
-
-        // Schedule Health Connect auto-sync if enabled
-        if (HealthConnectSyncWorker.isEnabled(this)) {
-            val interval = HealthConnectSyncWorker.getSyncInterval(this)
-            HealthConnectSyncWorker.schedule(this, interval)
-        }
     }
 }

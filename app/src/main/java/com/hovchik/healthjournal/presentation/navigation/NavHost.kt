@@ -28,7 +28,6 @@ import com.hovchik.healthjournal.presentation.screen.reminders.RemindersScreen
 import com.hovchik.healthjournal.presentation.screen.security.SecuritySettingsScreen
 import com.hovchik.healthjournal.presentation.screen.settings.AiSettingsScreen
 import com.hovchik.healthjournal.presentation.screen.settings.FamilyMembersScreen
-import com.hovchik.healthjournal.presentation.screen.settings.HealthConnectScreen
 import com.hovchik.healthjournal.presentation.screen.settings.LanguageSettingsScreen
 import com.hovchik.healthjournal.presentation.screen.settings.PredefinedDataSettingsScreen
 import com.hovchik.healthjournal.presentation.screen.disease.DiseaseAiAnalysisScreen
@@ -187,7 +186,6 @@ fun HealthNavHost(
                 onAiChat = { navController.navigate(Screen.AiChat.route) },
                 onSecurity = { navController.navigate(Screen.SecuritySettings.route) },
                 onAchievements = { navController.navigate(Screen.Achievements.route) },
-                onHealthConnect = { navController.navigate(Screen.HealthConnect.route) },
                 onFamilyDashboard = { navController.navigate(Screen.FamilyDashboard.route) },
                 onLegalDocument = { docKey ->
                     navController.navigate(Screen.LegalDocument.createRoute(docKey))
@@ -256,9 +254,6 @@ fun HealthNavHost(
                     navController.previousBackStackEntry?.destination?.route in bottomNavItems.map { it.route },
                 onAiChat = { navController.navigate(Screen.AiChat.route) { launchSingleTop = true } }
             )
-        }
-        composable(Screen.HealthConnect.route) {
-            HealthConnectScreen(onBack = { navController.popBackStack() })
         }
         composable(Screen.FamilyDashboard.route) {
             FamilyDashboardScreen(onBack = { navController.popBackStack() })

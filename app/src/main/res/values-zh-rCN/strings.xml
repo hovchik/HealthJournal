@@ -620,16 +620,6 @@
     <string name="ai_chat_hint">\u8be2\u95ee\u60a8\u7684\u75c7\u72b6\u3001\u751f\u547d\u4f53\u5f81\u6216\u836f\u7269</string>
     <string name="ai_chat_clear">\u6e05\u9664\u804a\u5929</string>
 
-    <!-- Health Connect -->
-    <string name="health_connect_title">Health Connect</string>
-    <string name="health_connect_desc">\u4ece\u53ef\u7a7f\u6234\u8bbe\u5907\u5bfc\u5165\u6570\u636e</string>
-    <string name="health_connect_status">\u8fde\u63a5\u72b6\u6001</string>
-    <string name="health_connect_available">Health Connect \u53ef\u7528</string>
-    <string name="health_connect_unavailable">Health Connect \u4e0d\u53ef\u7528</string>
-    <string name="health_connect_data_types">\u652f\u6301\u7684\u6570\u636e\u7c7b\u578b</string>
-    <string name="health_connect_import">\u5bfc\u5165 7 \u5929\u6570\u636e</string>
-    <string name="health_connect_import_1_day">导入 1 天数据</string>
-
     <!-- Security -->
     <string name="security_title">\u5b89\u5168</string>
     <string name="security_desc">\u751f\u7269\u8bc6\u522b\u3001PIN\u3001\u5ba1\u8ba1\u65e5\u5fd7</string>
@@ -709,21 +699,10 @@
     <string name="calendar_tab">日历</string>
     <string name="no_appointments_for_day">这天没有预约</string>
 
-    <!-- Health Connect permissions -->
-    <string name="health_connect_permissions_needed">需要权限</string>
-    <string name="health_connect_permissions_desc">授予 Health Connect 访问权限以导入健康数据</string>
-    <string name="health_connect_grant_permissions">授予权限</string>
-    <string name="health_connect_permissions_hint">授予权限以导入数据</string>
-    <string name="health_connect_auto_sync">自动同步</string>
-    <string name="health_connect_auto_sync_desc">定期从 Health Connect 导入数据</string>
-    <string name="health_connect_sync_interval">同步间隔</string>
-    <string name="health_connect_hours_format">%1$d 小时</string>
-
-
     <!-- Health Summary Tab -->
     <string name="reports_tab_health">健康</string>
     <string name="health_daily_summary">每日摘要</string>
-    <string name="health_no_data">没有健康数据。从 Health Connect 导入。</string>
+    <string name="health_no_data">暂无数据。手动添加生命体征。</string>
     <string name="health_avg_label">平均</string>
     <string name="health_total_label">总计</string>
     <string name="health_min_label">最小</string>

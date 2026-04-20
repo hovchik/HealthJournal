@@ -41,7 +41,6 @@ import com.hovchik.healthjournal.data.local.dto.DoctorContactDto
 import com.hovchik.healthjournal.data.local.dto.ReminderDto
 import com.hovchik.healthjournal.util.DataExportImportManager
 import com.hovchik.healthjournal.util.GamificationManager
-import com.hovchik.healthjournal.util.HealthConnectManager
 import com.hovchik.healthjournal.util.PrivacyRedactor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -271,7 +270,6 @@ class AppContainer(context: Context) {
     val auditLogRepository: AuditLogRepository = AuditLogRepositoryImpl(auditLogStore)
 
     // Utilities
-    val healthConnectManager = HealthConnectManager(context)
     val gamificationManager = GamificationManager(context)
 
     // Use Cases

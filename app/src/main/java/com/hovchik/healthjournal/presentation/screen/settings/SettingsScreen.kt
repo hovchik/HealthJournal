@@ -52,7 +52,6 @@ fun SettingsScreen(
     onAiChat: () -> Unit = {},
     onSecurity: () -> Unit = {},
     onAchievements: () -> Unit = {},
-    onHealthConnect: () -> Unit = {},
     onFamilyDashboard: () -> Unit = {},
     onLegalDocument: (String) -> Unit = {},
     settingsViewModel: SettingsViewModel = viewModel()
@@ -409,14 +408,6 @@ fun SettingsScreen(
                         title = stringResource(R.string.dashboard_title),
                         subtitle = stringResource(R.string.dashboard_desc),
                         onClick = onDashboard
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                    SettingsListItem(
-                        icon = Icons.Default.Watch,
-                        iconTint = MaterialTheme.colorScheme.tertiary,
-                        title = stringResource(R.string.health_connect_title),
-                        subtitle = stringResource(R.string.health_connect_desc),
-                        onClick = onHealthConnect
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                     SettingsListItem(
