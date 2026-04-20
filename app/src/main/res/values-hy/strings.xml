@@ -582,6 +582,19 @@
     <string name="symptom_heatmap_title">Ախտանիշների ջերմային քարտեզ</string>
     <string name="correlations_title">Կորելյացիաներ</string>
     <string name="latest_value">Վերջինը՝ %1$s %2$s</string>
+    <string name="dashboard_greeting_morning">Բարի լույս</string>
+    <string name="dashboard_greeting_day">Բարի օր</string>
+    <string name="dashboard_greeting_evening">Բարի երեկո</string>
+    <string name="dashboard_greeting_night">Բարի գիշեր</string>
+    <string name="dashboard_pulse">Օրվա զարկերակ</string>
+    <string name="dashboard_section_glance">Մի հայացքով</string>
+    <string name="dashboard_section_trends">Միտումներ</string>
+    <string name="dashboard_section_signals">Ազդանշաններ</string>
+    <string name="dashboard_empty_title">Գրառումներ դեռ չկան</string>
+    <string name="dashboard_empty_body">Ավելացրեք առաջին ախտանիշը կամ ցուցանիշը՝ միտումներն ու կորելյացիաները տեսնելու համար:</string>
+    <string name="dashboard_entries_for">%1$d գրառում</string>
+    <string name="quick_add_title">Արագ ավելացում</string>
+    <string name="quick_add_close">Փակել</string>
 
     <!-- Appointments -->
     <string name="appointments_title">Բժշկի այցելություններ</string>

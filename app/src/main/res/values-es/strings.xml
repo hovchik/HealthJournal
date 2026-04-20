@@ -586,6 +586,19 @@
     <string name="symptom_heatmap_title">Mapa de calor de síntomas</string>
     <string name="correlations_title">Correlaciones</string>
     <string name="latest_value">Último: %1$s %2$s</string>
+    <string name="dashboard_greeting_morning">Buenos días</string>
+    <string name="dashboard_greeting_day">Buenas tardes</string>
+    <string name="dashboard_greeting_evening">Buenas noches</string>
+    <string name="dashboard_greeting_night">Buenas noches</string>
+    <string name="dashboard_pulse">Pulso del día</string>
+    <string name="dashboard_section_glance">De un vistazo</string>
+    <string name="dashboard_section_trends">Tendencias</string>
+    <string name="dashboard_section_signals">Señales</string>
+    <string name="dashboard_empty_title">Aún no hay registros</string>
+    <string name="dashboard_empty_body">Añade tu primer síntoma o indicador para ver tendencias y correlaciones.</string>
+    <string name="dashboard_entries_for">%1$d registros</string>
+    <string name="quick_add_title">Añadir rápido</string>
+    <string name="quick_add_close">Cerrar</string>
 
     <!-- Appointments -->
     <string name="appointments_title">Citas médicas</string>

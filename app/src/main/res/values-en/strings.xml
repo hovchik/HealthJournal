@@ -593,6 +593,19 @@
     <string name="symptom_heatmap_title">Symptom Heatmap</string>
     <string name="correlations_title">Correlations</string>
     <string name="latest_value">Latest: %1$s %2$s</string>
+    <string name="dashboard_greeting_morning">Good morning</string>
+    <string name="dashboard_greeting_day">Good afternoon</string>
+    <string name="dashboard_greeting_evening">Good evening</string>
+    <string name="dashboard_greeting_night">Good night</string>
+    <string name="dashboard_pulse">Pulse of the day</string>
+    <string name="dashboard_section_glance">At a glance</string>
+    <string name="dashboard_section_trends">Trends</string>
+    <string name="dashboard_section_signals">Signals</string>
+    <string name="dashboard_empty_title">No entries yet</string>
+    <string name="dashboard_empty_body">Add your first symptom or vital to see trends and correlations.</string>
+    <string name="dashboard_entries_for">%1$d entries</string>
+    <string name="quick_add_title">Quick add</string>
+    <string name="quick_add_close">Close</string>
 
     <!-- Appointments -->
     <string name="appointments_title">Appointments</string>
