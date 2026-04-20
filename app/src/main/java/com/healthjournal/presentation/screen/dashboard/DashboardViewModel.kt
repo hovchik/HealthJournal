@@ -35,6 +35,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private val activeProfileFlow = container.userSettingsRepository.getUserSettings()
         .map { it.activeProfileId }
 
+    val activeProfileId = activeProfileFlow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0L)
+
+    val familyMembers = container.familyMemberRepository.getAllMembers()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     val uiState = combine(
         container.getAllSymptoms(),
         container.getAllVitalSigns(),
