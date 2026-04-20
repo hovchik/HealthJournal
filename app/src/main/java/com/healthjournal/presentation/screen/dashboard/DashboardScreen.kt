@@ -4,24 +4,19 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MonitorHeart
-import androidx.compose.material.icons.filled.Sick
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,9 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -46,6 +38,11 @@ import com.healthjournal.presentation.theme.LocalHealthExtended
 import java.time.LocalDate
 import kotlin.math.max
 
+/*
+ * Editorial dashboard. Single flat paper surface. Sections delineated by
+ * ruled uppercase headers and negative space. The two allowed non-zero radii
+ * — the period pill and the FAB — are the only shapes in the room.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
@@ -54,7 +51,7 @@ fun DashboardScreen(
     onAddSymptom: () -> Unit = {},
     onAddVital: () -> Unit = {},
     onAddMedication: () -> Unit = {},
-    onAiChat: () -> Unit = {},
+    @Suppress("UNUSED_PARAMETER") onAiChat: () -> Unit = {},
     viewModel: DashboardViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -69,7 +66,6 @@ fun DashboardScreen(
     }
 
     var showQuickAdd by remember { mutableStateOf(false) }
-    val cs = MaterialTheme.colorScheme
     val ext = LocalHealthExtended.current
 
     val pulseSeries = remember(state.symptomsByDay) {
@@ -81,15 +77,18 @@ fun DashboardScreen(
     }
 
     val isEmpty = state.symptoms.isEmpty() && state.vitals.isEmpty()
+    val trendTypes = state.vitalsByType.filterValues { it.size >= 2 }
 
     Scaffold(
-        containerColor = cs.background,
+        containerColor = ext.paper,
         floatingActionButton = {
+            // The one FAB, pill-shaped, carrying signal colour. Opening the
+            // quick-add sheet is the single "commit" action on this screen.
             FloatingActionButton(
                 onClick = { showQuickAdd = true },
                 containerColor = ext.signal,
                 contentColor = ext.onSignal,
-                shape = MaterialTheme.shapes.large
+                shape = CircleShape
             ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.quick_add_title))
             }
@@ -102,43 +101,73 @@ fun DashboardScreen(
             contentPadding = PaddingValues(bottom = 96.dp)
         ) {
             item(key = "hero") {
-                DashboardHero(
+                EditorialHero(
                     profileName = activeProfileName,
                     isTopLevel = isTopLevel,
                     onBack = onBack,
                     pulse = { mod -> AmbientPulse(series = pulseSeries, modifier = mod) }
                 )
-            }
-
-            item(key = "period") {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(cs.background)
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                ) {
-                    PeriodSegmentedControl(
-                        options = listOf(3, 7, 14, 30, 90),
-                        selected = state.selectedPeriodDays,
-                        onSelect = viewModel::setPeriod
-                    )
-                }
+                Spacer(Modifier.height(16.dp))
+                PeriodPill(
+                    options = listOf(3, 7, 14, 30, 90),
+                    selected = state.selectedPeriodDays,
+                    onSelect = viewModel::setPeriod
+                )
+                Spacer(Modifier.height(12.dp))
             }
 
             if (isEmpty) {
-                item(key = "empty") {
-                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        DashboardEmptyState()
+                item(key = "empty") { EditorialEmpty() }
+            } else {
+                item(key = "glance-header") {
+                    SectionHeader(text = stringResource(R.string.dashboard_section_glance))
+                }
+                item(key = "glance") {
+                    GlanceRow(
+                        symptomsCount = state.symptoms.size,
+                        vitalsCount = state.vitals.size
+                    )
+                }
+
+                if (state.symptomsByDay.isNotEmpty()) {
+                    item(key = "pulse-header") {
+                        SectionHeader(text = stringResource(R.string.dashboard_pulse))
+                    }
+                    item(key = "pulse") {
+                        PulseStrip(
+                            symptomsByDay = state.symptomsByDay,
+                            days = state.selectedPeriodDays
+                        )
+                        Spacer(Modifier.height(12.dp))
                     }
                 }
-            } else {
-                item(key = "bento") {
-                    DashboardBento(
-                        state = state,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
+
+                if (trendTypes.isNotEmpty()) {
+                    item(key = "trends-header") {
+                        SectionHeader(text = stringResource(R.string.dashboard_section_trends))
+                    }
+                    for ((type, vitals) in trendTypes) {
+                        item(key = "trend-${type.name}") {
+                            VitalBlock(type = type, vitals = vitals)
+                        }
+                    }
+                }
+
+                if (state.correlations.isNotEmpty()) {
+                    item(key = "signals-header") {
+                        SectionHeader(text = stringResource(R.string.dashboard_section_signals))
+                    }
+                    state.correlations.forEachIndexed { index, c ->
+                        item(key = "corr-$index") {
+                            CorrelationRow(item = c)
+                            if (index < state.correlations.lastIndex) HairlineRule()
+                        }
+                    }
+                }
+
+                item(key = "tail") {
+                    Spacer(Modifier.height(24.dp))
+                    HairlineRule()
                 }
             }
         }
@@ -154,73 +183,10 @@ fun DashboardScreen(
     }
 }
 
-// ── Bento layout ──────────────────────────────────────────────────────────────
-// Two-column stat row, then full-bleed pulse, trends, and signals. Sections
-// are introduced with quiet labels rather than card headers — the page reads
-// like a chart, not a list.
-@Composable
-private fun DashboardBento(
-    state: DashboardUiState,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        SectionLabel(text = stringResource(R.string.dashboard_section_glance))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            StatTile(
-                label = stringResource(R.string.symptoms_title),
-                value = "${state.symptoms.size}",
-                icon = Icons.Default.Sick,
-                accent = MaterialTheme.colorScheme.error,
-                modifier = Modifier.weight(1f)
-            )
-            StatTile(
-                label = stringResource(R.string.nav_vitals),
-                value = "${state.vitals.size}",
-                icon = Icons.Default.MonitorHeart,
-                accent = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        if (state.symptomsByDay.isNotEmpty()) {
-            SymptomPulseTile(
-                symptomsByDay = state.symptomsByDay,
-                days = state.selectedPeriodDays,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        val trendTypes = state.vitalsByType.filterValues { it.size >= 2 }
-        if (trendTypes.isNotEmpty()) {
-            SectionLabel(text = stringResource(R.string.dashboard_section_trends))
-            for ((type, vitals) in trendTypes) {
-                VitalTrendTile(
-                    type = type,
-                    vitals = vitals,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-
-        if (state.correlations.isNotEmpty()) {
-            SectionLabel(text = stringResource(R.string.dashboard_section_signals))
-            for (c in state.correlations) {
-                CorrelationStripCard(item = c, modifier = Modifier.fillMaxWidth())
-            }
-        }
-    }
-}
-
-// ── Ambient pulse sparkline ───────────────────────────────────────────────────
-// Low-contrast 14-day mini chart drawn behind the hero text. Animates its
-// stroke in via a horizontal clip so the line "writes itself" on entry.
+// ── Ambient pulse ────────────────────────────────────────────────────────────
+// Lives inside the hero. 14-day mini sparkline drawn in signal color with a
+// horizontal clip that advances 0→1 on composition, so the line "writes
+// itself in" alongside the page entering.
 @Composable
 private fun AmbientPulse(series: List<Float>, modifier: Modifier = Modifier) {
     val ext = LocalHealthExtended.current
@@ -228,45 +194,39 @@ private fun AmbientPulse(series: List<Float>, modifier: Modifier = Modifier) {
     val progress = remember(series) { Animatable(0f) }
     LaunchedEffect(series) {
         progress.snapTo(0f)
-        progress.animateTo(1f, tween(durationMillis = 800, easing = EaseOutCubic))
+        progress.animateTo(1f, tween(durationMillis = 900, easing = EaseOutCubic))
     }
 
-    Canvas(modifier = modifier.alpha(0.45f)) {
+    Canvas(modifier = modifier) {
         if (series.isEmpty()) return@Canvas
         val maxV = max(series.max(), 1f)
-        val n = series.size
+        val lastIndex = (series.size - 1).coerceAtLeast(1)
+        val baseline = size.height - 1f
 
-        val fillPath = Path()
         val strokePath = Path()
         series.forEachIndexed { i, v ->
-            val x = size.width * i / (n - 1).coerceAtLeast(1)
-            val y = size.height * (1f - 0.65f * (v / maxV)) - 8f
-            if (i == 0) {
-                strokePath.moveTo(x, y)
-                fillPath.moveTo(x, size.height)
-                fillPath.lineTo(x, y)
-            } else {
-                strokePath.lineTo(x, y)
-                fillPath.lineTo(x, y)
-            }
+            val x = size.width * i / lastIndex
+            val y = size.height * (1f - 0.85f * (v / maxV)) - 2f
+            if (i == 0) strokePath.moveTo(x, y) else strokePath.lineTo(x, y)
         }
-        fillPath.lineTo(size.width, size.height)
-        fillPath.close()
 
         val clipWidth = size.width * progress.value
         clipRect(left = 0f, top = 0f, right = clipWidth, bottom = size.height) {
-            drawPath(
-                fillPath,
-                brush = Brush.verticalGradient(
-                    0f to ext.signal.copy(alpha = 0.25f),
-                    1f to Color.Transparent
-                )
-            )
+            // Stroke alone — no gradient fill. Reads as a journalistic chart
+            // rule rather than decorative ambient glow.
             drawPath(
                 strokePath,
                 color = ext.signal,
-                style = Stroke(width = 2.5f, cap = StrokeCap.Round)
+                style = Stroke(width = 1.5f, cap = StrokeCap.Round)
             )
         }
+
+        // Baseline hairline spanning the full pulse width — anchors the stroke
+        drawLine(
+            color = ext.hairline,
+            start = androidx.compose.ui.geometry.Offset(0f, baseline),
+            end = androidx.compose.ui.geometry.Offset(size.width, baseline),
+            strokeWidth = 0.5f
+        )
     }
 }

@@ -11,38 +11,107 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.healthjournal.R
 import com.healthjournal.presentation.theme.LocalHealthExtended
 import java.time.LocalTime
 
-// ── Collapsing hero ───────────────────────────────────────────────────────────
-// Replaces the small TopAppBar. Greeting + active profile sit on top of an
-// ambient gradient that fades into the background. The pulse sparkline is
-// rendered separately by the screen so the header stays layout-cheap.
+/*
+ * Editorial primitives. No Surface, no BorderStroke — every piece of chrome
+ * here is text + a hairline rule. Callers compose these into full-bleed
+ * columns separated by negative space and rules.
+ */
+
+// Outer margin used throughout the dashboard. The grid "starts" here.
+val EditorialMargin = 20.dp
+
+// ── Horizontal rules ─────────────────────────────────────────────────────────
+// The three weights carry meaning:
+//   • 0.5dp  — within a section, between rows of equivalent items
+//   • 1dp    — under headline text / between sections
+//   • 2dp    — above a new major section header (strongest break)
 @Composable
-fun DashboardHero(
+fun HairlineRule(
+    modifier: Modifier = Modifier,
+    weight: Float = 0.5f
+) {
+    val ext = LocalHealthExtended.current
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(weight.dp)
+            .background(ext.hairline)
+    )
+}
+
+@Composable
+fun InkRule(modifier: Modifier = Modifier, weight: Float = 1f) {
+    val ext = LocalHealthExtended.current
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(weight.dp)
+            .background(ext.ink)
+    )
+}
+
+// ── Section header ───────────────────────────────────────────────────────────
+// Replaces every "card" in the dashboard with ruled type. A thin ink bar on
+// the left acts as a running head; the uppercase Grotesque label is the only
+// remaining marker of "what's this section".
+@Composable
+fun SectionHeader(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    val ext = LocalHealthExtended.current
+    Column(modifier = modifier.fillMaxWidth()) {
+        InkRule(weight = 1f)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = EditorialMargin, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(width = 14.dp, height = 2.dp)
+                    .background(ext.ink)
+            )
+            Text(
+                text = text.uppercase(),
+                style = MaterialTheme.typography.labelLarge,
+                color = ext.ink
+            )
+        }
+    }
+}
+
+// ── Hero ─────────────────────────────────────────────────────────────────────
+// Flat. Not a container. Greeting in italic serif, title in display Grotesque,
+// profile as a metadata line. The 2dp rule underneath closes the hero off
+// like a magazine masthead.
+@Composable
+fun EditorialHero(
     profileName: String,
     isTopLevel: Boolean,
     onBack: () -> Unit,
@@ -50,68 +119,69 @@ fun DashboardHero(
     pulse: @Composable (Modifier) -> Unit = {}
 ) {
     val greeting = greetingForNow()
-    val cs = MaterialTheme.colorScheme
+    val ext = LocalHealthExtended.current
 
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 188.dp)
-            .background(
-                Brush.verticalGradient(
-                    0f to cs.surfaceContainer,
-                    1f to cs.background
-                )
-            )
+            .background(ext.paper)
     ) {
-        // Ambient sparkline lives behind the text
-        pulse(
-            Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .align(Alignment.BottomCenter)
-        )
+        if (!isTopLevel) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back),
+                    tint = ext.ink
+                )
+            }
+        } else {
+            Spacer(Modifier.height(16.dp))
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 20.dp)
+                .padding(horizontal = EditorialMargin)
         ) {
-            if (!isTopLevel) {
-                IconButton(onClick = onBack, modifier = Modifier.padding(bottom = 4.dp)) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back),
-                        tint = cs.onSurfaceVariant
-                    )
-                }
-            } else {
-                Spacer(Modifier.height(8.dp))
-            }
-
             Text(
                 text = greeting,
-                style = MaterialTheme.typography.labelMedium,
-                color = cs.onSurfaceVariant
+                style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
+                color = ext.muted
             )
-            Spacer(Modifier.height(2.dp))
             Text(
                 text = stringResource(R.string.dashboard_title),
-                style = MaterialTheme.typography.headlineLarge,
-                color = cs.onSurface
+                style = MaterialTheme.typography.displaySmall,
+                color = ext.ink
             )
-            Spacer(Modifier.height(8.dp))
-            Surface(
-                shape = CircleShape,
-                color = cs.surfaceContainerLow,
-                contentColor = cs.onSurfaceVariant
-            ) {
+            Spacer(Modifier.height(6.dp))
+            // Metadata line: monospaced tabular marker dot + serif label
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .clip(CircleShape)
+                        .background(ext.signal)
+                )
+                Spacer(Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.recording_for, profileName),
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    color = ext.muted
                 )
             }
+            Spacer(Modifier.height(16.dp))
+
+            // Ambient 14-day pulse. Runs edge-to-edge within the margin; drawn
+            // by the screen so the hero stays dumb.
+            pulse(Modifier.fillMaxWidth().height(56.dp))
+
+            Spacer(Modifier.height(12.dp))
         }
+
+        InkRule(weight = 2f)
     }
 }
 
@@ -127,124 +197,107 @@ private fun greetingForNow(): String {
     return stringResource(resId)
 }
 
-// ── Period segmented control ──────────────────────────────────────────────────
-// Replaces the FilterChip row. Pill segments animate the selection background.
+// ── Period pill ──────────────────────────────────────────────────────────────
+// The first of two allowed pill radii. Segments are bare text with animated
+// ink fill on the selected one — no container around the control itself.
 @Composable
-fun PeriodSegmentedControl(
+fun PeriodPill(
     options: List<Int>,
     selected: Int,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cs = MaterialTheme.colorScheme
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        color = cs.surfaceContainerLow,
-        tonalElevation = 0.dp
+    val ext = LocalHealthExtended.current
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = EditorialMargin),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            options.forEach { days ->
-                val isSelected = days == selected
-                val bg by animateColorAsState(
-                    if (isSelected) cs.surface else Color.Transparent,
-                    animationSpec = tween(220),
-                    label = "segBg"
+        options.forEach { days ->
+            val isSelected = days == selected
+            val bg by animateColorAsState(
+                if (isSelected) ext.ink else Color.Transparent,
+                tween(220),
+                label = "pillBg"
+            )
+            val fg by animateColorAsState(
+                if (isSelected) ext.paper else ext.muted,
+                tween(220),
+                label = "pillFg"
+            )
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(bg)
+                    .clickable { onSelect(days) }
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.days_format, days),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = fg
                 )
-                val fg by animateColorAsState(
-                    if (isSelected) cs.onSurface else cs.onSurfaceVariant,
-                    animationSpec = tween(220),
-                    label = "segFg"
-                )
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(bg)
-                        .clickable { onSelect(days) }
-                        .padding(vertical = 10.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.days_format, days),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = fg
-                    )
-                }
             }
         }
     }
 }
 
-// ── Stat tile ─────────────────────────────────────────────────────────────────
-// 1×1 bento tile: hairline outline, no shadow. Number rendered in the
-// monospace numeral family so digits sit on a stable grid.
+// ── Baseline reading ─────────────────────────────────────────────────────────
+// Structural text block used for stat + context pairs. The reading sits at
+// the baseline with its serif caption to the right on the same line — the
+// alignment IS the grouping; there's no box.
 @Composable
-fun StatTile(
-    label: String,
+fun BaselineReading(
     value: String,
-    icon: ImageVector,
-    accent: Color,
+    caption: String,
+    accent: Color? = null,
     modifier: Modifier = Modifier
 ) {
-    val cs = MaterialTheme.colorScheme
     val ext = LocalHealthExtended.current
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        color = cs.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, ext.gridInk),
-        tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = EditorialMargin, vertical = 14.dp),
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(
-                    shape = CircleShape,
-                    color = accent.copy(alpha = 0.12f),
-                    modifier = Modifier.size(28.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            icon,
-                            contentDescription = null,
-                            tint = accent,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-            Spacer(Modifier.height(14.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.displaySmall.copy(fontFamily = ext.numerals),
-                color = cs.onSurface
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = cs.onSurfaceVariant
-            )
-        }
+        Text(
+            text = value,
+            style = MaterialTheme.typography.displayLarge.copy(fontFamily = ext.numerals),
+            color = accent ?: ext.ink
+        )
+        Text(
+            text = caption,
+            style = MaterialTheme.typography.bodyMedium,
+            color = ext.muted,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
     }
 }
 
-// ── Section divider label ─────────────────────────────────────────────────────
+// ── Empty state ──────────────────────────────────────────────────────────────
 @Composable
-fun SectionLabel(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.outline,
-        modifier = modifier.padding(start = 4.dp, top = 8.dp, bottom = 4.dp)
-    )
+fun EditorialEmpty(modifier: Modifier = Modifier) {
+    val ext = LocalHealthExtended.current
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = EditorialMargin, vertical = 40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.dashboard_empty_title),
+            style = MaterialTheme.typography.headlineSmall,
+            color = ext.ink
+        )
+        Text(
+            text = stringResource(R.string.dashboard_empty_body),
+            style = MaterialTheme.typography.bodyMedium,
+            color = ext.muted
+        )
+    }
 }
