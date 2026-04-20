@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 108 108">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="108" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1C1917"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="54" cy="54" r="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F97316" stop-opacity="0.33"/>
+      <stop offset="1" stop-color="#F97316" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="pageGrad" x1="30" y1="22" x2="82" y2="84" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FDBA74"/>
+      <stop offset="0.55" stop-color="#FB923C"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="108" height="108" fill="url(#bgGrad)"/>
+  <rect width="108" height="108" fill="url(#glow)"/>
+
+  <!-- Page drop shadow -->
+  <path fill="#000000" fill-opacity="0.45"
+        d="M32 28 Q32 24 36 24 L66 24 L84 42 L84 82 Q84 86 80 86 L36 86 Q32 86 32 82 Z"/>
+
+  <!-- Folded corner underneath -->
+  <path fill="#7C2D12" d="M64 22 L82 40 L64 40 Z"/>
+
+  <!-- Main page -->
+  <path fill="url(#pageGrad)"
+        d="M30 26 Q30 22 34 22 L64 22 L82 40 L82 80 Q82 84 78 84 L34 84 Q30 84 30 80 Z"/>
+
+  <!-- Crease line -->
+  <path stroke="#7C2D12" stroke-opacity="0.6" stroke-width="1.2" stroke-linecap="round"
+        fill="none" d="M64 22 L82 40"/>
+
+  <!-- Top highlight -->
+  <path fill="#FFFFFF" fill-opacity="0.22"
+        d="M34 22 L62 22 L62 24.5 L32.5 24.5 Q32.5 23.5 34 22 Z"/>
+
+  <!-- Title underline -->
+  <path stroke="#431407" stroke-opacity="0.35" stroke-width="1.6" stroke-linecap="round"
+        fill="none" d="M38 36 L58 36"/>
+
+  <!-- ECG pulse -->
+  <path stroke="#0C0A09" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+        fill="none" d="M36 54 L42 54 L46 44 L50 68 L54 34 L58 64 L62 50 L66 54 L76 54"/>
+
+  <!-- Accent dot -->
+  <circle cx="54" cy="34" r="2.6" fill="#F97316"/>
+  <circle cx="54" cy="34" r="1.2" fill="#000000"/>
+
+  <!-- Journal entry lines -->
+  <path stroke="#431407" stroke-opacity="0.3" stroke-width="1.4" stroke-linecap="round"
+        fill="none" d="M38 72 L74 72"/>
+  <path stroke="#431407" stroke-opacity="0.3" stroke-width="1.4" stroke-linecap="round"
+        fill="none" d="M38 78 L66 78"/>
+</svg>

@@ -1,0 +1,45 @@
+HealthJournal es un diario de salud privado, basado en tu dispositivo, para ti y tu familia. Registra síntomas, signos vitales, medicamentos y citas médicas, descubre tendencias y genera un resumen claro escrito por IA que puedes entregar a tu médico.
+
+Todo lo que introduces se queda en tu dispositivo. No hay cuenta que crear, ni SDK publicitario, ni analítica. Tu diario solo sale del dispositivo cuando tú pulsas "exportar" o activas la IA en la nube con tu propia clave de API.
+
+FUNCIONES PRINCIPALES
+
+• Registro de síntomas — tipo, intensidad 0–10, duración, desencadenantes y notas, con biblioteca y buscador.
+• Signos vitales — tensión arterial, pulso, temperatura, SpO₂, glucosa, peso, sueño y pasos, con gráficos y tendencias.
+• Medicamentos — dosis, horarios, registro de toma, % de adherencia y avisos de interacciones.
+• Citas y médicos — planifica visitas en el calendario integrado y guarda la lista de tus profesionales.
+• Informe de IA para el médico — resumen estructurado en lenguaje claro, sin diagnósticos ni prescripciones.
+• Análisis de patrones — la IA detecta correlaciones entre síntomas y signos vitales en varios días.
+• Perfiles familiares — diarios separados para pareja, padres, hijos. Cambia de perfil con un toque.
+• Health Connect — importa opcionalmente frecuencia cardíaca, pasos, sueño, SpO₂, tensión, temperatura, glucosa y peso desde tu wearable.
+• Exportación PDF, CSV y FHIR — comparte un informe limpio o el conjunto completo con cualquier clínica.
+• Recordatorios — alarmas exactas de tomas y notificaciones de citas.
+• Bloqueo biométrico / PIN — huella, rostro o PIN además del sandbox de Android.
+
+PRIVACIDAD POR DISEÑO
+
+• Todos los datos residen en el almacenamiento privado y aislado de la app.
+• La copia automática en la nube de Android y la transferencia entre dispositivos están desactivadas para los datos de la app.
+• Solo HTTPS; el texto plano está bloqueado en toda la aplicación.
+• Los teléfonos y correos se redactan por defecto antes de cualquier solicitud a la IA en la nube.
+• "Borrar todos los datos" en Ajustes es el mecanismo de eliminación completa: no guardamos copia en servidor.
+
+IA A TU MEDIDA
+
+• IA local — análisis basado en reglas que funciona totalmente en el dispositivo, siempre disponible, sin internet ni clave.
+• LLM en el dispositivo — descarga opcionalmente un modelo pequeño para ejecutar análisis avanzados sin conexión.
+• IA en la nube — usa tu propia clave de API de Anthropic Claude, OpenAI, Google Gemini o DeepSeek. Tú eliges el proveedor; la app nunca incluye una clave por defecto.
+
+Los informes de IA en la nube consumen tokens reales, por lo que ofrecemos suscripciones opcionales (Basic, Pro, Unlimited) mediante Google Play Billing. El nivel gratuito mantiene siempre el diario, los recordatorios y la IA en el dispositivo.
+
+AVISO MÉDICO
+
+HealthJournal es un diario personal. No es un dispositivo médico, no proporciona diagnóstico, tratamiento ni consejo farmacológico, y no está pensado para emergencias. En una emergencia, llama al número de emergencias local. Comenta siempre los resúmenes de IA con un profesional sanitario cualificado.
+
+IDIOMAS
+
+English, Русский, Español, 中文 (简体), Հայերեն. El idioma de respuesta de la IA sigue el idioma de la interfaz.
+
+REQUISITOS
+
+Android 8.0 (API 26) o posterior. La conexión a internet solo se usa si activas la IA en la nube.
