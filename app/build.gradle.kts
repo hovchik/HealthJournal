@@ -117,7 +117,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Google Play Billing (subscriptions)
-    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    implementation("com.android.billingclient:billing-ktx:8.0.0")
 
     // WorkManager (reminders & notifications)
     implementation("androidx.work:work-runtime-ktx:2.10.0")
